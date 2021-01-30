@@ -1,38 +1,107 @@
-.App {
+/* Color scheme:
+
+https://coolors.co/efe7da-36393f-2081c3-dd1c1a-6da34d-fe5d26-26c485
+
+*/
+
+
+@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap');
+
+
+*, html {
+  margin: 0;
+  padding: 0;
+  /* font-family: 'Oxygen', sans-serif; */
+  font-family: 'Oxygen Mono', monospace;
+  overflow: auto;
+}
+
+body {
+  background-color: #36393f;
+  color: #f2f2f2;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+p, ul {
+  margin: 15px;
+  font-size: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+li {
+  list-style-type: circle;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/*
+header {
+    background-color: #333;
+}
+*/
+
+header {
+    margin: 0px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 60px;
+    color: #f2f2f2;
+    opacity: 0;
+    /* padding-top: 28px;
+    padding-bottom: 28px;
+    */ 
 }
 
-.App-link {
-  color: #61dafb;
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  color: #f2f2f2;
+  padding: 50px;
+  margin-top: 100px;
+  font-size: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.fly-in-left {
+  margin-right: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.fly-in-right {
+  margin-left: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.text-category {
+  position: relative;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Underline on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
+
+.text-category:before {
+
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  bottom: 0;
+  left: 0;
+  background-color: currentColor;
+  visibility: hidden;
+  transform: scaleX(0);
+  transition: all 0.3s ease-in-out;
+}
+
+.text-category:hover:before {
+  font-weight: bold;
+  visibility: visible;
+  transform: scaleX(1);
+}
+
+.link {
+  text-decoration: none;
 }
