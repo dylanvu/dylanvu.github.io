@@ -8,6 +8,29 @@ https://coolors.co/efe7da-36393f-2081c3-dd1c1a-6da34d-fe5d26-26c485
 @import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap');
 
+/* Scrollbar Styling */
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px #36393f; 
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #26282c; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #1c1e21; 
+}
 
 *, html {
   margin: 0;
@@ -23,31 +46,10 @@ body {
   text-align: center;
 }
 
-p, ul {
-  margin: 15px;
+.content {
+  margin-top: 15px;
   font-size: 20px;
-}
-
-li {
-  list-style-type: circle;
-}
-
-/*
-header {
-    background-color: #333;
-}
-*/
-
-header {
-    margin: 0px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    font-size: 60px;
-    color: #f2f2f2;
-    opacity: 0;
-    /* padding-top: 28px;
-    padding-bottom: 28px;
-    */ 
+  margin-left: 250px;
 }
 
 .footer {
@@ -62,46 +64,86 @@ header {
   font-size: 20px;
 }
 
-.fly-in-left {
-  margin-right: 100%;
-  white-space: nowrap;
-  overflow: hidden;
+/* Sidebar CSS, including text */
+
+/* My name on the sidebar top */
+.sidebar header {
+  margin: 0px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 50px;
+  color: #f2f2f2;
 }
 
-.fly-in-right {
-  margin-left: 100%;
-  white-space: nowrap;
-  overflow: hidden;
+/* normal text on the side bar in white */
+.sidebar p {
+  margin-top: 15px;
+  font-size: 18px;
 }
 
+/* Colored text */
 .text-category {
   position: relative;
   cursor: pointer;
   font-weight: bold;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  font-size: 18px;
 }
 
-/* Underline on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
-
+/* Underline colored text on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
 .text-category:before {
 
   content: "";
   position: absolute;
-  width: 100%;
+  width: 0;
   height: 3px;
   bottom: 0;
   left: 0;
   background-color: currentColor;
   visibility: hidden;
-  transform: scaleX(0);
-  transition: all 0.3s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
 
 .text-category:hover:before {
-  font-weight: bold;
   visibility: visible;
-  transform: scaleX(1);
+  width: 100%;
 }
 
+/* This is due to routing coloring the text */
 .link {
   text-decoration: none;
+}
+
+/* Sidebar itself, including the line */
+.sidebar {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 20px;
+  text-align: left;
+  margin-left: 20px;
+  border-right: 3px solid #2081C3;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+/* The icons */
+.icon {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.icon:hover {
+  cursor: pointer;
+  color: #26C485;
+}
+
+.icon:active {
+  color: none;
 }

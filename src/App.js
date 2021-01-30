@@ -1,5 +1,5 @@
 import './App.css';
-import {fadeIn, FlyInLeft1, FlyInLeft2, FlyInRight1, FlyInRight2} from "./animateHome.js"
+//import {fadeIn, FlyInLeft1, FlyInLeft2, FlyInRight1, FlyInRight2} from "./animateHome.js"
 import {
   BrowserRouter as Router,
   Switch,
@@ -8,58 +8,34 @@ import {
 } from "react-router-dom"
 //import Header from "./components/Header.jsx"
 import ProjectGroup from "./components/ProjectGroup"
+import Sidebar from "./components/Sidebar"
 
 function App() {
   return (
     <Router>
-      <header id="fade">Dylan Vu</header>
-      <br />
-      <p id="fly-in-left1" className="fly-in-left">
-        Welcome to my page! Check out my projects below:
-      </p>
-      <p id="fly-in-right1" className="fly-in-right">
-        <Link to="/Python" className="link">
-          <span className="text-category" style={{color: "#2081C3"}}>Python</span>
-        </Link>,&nbsp;
-        <Link to="/JavaScript_HTML_CSS" className="link">
-          <span className="text-category" style={{color: "#DD1C1A"}}>JavaScript/HTML/CSS</span>
-        </Link>,&nbsp;
-        <Link to="/C++" className="link">
-          <span className="text-category" style={{color: "#6DA34D"}}>C++</span>
-        </Link>, and&nbsp;
-        <Link to="Non-Coding" className="link">
-          <span className="text-category" style={{color: "#FE5D26"}}>Non-Coding</span>
-        </Link>
-      </p>
-      <br />
-      <p id="fly-in-left2" className="fly-in-left">
-        Let's talk:&nbsp;
-        <span id="email" className="text-category" style={{color: "#26C485"}} onClick={getEmail}>My email</span>
-      </p>
-      <p id="fly-in-right2" className="fly-in-right">
-        A bit about me:&nbsp;
-        <Link to="/About" className="link">
-          <span className="text-category" style={{color: "#26C485"}}>Who am I?</span>
-        </Link>
-      </p>
-      <Switch>
-        <Route exact path="/Python" component={ProjectGroup} />
-      </Switch>
-      <script>
-        {setTimeout(fadeIn, 550)}
-      </script>
-      <script>
-        {setTimeout(FlyInLeft1, 1000)}
-      </script>
-      <script>
-        {setTimeout(FlyInRight1, 1100)}
-      </script>
-      <script>
-        {setTimeout(FlyInLeft2, 1200)}
-      </script>
-      <script>
-        {setTimeout(FlyInRight2, 1300)}
-      </script>
+      <Sidebar />
+      <div className="content">
+        <Switch>
+          <Route exact path="/">
+            <p>Welcome?</p>
+          </Route>
+          <Route exact path="/About">
+            <p>About Placeholder</p>
+          </Route>
+          <Route exact path="/Python">
+            <p>Python Placeholder</p>
+          </Route>
+          <Route exact path="/JS_HTML_CSS">
+            <p>JS Placeholder</p>
+          </Route>
+          <Route exact path="/CPP">
+            <p>C++ Placeholder</p>
+          </Route>
+          <Route exact path="/NonCoding">
+            <p>Non-Coding Placeholder</p>
+          </Route>
+        </Switch>
+      </div>
     </Router>
   );
 }
