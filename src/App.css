@@ -32,6 +32,8 @@ https://coolors.co/efe7da-36393f-2081c3-dd1c1a-6da34d-fe5d26-26c485
   background: #1c1e21; 
 }
 
+/* Fix scrollbar for firefox as well */
+
 *, html {
   margin: 0;
   padding: 0;
