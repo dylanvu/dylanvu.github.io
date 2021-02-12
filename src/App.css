@@ -48,12 +48,6 @@ body {
   text-align: center;
 }
 
-.content {
-  margin-top: 15px;
-  font-size: 20px;
-  margin-left: 250px;
-}
-
 .footer {
   position: fixed;
   bottom: 0;
@@ -66,7 +60,28 @@ body {
   font-size: 20px;
 }
 
+.content {
+  margin-top: 15px;
+  font-size: 20px;
+  margin-left: 295px;
+}
+
 /* Sidebar CSS, including text */
+
+/* Sidebar itself, including the line */
+.sidebar {
+  height: 100%;
+  width: 270px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 20px;
+  text-align: left;
+  margin-left: 20px;
+  border-right: 5px solid #2081C3;
+  z-index: 1;
+  overflow-x: hidden;
+}
 
 /* My name on the sidebar top */
 .sidebar header {
@@ -80,7 +95,7 @@ body {
 /* normal text on the side bar in white */
 .sidebar p {
   margin-top: 15px;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 /* Colored text */
@@ -90,7 +105,7 @@ body {
   font-weight: bold;
   margin-top: 5%;
   margin-bottom: 5%;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 /* Underline colored text on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
@@ -99,7 +114,7 @@ body {
   content: "";
   position: absolute;
   width: 0;
-  height: 3px;
+  height: 5px;
   bottom: 0;
   left: 0;
   background-color: currentColor;
@@ -117,20 +132,7 @@ body {
   text-decoration: none;
 }
 
-/* Sidebar itself, including the line */
-.sidebar {
-  height: 100%;
-  width: 250px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding-top: 20px;
-  text-align: left;
-  margin-left: 20px;
-  border-right: 3px solid #2081C3;
-  z-index: 1;
-  overflow-x: hidden;
-}
+
 
 /* The icons */
 .icon {
@@ -150,9 +152,18 @@ body {
   color: none;
 }
 
+/* CSS for Project Group */
+.projectGroup h1 {
+  font-size: 20px;
+  text-align: center;
+  text-decoration: underline;
+}
+
+/* CSS For ProjectContent */
 .projectContent h1 {
   font-size: 40px;
   text-align: center;
+  text-decoration: underline;
 }
 
 .projectImage {

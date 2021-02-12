@@ -20,13 +20,17 @@ const ProjectGroup = (props) => {
     //TODO: If there's a space in the project name, replace it with a hyphen for the URL?
 
     return (
-        <Router>
+        <Router className="ProjectGroup">
+            <p style={{color: `${props.color}` }}>
+                Click on a colored link below!
+            </p>
+            <br/>
             {PythonProjects.map((project) => (
                 <div>
                     <p>
                         {project.projectHook}&nbsp;
                         <Link to={url + "/" + project.projectName} className="link">
-                            <span className="text-category" style={{color: `${props.color}` }}>{project.projectName}</span>
+                            <span className="text-category" style={{color: `${props.color}` }} >{project.projectName}</span>
                         </Link>
                     </p>
                     <br/>
