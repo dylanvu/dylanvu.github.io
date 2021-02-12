@@ -36,7 +36,7 @@ const ProjectGroup = (props) => {
                     <br/>
                 </div>
             ))}
-            <br/><br/>
+            
             <Switch>
                 {PythonProjects.map((project) => (
                     <Route exact path={url + "/" + project.projectName}>
@@ -47,5 +47,5 @@ const ProjectGroup = (props) => {
         </Router>
     )
 }
-
+// When you refresh, the content does not get routed again. Check out https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually
 export default ProjectGroup
