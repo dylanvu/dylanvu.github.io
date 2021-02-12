@@ -29,7 +29,7 @@ const Sidebar = () => {
                 <Link to="/Python" className="link">
                     <div className="text-category" style={{color: "#2081C3"}}>Python</div>
                 </Link>
-                <Link to="/JS_HTML_CSS" className="link">
+                <Link to="/JS-HTML-CSS" className="link">
                     <div className="text-category" style={{color: "#DD1C1A"}}>JavaScript/HTML/CSS</div>
                 </Link>
                 <Link to="/CPP" className="link">

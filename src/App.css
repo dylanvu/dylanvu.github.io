@@ -149,3 +149,8 @@ body {
 .icon:active {
   color: none;
 }
+
+.projectContent h1 {
+  font-size: 40px;
+  text-align: center;
+}
