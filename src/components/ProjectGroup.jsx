@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Link, useRouteMatch, Switch, Route } from 'rea
 let PythonProjects = [{
     projectHook: "Ever wanted to convert your Spotify playlist to a YouTube one?",
     projectName: "You-tify",
-    projectImage: "Something here",
+    projectImage: "/You-tify.png",
     projectDescription: "This was my first hackathon submission."
     },{
     projectHook: "Ever wanted to record the current UCSB course availability with the click of a button?",
@@ -29,13 +29,14 @@ const ProjectGroup = (props) => {
                             <span className="text-category" style={{color: `${props.color}` }}>{project.projectName}</span>
                         </Link>
                     </p>
-                    <br />
+                    <br/>
                 </div>
             ))}
+            <br/><br/>
             <Switch>
                 {PythonProjects.map((project) => (
                     <Route exact path={url + "/" + project.projectName}>
-                        <ProjectContent color={props.color} name={project.projectName}/>
+                        <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
                     </Route>
                 ))}
             </Switch>

@@ -1,11 +1,19 @@
 import React from 'react'
 
-const ProjectContent = (props) => (
-    <div className="projectContent">
-        <h1 style={{color: `${props.color}` }}>
-            {props.name}
-        </h1> 
-    </div>
-)
+const ProjectContent = (props) => {
+    return (
+        <div className="projectContent">
+            <h1 style={{color: `${props.color}` }}>
+                {props.name}
+            </h1> 
+            <br/>
+            <img src={props.image} alt={props.name} className="projectImage"/>
+            <br/><br/>
+            <p>
+                {props.description}
+            </p>
+        </div>
+    )
+}
 
 export default ProjectContent
