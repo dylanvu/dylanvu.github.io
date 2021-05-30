@@ -1,12 +1,10 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
 
 const ProjectContent = (props) => {
-    let { projectTitle } = useParams();
     return (
         <div className="projectContent">
             <h1 style={{color: `${props.color}` }}>
-                {projectTitle}
+                {props.name}
             </h1> 
             <br/>
             <img src={props.image} alt={props.name} className="projectImage"/>
@@ -14,6 +12,7 @@ const ProjectContent = (props) => {
             <p>
                 {props.description}
             </p>
+            <br/>
         </div>
     )
 }

@@ -1,6 +1,5 @@
 import React from 'react'
 import ProjectContent from './ProjectContent'
-import { HashRouter as Router, Link, useRouteMatch, Switch, Route } from 'react-router-dom'
 
 
 let PythonProjects = [{
@@ -16,9 +15,6 @@ let PythonProjects = [{
     }]
 
 const ProjectGroup = (props) => {
-    let { path, url } = useRouteMatch();
-    //TODO: If there's a space in the project name, replace it with a hyphen for the URL?
-
     return (
         <div className="ProjectGroup">
             <p style={{color: `${props.color}` }}>
@@ -29,28 +25,14 @@ const ProjectGroup = (props) => {
                 <div>
                     <p>
                         {project.projectHook}&nbsp;
-                        <Link to={url + "/" + project.projectName} className="link">
-                            <span className="text-category" style={{color: `${props.color}` }} >{project.projectName}</span>
-                        </Link>
+                        <span className="text-category" style={{color: `${props.color}` }} >{project.projectName}</span>
                     </p>
                     <br/>
                 </div>
             ))}
-            
-            {/* <Switch>
-                {PythonProjects.map((project) => (
-                    <Route exact path={url + "/" + project.projectName}>
-                        <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
-                    </Route>
-                ))}
-            </Switch> */}
-            <Switch>
-                {PythonProjects.map((project) => (
-                <Route path={`${path}/:projectTitle`}>
-                    <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
-                </Route>
-                ))}
-            </Switch>
+            {PythonProjects.map((project) => (
+                <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
+            ))}
         </div>
     )
 }
