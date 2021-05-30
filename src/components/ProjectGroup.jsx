@@ -1,6 +1,6 @@
 import React from 'react'
 import ProjectContent from './ProjectContent'
-import { BrowserRouter as Router, Link, useRouteMatch, Switch, Route } from 'react-router-dom'
+import { HashRouter as Router, Link, useRouteMatch, Switch, Route } from 'react-router-dom'
 
 
 let PythonProjects = [{
@@ -20,7 +20,7 @@ const ProjectGroup = (props) => {
     //TODO: If there's a space in the project name, replace it with a hyphen for the URL?
 
     return (
-        <Router className="ProjectGroup">
+        <div className="ProjectGroup">
             <p style={{color: `${props.color}` }}>
                 Click on a colored link below!
             </p>
@@ -37,14 +37,21 @@ const ProjectGroup = (props) => {
                 </div>
             ))}
             
-            <Switch>
+            {/* <Switch>
                 {PythonProjects.map((project) => (
                     <Route exact path={url + "/" + project.projectName}>
                         <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
                     </Route>
                 ))}
+            </Switch> */}
+            <Switch>
+                {PythonProjects.map((project) => (
+                <Route path={`${path}/:projectTitle`}>
+                    <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
+                </Route>
+                ))}
             </Switch>
-        </Router>
+        </div>
     )
 }
 // When you refresh, the content does not get routed again. Check out https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually
