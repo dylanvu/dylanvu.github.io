@@ -50,11 +50,9 @@ let CProjects = [{
 function App() {
 	const [introText, setIntrotext] = useState("");
 	useEffect(() => {
-		// document.getElementById("header").style.paddingTop = Math.floor(window.innerHeight/2) + "px";
-		// document.getElementById("header").style.paddingBottom = Math.floor(window.innerHeight/2) + "px";
-		document.getElementById("header").style.height = window.innerHeight + "px";
-		// document.getElementById("header").style.width = window.innerWidth + "px";
-		// document.getElementById("header").style.lineHeight = window.innerHeight + "px";
+		// console.log(document.getElementById("navbar").style.height);
+		// let height = window.innerHeight - document.getElementById("navbar").style.height;
+		// document.getElementById("header").style.height = height + "px";
 		AnimateHome();
 	},[])
 
@@ -69,10 +67,11 @@ function App() {
 			currHeaderText = currHeaderText + intro[i];
 			if (i >= intro.length) {
 				// After animation ends, scroll to content
-				setTimeout(() => {
-					document.getElementById("site").style.display = null;
-					document.getElementById("navbar").scrollIntoView({behavior: "smooth"});
-				}, 1000)
+				// To make this work, set the display of the div of the content to none in code
+				// setTimeout(() => {
+				// 	document.getElementById("site").style.display = null;
+				// 	document.getElementById("navbar").scrollIntoView({behavior: "smooth"});
+				// }, 1000)
 				clearInterval(headerHandle);
 			}
 		}, 75)
@@ -92,14 +91,12 @@ function App() {
 					{introText}
 				</div>
 			</div>
-			<div id="site" style={{display: "none"}}>
-				<Navbar/>
-				<div className="content">
-					<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>
-					<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS"/>
-					<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python"/>
-					<ProjectGroup projects={CProjects} color={"#6DA34D"} group="C++/C#" scroll="C"/>
-				</div>
+			<Navbar/>
+			<div className="content">
+				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>
+				<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS"/>
+				<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python"/>
+				<ProjectGroup projects={CProjects} color={"#6DA34D"} group="C++/C#" scroll="C"/>
 			</div>
 		</div>
 	);
