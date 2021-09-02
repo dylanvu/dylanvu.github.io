@@ -37,11 +37,6 @@ const ProjectContent = (props) => {
                 return true;
             }
         }
-        // Case 2: the photo is from the internet (not recommended since images can disappear)
-        if (text.includes("http")) { 
-            console.log("not supported yet");
-            return false;
-        }
         return false;
     }
 
