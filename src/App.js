@@ -50,9 +50,6 @@ let CProjects = [{
 function App() {
 	const [introText, setIntrotext] = useState("");
 	useEffect(() => {
-		// console.log(document.getElementById("navbar").style.height);
-		// let height = window.innerHeight - document.getElementById("navbar").style.height;
-		// document.getElementById("header").style.height = height + "px";
 		AnimateHome();
 	},[])
 
@@ -66,15 +63,17 @@ function App() {
 			i++;
 			currHeaderText = currHeaderText + intro[i];
 			if (i >= intro.length) {
-				// After animation ends, scroll to content
-				// To make this work, set the display of the div of the content to none in code
-				// setTimeout(() => {
-				// 	document.getElementById("site").style.display = null;
-				// 	document.getElementById("navbar").scrollIntoView({behavior: "smooth"});
-				// }, 1000)
+				// After animation ends, change height if the user has not scrolled yet
+				setTimeout(() => {
+					// Shrink header to expose content only if they haven't scrolled yet
+					// Use both documentElement for chrome, and body for everything else
+					if (!document.documentElement.scrollTop && !document.body.scrollTop) {
+						document.getElementById("header").style.height = "85vh";
+					}
+				}, 500)
 				clearInterval(headerHandle);
 			}
-		}, 75)
+		}, 60)
 
 		
 	}
@@ -106,15 +105,9 @@ export default App;
 
 // D++ red? #D40000
 // Old JS red: #DD1C1A
-/*
-TODO:
 
-- See https://speckyboy.com/css-javascript-text-animation-snippets/ Typing carousel? Dylan Vu! Dylan Vu? Dylan Vu. D
-Add GitHub or LinkedIn icons
-Potentially implement react to route to content under the projects section?
-- See if you can add transitions
-- Nested routing for the Resume/Email/Who am I
-- For email, maybe add an animation to switch from email to whatever? 
-- Ensure that when you click again, it un-routes it back to home.
+/* TODO:
+
+Project arrays into JSON ?
+
 */
-// F038FF

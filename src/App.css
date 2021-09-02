@@ -230,7 +230,8 @@ body {
   font-family: 'Oxygen Mono', monospace;
   padding-left: 5%;
   padding-right: 5%;
-  height: 95vh;
+  height: 100vh;
+  transition: height 0.5s ease;
 
 
   /* Make text unselectable */
@@ -258,10 +259,11 @@ body {
   background-color: #333;
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
   z-index: 10;
   width: 100%;
   font-family: 'Oxygen Mono', monospace;
+  /* Due to using vh, there is a weird gap with the navbar when top = 0. Move it back up */
+  top: -0.5vh;
 }
 
 /* Navbar links */
@@ -488,10 +490,6 @@ body {
 
   .navbar {
     justify-content: space-between;
-  }
-
-  .header {
-    height: 100vh;
   }
 
   .icon {
