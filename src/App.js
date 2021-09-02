@@ -1,9 +1,11 @@
 import "./App.css";
-//import {fadeIn, FlyInLeft1, FlyInLeft2, FlyInRight1, FlyInRight2} from "./animateHome.js"
-//import Header from "./components/Header.jsx"
 import { useEffect, useState } from "react"
 import ProjectGroup from "./components/ProjectGroup";
 import Navbar from "./components/Navbar";
+
+// If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
+// Example: https://vu-dylan.github.io/portfolio/
+
 
 let AboutMe = [{
 	projectHook: "My name is Dylan Vu",
