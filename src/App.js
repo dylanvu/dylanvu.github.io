@@ -1,78 +1,103 @@
 import "./App.css";
 //import {fadeIn, FlyInLeft1, FlyInLeft2, FlyInRight1, FlyInRight2} from "./animateHome.js"
 //import Header from "./components/Header.jsx"
+import { useEffect, useState } from "react"
 import ProjectGroup from "./components/ProjectGroup";
-import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
 
-// Import font awesome icons. Follow these instructions: https://fontawesome.com/how-to-use/on-the-web/using-with/react
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+let AboutMe = [{
+	projectHook: "My name is Dylan Vu",
+	projectName: "",
+	textPath: "/about/about.txt"
+}]
+
+let PythonProjects = [{
+    projectHook: "Convert your Spotify playlist to a YouTube playlist",
+    projectName: "You-tify",
+	textPath: "/projectgroup/python/youtify/youtify.txt"
+    },{
+    projectHook: "Record the current UCSB course availability with the click of a button",
+    projectName: "GoldWebscraper",
+	textPath: "/projectgroup/python/goldwebscraper/goldwebscraper.txt"
+    }]
+
+let JavaScriptProjects = [{
+    projectHook: "Add and save your favorite movies through a social media app",
+    projectName: "SeenIt",
+	textPath: "/projectgroup/javascript/seenit/seenit.txt"
+    },{
+    projectHook: "Draw with your friends in a collaborative whiteboard",
+    projectName: "SketchedOut",
+	textPath: "/projectgroup/javascript/sketchedout/sketchedout.txt"
+    },{
+    projectHook: "Increase engagement in your Discord server",
+    projectName: "Discord Question of the Day (QOTD)",
+	textPath: "/projectgroup/javascript/discordqotd/discordqotd.txt"
+	},{
+    projectHook: "Modernize your club website",
+    projectName: "UCSB Robotics Website",
+	textPath: "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt"
+}]
+
+let CProjects = [{
+	projectHook: "Use a VR controller that gives tactile feedback",
+	projectName: "GRIP Controller",
+	textPath: "/projectgroup/clangs/grip/grip.txt"
+}]
 
 function App() {
+	const [introText, setIntrotext] = useState("");
+	useEffect(() => {
+		// document.getElementById("header").style.paddingTop = Math.floor(window.innerHeight/2) + "px";
+		// document.getElementById("header").style.paddingBottom = Math.floor(window.innerHeight/2) + "px";
+		document.getElementById("header").style.height = window.innerHeight + "px";
+		// document.getElementById("header").style.width = window.innerWidth + "px";
+		// document.getElementById("header").style.lineHeight = window.innerHeight + "px";
+		AnimateHome();
+	},[])
+
+	function AnimateHome() {
+		let intro = "Hi, I'm Dylan Vu. Welcome to my site!";
+		let currHeaderText = intro[0];
+		let i = 0;
+		// Animate "typing"
+		let headerHandle = setInterval(() => {
+			setIntrotext(currHeaderText);
+			i++;
+			currHeaderText = currHeaderText + intro[i];
+			if (i >= intro.length) {
+				// After animation ends, scroll to content
+				setTimeout(() => {
+					document.getElementById("site").style.display = null;
+					document.getElementById("navbar").scrollIntoView({behavior: "smooth"});
+				}, 1000)
+				clearInterval(headerHandle);
+			}
+		}, 75)
+
+		
+	}
+
+	// When you refresh, get sent to the top.
+	window.onbeforeunload = function() {
+		window.scrollTo(0,0);
+	}
+
 	return (
 		<div>
-			<div className="sidebar">
-				<header id="fade" className="text-category">
-					Dylan Vu
-				</header>
-				<p>Welcome to my page! </p>
-					<div className="text-category" style={{ color: "#26C485" }}>
-						Who am I?
-					</div>
-				<p>Check out my projects below:</p>
-				<br />
-					<div className="text-category" style={{ color: "#2081C3" }}>
-						Python
-					</div>
-					<div className="text-category" style={{ color: "#DD1C1A" }}>
-						JavaScript/HTML/CSS
-					</div>
-					<div className="text-category" style={{ color: "#6DA34D" }}>
-						C++
-					</div>
-					<div className="text-category" style={{ color: "#FE5D26" }}>
-						Non-Coding
-					</div>
-				<br />
-				<br />
-				<a
-					href="https://github.com/vu-dylan"
-					style={{ color: "#f2f2f2" }}
-				>
-					<FontAwesomeIcon
-						icon={faGithub}
-						size="4x"
-						className="icon"
-					/>
-				</a>
-				<br />
-				<span>
-					<a
-						href="https://www.linkedin.com/in/dylanvu9/"
-						style={{ color: "#f2f2f2" }}
-					>
-						<FontAwesomeIcon
-							icon={faLinkedinIn}
-							size="4x"
-							className="icon"
-						/>
-					</a>
-				</span>
-				<br />
-				<a href="mailto:dylanvu@ucsb.edu" style={{ color: "#f2f2f2" }}>
-					<FontAwesomeIcon
-						icon={faEnvelope}
-						size="4x"
-						className="icon"
-					/>
-				</a>
+			<div className="header" id="header">
+				<div>
+					{introText}
+				</div>
 			</div>
-			<div className="content">
-				<div> Welcome to my portfolio! </div>
-				<br/>
-				<ProjectGroup color={"#2081C3"} />
+			<div id="site" style={{display: "none"}}>
+				<Navbar/>
+				<div className="content">
+					<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>
+					<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS"/>
+					<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python"/>
+					<ProjectGroup projects={CProjects} color={"#6DA34D"} group="C++/C#" scroll="C"/>
+				</div>
 			</div>
 		</div>
 	);
@@ -84,10 +109,7 @@ export default App;
 // Old JS red: #DD1C1A
 /*
 TODO:
-Make animations slow down toward the end (control position using a function)
-Potentially transition to only static HTML with scripts or something?
-Add an animation on hover for my name? Or an idle animation for my name, such as a box occasionally forming around it?
-- Do the same for the clickables. On hover, stop it though.
+
 - See https://speckyboy.com/css-javascript-text-animation-snippets/ Typing carousel? Dylan Vu! Dylan Vu? Dylan Vu. D
 Add GitHub or LinkedIn icons
 Potentially implement react to route to content under the projects section?
@@ -97,13 +119,3 @@ Potentially implement react to route to content under the projects section?
 - Ensure that when you click again, it un-routes it back to home.
 */
 // F038FF
-
-function getEmail() {
-	if (document.getElementById("email").innerHTML === "My email") {
-		document.getElementById("email").innerHTML = "dylanvu9@gmail.com";
-	} else if (
-		document.getElementById("email").innerHTML === "dylanvu9@gmail.com"
-	) {
-		document.getElementById("email").innerHTML = "My email";
-	}
-}

@@ -1,27 +1,31 @@
 import React from 'react'
 import ProjectContent from './ProjectContent'
+import Collapsible from './Collapsible'
 
+/* Props
+color = string hex color of the project groups
+group = string of name of the project group
+scroll = css id to scroll to
+projects = array of project objects with the following attributes:
+    projectHook = string sentence to "hook" someone in
+    projectName = name of the specific project
+    textPath = path to .txt file containing the project contents in the public folder, relative to the public folder
+*/
 
-let PythonProjects = [{
-    projectHook: "Ever wanted to convert your Spotify playlist to a YouTube one?",
-    projectName: "You-tify",
-    projectImage: "/You-tify.png",
-    projectDescription: "This was my first hackathon submission."
-    },{
-    projectHook: "Ever wanted to record the current UCSB course availability with the click of a button?",
-    projectName: "GoldWebscraper",
-    projectImage: "Something image here",
-    projectDescription: "This was my first Python project."
-    }]
 
 const ProjectGroup = (props) => {
     return (
         <div className="ProjectGroup">
-            <p style={{color: `${props.color}` }}>
-                Click on a colored link below!
-            </p>
+            {/* <p className="project-group-title" style={{color: `${props.color}` }}>
+                {props.group}
+            </p> */}
+            <button type="button" className="project-group-title" id={props.scroll} style={{borderColor : `${props.color}`}}>{props.group}</button>
             <br/>
-            {PythonProjects.map((project) => (
+            <br/>
+            {props.projects.map((project) => (
+                <ProjectContent hook={project.projectHook} title={project.projectName} id={project.projectName} textPath={project.textPath} color={props.color}/>
+            ))}
+            {/* {props.projects.map((project) => (
                 <div>
                     <p>
                         {project.projectHook}&nbsp;
@@ -30,9 +34,9 @@ const ProjectGroup = (props) => {
                     <br/>
                 </div>
             ))}
-            {PythonProjects.map((project) => (
+            {props.projects.map((project) => (
                 <ProjectContent color={props.color} name={project.projectName} image={project.projectImage} description={project.projectDescription}/>
-            ))}
+            ))} */}
         </div>
     )
 }

@@ -8,7 +8,7 @@ textPath = the path of the text description of the content relative to the publi
     Example of valid text path prop: "/projectgroup/javascript/discordqotd/discordqotd.txt"
 */
 
-const ProjectContent = (props) => {
+const Collapsible = (props) => {
 
     const [paragraphs, setParagraphs] = useState([])
 
@@ -27,6 +27,19 @@ const ProjectContent = (props) => {
         getParagraphs();
     // eslint-disable-next-line
     },[])
+
+    // Define function to enable collapsing of collapsible on click
+    function collapsible(id) {
+		let collapsible = document.getElementById(id);
+		collapsible.classList.toggle("collapsible-active");
+		collapsible.classList.toggle("arrow-active");
+		let content = collapsible.nextElementSibling;
+		if (content.style.maxHeight) {
+			content.style.maxHeight = null;
+		} else {
+			content.style.maxHeight = content.scrollHeight + "px";
+		} 
+	}
 
     function checkIfphoto(text) {
         // The photo refereced in the txt file is a path that's uploaded in the public folder
@@ -54,25 +67,27 @@ const ProjectContent = (props) => {
     }
 
     return(
-        <div className="project-content">
-            <h4 style={{color: `${props.color}` }}> {props.hook}: </h4>
-            <h3 style={{color: `${props.color}` }}> {props.title} </h3>
-            {paragraphs.map((paragraph) => {
-                //console.log(paragraph);
-                if (checkIfphoto(paragraph)) {
-                    //console.log("Hi there");
-                    return <img src={process.env.PUBLIC_URL + paragraph} alt={paragraph}/>
-                } else if (CheckIfLink(paragraph)) {
-                    return <p className="text"><a className="collapsible-link" href={paragraph} target="_blank" rel="noreferrer">{paragraph}</a></p>
-                } else {
-                    return <p className="text">{paragraph}</p>
+        <div>
+            <button type="button" className="collapsible" id={props.id} style={{color: `${props.color}`}}onClick={() => {collapsible(`${props.id}`)}} >{props.hook}</button>
+            <div className="collapsible-content">
+                <h4 className="text" style={{color: `${props.color}` }}> {props.title} </h4>
+                {paragraphs.map((paragraph) => {
+                    //console.log(paragraph);
+                    if (checkIfphoto(paragraph)) {
+                        //console.log("Hi there");
+                        return <img src={process.env.PUBLIC_URL + paragraph} alt={paragraph}/>
+                    } else if (CheckIfLink(paragraph)) {
+                        return <p className="text"><a className="collapsible-link" href={paragraph} target="_blank" rel="noreferrer">{paragraph}</a></p>
+                    } else {
+                        return <p className="text">{paragraph}</p>
+                    }
+                    
                 }
-                
-            }
-            )}
-            <br/><br/>
+                )}
+                <br/><br/>
+            </div>
         </div>
     )
 }
 
-export default ProjectContent
+export default Collapsible
