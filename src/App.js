@@ -94,9 +94,9 @@ function App() {
 					{introText}
 				</div>
 			</div>
-			{/* <video className="video" preload="auto" id="video" autoPlay loop muted>
+			<video className="video" preload="auto" id="video" autoPlay loop muted>
 				<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
-			</video> */}
+			</video>
 			<Navbar/>
 			<div className="content">
 				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>

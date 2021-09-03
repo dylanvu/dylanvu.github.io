@@ -37,9 +37,7 @@ const Navbar = () => {
     }
 
     return(
-        // <nav className={`navbar ${responsiveClass}`} id="navbar">
         <nav className={`navbar ${responsiveClass}`} id="navbar">
-            
             {/* eslint-disable-next-line */}
             <a className="nav-link" onClick={() => scrolling('About')}><span className="name">Dylan Vu</span></a>
             {/* eslint-disable-next-line */}
