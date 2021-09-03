@@ -166,7 +166,7 @@ body {
 /* Style the collapsible content. Note: hidden by default */
 .project-content {
   padding: 0 18px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 }
