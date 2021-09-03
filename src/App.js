@@ -93,8 +93,9 @@ function App() {
 				<div className="welcome">
 					{introText}
 				</div>
-				<video className="video" preload="auto" id="video" autoPlay loop muted>
+				<video className="video" preload="auto" id="video" autoPlay loop muted playsinline>
 					<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
+					Video tag not supported
 				</video>
 			</div>
 			<Navbar/>
