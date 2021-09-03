@@ -31,7 +31,7 @@
 *, html {
   /* word-break: break-all; */
   padding: 0;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   /* font-family: 'Oxygen', sans-serif; */
   /* font-family: 'Oxygen Mono', monospace; */
 }
@@ -46,7 +46,7 @@ body {
   position: relative;
   top: 0;
   left: 0;
-  font-size: 20px;
+  /* font-size: 20px; */
   background-color: #f2f2f2;
   font-family: 'Oxygen', sans-serif;
   z-index: 1;
@@ -166,12 +166,13 @@ body {
 /* Style the collapsible content. Note: hidden by default */
 .project-content {
   padding: 0 18px;
+  font-size: 1.1rem;
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 }
 
 .project-content img {
-  max-width: 45%;
+  max-width: 55%;
   height: auto;
   /* margin-left: 15%;
   margin-right: 15%; */
@@ -231,6 +232,8 @@ body {
   padding-right: 5%;
   height: 100vh;
   transition: height 0.5s ease;
+  position: relative;
+  overflow: hidden;
 
 
   /* Make text unselectable */
@@ -247,14 +250,12 @@ body {
 
 .video {
   opacity: 0.3;
-  /* height: 100%; */
-  overflow: hidden;
   min-height: 100vh;
   width: 100vw;
   position: absolute;
-  object-fit: cover;
   top: 0;
   left: 0;
+  object-fit: cover;
   z-index: 0;
   transition: height 0.5s ease;
 }
@@ -272,7 +273,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   background-color: #333;
   position: -webkit-sticky;
   position: sticky;
@@ -351,8 +352,8 @@ body {
 /* Credit to: https://codepen.io/RRoberts/pen/ZBYaJr hamburger-1 */
 
 .hamburger .line{
-  width: 50px;
-  height: 5px;
+  width: 40px;
+  height: 4px;
   background-color: #f2f2f2;
   display: none;
   margin: 8px auto;
@@ -374,17 +375,17 @@ body {
 }
 
 #hamburger.is-responsive .line:nth-child(1){
-  -webkit-transform: translateY(13px) rotate(45deg);
-  -ms-transform: translateY(13px) rotate(45deg);
-  -o-transform: translateY(13px) rotate(45deg);
-  transform: translateY(13px) rotate(45deg);
+  -webkit-transform: translateY(12px) rotate(45deg);
+  -ms-transform: translateY(12px) rotate(45deg);
+  -o-transform: translateY(12px) rotate(45deg);
+  transform: translateY(12px) rotate(45deg);
 }
 
 #hamburger.is-responsive .line:nth-child(3){
-  -webkit-transform: translateY(-13px) rotate(-45deg);
-  -ms-transform: translateY(-13px) rotate(-45deg);
-  -o-transform: translateY(-13px) rotate(-45deg);
-  transform: translateY(-13px) rotate(-45deg);
+  -webkit-transform: translateY(-12px) rotate(-45deg);
+  -ms-transform: translateY(-12px) rotate(-45deg);
+  -o-transform: translateY(-12px) rotate(-45deg);
+  transform: translateY(-12px) rotate(-45deg);
 }
 
 /* <--------------- mobile, device specific ----------------> */
@@ -472,11 +473,38 @@ body {
 
 }
 
+@media screen and (min-width: 767px) and (max-width: 1366px) and (min-height: 768px) and (max-height: 1025px) {
+  /* Fix hamburger menu size for iPad and iPad pro */
+  .hamburger .line{
+    width: 50px;
+    height: 5px;
+  }
+
+  
+  #hamburger.is-responsive .line:nth-child(1){
+    -webkit-transform: translateY(13px) rotate(45deg);
+    -ms-transform: translateY(13px) rotate(45deg);
+    -o-transform: translateY(13px) rotate(45deg);
+    transform: translateY(13px) rotate(45deg);
+  }
+  
+  #hamburger.is-responsive .line:nth-child(3){
+    -webkit-transform: translateY(-13px) rotate(-45deg);
+    -ms-transform: translateY(-13px) rotate(-45deg);
+    -o-transform: translateY(-13px) rotate(-45deg);
+    transform: translateY(-13px) rotate(-45deg);
+  }
+}
+
 /* <--------------- mobile most of hamburger/general rules ----------------> */
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1023px) {
 
-  /* When the screen is at maximum 480 px in size, hide all the navbar links */
+  /* When the screen is at maximum 1024px px in size, hide all the navbar links */
+
+  .navbar {
+    flex-wrap: wrap;
+  }
   
   .hamburger {
     padding: 10px;
@@ -507,6 +535,14 @@ body {
 
   .navbar {
     justify-content: space-between;
+  }
+
+  .project-group-title {
+    width: 70%;
+  }
+
+  .project-content img {
+    max-width: 90%;
   }
 
   .icon {

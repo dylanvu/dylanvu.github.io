@@ -76,7 +76,7 @@ function App() {
 					clearInterval(headerHandle);
 				}
 			}, 60)
-		}, 200)
+		}, 600)
 		
 
 		
@@ -93,12 +93,13 @@ function App() {
 				<div className="welcome">
 					{introText}
 				</div>
+				<video className="video" preload="auto" id="video" autoPlay loop muted>
+					<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
+				</video>
 			</div>
-			<video className="video" preload="auto" id="video" autoPlay loop muted>
-				<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
-			</video>
 			<Navbar/>
 			<div className="content">
+				
 				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>
 				<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS"/>
 				<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python"/>

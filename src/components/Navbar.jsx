@@ -18,7 +18,7 @@ const Navbar = () => {
 	}
     
     function toggleBurger() {
-        console.log("Burger clicked");
+        // console.log("Burger clicked");
         if (responsiveClass === "inactive") {
             setResponsive('is-responsive');
         } else {
