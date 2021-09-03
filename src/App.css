@@ -246,7 +246,7 @@ body {
 }
 
 .video {
-  opacity: 40%;
+  opacity: 0.3;
   /* height: 100%; */
   overflow: hidden;
   min-height: 100vh;
