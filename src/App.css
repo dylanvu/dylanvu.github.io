@@ -12,13 +12,14 @@ https://coolors.co/efe7da-36393f-2081c3-dd1c1a-6da34d-fe5d26-26c485
 
 /* width */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 5px #36393f; 
   border-radius: 10px;
+  background-color: #f2f2f2;
 }
 
 /* Handle */
@@ -48,9 +49,13 @@ body {
 }
 
 .content {  
+  position: relative;
+  top: 0;
+  left: 0;
   font-size: 20px;
   background-color: #f2f2f2;
   font-family: 'Oxygen', sans-serif;
+  z-index: 1;
   /* margin-left: 295px; */
 }
 
@@ -240,6 +245,18 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.video {
+  opacity: 20%;
+  /* height: 100%; */
+  overflow: hidden;
+  width: 99.5vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  transition: height 0.5s ease;
 }
 
 /* <--------------- Nav bar ------------------> */

@@ -58,22 +58,26 @@ function App() {
 		let currHeaderText = intro[0];
 		let i = 0;
 		// Animate "typing"
-		let headerHandle = setInterval(() => {
-			setIntrotext(currHeaderText);
-			i++;
-			currHeaderText = currHeaderText + intro[i];
-			if (i >= intro.length) {
-				// After animation ends, change height if the user has not scrolled yet
-				setTimeout(() => {
-					// Shrink header to expose content only if they haven't scrolled yet
-					// Use both documentElement for chrome, and body for everything else
-					if (!document.documentElement.scrollTop && !document.body.scrollTop) {
-						document.getElementById("header").style.height = "85vh";
-					}
-				}, 500)
-				clearInterval(headerHandle);
-			}
-		}, 60)
+		setTimeout(() => {
+			let headerHandle = setInterval(() => {
+				setIntrotext(currHeaderText);
+				i++;
+				currHeaderText = currHeaderText + intro[i];
+				if (i >= intro.length) {
+					// After animation ends, change height if the user has not scrolled yet
+					setTimeout(() => {
+						// Shrink header to expose content only if they haven't scrolled yet
+						// Use both documentElement for chrome, and body for everything else
+						if (!document.documentElement.scrollTop && !document.body.scrollTop) {
+							document.getElementById("header").style.height = "85vh";
+							// document.getElementById("video").style.height = "85vh";
+						}
+					}, 500)
+					clearInterval(headerHandle);
+				}
+			}, 60)
+		}, 200)
+		
 
 		
 	}
@@ -90,6 +94,9 @@ function App() {
 					{introText}
 				</div>
 			</div>
+			{/* <video className="video" preload="auto" id="video" autoPlay loop muted>
+				<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
+			</video> */}
 			<Navbar/>
 			<div className="content">
 				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>
