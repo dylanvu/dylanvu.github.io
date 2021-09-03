@@ -90,7 +90,7 @@ function App() {
 	return (
 		<div>
 			<div className="header" id="header">
-				<div>
+				<div className="welcome">
 					{introText}
 				</div>
 			</div>
