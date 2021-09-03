@@ -50,7 +50,12 @@ let CProjects = [{
 function App() {
 	const [introText, setIntrotext] = useState("");
 	useEffect(() => {
-		document.getElementById("video").play();
+		// Play video and animate header typing
+		// React has an issue with the muted in the video tag not being set properly.
+		document.addEventListener("DOMContentLoaded", () => {
+			document.getElementById("video").muted = true;
+		})
+		document.getElementById("video").play(); // Might be necessary for chrome
 		AnimateHome();
 	},[])
 
