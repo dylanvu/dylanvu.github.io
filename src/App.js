@@ -99,7 +99,7 @@ function App() {
 				<div className="welcome">
 					{introText}
 				</div>
-				<video className="video" preload="auto" id="video" autoplay loop muted playsinline>
+				<video className="video" preload="auto" id="video" autoPlay loop muted playsInline>
 					<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
 					Video tag not supported
 				</video>
