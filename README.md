@@ -1,5 +1,3 @@
 # My Portfolio Website
 
-This portfolio was created with React so that I could practice more UI/UX design
-
-Entire website is in progress!
+My portfolio website created using React.js
