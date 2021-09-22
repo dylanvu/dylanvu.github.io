@@ -1,5 +1,5 @@
 # My Portfolio Website
 
-This portfolio was created with React so that I could practice more UI/UX design
+My portfolio website created using React.js
 
-Entire website is in progress!
+https://vu-dylan.github.io/
