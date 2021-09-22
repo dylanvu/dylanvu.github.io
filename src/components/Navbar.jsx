@@ -26,16 +26,6 @@ const Navbar = () => {
         }
     }
 
-    function colorChange(id) {
-        let icon = document.getElementById(id);
-        if (icon.style.color === "#f2f2f2") {
-            icon.style.color = "#26C485";
-        } else {
-            icon.style.color = "#f2f2f2";
-        }
-        
-    }
-
     return(
         <nav className={`navbar ${responsiveClass}`} id="navbar">
             {/* eslint-disable-next-line */}

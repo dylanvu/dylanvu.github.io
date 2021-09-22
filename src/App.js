@@ -21,7 +21,11 @@ let PythonProjects = [{
     projectHook: "Record the current UCSB course availability with the click of a button",
     projectName: "GoldWebscraper",
 	textPath: "/projectgroup/python/goldwebscraper/goldwebscraper.txt"
-    }]
+    }, {
+		projectHook: "Draw on a projector and a computer for a seamless hybrid learning experience",
+		projectName: "GRIP Board",
+		textPath: "/projectgroup/python/gripboard/gripboard.txt"
+	}]
 
 let JavaScriptProjects = [{
     projectHook: "Add and save your favorite movies through a social media app",
