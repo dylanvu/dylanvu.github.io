@@ -2,8 +2,7 @@ import { React, useEffect, useState } from 'react'
 
 /* Props:
 title = title of the project
-hook = collapsible title
-id = unique css id, only used for finding the collapsible in the collapsible function and has no effect on the styling
+hook = project title
 textPath = the path of the text description of the content relative to the public folder. This is a text file inside of the public/{projectgroup}/{projectname} directory
     Example of valid text path prop: "/projectgroup/javascript/discordqotd/discordqotd.txt"
 */
@@ -56,9 +55,9 @@ const ProjectContent = (props) => {
                 //console.log(paragraph);
                 if (checkIfphoto(paragraph)) {
                     //console.log("Hi there");
-                    return <img src={process.env.PUBLIC_URL + paragraph} alt={paragraph}/>
+                    return <img key={paragraph} src={process.env.PUBLIC_URL + paragraph} alt={paragraph}/>
                 } else if (CheckIfLink(paragraph)) {
-                    return <p className="text"><a className="collapsible-link" href={paragraph} target="_blank" rel="noreferrer">{paragraph}</a></p>
+                    return <p key={paragraph} className="text"><a className="collapsible-link" href={paragraph} target="_blank" rel="noreferrer">{paragraph}</a></p>
                 } else {
                     return <p className="text">{paragraph}</p>
                 }

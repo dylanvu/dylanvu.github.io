@@ -2,54 +2,28 @@ import "./App.css";
 import { useEffect, useState } from "react"
 import ProjectGroup from "./components/ProjectGroup";
 import Navbar from "./components/Navbar";
+import Project from "./objects/project.js"
 
 // If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
 // Example: https://vu-dylan.github.io/portfolio/
 
+let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt")]
 
-let AboutMe = [{
-	projectHook: "My name is Dylan Vu",
-	projectName: "",
-	textPath: "/about/about.txt"
-}]
+let PythonProjects = [
+	new Project("Convert your Spotify playlist to a YouTube playlist", "You-tify", "/projectgroup/python/youtify/youtify.txt"), 
+	new Project("Record the current UCSB course availability with the click of a button", "GoldWebscraper", "/projectgroup/python/goldwebscraper/goldwebscraper.txt"), 
+	new Project("Draw on a projector and a computer for a seamless hybrid learning experience", "GRIP Board", "/projectgroup/python/gripboard/gripboard.txt")
+]
 
-let PythonProjects = [{
-    projectHook: "Convert your Spotify playlist to a YouTube playlist",
-    projectName: "You-tify",
-	textPath: "/projectgroup/python/youtify/youtify.txt"
-    },{
-    projectHook: "Record the current UCSB course availability with the click of a button",
-    projectName: "GoldWebscraper",
-	textPath: "/projectgroup/python/goldwebscraper/goldwebscraper.txt"
-    }, {
-		projectHook: "Draw on a projector and a computer for a seamless hybrid learning experience",
-		projectName: "GRIP Board",
-		textPath: "/projectgroup/python/gripboard/gripboard.txt"
-	}]
+let JavaScriptProjects = [
+	new Project("Add and save your favorite movies through a social media app", "SeenIt", "/projectgroup/javascript/seenit/seenit.txt"), 
+	new Project("Draw with your friends in a collaborative whiteboard", "SketchedOut", "/projectgroup/javascript/sketchedout/sketchedout.txt"), 
+	new Project("Increase engagement in your Discord server", "Discord Question of the Day", "/projectgroup/javascript/discordqotd/discordqotd.txt"),
+	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt"),
+	new Project("Cut Retail Waste with Global Inventory Management", "F•sync", "/projectgroup/javascript/fsync/fsync.txt")
+]
 
-let JavaScriptProjects = [{
-    projectHook: "Add and save your favorite movies through a social media app",
-    projectName: "SeenIt",
-	textPath: "/projectgroup/javascript/seenit/seenit.txt"
-    },{
-    projectHook: "Draw with your friends in a collaborative whiteboard",
-    projectName: "SketchedOut",
-	textPath: "/projectgroup/javascript/sketchedout/sketchedout.txt"
-    },{
-    projectHook: "Increase engagement in your Discord server",
-    projectName: "Discord Question of the Day (QOTD)",
-	textPath: "/projectgroup/javascript/discordqotd/discordqotd.txt"
-	},{
-    projectHook: "Modernize your club website",
-    projectName: "UCSB Robotics Website",
-	textPath: "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt"
-}]
-
-let CProjects = [{
-	projectHook: "Use a VR controller that gives tactile feedback",
-	projectName: "GRIP Controller",
-	textPath: "/projectgroup/clangs/grip/grip.txt"
-}]
+let CProjects = [new Project("Use a VR controller that gives tactile feedback", "GRIP Controller", "/projectgroup/clangs/grip/grip.txt")]
 
 function App() {
 	const [introText, setIntrotext] = useState("");
@@ -110,7 +84,6 @@ function App() {
 			</div>
 			<Navbar/>
 			<div className="content">
-				
 				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About"/>
 				<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS"/>
 				<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python"/>
