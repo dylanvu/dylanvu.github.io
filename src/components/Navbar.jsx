@@ -1,4 +1,4 @@
-import {React, useState} from 'react'
+import { React, useState } from 'react'
 // Import font awesome icons. Follow these instructions: https://fontawesome.com/how-to-use/on-the-web/using-with/react
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
@@ -14,9 +14,9 @@ const Navbar = () => {
         if (responsiveClass === "is-responsive") {
             setResponsive('inactive');
         }
-		document.getElementById(id).scrollIntoView({behavior: "smooth"});
-	}
-    
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+    }
+
     function toggleBurger() {
         // console.log("Burger clicked");
         if (responsiveClass === "inactive") {
@@ -26,7 +26,7 @@ const Navbar = () => {
         }
     }
 
-    return(
+    return (
         <nav className={`navbar ${responsiveClass}`} id="navbar">
             {/* eslint-disable-next-line */}
             <a className="nav-link" onClick={() => scrolling('About')}><span className="name">Dylan Vu</span></a>
@@ -35,7 +35,7 @@ const Navbar = () => {
             {/* eslint-disable-next-line */}
             <a className="nav-link" style={{ color: "#2081C3" }} onClick={() => scrolling('Python')}><span>Python</span></a>
             {/* eslint-disable-next-line */}
-            <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('C')}><span>C++/C#</span></a>
+            <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('Other')}><span>Other</span></a>
             {/* eslint-disable-next-line */}
             <a className="nav-link" style={{ color: "#FE5D26" }} href="/about/Dylan Vu Resume.pdf" target="_blank" rel="noreferrer"><span>Resume</span></a>
             <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
@@ -48,17 +48,17 @@ const Navbar = () => {
             <a href="https://www.linkedin.com/in/dylanvu9/" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
                 <FontAwesomeIcon
                     icon={faLinkedinIn}
-                    
+
                     className="icon"
                 />
             </a>
             <a href="mailto:dylanvu@ucsb.edu" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
                 <FontAwesomeIcon
                     icon={faEnvelope}
-                    
+
                     className="icon"
                 />
-            </a> 
+            </a>
             <div className={`hamburger ${responsiveClass}`} id="hamburger" onClick={() => toggleBurger()}>
                 <span className="line"></span>
                 <span className="line"></span>
