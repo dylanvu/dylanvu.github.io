@@ -7,7 +7,7 @@ import Project from "./objects/project.js"
 // If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
 // Example: https://vu-dylan.github.io/portfolio/
 
-let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt")]
+let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt"), new Project("My Resume at a Glimpse", "", "/about/glimpse.txt")]
 
 let PythonProjects = [
 	new Project("Convert your Spotify playlist to a YouTube playlist", "You-tify", "/projectgroup/python/youtify/youtify.txt"),

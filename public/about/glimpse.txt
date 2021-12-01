@@ -1,0 +1,17 @@
+Incoming Software Development Intern at Ansync Labs in December 2021.
+
+Software Developer at Modet Collective working on an inventory management to improve sustainability. Implement custom JSON Web Token Login verification workflow and backend in NodeJS using Socket.io, Express, MongoDB driver, and Twilio API. Integrate backend with React.js frontend.
+
+Developer of the Discord Question of the Day bot featured in the UCSB AIChE club, UCSB Robotics club, and Solo Development (a Discord server with 1500+ members).
+
+Courses: Object Oriented Programming, Data Structures
+
+6x Hackathon Participant and 2x Winner (LA Hacks 2021, HackHarvard 2021). Pinnacle 2021 Participant.
+
+Languages I've worked with: Javascript (NodeJS runtime), Python, C++, Flutter, MATLAB, C#
+
+NodeJS - Express, Socket.io, React.js, MongoDB node driver, Axios, Discord.js
+
+Python - OpenCV, Flask, pygame, flask-socketio
+
+C# - Unity scripting and VR game development
