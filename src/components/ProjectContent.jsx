@@ -11,21 +11,21 @@ const ProjectContent = (props) => {
 
     const [paragraphs, setParagraphs] = useState([])
 
-    
+
     useEffect(() => {
         // Import text file and split into array divided by paragraph
         const getParagraphs = () => {
-        // eslint-disable-next-line
-        fetch(props.textPath)
-            .then(r => r.text())
-            .then(text => {
-                setParagraphs(text.split("\n"))
-            })
+            // eslint-disable-next-line
+            fetch(props.textPath)
+                .then(r => r.text())
+                .then(text => {
+                    setParagraphs(text.split("\n"))
+                })
 
         }
         getParagraphs();
-    // eslint-disable-next-line
-    },[])
+        // eslint-disable-next-line
+    }, [])
 
     function checkIfphoto(text) {
         // The photo refereced in the txt file is a path that's uploaded in the public folder
@@ -47,24 +47,29 @@ const ProjectContent = (props) => {
         }
     }
 
-    return(
+    return (
         <div className="project-content">
-            <h4 style={{color: `${props.color}` }}> {props.hook}: </h4>
-            <h3 style={{color: `${props.color}` }}> {props.title} </h3>
+            <h4 style={{ color: `${props.color}` }}> {props.hook}: </h4>
+            <h3 style={{ color: `${props.color}` }}> {props.title} </h3>
             {paragraphs.map((paragraph) => {
                 //console.log(paragraph);
                 if (checkIfphoto(paragraph)) {
                     //console.log("Hi there");
-                    return <img key={paragraph} src={process.env.PUBLIC_URL + paragraph} alt={paragraph}/>
+                    return <img key={paragraph} src={process.env.PUBLIC_URL + paragraph} alt={paragraph} />
                 } else if (CheckIfLink(paragraph)) {
                     return <p key={paragraph} className="text"><a className="collapsible-link" href={paragraph} target="_blank" rel="noreferrer">{paragraph}</a></p>
                 } else {
+                    if (paragraph[0] === "*") {
+                        return <ul>
+                            <li>{paragraph.slice(2)}</li>
+                        </ul>
+                    }
                     return <p className="text">{paragraph}</p>
                 }
-                
+
             }
             )}
-            <br/><br/>
+            <br /><br />
         </div>
     )
 }

@@ -114,6 +114,14 @@ body {
   font-size: 1.1em;
 }
 
+ul {
+  text-align: left;
+  margin-left: 18%;
+  margin-right: 15%;
+  margin-top: 2%;
+  font-size: 1.1em;
+}
+
 .projectImage {
   max-width: 50%;
   height: auto;
