@@ -53,13 +53,33 @@ body {
   /* margin-left: 295px; */
 }
 
+.contribution {
+  color: 	#36393F;
+  font-size: 1.8em;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.contribution div {
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+.contribution a:visited {
+  color: 	#36393F;
+}
+
+.contribution a {
+  color: 	#36393F;
+}
+
 /* Colored text */
 .text-category {
   position: relative;
   cursor: pointer;
-  margin-top: 5%;
-  margin-bottom: 5%;
-  font-size: 20px;
+  /* margin-top: 5%;
+  margin-bottom: 5%; */
+  /* font-size: 20px; */
 }
 
 /* Underline colored text on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
@@ -68,7 +88,7 @@ body {
   content: "";
   position: absolute;
   width: 0;
-  height: 5px;
+  height: 2px;
   bottom: 0;
   left: 0;
   background-color: currentColor;

@@ -61,10 +61,10 @@ const ProjectContent = (props) => {
                 } else {
                     if (paragraph[0] === "*") {
                         return <ul>
-                            <li>{paragraph.slice(2)}</li>
+                            <li key={paragraph}>{paragraph.slice(2)}</li>
                         </ul>
                     }
-                    return <p className="text">{paragraph}</p>
+                    return <p className="text" key={paragraph + Math.floor(Math.random() * 500 * Math.floor(Math.random() * 500)).toString()}>{paragraph}</p>
                 }
 
             }

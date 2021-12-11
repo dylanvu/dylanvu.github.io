@@ -19,7 +19,7 @@ const ProjectGroup = (props) => {
             <br/>
             <br/>
             {props.projects.map((project) => (
-                <ProjectContent key={project.projectName} hook={project.projectHook} title={project.projectName} id={project.projectName} textPath={project.textPath} color={props.color}/>
+                <ProjectContent key={project.projectName + Math.floor(Math.random() * 500).toString()} hook={project.projectHook} title={project.projectName} id={project.projectName} textPath={project.textPath} color={props.color}/>
             ))}
         </div>
     )

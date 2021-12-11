@@ -1,8 +1,10 @@
 import "./App.css";
 import { useEffect, useState } from "react"
+import Header from "./components/Header";
 import ProjectGroup from "./components/ProjectGroup";
 import Navbar from "./components/Navbar";
-import Project from "./objects/project.js"
+import Project from "./objects/project.js";
+import Contributions from "./components/Contributions";
 
 // If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
 // Example: https://vu-dylan.github.io/portfolio/
@@ -27,44 +29,43 @@ let OtherProjects = [new Project("Use a VR controller that gives tactile feedbac
 
 function App() {
 	const [introText, setIntrotext] = useState("");
-	useEffect(() => {
-		// Play video and animate header typing
-		// React has an issue with the muted in the video tag not being set properly.
-		document.addEventListener("DOMContentLoaded", () => {
-			document.getElementById("video").muted = true;
-		})
-		document.getElementById("video").play(); // Might be necessary for chrome
-		AnimateHome();
-	}, [])
-
-	function AnimateHome() {
-		let intro = "Hi, I'm Dylan Vu. Welcome to my site!";
-		let currHeaderText = intro[0];
-		let i = 0;
-		// Animate "typing"
-		setTimeout(() => {
-			let headerHandle = setInterval(() => {
-				setIntrotext(currHeaderText);
-				i++;
-				currHeaderText = currHeaderText + intro[i];
-				if (i >= intro.length) {
-					// After animation ends, change height if the user has not scrolled yet
-					setTimeout(() => {
-						// Shrink header to expose content only if they haven't scrolled yet
-						// Use both documentElement for chrome, and body for everything else
-						if (!document.documentElement.scrollTop && !document.body.scrollTop) {
-							document.getElementById("header").style.height = "85vh";
-							// document.getElementById("video").style.height = "85vh";
-						}
-					}, 500)
-					clearInterval(headerHandle);
-				}
-			}, 60)
-		}, 600)
 
 
+	// useEffect(() => {
+	// 	// Play video and animate header typing
+	// 	// React has an issue with the muted in the video tag not being set properly.
+	// 	document.addEventListener("DOMContentLoaded", () => {
+	// 		document.getElementById("video").muted = true;
+	// 	})
+	// 	document.getElementById("video").play(); // Might be necessary for chrome
+	// 	AnimateHome();
+	// }, []);
 
-	}
+	// function AnimateHome() {
+	// 	let intro = "Hi, I'm Dylan Vu. Welcome to my site!";
+	// 	let currHeaderText = intro[0];
+	// 	let i = 0;
+	// 	// Animate "typing"
+	// 	setTimeout(() => {
+	// 		let headerHandle = setInterval(() => {
+	// 			setIntrotext(currHeaderText);
+	// 			i++;
+	// 			currHeaderText = currHeaderText + intro[i];
+	// 			if (i >= intro.length) {
+	// 				// After animation ends, change height if the user has not scrolled yet
+	// 				setTimeout(() => {
+	// 					// Shrink header to expose content only if they haven't scrolled yet
+	// 					// Use both documentElement for chrome, and body for everything else
+	// 					if (!document.documentElement.scrollTop && !document.body.scrollTop) {
+	// 						document.getElementById("header").style.height = "85vh";
+	// 						// document.getElementById("video").style.height = "85vh";
+	// 					}
+	// 				}, 500)
+	// 				clearInterval(headerHandle);
+	// 			}
+	// 		}, 60)
+	// 	}, 600)
+	// }
 
 	// When you refresh, get sent to the top.
 	window.onbeforeunload = function () {
@@ -73,7 +74,7 @@ function App() {
 
 	return (
 		<div>
-			<div className="header" id="header">
+			{/* <div className="header" id="header">
 				<div className="welcome">
 					{introText}
 				</div>
@@ -81,9 +82,11 @@ function App() {
 					<source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
 					Video tag not supported
 				</video>
-			</div>
+			</div> */}
+			<Header/>
 			<Navbar />
 			<div className="content">
+				<Contributions/>
 				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About" />
 				<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS" />
 				<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python" />
