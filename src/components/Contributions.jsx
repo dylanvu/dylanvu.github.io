@@ -130,7 +130,7 @@ const Contributions = () => {
                     <FontAwesomeIcon
                         icon={faGithub}
                         id="github"
-                        style={{color: "#36393f", fontSize: "6rem"}}
+                        className="githubIcon"
                     />
                 </a>
             </div>

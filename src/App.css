@@ -75,6 +75,16 @@ body {
   color: 	#36393F;
 }
 
+.githubIcon {
+  color: #36393f;
+  font-size: 6rem;
+}
+
+.githubIcon:hover {
+  transition: transform .7s ease-in-out;
+  transform: rotate(720deg);
+}
+
 /* Colored text */
 .text-category {
   position: relative;
