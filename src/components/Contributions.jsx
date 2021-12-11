@@ -1,5 +1,7 @@
 import {React, useState, useEffect} from 'react';
 import Axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 
 const Contributions = () => {
 
@@ -24,6 +26,10 @@ const Contributions = () => {
             for (let i = 0; i < res.data.length; i++) {
                 if (res.data[i].type === 'PushEvent') {
                     let name = res.data[i].repo.name.split('/').at(-1);
+                    // Change the name to this website if the last thing I worked on was my portfolio
+                    if (name === "vu-dylan.github.io") {
+                        name = "this website";
+                    }
                     if (first) {
                         first = false;
                         // console.log(name)
@@ -52,7 +58,10 @@ const Contributions = () => {
 
     useEffect(() => {
         if (done && allRepos.length > 0) {
-            Type(allRepos[index].name);
+            setTimeout(() => {
+                Type(allRepos[index].name);
+            }, 2000);
+            
         }
     }, [allRepos]);
 
@@ -115,7 +124,18 @@ const Contributions = () => {
                     What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
                 </div>
             </div> : null}
-
+            <div>
+                Maybe you'll find something here?
+            </div>
+            <div>
+                <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
+                    <FontAwesomeIcon
+                        icon={faGithub}
+                        id="github"
+                        style={{color: "#36393f", fontSize: "6rem"}}
+                    />
+                </a>
+            </div>
         </div>
     )
 }
