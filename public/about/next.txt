@@ -9,3 +9,5 @@ What I'm planning on doing next:
 * Dip my toes into Next.js
 
 * Learn Arduino and pursue a hardware-oriented project
+
+* Learn how to mod a game for the first time

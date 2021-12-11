@@ -125,7 +125,7 @@ const Contributions = () => {
                 </div>
             </div> : null}
             <div>
-                Maybe you'll find something here?
+                Maybe you'll find even better something here?
             </div>
             <div>
                 <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
@@ -135,6 +135,9 @@ const Contributions = () => {
                         style={{color: "#36393f", fontSize: "6rem"}}
                     />
                 </a>
+            </div>
+            <div>
+                Or just keep scrolling to find out!
             </div>
         </div>
     )
