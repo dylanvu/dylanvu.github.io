@@ -10,7 +10,6 @@ const Contributions = () => {
     const [index, setIndex] = useState(0);
     const [done, setDone] = useState(false);
     useEffect(() => {
-        // TODO: Check to see if I have anything in the repo and the contribution
         // TODO: Get description of the featured GitHub Repo
         // https://docs.github.com/en/rest/reference/activity#list-public-events-for-a-user
         // Use Github API to get most recent push
@@ -32,7 +31,14 @@ const Contributions = () => {
                         setRepolink("https://github.com/" + res.data[i].repo.name);
                     }
                     allPush.push({name: name, url: "https://github.com/" + res.data[i].repo.name})
+                } else {
+                    console.log(res.data[i])
                 }
+            }
+            // If there is literally no push events, just show the last thing I did.
+            if (first) {
+                setContrib(res.data[0].repo.name.split('/').at(-1));
+                setRepolink("https://github.com/" + res.data[0].repo.name);
             }
             // Remove duplicates
             // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
@@ -45,7 +51,7 @@ const Contributions = () => {
     }, []);
 
     useEffect(() => {
-        if (done) {
+        if (done && allRepos.length > 0) {
             Type(allRepos[index].name);
         }
     }, [allRepos]);
@@ -101,12 +107,15 @@ const Contributions = () => {
             <div>
                 The last thing I've worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
             </div>
-            <div>
-                Think that's pretty cool? Or maybe it wasn't your cup of tea?
-            </div>
-            <div>
-                What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
-            </div>
+            {allRepos.length > 0 ? <div>
+                <div>
+                    Think that's pretty cool? Or maybe it wasn't your cup of tea?
+                </div>
+                <div>
+                    What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
+                </div>
+            </div> : null}
+
         </div>
     )
 }
