@@ -18,11 +18,12 @@ let PythonProjects = [
 ]
 
 let JavaScriptProjects = [
+	new Project("Find a Chemical Engineering Internship and/or Job", "UCSB AIChE Careers Bot", "/projectgroup/javascript/aichecareers/aichecareers.txt"),
+	new Project("Cut Retail Waste with Global Inventory Management", "F•sync", "/projectgroup/javascript/fsync/fsync.txt"),
 	new Project("Add and save your favorite movies through a social media app", "SeenIt", "/projectgroup/javascript/seenit/seenit.txt"),
 	new Project("Draw with your friends in a collaborative whiteboard", "SketchedOut", "/projectgroup/javascript/sketchedout/sketchedout.txt"),
 	new Project("Increase engagement in your Discord server", "Discord Question of the Day", "/projectgroup/javascript/discordqotd/discordqotd.txt"),
-	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt"),
-	new Project("Cut Retail Waste with Global Inventory Management", "F•sync", "/projectgroup/javascript/fsync/fsync.txt")
+	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt")
 ]
 
 let OtherProjects = [new Project("Use a VR controller that gives tactile feedback", "GRIP Controller", "/projectgroup/clangs/grip/grip.txt"), new Project("Get fit through a mobile fitness AI-generated text-adventure game", "Geoverse", "/projectgroup/flutter/geoverse/geoverse.txt")]

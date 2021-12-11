@@ -8,9 +8,9 @@
 
 * 6x Hackathon Participant and 2x Winner (LA Hacks 2021, HackHarvard 2021). Pinnacle 2021 Participant.
 
-* Languages I've worked with: Javascript (NodeJS runtime), Python, C++, Flutter, MATLAB, C#
+* Languages I've worked with: Javascript (NodeJS runtime and TypeScript), Python, C++, Flutter, MATLAB, C#
 
-* NodeJS - Express, Socket.io, React.js, MongoDB node driver, Axios, Discord.js
+* NodeJS and TypeScript - Express, Socket.io, React.js, MongoDB node driver, Axios, Discord.js
 
 * Python - OpenCV, Flask, pygame, flask-socketio
 
