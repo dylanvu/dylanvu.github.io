@@ -37,8 +37,6 @@ const Contributions = () => {
                         setRepolink("https://github.com/" + res.data[i].repo.name);
                     }
                     allPush.push({name: name, url: "https://github.com/" + res.data[i].repo.name})
-                } else {
-                    console.log(res.data[i])
                 }
             }
             // If there is literally no push events, just show the last thing I did.
