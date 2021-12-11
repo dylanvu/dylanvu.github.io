@@ -9,7 +9,7 @@ import Contributions from "./components/Contributions";
 // If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
 // Example: https://vu-dylan.github.io/portfolio/
 
-let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt"), new Project("Resume at a Glance", "", "/about/glance.txt")]
+let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt"), new Project("Resume at a Glance", "", "/about/glance.txt"), new Project("Current Learning Goals", "", "/about/next.txt")]
 
 let PythonProjects = [
 	new Project("Convert your Spotify playlist to a YouTube playlist", "You-tify", "/projectgroup/python/youtify/youtify.txt"),
