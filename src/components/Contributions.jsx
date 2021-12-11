@@ -17,7 +17,7 @@ const Contributions = () => {
         Axios.get("https://api.github.com/users/vu-dylan/events/public", {
             params: {per_page: 70}
         }).then((res) => {
-            console.log(res.data);
+            // console.log(res.data);
             let allPush = [];
             let first = true;
 
@@ -27,7 +27,7 @@ const Contributions = () => {
                     let name = res.data[i].repo.name.split('/').at(-1);
                     if (first) {
                         first = false;
-                        console.log(name)
+                        // console.log(name)
                         setContrib(name);
                         setRepolink("https://github.com/" + res.data[i].repo.name);
                     }
@@ -99,10 +99,13 @@ const Contributions = () => {
     return (
         <div className="contribution">
             <div>
-                The last thing I've worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>!
+                The last thing I've worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
             </div>
             <div>
-                Think that's pretty cool? Or maybe it wasn't your cup of tea? What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
+                Think that's pretty cool? Or maybe it wasn't your cup of tea?
+            </div>
+            <div>
+                What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
             </div>
         </div>
     )
