@@ -15,7 +15,8 @@ const Contributions = () => {
         // TODO: Get description of the featured GitHub Repo
         // https://docs.github.com/en/rest/reference/activity#list-public-events-for-a-user
         // Use Github API to get most recent push
-        Axios.get("https://api.github.com/users/vu-dylan/events/public", {
+        // Safari was broken so try this: https://stackoverflow.com/questions/47877808/axios-get-not-working-in-safari-browser 
+        Axios.get("https://api.github.com/users/vu-dylan/events/public" + '?nocache=' + new Date().getTime(), {
             params: {per_page: 70}
         }).then((res) => {
             // console.log(res.data);
