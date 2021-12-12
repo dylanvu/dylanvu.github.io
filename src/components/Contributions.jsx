@@ -16,7 +16,7 @@ const Contributions = () => {
         // https://docs.github.com/en/rest/reference/activity#list-public-events-for-a-user
         // Use Github API to get most recent push
         // Safari was broken so try this: https://stackoverflow.com/questions/47877808/axios-get-not-working-in-safari-browser 
-        Axios.get("https://api.github.com/users/vu-dylan/events/public" + '?nocache=' + new Date().getTime(), {
+        Axios.get("https://api.github.com/users/vu-dylan/events/public/" + '?nocache=' + new Date().getTime(), {
             params: {per_page: 70}
         }).then((res) => {
             // console.log(res.data);
@@ -52,6 +52,8 @@ const Contributions = () => {
             allPush.shift();
             setDone(true);
             setAllrepos(allPush);
+        }).catch((e) => {
+            console.error(e);
         });
     }, []);
 
