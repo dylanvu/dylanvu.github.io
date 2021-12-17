@@ -12,17 +12,18 @@ import Contributions from "./components/Contributions";
 let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt"), new Project("Resume at a Glance", "", "/about/glance.txt"), new Project("Current Learning Goals", "", "/about/next.txt")]
 
 let PythonProjects = [
+	new Project("Draw on a projector and a computer for a seamless hybrid learning experience", "GRIP Board", "/projectgroup/python/gripboard/gripboard.txt"),
 	new Project("Convert your Spotify playlist to a YouTube playlist", "You-tify", "/projectgroup/python/youtify/youtify.txt"),
-	new Project("Record the current UCSB course availability with the click of a button", "GoldWebscraper", "/projectgroup/python/goldwebscraper/goldwebscraper.txt"),
-	new Project("Draw on a projector and a computer for a seamless hybrid learning experience", "GRIP Board", "/projectgroup/python/gripboard/gripboard.txt")
+	new Project("Record the current UCSB course availability with the click of a button", "GoldWebscraper", "/projectgroup/python/goldwebscraper/goldwebscraper.txt")
 ]
 
 let JavaScriptProjects = [
 	new Project("Find a Chemical Engineering Internship and/or Job", "UCSB AIChE Careers Bot", "/projectgroup/javascript/aichecareers/aichecareers.txt"),
+	new Project("Add a Chaotic Twist to an Auto-Battler Game", "Super RNG Pets", "/projectgroup/javascript/super-rng-pets/super-rng-pets.txt"),
 	new Project("Cut Retail Waste with Global Inventory Management", "F•sync", "/projectgroup/javascript/fsync/fsync.txt"),
+	new Project("Increase engagement in your Discord server", "Discord Question of the Day", "/projectgroup/javascript/discordqotd/discordqotd.txt"),
 	new Project("Add and save your favorite movies through a social media app", "SeenIt", "/projectgroup/javascript/seenit/seenit.txt"),
 	new Project("Draw with your friends in a collaborative whiteboard", "SketchedOut", "/projectgroup/javascript/sketchedout/sketchedout.txt"),
-	new Project("Increase engagement in your Discord server", "Discord Question of the Day", "/projectgroup/javascript/discordqotd/discordqotd.txt"),
 	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt")
 ]
 
