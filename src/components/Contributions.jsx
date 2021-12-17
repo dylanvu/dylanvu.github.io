@@ -30,6 +30,18 @@ const Contributions = () => {
                     // Change the name to this website if the last thing I worked on was my portfolio
                     if (name === "vu-dylan.github.io") {
                         name = "this website";
+                    } else {
+                        let nameArr = name.split("-");
+                        let i = 0;
+                        name = "";
+                        nameArr.forEach((namePart) => {
+                            if (i) {
+                                name = namePart
+                            } else {
+                                name = name + " " + namePart;
+                            }
+                            
+                        })
                     }
                     if (first) {
                         first = false;
