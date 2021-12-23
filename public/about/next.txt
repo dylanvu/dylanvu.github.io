@@ -1,12 +1,12 @@
 What I'm planning on doing next:
 
-* Get more familiar with TypeScript
+* Make most of my future projects in TypeScript
 
-* Learn how to use ElectronJS to make my first desktop application
+* Make a larger project in Next.js (potentially port my website to Next.js)
+
+* Make a more complex project in ElectronJS
 
 * Figure out more complex state management in React using contexts and reducers
-
-* Dip my toes into Next.js
 
 * Learn Arduino and pursue a hardware-oriented project
 
