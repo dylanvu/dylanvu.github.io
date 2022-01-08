@@ -22,6 +22,7 @@ let JavaScriptProjects = [
 	new Project("Add a Chaotic Twist to an Auto-Battler Game", "Super RNG Pets", "/projectgroup/javascript/super-rng-pets/super-rng-pets.txt"),
 	new Project("Cut Retail Waste with Global Inventory Management", "F•sync", "/projectgroup/javascript/fsync/fsync.txt"),
 	new Project("Increase engagement in your Discord server", "Discord Question of the Day", "/projectgroup/javascript/discordqotd/discordqotd.txt"),
+	new Project("Schedule Chemical Engineering Lab Usage", "UCSB AIChE Lab Reservation/Registration", "/projectgroup/javascript/reservation/reservation.txt"),
 	new Project("Add and save your favorite movies through a social media app", "SeenIt", "/projectgroup/javascript/seenit/seenit.txt"),
 	new Project("Draw with your friends in a collaborative whiteboard", "SketchedOut", "/projectgroup/javascript/sketchedout/sketchedout.txt"),
 	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt")
