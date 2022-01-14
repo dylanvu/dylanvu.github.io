@@ -1,5 +1,0 @@
-I'm a student from the University of California, Santa Barbara.
-
-I mostly program using NodeJS, but I'm also familiar with Python and C++. I do know a little bit of C# in the context of Unity, a little bit on the basics of Flutter and Dart, and I also know MATLAB from my background in Chemical Engineering.
-
-I'm a huge fan of hackathons! I've done six so far, and I always come out knowing so much more than what I started with. I think of them as the best way to learn since you're committing to finishing a mini project, it's quite short term, and it's a great chance to challenge yourself and step outside of what you already know. I attribute the majority of my development in this field just to hackathons.
