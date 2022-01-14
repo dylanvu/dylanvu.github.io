@@ -1,6 +1,8 @@
 What I'm planning on doing next:
 
-* Create a Chrome extension
+* Make most of my future projects in TypeScript
+
+* Make a larger project in Next.js (potentially port my website to Next.js)
 
 * Make a more complex project in ElectronJS
 
