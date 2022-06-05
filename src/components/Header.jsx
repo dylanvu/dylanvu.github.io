@@ -1,7 +1,7 @@
-import {React, useEffect, useState} from 'react';
+import { React, useEffect, useState } from 'react';
 
 const Header = () => {
-    const [introText, setIntrotext] = useState("");
+	const [introText, setIntrotext] = useState("");
 	useEffect(() => {
 		// Play video and animate header typing
 		// React has an issue with the muted in the video tag not being set properly.
@@ -36,18 +36,18 @@ const Header = () => {
 				}
 			}, 60)
 		}, 600)
-    }
-    return (
-        <div className="header" id="header">
-            <div className="welcome">
-                {introText}
-            </div>
-            <video className="video" preload="auto" id="video" autoPlay loop muted playsInline>
-                <source src={process.env.PUBLIC_URL + "/header.mp4"} type='video/mp4' />
-                Video tag not supported
-            </video>
-        </div>
-    )
+	}
+	return (
+		<div className="header" id="header">
+			<div className="welcome">
+				{introText}
+			</div>
+			<video className="video" preload="auto" id="video" autoPlay loop muted playsInline>
+				<source src={process.env.PUBLIC_URL + "/reel.mp4"} type='video/mp4' />
+				Video tag not supported
+			</video>
+		</div>
+	)
 }
 
 export default Header
