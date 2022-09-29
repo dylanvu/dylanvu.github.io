@@ -1,6 +1,6 @@
 What I'm planning on doing next:
 
-* Make a larger project in Next.js (potentially port my website to Next.js)
+* Make a larger project in Next.js (potentially port my website to Next.js, or a cooking website to store my recipes)
 
 * Make a more complex project in ElectronJS
 
