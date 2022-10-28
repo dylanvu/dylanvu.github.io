@@ -1,4 +1,4 @@
-import {React, useState, useEffect} from 'react';
+import { React, useState, useEffect } from 'react';
 import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
@@ -7,7 +7,7 @@ const Contributions = () => {
 
     const [contribution, setContrib] = useState("");
     const [repoLink, setRepolink] = useState("");
-    const [allRepos, setAllrepos] = useState([{name: "", url: ""}]);
+    const [allRepos, setAllrepos] = useState([{ name: "", url: "" }]);
     const [backupRepo, setbackupRepo] = useState("");
     const [index, setIndex] = useState(0);
     const [done, setDone] = useState(false);
@@ -17,7 +17,7 @@ const Contributions = () => {
         // Use Github API to get most recent push
         // Safari was broken so try this: https://stackoverflow.com/questions/47877808/axios-get-not-working-in-safari-browser 
         Axios.get("https://api.github.com/users/vu-dylan/events/public" + '?nocache=' + new Date().getTime(), {
-            params: {per_page: 70}
+            params: { per_page: 70 }
         }).then((res) => {
             // console.log(res.data);
             let allPush = [];
@@ -40,7 +40,7 @@ const Contributions = () => {
                             } else {
                                 name = name + " " + namePart;
                             }
-                            
+
                         })
                     }
                     if (first) {
@@ -49,7 +49,7 @@ const Contributions = () => {
                         setContrib(name);
                         setRepolink("https://github.com/" + res.data[i].repo.name);
                     }
-                    allPush.push({name: name, url: "https://github.com/" + res.data[i].repo.name})
+                    allPush.push({ name: name, url: "https://github.com/" + res.data[i].repo.name })
                 }
             }
             // If there is literally no push events, just show the last thing I did.
@@ -63,7 +63,13 @@ const Contributions = () => {
             // Remove first element, which is the most recent thing
             allPush.shift();
             setDone(true);
-            setAllrepos(allPush);
+            // check if repos were actually gotten
+            if (allPush.length) {
+                setAllrepos(allPush);
+            } else {
+                // just push something random to display null
+                allPush = [{ name: "", url: "" }];
+            }
         }).catch((e) => {
             console.error(e);
         });
@@ -74,48 +80,48 @@ const Contributions = () => {
             setTimeout(() => {
                 Type(allRepos[index].name);
             }, 2000);
-            
+
         }
     }, [allRepos]);
 
     function Type(text) {
-		let currText = text[0];
-		let i = 0;
-		// Animate "typing"
-		setTimeout(() => {
-			let textHandle = setInterval(() => {
-				setbackupRepo(currText);
-				i++;
-				currText = currText + text[i];
-				if (i >= text.length) {
+        let currText = text[0];
+        let i = 0;
+        // Animate "typing"
+        setTimeout(() => {
+            let textHandle = setInterval(() => {
+                setbackupRepo(currText);
+                i++;
+                currText = currText + text[i];
+                if (i >= text.length) {
                     setTimeout(() => {
                         // Getting some weird stuff with accessing states inside this function, so just set it again and delete it
                         DeleteText(text);
                     }, 3000)
-					clearInterval(textHandle);
-				}
-			}, 60);
-		}, 600);
+                    clearInterval(textHandle);
+                }
+            }, 60);
+        }, 600);
     }
 
     function DeleteText(text) {
         let i = text.length;
         // Animate "deletion"
         setTimeout(() => {
-			let textHandle = setInterval(() => {
-				setbackupRepo(text.slice(0,i));
-				i--;
-				if (i < 0) {
-					clearInterval(textHandle);
+            let textHandle = setInterval(() => {
+                setbackupRepo(text.slice(0, i));
+                i--;
+                if (i < 0) {
+                    clearInterval(textHandle);
                     // Now we cycle to the next repo
                     if (index + 1 >= allRepos.length) {
                         setIndex(0)
                     } else {
                         setIndex(index + 1);
                     }
-				}
-			}, 60);
-		}, 600);
+                }
+            }, 60);
+        }, 600);
     }
 
     useEffect(() => {
@@ -126,36 +132,37 @@ const Contributions = () => {
 
     return (
         <div className="contribution">
-            {contribution === "" ? 
-            <div>Thanks for stopping by! Come learn more about me and my projects!</div> :
-            <div>
-            The last thing I've worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
-            </div>}
-            {allRepos[0].name === "" || allRepos[0].url === "" || contribution === "" ? 
-            null : 
-            <div>
+            {contribution === "" ?
+                <div>Thanks for stopping by! Come learn more about me and my projects!</div> :
                 <div>
-                    Think that's pretty cool? Or maybe it wasn't your cup of tea?
+                    The last thing I've worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
                 </div>
+            }
+            {allRepos[0].name === "" || allRepos[0].url === "" || contribution === "" ?
+                null :
                 <div>
-                    What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
-                </div>
-                <div>
-                    Maybe you'll find even better something here?
-                </div>
-                <div>
-                    <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
-                        <FontAwesomeIcon
-                            icon={faGithub}
-                            id="github"
-                            className="githubIcon"
-                        />
-                    </a>
-                </div>
-                <div>
-                    Or just keep scrolling to find out!
-                </div>
-            </div>}
+                    <div>
+                        Think that's pretty cool? Or maybe it wasn't your cup of tea?
+                    </div>
+                    <div>
+                        What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
+                    </div>
+                    <div>
+                        Maybe you'll find even better something here?
+                    </div>
+                    <div>
+                        <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
+                            <FontAwesomeIcon
+                                icon={faGithub}
+                                id="github"
+                                className="githubIcon"
+                            />
+                        </a>
+                    </div>
+                    <div>
+                        Or just keep scrolling to find out!
+                    </div>
+                </div>}
         </div>
     )
 }
