@@ -17,7 +17,7 @@ const Contributions = () => {
         // Use Github API to get most recent push
         // Safari was broken so try this: https://stackoverflow.com/questions/47877808/axios-get-not-working-in-safari-browser 
         Axios.get("https://api.github.com/users/vu-dylan/events/public" + '?nocache=' + new Date().getTime(), {
-            params: { per_page: 70 }
+            params: { per_page: 200 }
         }).then((res) => {
             // console.log(res.data);
             let allPush = [];

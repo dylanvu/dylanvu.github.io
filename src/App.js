@@ -28,7 +28,7 @@ let JavaScriptProjects = [
 	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt")
 ]
 
-let OtherProjects = [new Project("Use a VR controller that gives tactile feedback", "GRIP Controller", "/projectgroup/clangs/grip/grip.txt"), new Project("Get fit through a mobile fitness AI-generated text-adventure game", "Geoverse", "/projectgroup/flutter/geoverse/geoverse.txt"), new Project("Compete in a competitive 1v1 Wordle shooter game", "WordShip", "/projectgroup/other/wordship/wordship.txt")]
+let OtherProjects = [new Project("Use a VR controller that gives tactile feedback", "GRIP Controller", "/projectgroup/clangs/grip/grip.txt"), new Project("Get fit through a mobile fitness AI-generated text-adventure game", "Geoverse", "/projectgroup/flutter/geoverse/geoverse.txt"), new Project("Compete in a competitive 1v1 Wordle shooter game", "WordShip", "/projectgroup/other/wordship/wordship.txt"), new Project("Mentoring 4 beginners to first place", "Zot Class Mobile", "/projectgroup/flutter/zotclass/zotclass.txt")]
 
 function App() {
 
@@ -39,10 +39,10 @@ function App() {
 
 	return (
 		<div>
-			<Header/>
+			<Header />
 			<Navbar />
 			<div className="content">
-				<Contributions/>
+				<Contributions />
 				<ProjectGroup projects={AboutMe} color={"#36393f"} group="About" scroll="About" />
 				<ProjectGroup projects={JavaScriptProjects} color={"#c0392b"} group="NodeJS" scroll="JS" />
 				<ProjectGroup projects={PythonProjects} color={"#2081C3"} group="Python" scroll="Python" />
