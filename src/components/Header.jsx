@@ -13,7 +13,7 @@ const Header = () => {
 	}, []);
 
 	function AnimateHome() {
-		let intro = "Hi, I'm Dylan Vu. Welcome to my site!";
+		let intro = "Heyo! I'm Dylan Vu and welcome to my site!";
 		let currHeaderText = intro[0];
 		let i = 0;
 		// Animate "typing"
