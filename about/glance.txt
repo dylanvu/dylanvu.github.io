@@ -1,12 +1,14 @@
-* 9 months of experience as a Software Development Intern at Ansync Labs as of December 2021 developing Google Cloud Functions, a TypeScript custom testing framework, and functionality in the company website using vanilla web components.
+* 9 months of experience as a Software Development Intern at Ansync Labs from December 2021 to September 2022 developing Google Cloud Functions, IoT device integration testing, and functionality in the company website using vanilla web components.
 
 * Developer of the Discord Question of the Day bot featured in the UCSB AIChE club, UCSB Robotics club, and Solo Development (a Discord server with 1500+ members).
 
 * Courses: Object Oriented Programming, Data Structures, Assembly
 
-* 7x Hackathon Participant and 2x Winner (LA Hacks 2021, HackHarvard 2021). Pinnacle 2021 Participant.
+* 8x Hackathon Participant and 4x Winner (LA Hacks 2021, HackHarvard 2021, SBHacks 2022). Pinnacle 2021 Participant.
 
-* Languages I've worked with: Javascript (NodeJS runtime), TypeScript, Python, C++, Flutter, Dart, MATLAB, C#
+* 1x Hackathon Mentor (team placed first overall)
+
+* Languages I've worked with: TypeScript/Javascript (NodeJS runtime), TypeScript, Python, C++, Flutter, Dart, MATLAB, C#
 
 * NodeJS and TypeScript - Express, Socket.io, React.js, MongoDB node driver, Axios, Discord.js, Next.js, Electron, Google Cloud Functions, Firebase, Google IoT API
 
