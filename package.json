@@ -25,7 +25,7 @@
     "start": "react-scripts start",
     "ts": "npx tsc",
     "watch": "npx tsc --watch",
-    "build": "react-scripts build",
+    "build": "npx tsc && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
