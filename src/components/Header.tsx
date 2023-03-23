@@ -1,4 +1,5 @@
-import { React, useEffect, useState } from 'react';
+import React from 'react'
+import { useEffect, useState } from 'react';
 
 const Header = () => {
 	const [introText, setIntrotext] = useState("");
@@ -6,9 +7,14 @@ const Header = () => {
 		// Play video and animate header typing
 		// React has an issue with the muted in the video tag not being set properly.
 		document.addEventListener("DOMContentLoaded", () => {
-			document.getElementById("video").muted = true;
+			let video = document.getElementById("video");
+			if (video) {
+				(video as HTMLVideoElement).muted = true;
+				(video as HTMLVideoElement).play(); // Might be necessary for chrome
+			} else {
+				console.error("Could not  find video reel")
+			}
 		})
-		document.getElementById("video").play(); // Might be necessary for chrome
 		AnimateHome();
 	}, []);
 
@@ -28,7 +34,12 @@ const Header = () => {
 						// Shrink header to expose content only if they haven't scrolled yet
 						// Use both documentElement for chrome, and body for everything else
 						if (!document.documentElement.scrollTop && !document.body.scrollTop) {
-							document.getElementById("header").style.height = "85vh";
+							let header = document.getElementById("header");
+							if (header) {
+								header.style.height = "85vh";
+							} else {
+								console.error("could not find element with id header")
+							}
 							// document.getElementById("video").style.height = "85vh";
 						}
 					}, 500)

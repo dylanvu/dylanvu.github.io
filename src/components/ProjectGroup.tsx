@@ -1,5 +1,6 @@
 import React from 'react'
 import ProjectContent from './ProjectContent'
+import Project from '../classes/project'
 
 /* Props
 color = string hex color of the project groups
@@ -12,14 +13,14 @@ projects = array of project objects with the following attributes:
 */
 
 
-const ProjectGroup = (props) => {
+const ProjectGroup = (props: { scroll: string, color: string, group: string, projects: Project[] }) => {
     return (
         <div className="ProjectGroup">
-            <button type="button" className="project-group-title" id={props.scroll} style={{borderColor : `${props.color}`}}>{props.group}</button>
-            <br/>
-            <br/>
+            <button type="button" className="project-group-title" id={props.scroll} style={{ borderColor: `${props.color}` }}>{props.group}</button>
+            <br />
+            <br />
             {props.projects.map((project) => (
-                <ProjectContent key={project.projectName + Math.floor(Math.random() * 500).toString()} hook={project.projectHook} title={project.projectName} id={project.projectName} textPath={project.textPath} color={props.color}/>
+                <ProjectContent key={project.projectName + Math.floor(Math.random() * 500).toString()} hook={project.projectHook} title={project.projectName} id={project.projectName} textPath={project.textPath} color={props.color} />
             ))}
         </div>
     )

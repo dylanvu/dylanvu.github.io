@@ -1,4 +1,5 @@
-import { React, useEffect, useState } from 'react'
+import React from "react";
+import { useEffect, useState } from 'react';
 
 /* Props:
 title = title of the project
@@ -7,9 +8,9 @@ textPath = the path of the text description of the content relative to the publi
     Example of valid text path prop: "/projectgroup/javascript/discordqotd/discordqotd.txt"
 */
 
-const ProjectContent = (props) => {
+const ProjectContent = (props: { id: string, color: string, hook: string, title: string, textPath: string }) => {
 
-    const [paragraphs, setParagraphs] = useState([])
+    const [paragraphs, setParagraphs] = useState<string[]>([])
 
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const ProjectContent = (props) => {
         // eslint-disable-next-line
     }, [])
 
-    function checkIfphoto(text) {
+    function checkIfphoto(text: string) {
         // The photo refereced in the txt file is a path that's uploaded in the public folder
         // Add more file extensions if needed
         let validImageExtension = ['.jpg', '.png', '.jpeg', '.svg', '.webp']
@@ -39,7 +40,7 @@ const ProjectContent = (props) => {
         return false;
     }
 
-    function CheckIfLink(text) {
+    function CheckIfLink(text: string) {
         if (text.includes("github.com/") || text.includes("devpost.com/software") || text.includes("https://")) {
             return true;
         } else {

@@ -1,9 +1,9 @@
 import "./App.css";
-import { useEffect, useState } from "react"
+import React from "react";
 import Header from "./components/Header";
 import ProjectGroup from "./components/ProjectGroup";
 import Navbar from "./components/Navbar";
-import Project from "./classes/project.js";
+import Project from "./classes/project";
 import Contributions from "./components/Contributions";
 
 // If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
@@ -49,7 +49,7 @@ function App() {
 				<ProjectGroup projects={OtherProjects} color={"#6DA34D"} group="C# and Flutter" scroll="Other" />
 			</div>
 		</div>
-	);
+	)
 }
 
 export default App;
