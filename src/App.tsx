@@ -9,7 +9,11 @@ import Contributions from "./components/Contributions";
 // If there are issues with net::ERR_ABORTED 404, look into package.json and make sure the homepage is set to github pages with the / repository name.
 // Example: https://vu-dylan.github.io/portfolio/
 
-let AboutMe = [new Project("My name is Dylan Vu", "", "/about/about.txt"), new Project("Resume at a Glance", "", "/about/glance.txt"), new Project("Current Learning Goals", "", "/about/next.txt")]
+let AboutMe = [
+	new Project("My name is Dylan Vu", "", "/about/about.txt"),
+	new Project("Resume at a Glance", "", "/about/glance.txt"),
+	new Project("Current Learning Goals", "", "/about/next.txt")
+]
 
 let PythonProjects = [
 	new Project("Draw on a projector and a computer for a seamless hybrid learning experience", "GRIP Board", "/projectgroup/python/gripboard/gripboard.txt"),
@@ -26,9 +30,14 @@ let JavaScriptProjects = [
 	new Project("Add and save your favorite movies through a social media app", "SeenIt", "/projectgroup/javascript/seenit/seenit.txt"),
 	new Project("Draw with your friends in a collaborative whiteboard", "SketchedOut", "/projectgroup/javascript/sketchedout/sketchedout.txt"),
 	new Project("Modernize your club website", "UCSB Robotics Website", "/projectgroup/javascript/ucsbrobotics/ucsbrobotics.txt")
-]
+];
 
-let OtherProjects = [new Project("Use a VR controller that gives tactile feedback", "GRIP Controller", "/projectgroup/clangs/grip/grip.txt"), new Project("Get fit through a mobile fitness AI-generated text-adventure game", "Geoverse", "/projectgroup/flutter/geoverse/geoverse.txt"), new Project("Compete in a competitive 1v1 Wordle shooter game", "WordShip", "/projectgroup/other/wordship/wordship.txt"), new Project("Mentoring 4 beginners to first place", "Zot Class Mobile", "/projectgroup/flutter/zotclass/zotclass.txt")]
+let OtherProjects = [
+	new Project("Use a VR controller that gives tactile feedback", "GRIP Controller", "/projectgroup/clangs/grip/grip.txt"),
+	new Project("Get fit through a mobile fitness AI-generated text-adventure game", "Geoverse", "/projectgroup/flutter/geoverse/geoverse.txt"),
+	new Project("Compete in a competitive 1v1 Wordle shooter game", "WordShip", "/projectgroup/other/wordship/wordship.txt"),
+	new Project("Mentoring 4 beginners to first place", "Zot Class Mobile", "/projectgroup/flutter/zotclass/zotclass.txt")
+];
 
 function App() {
 
