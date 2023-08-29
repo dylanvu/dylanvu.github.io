@@ -32,7 +32,7 @@ const Contributions = () => {
                 if (res.data[i].type === 'PushEvent') {
                     let name = res.data[i].repo.name.split('/').at(-1);
                     // Change the name to this website if the last thing I worked on was my portfolio
-                    if (name === `${username}.github.io`) {
+                    if (name === `${username}.github.io` || name === "vu-dylan.github.io") {
                         name = "this website";
                     } else {
                         let nameArr = name.split("-");
