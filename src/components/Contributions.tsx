@@ -12,12 +12,15 @@ const Contributions = () => {
     const [backupRepo, setbackupRepo] = useState("");
     const [index, setIndex] = useState(0);
     const [done, setDone] = useState(false);
+
+    const username = "dylanvu";
+
     useEffect(() => {
         // TODO: Get description of the featured GitHub Repo
         // https://docs.github.com/en/rest/reference/activity#list-public-events-for-a-user
         // Use Github API to get most recent push
         // Safari was broken so try this: https://stackoverflow.com/questions/47877808/axios-get-not-working-in-safari-browser 
-        Axios.get("https://api.github.com/users/vu-dylan/events/public" + '?nocache=' + new Date().getTime(), {
+        Axios.get(`https://api.github.com/users/${username}/events/public` + '?nocache=' + new Date().getTime(), {
             params: { per_page: 200 }
         }).then((res) => {
             // console.log(res.data);
@@ -29,7 +32,7 @@ const Contributions = () => {
                 if (res.data[i].type === 'PushEvent') {
                     let name = res.data[i].repo.name.split('/').at(-1);
                     // Change the name to this website if the last thing I worked on was my portfolio
-                    if (name === "vu-dylan.github.io") {
+                    if (name === `${username}.github.io`) {
                         name = "this website";
                     } else {
                         let nameArr = name.split("-");
@@ -152,7 +155,7 @@ const Contributions = () => {
                         Maybe you'll find even better something here?
                     </div>
                     <div>
-                        <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
+                        <a href={`https://github.com/${username}`} target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
                             <FontAwesomeIcon
                                 icon={faGithub}
                                 id="github"
