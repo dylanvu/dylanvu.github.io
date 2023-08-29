@@ -44,7 +44,7 @@ const Navbar = () => {
             <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('Other')}><span>Other</span></a>
             {/* eslint-disable-next-line */}
             <a className="nav-link" style={{ color: "#FE5D26" }} href="/about/Dylan Vu Resume.pdf" target="_blank" rel="noreferrer"><span>Resume</span></a>
-            <a href="https://github.com/vu-dylan" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
+            <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
                 <FontAwesomeIcon
                     icon={faGithub}
                     id="github"
