@@ -1,11 +1,7 @@
 What I'm planning on doing next:
 
-* Make a larger project in Next.js (potentially port my website to Next.js, or a cooking website to store my recipes)
-
-* Make a more complex project in ElectronJS
+* I want to learn and do a project with SQL probably
 
 * Figure out more complex state management in React using contexts and reducers
-
-* Learn Arduino or ESP-32 and pursue a hardware-oriented project
 
 * Learn how to mod a game for the first time
