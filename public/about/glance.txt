@@ -1,4 +1,4 @@
-* 3 months of experinece as a Software Engineering Intern at One Medical from June 2023 to August 2023 in the Engineering Experience Team speeding up unit tests and fixing linting issues
+* 3 months of experience as a Software Engineering Intern at One Medical from June 2023 to August 2023 in the Engineering Experience Team speeding up unit tests and fixing linting issues
 
 * 9 months of experience as a Software Development Intern at Ansync Labs from December 2021 to September 2022 developing Google Cloud Functions, IoT device integration testing, and functionality in the company website using vanilla web components.
 
