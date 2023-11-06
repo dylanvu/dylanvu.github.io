@@ -16,3 +16,4 @@ Hackathon list:
 * ZotHacks 2022 (mentor)
 * HackUCI 2023
 * LA Hacks 2023
+* ZotHacks 2023 (mentor)
