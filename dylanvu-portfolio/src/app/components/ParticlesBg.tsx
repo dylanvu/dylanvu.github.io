@@ -57,7 +57,7 @@ export default function ParticlesBg() {
                             value: 0.5,
                         },
                         shape: {
-                            type: "square",
+                            type: "circle",
                         },
                         size: {
                             value: { min: 1, max: 5 },
