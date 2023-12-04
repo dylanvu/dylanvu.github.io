@@ -59,7 +59,7 @@ const Navbar = () => {
                     className="icon"
                 />
             </a>
-            <a href="mailto:dylanvu9@gmail.edu" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
+            <a href="mailto:dylanvu9@gmail.com" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
                 <FontAwesomeIcon
                     icon={faEnvelope}
 
