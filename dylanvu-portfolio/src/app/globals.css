@@ -32,6 +32,9 @@ body {
   text-align: center;
 }
 
+.main {
+  position: relative;
+}
 
 .content {
   position: relative;
