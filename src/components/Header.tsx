@@ -12,7 +12,7 @@ const Header = () => {
 				(video as HTMLVideoElement).muted = true;
 				(video as HTMLVideoElement).play(); // Might be necessary for chrome
 			} else {
-				console.error("Could not  find video reel")
+				console.error("Could not find video reel")
 			}
 		})
 		AnimateHome();

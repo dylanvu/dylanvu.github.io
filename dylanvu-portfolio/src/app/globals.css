@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,11 +20,18 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #36393f;
+  /* color: #f2f2f2; */
+  text-align: center;
+}
+
+.content {
+  position: relative;
+  top: 0;
+  left: 0;
+  /* font-size: 20px; */
+  background-color: #f2f2f2;
+  font-family: 'Oxygen', sans-serif;
+  z-index: 1;
+  /* margin-left: 295px; */
 }

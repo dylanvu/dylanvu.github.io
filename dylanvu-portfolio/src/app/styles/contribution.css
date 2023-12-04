@@ -1,0 +1,33 @@
+.contribution {
+    color: #36393F;
+    font-size: 1.8em;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.contribution div {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+
+.contribution a:visited {
+    color: #36393F;
+    text-decoration: underline;
+}
+
+.contribution a {
+    color: #36393F;
+    text-decoration: underline;
+}
+
+.githubIcon {
+    color: #36393f;
+    font-size: 6rem;
+}
+
+.githubIcon:hover {
+    transition: transform .7s ease-in-out;
+    transform: rotate(720deg);
+}
