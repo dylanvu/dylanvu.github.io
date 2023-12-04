@@ -1,0 +1,9 @@
+.particle-container {
+    z-index: -100;
+    position: absolute;
+    height: 100%
+}
+
+#tsparticles {
+    height: 100%
+}

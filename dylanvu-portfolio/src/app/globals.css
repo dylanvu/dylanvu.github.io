@@ -9,6 +9,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --left-right-margin: 8%;
+  --left-right-padding: 4%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,11 +21,17 @@
   }
 }
 
+HTML,
+body {
+  height: 100%;
+}
+
 body {
   background-color: #36393f;
   /* color: #f2f2f2; */
   text-align: center;
 }
+
 
 .content {
   position: relative;
@@ -33,5 +41,11 @@ body {
   background-color: #f2f2f2;
   font-family: 'Oxygen', sans-serif;
   z-index: 1;
-  /* margin-left: 295px; */
+  font-size: 1.8rem;
+  margin-left: var(--left-right-margin);
+  margin-right: var(--left-right-margin);
+  word-wrap: break-word;
+  padding-left: var(--left-right-padding);
+  padding-right: var(--left-right-padding);
+  height: 100%
 }
