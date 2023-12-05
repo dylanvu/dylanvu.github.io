@@ -1,3 +1,5 @@
+'use client'
+
 // code taken from react-particles documentation: https://github.com/tsparticles/react
 import { useCallback } from "react";
 import type { Container, Engine } from "tsparticles-engine";

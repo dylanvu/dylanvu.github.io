@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react';
 import { useState } from 'react';
 // Import font awesome icons. Follow these instructions: https://fontawesome.com/how-to-use/on-the-web/using-with/react
