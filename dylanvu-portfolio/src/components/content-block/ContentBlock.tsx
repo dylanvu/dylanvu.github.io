@@ -7,7 +7,7 @@ export default function ContentBlock({ title, paragraphs }: { title: string, par
             <div>
                 {title}
             </div>
-            {paragraphs.map((paragraph) => <Paragraph text={paragraph} />)}
+            {paragraphs.map((paragraph, index) => <Paragraph key={"_" + title + index.toString()} text={paragraph} />)}
         </div>
     )
 }
