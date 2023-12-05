@@ -38,11 +38,11 @@ const Navbar = () => {
             {/* eslint-disable-next-line */}
             <a className="nav-link" onClick={() => scrolling('About')}><span className="name">Dylan Vu</span></a>
             {/* eslint-disable-next-line */}
-            <a className="nav-link" style={{ color: "#c0392b" }} onClick={() => scrolling('JS')}><span>JavaScript/NodeJS</span></a>
+            {/* <a className="nav-link" style={{ color: "#c0392b" }} onClick={() => scrolling('JS')}><span>JavaScript/NodeJS</span></a> */}
             {/* eslint-disable-next-line */}
-            <a className="nav-link" style={{ color: "#2081C3" }} onClick={() => scrolling('Python')}><span>Python</span></a>
+            {/* <a className="nav-link" style={{ color: "#2081C3" }} onClick={() => scrolling('Python')}><span>Python</span></a> */}
             {/* eslint-disable-next-line */}
-            <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('Other')}><span>Other</span></a>
+            {/* <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('Other')}><span>Other</span></a> */}
             {/* eslint-disable-next-line */}
             <a className="nav-link" style={{ color: "#FE5D26" }} href="/about/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span>Resume</span></a>
             <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
