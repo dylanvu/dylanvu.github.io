@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Contributions from './components/Contributions'
 import Header from './components/Header'
 import Navbar from './components/Navbar'
+import NavigationGroup from './components/NavigationGroup'
 import ParticlesBg from './components/ParticlesBg'
 
 export default function Home() {
@@ -11,15 +12,21 @@ export default function Home() {
   window.onbeforeunload = function () {
     window.scrollTo(0, 0);
   }
+
+  const sections = ["About", "Projects", "Resume & Socials"]
+
   return (
     <div className="main">
       <Header />
       <Navbar />
-      {/* floating particles in background  */}
-      <ParticlesBg />
-      {/* place all important content here */}
-      <div className="content">
-        <Contributions />
+      <div className="content-container">
+        {/* floating particles in background  */}
+        <ParticlesBg />
+        {/* place all important content here */}
+        <div className="content">
+          <Contributions />
+          <NavigationGroup sections={sections} />
+        </div>
       </div>
     </div>
     // <main className="flex min-h-screen flex-col items-center justify-between p-24">

@@ -26,11 +26,6 @@ export default function ParticlesBg() {
                 init={particlesInit}
                 loaded={particlesLoaded}
                 options={{
-                    background: {
-                        color: {
-                            value: "#36393f"
-                        }
-                    },
                     fpsLimit: 120,
                     particles: {
                         color: {

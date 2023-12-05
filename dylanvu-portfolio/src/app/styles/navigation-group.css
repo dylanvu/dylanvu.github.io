@@ -1,0 +1,37 @@
+:root {
+    --navigation-group-left-right-padding: 20%;
+}
+
+.navigation-group {
+    padding-left: var(--navigation-group-left-right-padding);
+    padding-right: var(--navigation-group-left-right-padding);
+}
+
+.navigation-link {
+    text-align: left;
+    font-size: 3rem;
+}
+
+.navigation-link-underline {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Underline colored text on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
+.navigation-link-underline:before {
+
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0.25rem;
+    bottom: 0;
+    left: 0;
+    background-color: currentColor;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.navigation-link-underline:hover:before {
+    visibility: visible;
+    width: 100%;
+}

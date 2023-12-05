@@ -36,6 +36,11 @@ body {
   position: relative;
 }
 
+.content-container {
+  height: 100%;
+  position: relative;
+}
+
 .content {
   position: relative;
   top: 0;
@@ -50,5 +55,5 @@ body {
   word-wrap: break-word;
   padding-left: var(--left-right-padding);
   padding-right: var(--left-right-padding);
-  height: 100%
+  height: 100%;
 }
