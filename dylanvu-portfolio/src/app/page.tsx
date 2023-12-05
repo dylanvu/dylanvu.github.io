@@ -3,12 +3,25 @@ import { useEffect } from 'react'
 import Contributions from '../components/Contributions'
 import Header from '../components/Header'
 import Navbar from '../components/Navbar'
-import NavigationGroup from '../components/NavigationGroup'
+import NavigationGroup, { navigationObject } from '../components/NavigationGroup'
 import ParticlesBg from '../components/ParticlesBg'
 
 export default function Home() {
 
-  const sections = ["About", "Projects", "Resume & Socials"]
+  const sections: navigationObject[] = [
+    {
+      displaySection: "About",
+      urlSegment: "about"
+    },
+    {
+      displaySection: "Projects",
+      urlSegment: "projects"
+    },
+    {
+      displaySection: "Resume & Socials",
+      urlSegment: "resume-socials"
+    }
+  ]
 
   return (
     <div className="main">
