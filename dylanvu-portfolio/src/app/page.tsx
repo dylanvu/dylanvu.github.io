@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { useEffect } from 'react'
 import Contributions from '../components/Contributions'
 import Header from '../components/Header'
 import Navbar from '../components/Navbar'
@@ -24,12 +23,12 @@ export default function Home() {
   ]
 
   return (
-    <div className="main">
+    <div>
       <Header />
       <Navbar />
       <div className="content-container">
         {/* floating particles in background  */}
-        <ParticlesBg />
+        {/* <ParticlesBg /> */}
         {/* place all important content here */}
         <div className="content">
           <Contributions />

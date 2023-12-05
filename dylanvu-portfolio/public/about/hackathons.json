@@ -1,0 +1,67 @@
+{
+    "data": [
+        {
+            "name": "SB Hacks 2021",
+            "awards": []
+        },
+        {
+            "name": "SacHacks 2021",
+            "awards": []
+        },
+        {
+            "name": "LA Hacks 2021",
+            "awards": [
+                "1st Place Overall",
+                "Best Level Up Hack"
+            ]
+        },
+        {
+            "name": "Pinnacle 2021",
+            "awards": []
+        },
+        {
+            "name": "HackHarvard 2021",
+            "awards": [
+                "Most Creative Use of Twilio"
+            ]
+        },
+        {
+            "name": "CalHacks 2021",
+            "awards": []
+        },
+        {
+            "name": "SB Hacks 2022",
+            "awards": [
+                "Best Space App"
+            ]
+        },
+        {
+            "name": "ZotHacks 2022 (Mentor)",
+            "awards": []
+        },
+        {
+            "name": "UCI WebJam 2022",
+            "awards": [
+                "Second Place"
+            ]
+        },
+        {
+            "name": "HackUCI 2023",
+            "awards": []
+        },
+        {
+            "name": "LA Hacks 2023",
+            "awards": []
+        },
+        {
+            "name": "ZotHacks 2023 (Mentor)",
+            "awards": []
+        },
+        {
+            "name": "UCI WebJam 2023",
+            "awards": [
+                "Third Place"
+            ]
+        }
+    ]
+}

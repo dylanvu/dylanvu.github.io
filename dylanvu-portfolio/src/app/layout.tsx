@@ -1,3 +1,5 @@
+import Navbar from '@/components/Navbar'
+import ParticlesBg from '@/components/ParticlesBg'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -16,7 +18,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="main">
+          {/* floating particles in background  */}
+          <ParticlesBg />
+          {children}
+        </div>
+      </body>
     </html>
+  )
+}
+
+export function PageLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <Navbar />
+      <div className="content-container">
+        <div className="content">
+          {children}
+        </div>
+      </div>
+    </div >
   )
 }
