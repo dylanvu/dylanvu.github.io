@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import Contributions from './components/Contributions'
-import Header from './components/Header'
-import Navbar from './components/Navbar'
-import NavigationGroup from './components/NavigationGroup'
-import ParticlesBg from './components/ParticlesBg'
+import Contributions from '../components/Contributions'
+import Header from '../components/Header'
+import Navbar from '../components/Navbar'
+import NavigationGroup from '../components/NavigationGroup'
+import ParticlesBg from '../components/ParticlesBg'
 
 export default function Home() {
   // When you refresh, get sent to the top.
