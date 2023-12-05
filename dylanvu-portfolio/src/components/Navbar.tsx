@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react';
+import Link from 'next/link';
 import { useState } from 'react';
 // Import font awesome icons. Follow these instructions: https://fontawesome.com/how-to-use/on-the-web/using-with/react
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -38,7 +39,7 @@ const Navbar = () => {
     return (
         <nav className={`navbar ${responsiveClass}`} id="navbar">
             {/* eslint-disable-next-line */}
-            <a className="nav-link" onClick={() => scrolling('About')}><span className="name">Dylan Vu</span></a>
+            <Link className="nav-link" href="/"><span className="name">Dylan Vu</span></Link>
             {/* eslint-disable-next-line */}
             {/* <a className="nav-link" style={{ color: "#c0392b" }} onClick={() => scrolling('JS')}><span>JavaScript/NodeJS</span></a> */}
             {/* eslint-disable-next-line */}
@@ -46,7 +47,7 @@ const Navbar = () => {
             {/* eslint-disable-next-line */}
             {/* <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('Other')}><span>Other</span></a> */}
             {/* eslint-disable-next-line */}
-            <a className="nav-link" style={{ color: "#FE5D26" }} href="/about/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span>Resume</span></a>
+            <Link className="nav-link" style={{ color: "#FE5D26" }} href="/about/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span>Resume</span></Link>
             <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
                 <FontAwesomeIcon
                     icon={faGithub}
