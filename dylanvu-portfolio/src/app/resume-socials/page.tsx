@@ -1,8 +1,11 @@
+import { PageLayout } from "../layout"
 export default function ResumeSocials() {
 
     return (
-        <div>
-            Resume & Socials
-        </div>
+        <PageLayout>
+            <div>
+                Resume & Socials
+            </div>
+        </PageLayout>
     )
 }

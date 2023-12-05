@@ -1,4 +1,5 @@
 import NavigationGroup, { navigationObject } from "@/components/NavigationGroup"
+import { PageLayout } from "../layout"
 
 export default function Projects() {
     const sections: navigationObject[] = [
@@ -16,11 +17,11 @@ export default function Projects() {
         }
     ]
     return (
-        <div>
+        <PageLayout>
             <div>
                 Projects
             </div>
             <NavigationGroup sections={sections} />
-        </div>
+        </PageLayout>
     )
 }
