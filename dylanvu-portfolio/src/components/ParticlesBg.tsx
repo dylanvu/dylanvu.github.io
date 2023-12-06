@@ -17,7 +17,7 @@ export default function ParticlesBg() {
     }, []);
 
     const particlesLoaded = useCallback(async (container: Container | undefined) => {
-        console.log(container);
+        // console.log(container);
     }, []);
 
 
