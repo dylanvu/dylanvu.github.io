@@ -9,12 +9,12 @@ export default function Home() {
 
   const sections: navigationObject[] = [
     {
-      displaySection: "About",
-      urlSegment: "about"
-    },
-    {
       displaySection: "Projects",
       urlSegment: "projects"
+    },
+    {
+      displaySection: "About",
+      urlSegment: "about"
     },
     {
       displaySection: "Resume & Socials",
