@@ -37,12 +37,14 @@
         },
         {
             "name": "ZotHacks 2022 (Mentor)",
-            "awards": []
+            "awards": [
+                "1st Place"
+            ]
         },
         {
             "name": "UCI WebJam 2022",
             "awards": [
-                "Second Place"
+                "2nd Place"
             ]
         },
         {
@@ -55,7 +57,9 @@
         },
         {
             "name": "ZotHacks 2023 (Mentor)",
-            "awards": []
+            "awards": [
+                "2nd Place"
+            ]
         },
         {
             "name": "UCI WebJam 2023",

@@ -1,6 +1,18 @@
+:root {
+    --content-block-title-left-right-padding: 2rem;
+    --content-block-top-bottom-padding: 1rem;
+}
+
+.content-block {
+    padding-top: var(--content-block-top-bottom-padding);
+    padding-bottom: var(--content-block-top-bottom-padding);
+}
+
 .content-block-title {
     padding-top: 10px;
-    width: 50%;
+    width: fit-content;
+    padding-left: var(--content-block-title-left-right-padding);
+    padding-right: var(--content-block-title-left-right-padding);
     border-bottom: 0.25rem solid;
     border-left: none;
     border-right: none;
