@@ -1,5 +1,6 @@
 import { PageLayout } from "@/app/layout"
-import NavigationGroup, { navigationObject } from "@/components/NavigationGroup"
+import NavigationGroup, { navigationObject } from "@/components/NavigationGroup";
+import "../../../styles/content-block/content-block.css";
 export default function ProjectGroupPage() {
     // generate list of projects based on the json located in public
 
@@ -24,7 +25,7 @@ export default function ProjectGroupPage() {
 
     return (
         <PageLayout>
-            <div>
+            <div className="content-block">
                 <NavigationGroup sections={sections} />
                 <div>
                     Surprise me!

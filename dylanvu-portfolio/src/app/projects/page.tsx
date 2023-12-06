@@ -1,6 +1,7 @@
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle"
 import NavigationGroup, { navigationObject } from "@/components/NavigationGroup"
 import { PageLayout } from "../layout"
+import "../../styles/content-block/content-block.css";
 
 export default function Projects() {
     const sections: navigationObject[] = [
@@ -27,8 +28,10 @@ export default function Projects() {
     ]
     return (
         <PageLayout>
-            <ContentBlockTitle title="Project Categories" />
-            <NavigationGroup sections={sections} />
+            <div className="content-block">
+                <ContentBlockTitle title="Project Categories" />
+                <NavigationGroup sections={sections} />
+            </div>
         </PageLayout>
     )
 }
