@@ -3,7 +3,6 @@ import Contributions from '../components/Contributions'
 import Header from '../components/Header'
 import Navbar from '../components/Navbar'
 import NavigationGroup, { navigationObject } from '../components/NavigationGroup'
-import ParticlesBg from '../components/ParticlesBg'
 
 export default function Home() {
 
