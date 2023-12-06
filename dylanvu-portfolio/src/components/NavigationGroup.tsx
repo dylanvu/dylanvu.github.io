@@ -18,8 +18,9 @@ export default function NavigationGroup(props: navigationViewProps) {
     return (
         <div className="navigation-group">
             {props.sections.map((section) =>
-                <div className="navigation-link" key={section.urlSegment}>
-                    <span className="navigation-link-underline"><Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link></span>
+                <div className="navigation-link navigation-link-underline" key={section.urlSegment}>
+                    {/* <span className="navigation-link-underline"><Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link></span> */}
+                    <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link>
                 </div>
             )}
         </div>

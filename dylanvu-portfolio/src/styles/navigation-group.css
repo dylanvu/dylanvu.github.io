@@ -1,5 +1,6 @@
 :root {
     --navigation-group-left-right-padding: 20%;
+    --navigation-link-top-bottom-margin: 1rem;
 }
 
 .navigation-group {
@@ -10,6 +11,8 @@
 .navigation-link {
     text-align: left;
     font-size: 3rem;
+    margin-bottom: var(--navigation-link-top-bottom-margin);
+    margin-top: var(--navigation-link-top-bottom-margin);
 }
 
 .navigation-link-underline {

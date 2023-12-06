@@ -55,5 +55,6 @@ body {
   word-wrap: break-word;
   padding-left: var(--left-right-padding);
   padding-right: var(--left-right-padding);
+  min-height: 100vh;
   height: 100%;
 }
