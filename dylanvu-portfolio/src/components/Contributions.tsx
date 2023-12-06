@@ -167,7 +167,7 @@ const Contributions = () => {
                         </a>
                     </div>
                     <div>
-                        Or just keep scrolling to find out!
+                        Or take a look at my projects to find out!
                     </div>
                 </div>}
         </div>
