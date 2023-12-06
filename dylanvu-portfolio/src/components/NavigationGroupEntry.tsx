@@ -11,7 +11,7 @@ import { navigationObject } from "./NavigationGroup";
 export default function NavigationGroupEntry({ section }: { section: navigationObject }) {
     // use pathname to dynamically link to different subsections
     const pathName = usePathname();
-    const [chevronState, setChevronState] = useState<"up" | "right">("up");
+    const [chevronState, setChevronState] = useState<"up" | "right" | "left">("up");
 
     return (
         <div className="navigation-link navigation-link-underline" key={section.urlSegment}
@@ -20,6 +20,9 @@ export default function NavigationGroupEntry({ section }: { section: navigationO
             }}
             onMouseLeave={() => {
                 setChevronState("up");
+            }}
+            onMouseUp={() => {
+                setChevronState("left");
             }}
         >
             <FontAwesomeIcon icon={faChevronUp} className={`chevron-icon chevron-${chevronState}`} />

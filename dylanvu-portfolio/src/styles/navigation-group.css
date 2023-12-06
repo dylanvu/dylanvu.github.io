@@ -18,6 +18,10 @@
     transform: rotate(90deg);
 }
 
+.chevron-left {
+    transform: rotate(-90deg);
+}
+
 .navigation-link {
     text-align: left;
     font-size: 3rem;
