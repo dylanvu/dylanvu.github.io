@@ -1,3 +1,4 @@
+import ContentBlockTitle from "@/components/content-block/ContentBlockTitle"
 import NavigationGroup, { navigationObject } from "@/components/NavigationGroup"
 import { PageLayout } from "../layout"
 
@@ -12,15 +13,21 @@ export default function Projects() {
             urlSegment: "python"
         },
         {
+            displaySection: "Flutter",
+            urlSegment: "flutter"
+        },
+        {
+            displaySection: "Embedded Systems",
+            urlSegment: "embedded-systems"
+        },
+        {
             displaySection: "Other",
             urlSegment: "other"
         }
     ]
     return (
         <PageLayout>
-            <div>
-                Projects
-            </div>
+            <ContentBlockTitle title="Project Categories" />
             <NavigationGroup sections={sections} />
         </PageLayout>
     )
