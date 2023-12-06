@@ -8,7 +8,7 @@ export interface navigationObject {
 }
 export default function NavigationGroup({ sections, title }: { sections: navigationObject[], title: string }) {
     return (
-        <div className="content-block">
+        <div className="content-block navigation-group-container">
             <ContentBlockTitle title={title} />
             <div className="navigation-group">
                 {sections.map((section) =>

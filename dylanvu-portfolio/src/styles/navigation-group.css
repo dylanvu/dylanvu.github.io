@@ -3,6 +3,12 @@
     --navigation-link-top-bottom-margin: 1rem;
 }
 
+.navigation-group-container {
+    /* transform: rotateX(-10deg) rotateY(9deg);
+    perspective: 1000px;
+    perspective-origin: 50% 50%; */
+}
+
 .navigation-group {
     padding-left: var(--navigation-group-left-right-padding);
     padding-right: var(--navigation-group-left-right-padding);
