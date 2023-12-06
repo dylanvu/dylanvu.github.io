@@ -8,6 +8,18 @@
     padding-right: var(--navigation-group-left-right-padding);
 }
 
+.chevron-icon {
+    font-size: 30px;
+    transition: transform 0.3s ease-in-out;
+    margin-right: 1rem;
+}
+
+.chevron-right {
+    transform: rotate(90deg);
+}
+
+.chevron-up {}
+
 .navigation-link {
     text-align: left;
     font-size: 3rem;
