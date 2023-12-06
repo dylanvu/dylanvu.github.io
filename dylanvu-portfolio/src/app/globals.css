@@ -58,3 +58,23 @@ body {
   min-height: 100vh;
   height: 100%;
 }
+
+/* stolen from https: //stackoverflow.com/questions/68216941/how-to-make-a-css-shimmer-effect-on-image */
+.shimmer {
+  display: inline-block;
+  -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/500% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 10s infinite 10s;
+}
+
+@keyframes shimmer {
+
+  /* this will add a delay between each iteration: https: //css-tricks.com/css-keyframe-animation-delay-iterations/ */
+  50% {
+    -webkit-mask-position: left
+  }
+
+  100% {
+    -webkit-mask-position: left
+  }
+}

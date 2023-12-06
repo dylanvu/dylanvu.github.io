@@ -1,0 +1,11 @@
+.surprise-me-button {
+    background-color: #c0392b;
+    padding: 0.5rem;
+    transition: transform 0.2s ease-in-out;
+    margin: 0.3rem;
+    margin-top: 0.7rem;
+}
+
+.surprise-me-button:hover {
+    transform: rotate(5deg);
+}

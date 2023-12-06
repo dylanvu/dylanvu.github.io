@@ -31,7 +31,7 @@ export default function Home() {
         {/* place all important content here */}
         <div className="content">
           <Contributions />
-          <NavigationGroup sections={sections} />
+          <NavigationGroup sections={sections} title="Where To?" />
         </div>
       </div>
     </div>

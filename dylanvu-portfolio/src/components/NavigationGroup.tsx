@@ -1,19 +1,20 @@
 import "../styles/navigation-group.css";
+import ContentBlockTitle from "./content-block/ContentBlockTitle";
 import NavigationGroupEntry from "./NavigationGroupEntry";
 
 export interface navigationObject {
     displaySection: string; // what will be displayed to the user
     urlSegment: string; // the actual url
 }
-export interface navigationViewProps {
-    sections: navigationObject[];
-}
-export default function NavigationGroup(props: navigationViewProps) {
+export default function NavigationGroup({ sections, title }: { sections: navigationObject[], title: string }) {
     return (
-        <div className="navigation-group">
-            {props.sections.map((section) =>
-                <NavigationGroupEntry section={section} />
-            )}
+        <div className="content-block">
+            <ContentBlockTitle title={title} />
+            <div className="navigation-group">
+                {sections.map((section) =>
+                    <NavigationGroupEntry section={section} />
+                )}
+            </div>
         </div>
     )
 }
