@@ -2,14 +2,9 @@
     --project-card-side-size: 30rem;
 }
 
-/* .project-card-group {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-
-} */
+.project-card-title {
+    font-weight: bold;
+}
 
 .project-card-group {
     display: inline-grid;
@@ -39,7 +34,7 @@
 }
 
 .project-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) rotate(2deg);
 }
 
 .project-card-image-container {

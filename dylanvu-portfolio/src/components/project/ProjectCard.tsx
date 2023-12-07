@@ -16,7 +16,7 @@ export default function ProjectCard({ section }: { section: navigationObject }) 
     return (
         <Link href={`${pathName}/${section.urlSegment}`}>
             <div className="project-card">
-                <div>
+                <div className="project-card-title">
                     {section.displaySection}
                 </div>
                 <div className="project-card-image-container">
