@@ -13,9 +13,9 @@ export default function SurpriseMe({ sections }: { sections: navigationObject[] 
             <div className="surprise-me-title" >
                 Can't Decide?
             </div>
-            <div className="surprise-me-text">
+            {/* <div className="surprise-me-text">
                 Stuck? Not sure where to go?
-            </div>
+            </div> */}
             <button className="surprise-me-button shimmer" onClick={() => {
                 // send to random page
                 router.push(`${pathName}/${sections[Math.floor(Math.random() * sections.length)].urlSegment}`);
