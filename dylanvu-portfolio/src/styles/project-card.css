@@ -33,6 +33,10 @@
     background-color: antiquewhite;
     transition: transform 0.2s ease-in-out;
     padding: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    display: grid;
+    grid-template-rows: 0.5fr 3.5fr;
+    align-items: center;
 }
 
 .project-card:hover {
@@ -42,7 +46,5 @@
 .project-card-image-container {
     /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
     position: relative;
-    width: 100%;
-    height: 100%;
     margin: auto;
 }
