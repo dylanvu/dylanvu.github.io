@@ -10,6 +10,12 @@
     margin-left: 85%;
     white-space: nowrap;
     transform: rotate(5deg);
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0.3;
+}
+
+.surprise-me-container:hover {
+    opacity: 1;
 }
 
 .surprise-me-title {
