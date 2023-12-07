@@ -1,0 +1,25 @@
+:root {
+    --project-card-side-size: 20rem;
+}
+
+.project-card-group {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    gap: 5rem;
+}
+
+.project-card {
+    width: var(--project-card-side-size);
+    height: var(--project-card-side-size);
+    border-radius: 0.5rem;
+    background-color: antiquewhite;
+    transition: transform 0.2s ease-in-out;
+    padding: 1rem;
+}
+
+.project-card:hover {
+    transform: scale(1.05);
+}
