@@ -14,17 +14,15 @@ export default function ProjectCard({ section }: { section: navigationObject }) 
     const imageUrl = `/${baseless}/${section.urlSegment}/${section.urlSegment}.png`
     console.log(imageUrl);
     return (
-        <Link href={`${pathName}/${section.urlSegment}`}>
-            <div className="project-card">
-                <div className="project-card-title">
-                    {section.displaySection}
-                </div>
-                <div className="project-card-image-container">
-                    {/* https://stackoverflow.com/questions/65169431/how-to-set-the-next-image-component-to-100-height */}
-                    <Image src={imageUrl} alt={section.displaySection} width={0}
-                        height={0}
-                        sizes="100vw" style={{ width: '100%', height: 'auto' }} />
-                </div>
+        <Link href={`${pathName}/${section.urlSegment}`} className="project-card">
+            <div className="project-card-title">
+                {section.displaySection}
+            </div>
+            <div className="project-card-image-container">
+                {/* https://stackoverflow.com/questions/65169431/how-to-set-the-next-image-component-to-100-height */}
+                <Image src={imageUrl} alt={section.displaySection} width={0}
+                    height={0}
+                    sizes="100vw" style={{ width: '100%', height: 'auto' }} />
             </div>
         </Link>
     )
