@@ -18,8 +18,7 @@
     z-index: 10;
     width: 100%;
     font-family: 'Oxygen Mono', monospace;
-    /* Due to using vh, there is a weird gap with the navbar when top = 0. Move it back up */
-    top: -0.5vh;
+    top: 0;
 }
 
 /* Navbar links */
