@@ -1,10 +1,11 @@
 import { PageLayout } from "@/app/layout"
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
-import NavigationGroup, { navigationObject } from "@/components/NavigationGroup";
+import { navigationObject } from "@/components/NavigationGroup";
 import ProjectCard from "@/components/project/ProjectCard";
 import SurpriseMe from "@/components/SurpriseMe";
 import "../../../styles/content-block/content-block.css";
 import "../../../styles/project-card.css";
+
 export default function ProjectGroupPage() {
     // generate list of projects based on the json located in public
 
