@@ -69,6 +69,8 @@
     position: relative;
     padding: 0.5rem;
     margin-left: 10%;
+    background-color: antiquewhite;
+    border-radius: 1rem;
 }
 
 .navigation-entry-info-container.visible {
