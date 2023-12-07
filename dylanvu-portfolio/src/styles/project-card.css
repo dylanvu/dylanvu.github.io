@@ -16,8 +16,7 @@
     grid-template-columns: repeat(auto-fit, var(--project-card-side-size));
     justify-items: center;
     gap: 3rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin: 1rem;
     width: 100%;
     position: relative;
     justify-items: center;
