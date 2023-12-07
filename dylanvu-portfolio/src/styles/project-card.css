@@ -1,14 +1,29 @@
 :root {
-    --project-card-side-size: 20rem;
+    --project-card-side-size: 30rem;
 }
 
-.project-card-group {
+/* .project-card-group {
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    gap: 5rem;
+
+} */
+
+.project-card-group {
+    display: inline-grid;
+    grid-template-columns: repeat(auto-fit, var(--project-card-side-size));
+    justify-items: center;
+    gap: 3rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    width: 100%;
+    position: relative;
+    justify-items: center;
+    align-items: center;
+    /* this actually makes the grid centered in the container */
+    justify-content: center;
 }
 
 .project-card {
