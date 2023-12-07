@@ -11,8 +11,8 @@ export default function ProjectGroupPage() {
 
     const sections: navigationObject[] = [
         {
-            displaySection: "Project 1",
-            urlSegment: "project-1"
+            displaySection: "UCSB AIChE Careers Bot",
+            urlSegment: "aiche-careers"
         },
         {
             displaySection: "Project 2",
@@ -42,7 +42,6 @@ export default function ProjectGroupPage() {
             <div className="project-card-group">
                 {sections.map((section) => <ProjectCard section={section} />)}
             </div>
-            {/* <NavigationGroup sections={sections} title="Welcome to {PROJECT GROUP}" /> */}
             <SurpriseMe sections={sections} />
         </PageLayout>
     )
