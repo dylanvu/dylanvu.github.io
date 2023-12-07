@@ -14,20 +14,30 @@ export default function NavigationGroupEntry({ section }: { section: navigationO
     const [chevronState, setChevronState] = useState<"up" | "right" | "left">("up");
 
     return (
-        <div className="navigation-link navigation-link-underline" key={section.urlSegment}
-            onMouseEnter={() => {
-                setChevronState("right");
-            }}
-            onMouseLeave={() => {
-                setChevronState("up");
-            }}
-            onMouseUp={() => {
-                setChevronState("left");
-            }}
-        >
-            <FontAwesomeIcon icon={faChevronUp} className={`chevron-icon chevron-${chevronState}`} />
-            {/* <span className="navigation-link-underline"><Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link></span> */}
-            <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link>
+        <div>
+            <div className="navigation-link navigation-link-underline" key={section.urlSegment}
+                onMouseEnter={() => {
+                    setChevronState("right");
+                }}
+                onMouseLeave={() => {
+                    setChevronState("up");
+                }}
+                onMouseUp={() => {
+                    setChevronState("left");
+                }}
+            >
+                <FontAwesomeIcon icon={faChevronUp} className={`chevron-icon chevron-${chevronState}`} />
+                {/* <span className="navigation-link-underline"><Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link></span> */}
+                <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link>
+            </div>
+            {section.info && section.info.length > 0 ?
+                <div className={`navigation-entry-info-container ${chevronState == "right" ? "visible" : "invisible"}`}>
+                    <div className="navigation-entry-info-text">
+                        {section.info}
+                    </div>
+                </div>
+                : null
+            }
         </div>
     )
 }

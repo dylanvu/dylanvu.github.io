@@ -1,6 +1,7 @@
 :root {
     --navigation-group-left-right-padding: 20%;
     --navigation-link-top-bottom-margin: 1rem;
+    --navigation-entry-info-container-padding: 0.25rem;
 }
 
 .navigation-group-container {
@@ -42,7 +43,6 @@
 
 /* Underline colored text on hover. Code adapted from https://paulund.co.uk/css-animation-link-underline */
 .navigation-link-underline:before {
-
     content: "";
     position: absolute;
     width: 0;
@@ -57,4 +57,34 @@
 .navigation-link-underline:hover:before {
     visibility: visible;
     width: 100%;
+}
+
+
+.navigation-entry-info-container {
+    transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+    box-sizing: border-box;
+    border: var(--navigation-entry-info-container-padding) solid transparent;
+    transform: translateX(-100vw);
+    opacity: 0;
+    position: relative;
+    padding: 0.5rem;
+    margin-left: 10%;
+}
+
+.navigation-entry-info-container.visible {
+    border: var(--navigation-entry-info-container-padding) solid currentColor;
+    transform: translateX(0);
+    opacity: 1;
+}
+
+
+.navigation-entry-info-text {
+    text-align: left;
+    font-size: 1.5rem;
+    transition: opacity 0.3s ease-in-out 0.4s;
+    opacity: 0;
+}
+
+.navigation-entry-info-container.visible .navigation-entry-info-text {
+    opacity: 1;
 }
