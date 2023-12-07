@@ -8,27 +8,27 @@ export default function Projects() {
     const sections: navigationObject[] = [
         {
             displaySection: "TypeScript/JavaScript",
-            info: "Web Development",
+            info: "Web Dev, Discord Bots",
             urlSegment: "ts-js"
         },
         {
             displaySection: "Python",
-            info: "Computer Vision, Automation, Raspberry Pi Applications",
+            info: "Computer Vision, Rasp. Pi Stuff, Web Scraping",
             urlSegment: "python"
         },
         {
             displaySection: "Flutter",
-            info: "Mobile Development",
+            info: "App Dev",
             urlSegment: "flutter"
         },
         {
             displaySection: "Embedded (MCU, Circuitry)",
-            info: "Microcontrollers, Circuitry, Hardware",
+            info: "Arduino, ESP32, Circuitry, Hardware",
             urlSegment: "embedded"
         },
         {
             displaySection: "Other",
-            info: "Other Stuff",
+            info: "Anything & Everything Else",
             urlSegment: "other"
         }
     ]

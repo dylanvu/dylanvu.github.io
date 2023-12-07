@@ -1,0 +1,36 @@
+.surprise-me-container {
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 5%;
+    text-align: center;
+    background-color: wheat;
+    width: fit-content;
+    padding: 1rem;
+    font-size: 1.5rem;
+    margin-left: 85%;
+    white-space: nowrap;
+    transform: rotate(5deg);
+}
+
+.surprise-me-title {
+    padding-top: 10px;
+    width: fit-content;
+    padding-left: var(--content-block-title-left-right-padding);
+    padding-right: var(--content-block-title-left-right-padding);
+    border-bottom: 0.25rem solid;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    text-align: center;
+    outline: none;
+    font-size: 2rem;
+    color: #36393f;
+    background-color: inherit;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+}
+
+.surprise-me-text {
+    font-size: 1.5rem;
+}

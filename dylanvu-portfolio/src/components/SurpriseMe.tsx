@@ -1,18 +1,20 @@
 'use client'
-import ContentBlockTitle from "./content-block/ContentBlockTitle"
 import { navigationObject } from "./NavigationGroup"
 import { usePathname, useRouter } from 'next/navigation'
 import "../styles/buttons.css"
+import "../styles/surprise-me.css"
 
 export default function SurpriseMe({ sections }: { sections: navigationObject[] }) {
     const pathName = usePathname();
     const router = useRouter()
 
     return (
-        <div className="content-block">
-            <ContentBlockTitle title="Can't Decide?" />
-            <div>
-                Are you stuck? Not sure where to go?
+        <div className="content-block surprise-me-container">
+            <div className="surprise-me-title" >
+                Can't Decide?
+            </div>
+            <div className="surprise-me-text">
+                Stuck? Not sure where to go?
             </div>
             <button className="surprise-me-button shimmer" onClick={() => {
                 // send to random page
