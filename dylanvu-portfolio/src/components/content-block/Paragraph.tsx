@@ -1,5 +1,6 @@
 
 import "../../styles/content-block/paragraph.css";
+import Image from "next/image";
 export default function Paragraph({ text }: { text: string }) {
 
     function formatText(text: string) {
@@ -12,7 +13,21 @@ export default function Paragraph({ text }: { text: string }) {
                 </li>
             )
             // TOOD: handle image and external link
-        } else {
+        } else if (isImage(text)) {
+            const imageAlt = text.split("/").at(-1);
+            return (
+                <div className="paragraph-image-container">
+                    <Image src={text} alt={imageAlt ?? text} fill />
+                </div>
+            )
+        } else if (isLink(text)) {
+            return (
+                <a href={text} className="link" target="_blank" rel="noreferrer">
+                    {text}
+                </a>
+            )
+        }
+        else {
             return (
                 // just render as text
                 <div className="paragraph-text">
@@ -28,4 +43,24 @@ export default function Paragraph({ text }: { text: string }) {
         </div>
     )
 
+}
+
+function isImage(text: string) {
+    // The photo refereced in the txt file is a path that's uploaded in the public folder
+    // Add more file extensions if needed
+    let validImageExtension = ['.jpg', '.png', '.jpeg', '.svg', '.webp']
+    for (let i = 0; i < validImageExtension.length; i++) {
+        if (text.includes(validImageExtension[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isLink(text: string) {
+    if (text.includes("github.com/") || text.includes("devpost.com/software") || text.includes("https://")) {
+        return true;
+    } else {
+        return false
+    }
 }
