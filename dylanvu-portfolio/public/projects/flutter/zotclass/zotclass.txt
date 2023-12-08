@@ -8,6 +8,6 @@ I helped them with ideation, selecting a tech stack, and taught them the basics 
 
 The team was rewarded by their efforts with a first place prize in the entire hackathon! 
 
-/projects/flutter/zotclass/TeamPhoto.jpg
+/projects/flutter/zotclass/zotclass_app.png
 
 https://devpost.com/software/zot-class-mobile

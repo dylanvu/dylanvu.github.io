@@ -1,0 +1,13 @@
+{
+    "title": "Game Development",
+    "data": [
+        {
+            "displaySection": "WordShip",
+            "urlSegment": "wordship"
+        },
+        {
+            "displaySection": "GRIP Controller",
+            "urlSegment": "grip"
+        }
+    ]
+}

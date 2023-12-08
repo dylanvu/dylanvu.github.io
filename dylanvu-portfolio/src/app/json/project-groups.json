@@ -21,9 +21,9 @@
             "urlSegment": "embedded"
         },
         {
-            "displaySection": "Other",
-            "info": "Anything & Everything Else",
-            "urlSegment": "other"
+            "displaySection": "Game Development",
+            "info": "Web, Unity, Godot",
+            "urlSegment": "games"
         }
     ]
 }

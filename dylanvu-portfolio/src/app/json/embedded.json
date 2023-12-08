@@ -2,8 +2,12 @@
     "title": "Embedded Systems",
     "data": [
         {
-            "displaySection": "THIS IS SUPPOSED TO BE EMBEDDED",
-            "urlSegment": "gold-webscraper"
+            "displaySection": "BlockStalk",
+            "urlSegment": "blockstalk"
+        },
+        {
+            "displaySection": "Caption",
+            "urlSegment": "caption"
         }
     ]
 }
