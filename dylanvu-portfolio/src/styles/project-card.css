@@ -1,9 +1,13 @@
 :root {
     --project-card-side-size: 30rem;
+    --project-card-edge-padding: 1.3rem;
 }
 
 .project-card-title {
     font-weight: bold;
+    padding-top: var(--project-card-edge-padding);
+    padding-left: var(--project-card-edge-padding);
+    padding-right: var(--project-card-edge-padding);
 }
 
 .project-card-group {
@@ -26,19 +30,27 @@
     border-radius: 0.5rem;
     background-color: antiquewhite;
     transition: transform 0.2s ease-in-out;
-    padding: 1rem;
+    /* padding: 1rem; */
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     display: grid;
     grid-template-rows: 0.5fr 3.5fr;
     align-items: center;
+    height: 100%;
+    margin: 1rem;
 }
 
 .project-card:hover {
     transform: scale(1.05) rotate(2deg);
 }
 
+.project-card-content-container {}
+
 .project-card-image-container {
     /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
     position: relative;
     margin: auto;
+    max-height: 100%;
+    padding-left: var(--project-card-edge-padding);
+    padding-right: var(--project-card-edge-padding);
+    padding-bottom: var(--project-card-edge-padding);
 }
