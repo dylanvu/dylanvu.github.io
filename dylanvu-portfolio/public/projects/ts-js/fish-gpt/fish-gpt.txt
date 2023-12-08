@@ -1,1 +1,3 @@
 FishGPT
+
+/projects/ts-s/fish-gpt/fish-gpt.png

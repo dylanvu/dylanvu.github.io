@@ -1,6 +1,6 @@
 UCSB AIChE Careers Bot
 
-/projectgroup/javascript/aichecareers/aichecareers.png
+/projects/ts-js/aiche-careers/aiche-careers.png
 
 This was actually my first project in TypeScript and my second-ever Discord Bot! I've been wanting to learn TypeScript, since I consider JavaScript my main language and the static typing of TypeScript would be handy to pick up.
 
