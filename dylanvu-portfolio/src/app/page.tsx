@@ -16,7 +16,7 @@ export default function Home() {
     },
     {
       displaySection: "Resume & Socials",
-      urlSegment: "resume-socials"
+      urlSegment: "contact"
     }
   ]
 
