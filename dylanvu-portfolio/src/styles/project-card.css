@@ -1,6 +1,7 @@
 :root {
     --project-card-side-size: 30rem;
     --project-card-edge-padding: 1.3rem;
+    --project-card-group-left-right-margin: 1.3rem;
 }
 
 .project-card-title {
@@ -14,8 +15,12 @@
     display: inline-grid;
     grid-template-columns: repeat(auto-fit, var(--project-card-side-size));
     justify-items: center;
-    gap: 3rem;
-    margin: 1rem;
+    row-gap: 3rem;
+    column-gap: 5rem;
+    padding-bottom: 1rem;
+    padding-left: var(--project-card-group-left-right-margin);
+    padding-right: var(--project-card-group-left-right-margin);
+    padding-top: 3rem;
     width: 100%;
     position: relative;
     justify-items: center;
