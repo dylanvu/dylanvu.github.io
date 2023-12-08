@@ -1,3 +1,5 @@
+ZotClass Mobile
+
 This was the first hackathon I've mentored for! I was a mentor for ZotHacks 2022 and I mentored a group of 4 beginners who've never done a hackathon before and had minimal project experience. It was incredibly rewarding and I'm super impressed with the progress they made in only 12 hours!
 
 /projectgroup/flutter/zotclass/zotclass.png

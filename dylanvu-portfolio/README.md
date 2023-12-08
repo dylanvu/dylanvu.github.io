@@ -34,20 +34,18 @@ Example:
 2. Determine which group the project falls under. Example: "ts-js" for TypeScript/JavaScript projects
 3. Create the project folder, and name it something url friendly. Like: "amazing-project"
 4. Have an image (required: ends in .png) named the same thing: "amazing-project.png"
-5. Create a json file with the following format, where the data is what will be parsed. Each `\n` is the separator, and you can include both links and images:
+5. Create a json file with the following format, where the data is what will be parsed. Each `\n` is the separator, and you can include both links and images. The first line will be the title:
 
-```ts
-{
-    "data": string
-}
-```
+```txt
+My Amazing Project
 
-Example:
+This is my amazing project.
 
-```json
-{
-    "data": "This is my amazing project.\nHere is a great description of it.\nHere is a cool picture.\n/projects/ts-js/amazing-project/amazing-project-picture-1.jpg"
-}
+Here is a great description of it.
+
+Here is a cool picture.
+
+/projects/ts-js/amazing-project/amazing-project-picture-1.jpg
 ```
 
 6. Go to `src/app/json`, go to the group.json, and add this new project under the format in the section above under "adding new project groups"

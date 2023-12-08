@@ -1,3 +1,5 @@
+WordShip
+
 /projectgroup/other/wordship/wordship.jpg
 
 Introducing my seventh hackathon submission, this time for SB Hacks VIII, WordShip! Wordship is one of the most interesting projects I've worked on, combining two extremely different genres: the 2022 hit game "Wordle" and a retro arcade "Mainic Shooter" style game. In addition to having a really cool combination of games, this is one of my most polished hackathon projects I've worked on. As a result, my team and I got an honorable mention during the awards ceremony due to the polish, creativity, and execution of this game!

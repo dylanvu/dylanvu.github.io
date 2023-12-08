@@ -1,3 +1,5 @@
+Super RNG Pets
+
 /projectgroup/javascript/super-rng-pets/super-rng-pets.png
 
 My first ever project in Electron.js! I was looking forward to putting what I know in web development (React.js) into a desktop application. While playing a game that I recently got into with my friends, I handicapped myself by making my actions in "Super Auto Pets" be decided entirely by an RNG.

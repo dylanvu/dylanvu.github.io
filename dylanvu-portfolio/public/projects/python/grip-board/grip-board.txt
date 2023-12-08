@@ -1,3 +1,5 @@
+GRIP Board - Grasp Responsive Interactive Projector Board
+
 /projectgroup/python/gripboard/gripboard.png
 
 GRIP Board was my team's submission to Pinnacle, the "Olympics" of hackathons where the winners of the top 50 collegiate hackathons across North America are invited to compete against each other.
