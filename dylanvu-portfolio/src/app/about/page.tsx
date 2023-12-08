@@ -25,7 +25,7 @@ interface HackathonItem {
     awards: string[] // list of awards, if any
 }
 
-export default function About({ text }: { text: string }) {
+export default function About() {
     // parse the text, separate by newline, and then create many Paragraph blocks
     const aboutParagraphs: string[] = bio.data.split("\n");
     // process the hackathons
