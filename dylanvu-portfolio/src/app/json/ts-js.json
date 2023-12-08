@@ -10,6 +10,10 @@
             "urlSegment": "discord-qotd"
         },
         {
+            "displaySection": "Fish GPT",
+            "urlSegment": "fish-gpt"
+        },
+        {
             "displaySection": "F•sync",
             "urlSegment": "fsync"
         },
