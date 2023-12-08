@@ -9,7 +9,7 @@ import "../../../styles/project-card.css";
 import { promises as fs } from "fs";
 
 // dynamically generate each project-group page from the list of project-groups 
-export async function generateStaticParams() {
+export async function handleGenerateStaticParams() {
     // first, get each project group in projects.json (aka "ts-js", "python", etc)
     // this serves as the URL of the page ("projects/ts-js") with all the projects details
 
@@ -18,22 +18,24 @@ export async function generateStaticParams() {
     const projectGroups: string[] = JSON.parse(projectGroupFile).data;
 
     // map through the object and generate the static parameter
-    return projectGroups.map((group) => {
-        return {
-            "project-group-slug": group
-        }
-    });
+    return projectGroups.map((group) => ({
+        group: group
+    }
+    ));
+}
 
+export async function generateStaticParams() {
+    return await handleGenerateStaticParams();
 }
 
 export default async function ProjectGroupPage({ params }: {
     params: {
-        "project-group-slug": string
+        group: string
     }
 }) {
 
     // fetch the project data
-    const projectGroup = params["project-group-slug"];
+    const projectGroup = params.group;
     // then, for this project group, fetch each project-group.json to get the list of their URLs and displaySections
     const projectsFile = await fs.readFile(process.cwd() + `/src/app/json/${projectGroup}.json`, 'utf8');
     const parsedJSON = JSON.parse(projectsFile);
