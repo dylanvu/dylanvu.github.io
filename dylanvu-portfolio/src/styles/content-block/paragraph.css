@@ -8,7 +8,18 @@
     margin-bottom: 1rem;
 } */
 
-.paragraph-image-container {}
+.paragraph-image-container {
+
+    /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
+    position: relative;
+    margin: auto;
+    /* width: 90%; */
+    /* height: 90%; */
+    padding-left: var(--project-card-edge-padding);
+    padding-right: var(--project-card-edge-padding);
+    padding-bottom: var(--project-card-edge-padding);
+    max-width: 70%;
+}
 
 .link {
     text-decoration: underline;

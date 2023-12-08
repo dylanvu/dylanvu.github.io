@@ -9,7 +9,9 @@ export default function PageLayout({
             <Navbar />
             <div className="content-container">
                 <div className="content">
-                    {children}
+                    <div className="page">
+                        {children}
+                    </div>
                 </div>
             </div>
         </div >

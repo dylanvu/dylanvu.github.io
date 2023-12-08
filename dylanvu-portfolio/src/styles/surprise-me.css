@@ -7,7 +7,7 @@
     width: fit-content;
     padding: 1rem;
     font-size: 1.5rem;
-    margin-left: 85%;
+    margin-left: 100%;
     white-space: nowrap;
     transform: rotate(5deg);
     transition: opacity 0.3s ease-in-out;

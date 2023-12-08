@@ -59,6 +59,11 @@ body {
   height: 100%;
 }
 
+.page {
+  width: 80%;
+  margin: auto;
+}
+
 /* stolen from https: //stackoverflow.com/questions/68216941/how-to-make-a-css-shimmer-effect-on-image */
 .shimmer {
   display: inline-block;

@@ -48,7 +48,7 @@ export default function About() {
     const filteredHackathonWinners = competedHackathons.filter((hackathon) => hackathon.awards.length > 0);
     const filteredHackathonMentorship = hackathonItems.filter((hackathon) => hackathon.name.toLowerCase().includes("mentor"));
     return (
-        <div className="content">
+        <div >
             <ContentBlock title="About" paragraphs={aboutParagraphs} />
             <div className="content-block">
                 <ContentBlockTitle title="Hackathon Statistics" />
