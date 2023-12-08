@@ -2,8 +2,16 @@
     "title": "Flutter",
     "data": [
         {
-            "displaySection": "THIS IS SUPPOSED TO BE FLUTTER",
-            "urlSegment": "gold-webscraper"
+            "displaySection": "Thales Undisclosed App",
+            "urlSegment": "thales"
+        },
+        {
+            "displaySection": "Zot Class Mobile (Mentor)",
+            "urlSegment": "zotclass"
+        },
+        {
+            "displaySection": "Geoverse",
+            "urlSegment": "geoverse"
         }
     ]
 }
