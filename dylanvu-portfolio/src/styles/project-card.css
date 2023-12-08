@@ -31,15 +31,16 @@
 
 .project-card {
     width: var(--project-card-side-size);
-    /* height: var(--project-card-side-size); */
+    height: var(--project-card-side-size);
     border-radius: 0.5rem;
     background-color: antiquewhite;
     transition: transform 0.2s ease-in-out;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     display: grid;
+    row-gap: 1rem;
     grid-template-rows: 0.5fr 3.5fr;
     align-items: center;
-    height: 100%;
+    /* height: 100%; */
     margin: 1rem;
 }
 
@@ -51,8 +52,9 @@
     /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
     position: relative;
     margin: auto;
-    /* max-height: 100%; */
-    padding-left: var(--project-card-edge-padding);
-    padding-right: var(--project-card-edge-padding);
-    padding-bottom: var(--project-card-edge-padding);
+    width: 70%;
+    height: 70%;
+    /* padding-left: var(--project-card-edge-padding); */
+    /* padding-right: var(--project-card-edge-padding); */
+    /* padding-bottom: var(--project-card-edge-padding); */
 }

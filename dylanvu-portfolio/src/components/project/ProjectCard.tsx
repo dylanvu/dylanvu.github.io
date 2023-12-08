@@ -20,9 +20,7 @@ export default function ProjectCard({ section }: { section: navigationObject }) 
             </div>
             <div className="project-card-image-container">
                 {/* https://stackoverflow.com/questions/65169431/how-to-set-the-next-image-component-to-100-height */}
-                <Image src={imageUrl} alt={section.displaySection} width={0}
-                    height={0}
-                    sizes="100vw" style={{ width: '100%', height: 'auto' }} />
+                <Image src={imageUrl} alt={section.displaySection} fill objectFit={"contain"} />
             </div>
         </Link>
     )
