@@ -1,7 +1,6 @@
 import NavigationGroup, { navigationObject } from "@/components/NavigationGroup"
-import { PageLayout } from "../layout"
-import "../../styles/content-block/content-block.css";
-import "../../styles/buttons.css";
+import "../../../styles/content-block/content-block.css";
+import "../../../styles/buttons.css";
 import SurpriseMe from "@/components/SurpriseMe";
 import { promises as fs } from 'fs';
 
@@ -11,9 +10,9 @@ export default async function Projects() {
     const sections: navigationObject[] = JSON.parse(projectGroupFile).data;
 
     return (
-        <PageLayout>
+        <div>
             <NavigationGroup sections={sections} title="Project Categories" />
             <SurpriseMe sections={sections} />
-        </PageLayout>
+        </div>
     )
 }

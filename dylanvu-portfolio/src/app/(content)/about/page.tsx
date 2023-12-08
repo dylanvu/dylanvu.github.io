@@ -9,12 +9,11 @@
 
 import ContentBlock from "@/components/content-block/ContentBlock";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
-import bio from "../../../public/about/bio.json";
-import hackathons from "../../../public/about/hackathons.json"
-import { PageLayout } from "../layout";
+import bio from "../../../../public/about/bio.json";
+import hackathons from "../../../../public/about/hackathons.json"
 
-import "../../styles/content-block/paragraph.css";
-import "../../styles/content-block/content-block.css";
+import "../../../styles/content-block/paragraph.css";
+import "../../../styles/content-block/content-block.css";
 
 
 /**
@@ -49,27 +48,25 @@ export default function About() {
     const filteredHackathonWinners = competedHackathons.filter((hackathon) => hackathon.awards.length > 0);
     const filteredHackathonMentorship = hackathonItems.filter((hackathon) => hackathon.name.toLowerCase().includes("mentor"));
     return (
-        <PageLayout>
-            <div className="content">
-                <ContentBlock title="About" paragraphs={aboutParagraphs} />
-                <div className="content-block">
-                    <ContentBlockTitle title="Hackathon Statistics" />
-                    {/* we are not using ContentBlock here because I want to animate the numbers counting up */}
-                    <div>
-                        Participated:  {hackathonList.length}
-                    </div>
-                    <div>
-                        Competed:  {competedHackathons.length}
-                    </div>
-                    <div>
-                        Awards: {filteredHackathonWinners.length}
-                    </div>
-                    <div>
-                        Mentored: {filteredHackathonMentorship.length}
-                    </div>
+        <div className="content">
+            <ContentBlock title="About" paragraphs={aboutParagraphs} />
+            <div className="content-block">
+                <ContentBlockTitle title="Hackathon Statistics" />
+                {/* we are not using ContentBlock here because I want to animate the numbers counting up */}
+                <div>
+                    Participated:  {hackathonList.length}
                 </div>
-                <ContentBlock title="Hackathon List" paragraphs={hackathonList} />
+                <div>
+                    Competed:  {competedHackathons.length}
+                </div>
+                <div>
+                    Awards: {filteredHackathonWinners.length}
+                </div>
+                <div>
+                    Mentored: {filteredHackathonMentorship.length}
+                </div>
             </div>
-        </PageLayout>
+            <ContentBlock title="Hackathon List" paragraphs={hackathonList} />
+        </div>
     )
 }

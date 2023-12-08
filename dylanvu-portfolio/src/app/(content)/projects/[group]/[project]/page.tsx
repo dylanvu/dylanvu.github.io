@@ -1,5 +1,4 @@
-import { PageLayout } from "@/app/layout"
-import "../../../../styles/content-block/content-block.css";
+import "../../../../../styles/content-block/content-block.css";
 import { navigationObject } from "@/components/NavigationGroup";
 import { promises as fs } from "fs";
 
@@ -21,10 +20,8 @@ export async function generateStaticParams({
 export default function ProjectGroupPage({ params }: { params: { group: string, project: string } }) {
     // generate project pages based on the json located in public
     return (
-        <PageLayout>
-            <div className="content-block">
-                {params.project}
-            </div>
-        </PageLayout>
+        <div className="content-block">
+            {params.project}
+        </div>
     )
 }

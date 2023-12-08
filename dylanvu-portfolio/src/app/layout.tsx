@@ -1,4 +1,4 @@
-import Navbar from '@/components/Navbar'
+// import Navbar from '@/components/Navbar'
 import ParticlesBg from '@/components/ParticlesBg'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -29,19 +29,19 @@ export default function RootLayout({
   )
 }
 
-export function PageLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <div>
-      <Navbar />
-      <div className="content-container">
-        <div className="content">
-          {children}
-        </div>
-      </div>
-    </div >
-  )
-}
+// export function PageLayout({
+//   children,
+// }: {
+//   children: React.ReactNode
+// }) {
+//   return (
+//     <div>
+//       <Navbar />
+//       <div className="content-container">
+//         <div className="content">
+//           {children}
+//         </div>
+//       </div>
+//     </div >
+//   )
+// }
