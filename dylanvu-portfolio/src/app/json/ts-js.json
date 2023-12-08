@@ -1,0 +1,37 @@
+{
+    "title": "TypeScript/JavaScript",
+    "data": [
+        {
+            "displaySection": "UCSB AIChE Careers Bot",
+            "urlSegment": "aiche-careers"
+        },
+        {
+            "displaySection": "Discord Question of the Day",
+            "urlSegment": "discord-qotd"
+        },
+        {
+            "displaySection": "F•sync",
+            "urlSegment": "fsync"
+        },
+        {
+            "displaySection": "UCSB AIChE Lab Reservation/Registration",
+            "urlSegment": "lab-reservation"
+        },
+        {
+            "displaySection": "SeenIt",
+            "urlSegment": "seenit"
+        },
+        {
+            "displaySection": "SketchedOut",
+            "urlSegment": "sketchedout"
+        },
+        {
+            "displaySection": "Super RNG Pets",
+            "urlSegment": "super-rng-pets"
+        },
+        {
+            "displaySection": "UCSB Robotics Website",
+            "urlSegment": "ucsb-robotics"
+        }
+    ]
+}

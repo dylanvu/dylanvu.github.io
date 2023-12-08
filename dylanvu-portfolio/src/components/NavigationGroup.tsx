@@ -2,6 +2,11 @@ import "../styles/navigation-group.css";
 import ContentBlockTitle from "./content-block/ContentBlockTitle";
 import NavigationGroupEntry from "./NavigationGroupEntry";
 
+/**
+ * displaySection: string,
+ * urlSegment: string,
+ * info?: string
+ */
 export interface navigationObject {
     displaySection: string; // what will be displayed to the user
     urlSegment: string; // the actual url

@@ -6,43 +6,59 @@ import SurpriseMe from "@/components/SurpriseMe";
 import "../../../styles/content-block/content-block.css";
 import "../../../styles/project-card.css";
 
-export default function ProjectGroupPage() {
-    // generate list of projects based on the json located in public
+import { promises as fs } from "fs";
 
-    const sections: navigationObject[] = [
-        {
-            displaySection: "UCSB AIChE Careers Bot",
-            urlSegment: "aiche-careers"
-        },
-        {
-            displaySection: "Project 2",
-            urlSegment: "project-2"
-        },
-        {
-            displaySection: "Project 3",
-            urlSegment: "project-3"
-        },
-        {
-            displaySection: "Project 4",
-            urlSegment: "project-4"
-        },
-        {
-            displaySection: "Project 5",
-            urlSegment: "project-5"
-        },
-        {
-            displaySection: "Project 6",
-            urlSegment: "project-6"
+// dynamically generate each project-group page from the list of project-groups 
+export async function generateStaticParams() {
+    // first, get each project group in projects.json
+    // const projectGroups = await fetch("/projects.json");
+
+    let projectNavigations: { "project-group-slug": string }[] = [];
+
+    const projectGroupFile = await fs.readFile(process.cwd() + '/src/app/json/project-groups.json', 'utf8');
+    const projectGroups: string[] = JSON.parse(projectGroupFile).data;
+
+    // map through the object
+    return projectGroups.map((group) => {
+        return {
+            "project-group-slug": group
         }
-    ];
+    });
+
+}
+
+interface projectInformation {
+    title: string,
+    sections: navigationObject[]
+}
+
+export default async function ProjectGroupPage({ params }: {
+    params: {
+        "project-group-slug": string
+    }
+}) {
+
+    // fetch the project data
+    const projectGroup = params["project-group-slug"];
+    // then, for this project group, fetch each project-group.json to get the list of their URLs and displaySections
+    const projectsFile = await fs.readFile(process.cwd() + `/src/app/json/${projectGroup}.json`, 'utf8');
+    const parsedJSON = JSON.parse(projectsFile);
+    const projects = parsedJSON.data;
+    const title = parsedJSON.title;
+    let projectNavigations: navigationObject[] = [];
+    for (const project of projects) {
+        projectNavigations.push({ displaySection: project.displaySection, urlSegment: project.urlSegment });
+    }
+    // create the object
+
 
     return (
         <PageLayout>
-            <ContentBlockTitle title="Welcome to {PROJECT GROUP}" />
+            <ContentBlockTitle title={`Welcome to ${title}`} />
             <div className="project-card-group">
-                {sections.map((section) => <ProjectCard section={section} />)}
+                {projectNavigations.map((section) => <ProjectCard section={section} />)}
             </div>
-            <SurpriseMe sections={sections} />
+            <SurpriseMe sections={projectNavigations} />
         </PageLayout>
     )
 }
