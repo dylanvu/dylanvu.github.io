@@ -12,36 +12,48 @@ export default function ResumeSocials() {
             <div>
                 <ContentBlockTitle title="Resume" />
                 <div className="content-block">
-                    <a href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer" className="contact-icon-link">
-                        <FontAwesomeIcon
-                            icon={faFile}
-                            id="resume"
-                            className="contact-icon"
-                        />
-                    </a>
+                    <div className="contact-icon-block">
+                        <div>
+                            <a href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer" className="contact-icon-link">
+                                <FontAwesomeIcon
+                                    icon={faFile}
+                                    id="resume"
+                                    className="contact-icon"
+                                />
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
                 <ContentBlockTitle title="Contact Me" />
                 <div className="content-block">
-                    <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" className="contact-icon-link">
-                        <FontAwesomeIcon
-                            icon={faGithub}
-                            className="contact-icon"
-                        />
-                    </a>
-                    <a href="https://www.linkedin.com/in/dylanvu9/" target="_blank" rel="noreferrer" className="contact-icon-link">
-                        <FontAwesomeIcon
-                            icon={faLinkedinIn}
-                            className="contact-icon"
-                        />
-                    </a>
-                    <a href="mailto:dylanvu9@gmail.com" target="_blank" rel="noreferrer" className="contact-icon-link">
-                        <FontAwesomeIcon
-                            icon={faEnvelope}
-                            className="contact-icon"
-                        />
-                    </a>
+                    <div className="contact-icon-block">
+                        <div >
+                            <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" className="contact-icon-link">
+                                <FontAwesomeIcon
+                                    icon={faGithub}
+                                    className="contact-icon"
+                                />
+                            </a>
+                        </div>
+                        <div >
+                            <a href="https://www.linkedin.com/in/dylanvu9/" target="_blank" rel="noreferrer" className="contact-icon-link">
+                                <FontAwesomeIcon
+                                    icon={faLinkedinIn}
+                                    className="contact-icon"
+                                />
+                            </a>
+                        </div>
+                        <div >
+                            <a href="mailto:dylanvu9@gmail.com" target="_blank" rel="noreferrer" className="contact-icon-link">
+                                <FontAwesomeIcon
+                                    icon={faEnvelope}
+                                    className="contact-icon"
+                                />
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

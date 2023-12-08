@@ -6,3 +6,8 @@
 .contact-icon:hover {
     transform: scale(1.1) rotate(2deg);
 }
+
+.contact-icon-block {
+    display: grid;
+    row-gap: 1rem;
+}
