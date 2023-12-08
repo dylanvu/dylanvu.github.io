@@ -12,7 +12,7 @@ export default function ResumeSocials() {
             <div>
                 <ContentBlockTitle title="Resume" />
                 <div className="content-block">
-                    <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" className="contact-icon-link">
+                    <a href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer" className="contact-icon-link">
                         <FontAwesomeIcon
                             icon={faFile}
                             id="resume"
