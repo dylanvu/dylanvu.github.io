@@ -1,3 +1,8 @@
-.contact-icons {
-    background-color: #333;
+.contact-icon {
+    font-size: 6rem;
+    transition: transform .3s ease-in-out, color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.contact-icon:hover {
+    transform: scale(1.1) rotate(2deg);
 }
