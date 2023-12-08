@@ -1,6 +1,6 @@
 import { handleGenerateStaticParams } from "./page";
 
-// we need this layouot.tsx: https://github.com/vercel/next.js/issues/42840#issuecomment-1352105907
+// we need this layout.tsx: https://github.com/vercel/next.js/issues/42840#issuecomment-1352105907
 export async function generateStaticParams() {
     return await handleGenerateStaticParams()
 }

@@ -3,35 +3,13 @@ import { PageLayout } from "../layout"
 import "../../styles/content-block/content-block.css";
 import "../../styles/buttons.css";
 import SurpriseMe from "@/components/SurpriseMe";
+import { promises as fs } from 'fs';
 
-export default function Projects() {
-    const sections: navigationObject[] = [
-        {
-            displaySection: "TypeScript/JavaScript",
-            info: "Web Development",
-            urlSegment: "ts-js"
-        },
-        {
-            displaySection: "Python",
-            info: "Computer Vision, Rasperry Pi Stuff, Web Scraping",
-            urlSegment: "python"
-        },
-        {
-            displaySection: "Flutter",
-            info: "Mobile Application Development",
-            urlSegment: "flutter"
-        },
-        {
-            displaySection: "Embedded Systems",
-            info: "Arduino, ESP32, Circuitry, Hardware",
-            urlSegment: "embedded"
-        },
-        {
-            displaySection: "Other",
-            info: "Anything & Everything Else",
-            urlSegment: "other"
-        }
-    ]
+export default async function Projects() {
+    // grab the list of all the project-groups: ["ts-js", "python", "flutter", etc]
+    const projectGroupFile = await fs.readFile(process.cwd() + '/src/app/json/project-groups.json', 'utf8');
+    const sections: navigationObject[] = JSON.parse(projectGroupFile).data;
+
     return (
         <PageLayout>
             <NavigationGroup sections={sections} title="Project Categories" />

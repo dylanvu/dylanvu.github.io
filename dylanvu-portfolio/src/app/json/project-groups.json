@@ -1,9 +1,29 @@
 {
     "data": [
-        "ts-js",
-        "embedded",
-        "flutter",
-        "other",
-        "python"
+        {
+            "displaySection": "TypeScript/JavaScript",
+            "info": "Full-Stack Web Development",
+            "urlSegment": "ts-js"
+        },
+        {
+            "displaySection": "Python",
+            "info": "Computer Vision, Rasperry Pi Stuff, Web Scraping",
+            "urlSegment": "python"
+        },
+        {
+            "displaySection": "Flutter",
+            "info": "Mobile Application Development",
+            "urlSegment": "flutter"
+        },
+        {
+            "displaySection": "Embedded Systems",
+            "info": "Arduino, ESP32, Circuitry, Hardware",
+            "urlSegment": "embedded"
+        },
+        {
+            "displaySection": "Other",
+            "info": "Anything & Everything Else",
+            "urlSegment": "other"
+        }
     ]
 }

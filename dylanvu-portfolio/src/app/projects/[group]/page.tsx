@@ -15,11 +15,11 @@ export async function handleGenerateStaticParams() {
 
     // grab the list of all the project-groups: ["ts-js", "python", "flutter", etc]
     const projectGroupFile = await fs.readFile(process.cwd() + '/src/app/json/project-groups.json', 'utf8');
-    const projectGroups: string[] = JSON.parse(projectGroupFile).data;
+    const projectGroups: navigationObject[] = JSON.parse(projectGroupFile).data;
 
     // map through the object and generate the static parameter
     return projectGroups.map((group) => ({
-        group: group
+        group: group.urlSegment
     }
     ));
 }
