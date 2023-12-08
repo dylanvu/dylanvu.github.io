@@ -28,12 +28,14 @@ export default async function ProjectGroupPage({ params }: {
 
 
     return (
-        <div className="content-block">
+        <div>
             <ContentBlockTitle title={`${title} Projects`} />
-            <div className="project-card-group">
-                {projects.map((section) => <ProjectCard section={section} />)}
+            <div className="content-block">
+                <div className="project-card-group">
+                    {projects.map((section) => <ProjectCard section={section} />)}
+                </div>
+                <SurpriseMe sections={projects} />
             </div>
-            <SurpriseMe sections={projects} />
         </div>
     )
 }
