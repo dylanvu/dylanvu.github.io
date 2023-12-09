@@ -17,10 +17,10 @@ export default function Paragraph({ text }: { text: string }) {
             const imageAlt = text.split("/").at(-1);
             return (
                 <div className="paragraph-image-container">
-                    <Image src={text} alt={imageAlt ?? text} style={{ objectFit: "cover" }} width={0}
+                    <Image src={text} alt={imageAlt ?? text} style={{ objectFit: "cover", width: '100%', height: 'auto' }} width={0}
                         height={0}
                         sizes="100vw"
-                        style={{ width: '100%', height: 'auto' }} />
+                    />
                 </div>
             )
         } else if (isLink(text)) {
