@@ -28,7 +28,7 @@ export default async function ProjectGroupPage({ params }: {
 
 
     return (
-        <div>
+        <div key={projectGroup}>
             <ContentBlockTitle title={`${title} Projects`} />
             <div className="content-block">
                 <div className="project-card-group">

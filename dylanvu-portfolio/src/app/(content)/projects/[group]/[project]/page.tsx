@@ -32,7 +32,7 @@ export default async function ProjectGroupPage({ params }: { params: { group: st
     const content = paragraphs.slice(1);
 
     return (
-        <div>
+        <div key={`${group}/${project}`}>
             <ContentBlockTitle title={title} />
             <div className="content-block">
                 {content.map((paragraph) =>
