@@ -3,6 +3,7 @@ import { navigationObject } from "@/components/NavigationGroup";
 import { promises as fs } from "fs";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import Paragraph from "@/components/content-block/Paragraph";
+import { usePathname } from "next/navigation";
 
 // dynamically generate each project page from the parameter 
 export async function generateStaticParams({
