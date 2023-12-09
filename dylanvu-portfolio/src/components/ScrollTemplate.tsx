@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from 'next/navigation'
 
 export default function ScrollTemplate({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname()
+    const pathname = usePathname();
     return (
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
             <motion.div initial={{ x: "100vw" }}
                 animate={{ x: 0 }}
                 exit={{ x: "-100vw" }}

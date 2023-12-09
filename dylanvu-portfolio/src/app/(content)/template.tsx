@@ -1,7 +1,15 @@
-import ScrollTemplate from "@/components/ScrollTemplate";
+'use client'
+import { usePathname } from 'next/navigation'
+import { useEffect } from 'react';
 
 export default function Template({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
+    // useEffect(() => {
+    //     console.log(pathname)
+    // }, [])
     return (
-        <ScrollTemplate children={children} />
+        <div key={pathname}>
+            {children}
+        </div>
     )
 }

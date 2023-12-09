@@ -1,4 +1,6 @@
+'use client'
 import Navbar from "@/components/Navbar"
+import ScrollTemplate from "@/components/ScrollTemplate"
 export default function PageLayout({
     children,
 }: {
@@ -10,7 +12,8 @@ export default function PageLayout({
             <div className="content-container">
                 <div className="content">
                     <div className="page">
-                        {children}
+                        <ScrollTemplate children={children} />
+                        {/* {children} */}
                     </div>
                 </div>
             </div>
