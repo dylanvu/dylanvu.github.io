@@ -91,4 +91,9 @@ body {
   .content {
     font-size: 0.9rem;
   }
+
+  .page {
+    width: 100%;
+    margin: auto;
+  }
 }

@@ -24,3 +24,14 @@
 .link {
     text-decoration: underline;
 }
+
+/* <--------------- mobile most of general rules ----------------> */
+@media screen and (max-width: 1023px) {
+    :root {
+        --contribution-margin-left-right: 0%;
+    }
+
+    .paragraph-image-container {
+        max-width: 100%;
+    }
+}
