@@ -30,6 +30,7 @@ body {
   background-color: #36393f;
   /* color: #f2f2f2; */
   text-align: center;
+  overflow-x: hidden;
 }
 
 .main {
