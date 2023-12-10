@@ -1,11 +1,12 @@
 :root {
     --contribution-margin-left-right: 15%;
+    --contribution-padding-top-bottom: 2rem;
 }
 
 .contribution {
     color: #36393F;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-top: var(--contribution-padding-top-bottom);
+    padding-bottom: var(--contribution-padding-top-bottom);
     margin-left: var(--contribution-margin-left-right);
     margin-right: var(--contribution-margin-left-right);
 }
@@ -39,10 +40,12 @@
 @media screen and (max-width: 1023px) {
     :root {
         --contribution-margin-left-right: 0%;
+        --contribution-padding-top-bottom: 0.7rem;
     }
 
     .githubIcon {
         color: #36393f;
         font-size: 3.5rem;
     }
+
 }
