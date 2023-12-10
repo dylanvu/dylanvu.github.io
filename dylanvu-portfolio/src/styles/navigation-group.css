@@ -16,7 +16,7 @@
 }
 
 .chevron-icon {
-    font-size: 30px;
+    font-size: 1.8rem;
     transition: transform 0.3s ease-in-out;
     margin-right: 1rem;
 }
@@ -89,4 +89,30 @@
 
 .navigation-entry-info-container.visible .navigation-entry-info-text {
     opacity: 1;
+}
+
+/* <--------------- mobile most of general rules ----------------> */
+@media screen and (max-width: 1023px) {
+    :root {
+        --navigation-group-left-right-padding: 5%;
+    }
+
+    .navigation-entry-info-text {
+        font-size: 1.5rem;
+        opacity: 1;
+    }
+
+    .navigation-link {
+        font-size: 1.3rem;
+    }
+
+    .navigation-link-underline:before {
+        height: 0.1rem;
+    }
+
+    .chevron-icon {
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+    }
+
 }
