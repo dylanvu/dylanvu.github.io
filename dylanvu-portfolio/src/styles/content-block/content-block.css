@@ -26,3 +26,15 @@
     margin-right: auto;
     margin-bottom: 1rem;
 }
+
+/* <--------------- mobile most of general rules ----------------> */
+@media screen and (max-width: 1023px) {
+    :root {
+        --contribution-margin-left-right: 0%;
+    }
+
+    .content-block-title {
+        font-size: 1.5rem;
+        border-bottom: 0.15rem solid;
+    }
+}
