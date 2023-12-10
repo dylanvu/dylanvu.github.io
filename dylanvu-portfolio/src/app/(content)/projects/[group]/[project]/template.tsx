@@ -1,7 +1,7 @@
-import ScrollTemplate from "@/components/ScrollTemplate";
+import TransitionTemplate from "@/components/TransitionTemplate";
 
 export default function Template({ children }: { children: React.ReactNode }) {
     return (
-        <ScrollTemplate children={children} />
+        <TransitionTemplate children={children} />
     )
 }

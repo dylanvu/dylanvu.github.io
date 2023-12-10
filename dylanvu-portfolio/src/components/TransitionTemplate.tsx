@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from 'next/navigation'
 
-export default function ScrollTemplate({ children }: { children: React.ReactNode }) {
+export default function TransitionTemplate({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     return (
         <AnimatePresence mode="wait">
