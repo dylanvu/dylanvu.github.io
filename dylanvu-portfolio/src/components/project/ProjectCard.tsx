@@ -14,7 +14,7 @@ export default function ProjectCard({ section }: { section: navigationObject }) 
     const baseless = pathName.split("/").slice(1).join("/");
     const imageUrl = `/${baseless}/${section.urlSegment}/${section.urlSegment}.png`
     return (
-        <motion.span initial={{ opacity: 0 }}
+        <motion.div initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}>
             <Link href={`${pathName}/${section.urlSegment}`} className="project-card">
                 <div className="project-card-title">
@@ -28,6 +28,6 @@ export default function ProjectCard({ section }: { section: navigationObject }) 
                         style={{ width: '100%', height: 'auto', objectFit: "contain" }} />
                 </div>
             </Link>
-        </motion.span>
+        </motion.div>
     )
 }
