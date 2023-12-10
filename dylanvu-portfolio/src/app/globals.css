@@ -84,3 +84,11 @@ body {
     -webkit-mask-position: left
   }
 }
+
+/* <--------------- mobile most of general rules ----------------> */
+
+@media screen and (max-width: 1023px) {
+  .content {
+    font-size: 0.9rem;
+  }
+}

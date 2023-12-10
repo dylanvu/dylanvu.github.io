@@ -1,9 +1,13 @@
+:root {
+    --contribution-margin-left-right: 15%;
+}
+
 .contribution {
     color: #36393F;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    margin-left: 15%;
-    margin-right: 15%;
+    margin-left: var(--contribution-margin-left-right);
+    margin-right: var(--contribution-margin-left-right);
 }
 
 .contribution div {
@@ -29,4 +33,16 @@
 .githubIcon:hover {
     transition: transform .7s ease-in-out;
     transform: rotate(720deg);
+}
+
+/* <--------------- mobile most of general rules ----------------> */
+@media screen and (max-width: 1023px) {
+    :root {
+        --contribution-margin-left-right: 0%;
+    }
+
+    .githubIcon {
+        color: #36393f;
+        font-size: 3.5rem;
+    }
 }
