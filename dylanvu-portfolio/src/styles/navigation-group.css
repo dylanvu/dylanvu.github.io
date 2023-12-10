@@ -95,12 +95,9 @@
 @media screen and (max-width: 1023px) {
     :root {
         --navigation-group-left-right-padding: 5%;
+        --navigation-link-top-bottom-margin: 0.5rem;
     }
 
-    .navigation-entry-info-text {
-        font-size: 1.5rem;
-        opacity: 1;
-    }
 
     .navigation-link {
         font-size: 1.3rem;
@@ -115,4 +112,29 @@
         margin-right: 0.5rem;
     }
 
+    .navigation-entry-info-text {
+        font-size: 0.9rem;
+        opacity: 1;
+    }
+
+    .navigation-entry-info-container {
+        transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+        box-sizing: border-box;
+        border: var(--navigation-entry-info-container-padding) solid transparent;
+        transform: none;
+        opacity: 1;
+        padding: 0.5rem;
+        margin-left: 10%;
+        border-radius: 1rem;
+    }
+
+    .navigation-entry-info-container.visible {
+        border: var(--navigation-entry-info-container-padding) solid currentColor;
+        transform: none;
+        opacity: 1;
+    }
+
+    .invisible {
+        visibility: visible;
+    }
 }
