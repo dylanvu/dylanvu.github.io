@@ -6,6 +6,7 @@ import "../../../../styles/content-block/content-block.css";
 import "../../../../styles/project-card.css";
 import { handleGenerateStaticParams } from "./util";
 import { promises as fs } from "fs";
+import TransitionTemplate from "@/components/TransitionTemplate";
 
 export async function generateStaticParams() {
     return await handleGenerateStaticParams();
@@ -28,14 +29,14 @@ export default async function ProjectGroupPage({ params }: {
 
 
     return (
-        <div key={projectGroup}>
+        <TransitionTemplate>
             <ContentBlockTitle title={`${title} Projects`} />
             <div className="content-block">
                 <div className="project-card-group">
-                    {projects.map((section) => <ProjectCard section={section} />)}
+                    {projects.map((section) => <ProjectCard section={section} key={"_" + section.urlSegment} />)}
                 </div>
                 <SurpriseMe sections={projects} />
             </div>
-        </div>
+        </TransitionTemplate>
     )
 }

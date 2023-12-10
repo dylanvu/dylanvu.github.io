@@ -4,6 +4,7 @@ import { promises as fs } from "fs";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import Paragraph from "@/components/content-block/Paragraph";
 import { usePathname } from "next/navigation";
+import TransitionTemplate from "@/components/TransitionTemplate";
 
 // dynamically generate each project page from the parameter 
 export async function generateStaticParams({
@@ -33,13 +34,13 @@ export default async function ProjectGroupPage({ params }: { params: { group: st
     const content = paragraphs.slice(1);
 
     return (
-        <div key={`${group}/${project}`}>
+        <TransitionTemplate>
             <ContentBlockTitle title={title} />
             <div className="content-block">
-                {content.map((paragraph) =>
-                    <Paragraph text={paragraph} />
+                {content.map((paragraph, index) =>
+                    <Paragraph text={paragraph} key={"_" + paragraph + index.toString()} />
                 )}
             </div>
-        </div>
+        </TransitionTemplate>
     )
 }

@@ -1,18 +1,26 @@
 'use client'
 // animation template
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname } from 'next/navigation'
+// import { useEffect } from "react";
 
 export default function TransitionTemplate({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    // useEffect(() => {
+    //     console.log("mounting " + pathname)
+    //     return () => {
+    //         console.log("unmounting from " + pathname);
+    //     }
+    // }, []);
     return (
-        <AnimatePresence mode="wait">
-            <motion.div initial={{ x: "100vw" }}
-                animate={{ x: 0 }}
-                exit={{ x: "-100vw" }}
-                transition={{ bounce: 0 }} key={pathname}>
-                {children}
-            </motion.div>
-        </AnimatePresence>
+
+        <motion.div initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ bounce: 0, ease: "easeInOut", duration: 0.5 }}
+            key={pathname}
+        >
+            {children}
+        </motion.div>
     )
 }

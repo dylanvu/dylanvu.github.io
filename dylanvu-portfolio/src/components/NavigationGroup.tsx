@@ -17,8 +17,8 @@ export default function NavigationGroup({ sections, title }: { sections: navigat
         <div className="content-block navigation-group-container">
             <ContentBlockTitle title={title} />
             <div className="navigation-group">
-                {sections.map((section) =>
-                    <NavigationGroupEntry section={section} />
+                {sections.map((section, index) =>
+                    <NavigationGroupEntry section={section} key={"_" + section.urlSegment + index.toString()} />
                 )}
             </div>
         </div>
