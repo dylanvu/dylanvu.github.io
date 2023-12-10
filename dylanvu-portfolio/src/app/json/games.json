@@ -8,6 +8,10 @@
         {
             "displaySection": "GRIP Controller",
             "urlSegment": "grip"
+        },
+        {
+            "displaySection": "Rattle",
+            "urlSegment": "rattle"
         }
     ]
 }
