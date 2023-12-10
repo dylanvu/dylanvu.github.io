@@ -11,9 +11,9 @@
             "urlSegment": "python"
         },
         {
-            "displaySection": "Flutter",
-            "info": "Mobile Application Development",
-            "urlSegment": "flutter"
+            "displaySection": "Mobile Applicaions",
+            "info": "Flutter",
+            "urlSegment": "mobile"
         },
         {
             "displaySection": "Embedded Systems",
