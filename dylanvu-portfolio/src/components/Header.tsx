@@ -25,7 +25,6 @@ const Header = () => {
         <div className="header" id="header">
             <div className="welcome">
                 <TypeOnce text="Heyo! I'm Dylan Vu and welcome to my site!" cursorClass="welcome-cursor" />
-                {/* {introText} */}
             </div>
             <video className="video" preload="auto" id="video" autoPlay loop muted playsInline>
                 <source src="/reel.mp4" type='video/mp4' />
