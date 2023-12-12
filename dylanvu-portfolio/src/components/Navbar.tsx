@@ -37,38 +37,16 @@ const Navbar = () => {
     }
 
     return (
+        // colors:
+        // #c0392b - red
+        // #2081C3 - blue
+        // #6DA34D - green
+        // #FE5D26 - orange
         <nav className={`navbar ${responsiveClass}`} id="navbar">
-            {/* eslint-disable-next-line */}
             <Link className="nav-link" href="/"><span className="name">Dylan Vu</span></Link>
-            {/* eslint-disable-next-line */}
-            {/* <a className="nav-link" style={{ color: "#c0392b" }} onClick={() => scrolling('JS')}><span>JavaScript/NodeJS</span></a> */}
-            {/* eslint-disable-next-line */}
-            {/* <a className="nav-link" style={{ color: "#2081C3" }} onClick={() => scrolling('Python')}><span>Python</span></a> */}
-            {/* eslint-disable-next-line */}
-            {/* <a className="nav-link" style={{ color: "#6DA34D" }} onClick={() => scrolling('Other')}><span>Other</span></a> */}
-            {/* eslint-disable-next-line */}
+            <Link className="nav-link" style={{ color: "#2081C3" }} href="/projects"><span>Projects</span></Link>
             <Link className="nav-link" style={{ color: "#FE5D26" }} href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span>Resume</span></Link>
-            <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
-                <FontAwesomeIcon
-                    icon={faGithub}
-                    id="github"
-                    className="icon"
-                />
-            </a>
-            <a href="https://www.linkedin.com/in/dylanvu9/" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
-                <FontAwesomeIcon
-                    icon={faLinkedinIn}
-
-                    className="icon"
-                />
-            </a>
-            <a href="mailto:dylanvu9@gmail.com" target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
-                <FontAwesomeIcon
-                    icon={faEnvelope}
-
-                    className="icon"
-                />
-            </a>
+            <Link className="nav0link" style={{ color: "#6DA34D" }} href="/contact"><span>Contact</span></Link>
             <div className={`hamburger ${responsiveClass}`} id="hamburger" onClick={() => toggleBurger()}>
                 <span className="line"></span>
                 <span className="line"></span>
