@@ -142,20 +142,20 @@ const Contributions = () => {
             {contribution === "" ?
                 <div>Thanks for stopping by! Come learn more about me and my projects!</div> :
                 <div>
-                    The last thing I've worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
+                    The last thing I&apos;ve worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
                 </div>
             }
             {allRepos[0].name === "" || allRepos[0].url === "" || contribution === "" ?
                 null :
                 <div>
                     <div>
-                        Think that's pretty cool? Or maybe it wasn't your cup of tea?
+                        Think that&apos;s pretty cool? Or maybe it wasn&apos;t your cup of tea?
                     </div>
                     <div>
                         What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
                     </div>
                     <div>
-                        Maybe you'll find even better something here?
+                        Maybe you&apos;ll find even better something here?
                     </div>
                     <div>
                         <a href={`https://github.com/${username}`} target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>

@@ -11,7 +11,7 @@ export default function SurpriseMe({ sections }: { sections: navigationObject[] 
     return (
         <div className="content-block surprise-me-container">
             <div className="surprise-me-title" >
-                Can't Decide?
+                Can&apos;t Decide?
             </div>
             <button className="surprise-me-button shimmer" onClick={() => {
                 // send to random page

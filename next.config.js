@@ -3,6 +3,7 @@ const nextConfig = {
     experimental: {
         scrollRestoration: true,
     },
+    output: 'export',
 }
 
 module.exports = nextConfig
