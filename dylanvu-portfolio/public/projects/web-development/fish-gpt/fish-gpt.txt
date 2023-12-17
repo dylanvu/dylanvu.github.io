@@ -1,0 +1,3 @@
+FishGPT
+
+/projects/web-development/fish-gpt/fish-gpt.png

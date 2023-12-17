@@ -1,9 +1,9 @@
 {
     "data": [
         {
-            "displaySection": "TypeScript/JavaScript",
-            "info": "Full-Stack Web Development",
-            "urlSegment": "ts-js"
+            "displaySection": "Web Development",
+            "info": "TypeScript/JavaScript, Python",
+            "urlSegment": "web-development"
         },
         {
             "displaySection": "Python",

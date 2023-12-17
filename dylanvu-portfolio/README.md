@@ -45,7 +45,7 @@ Here is a great description of it.
 
 Here is a cool picture.
 
-/projects/ts-js/amazing-project/amazing-project-picture-1.jpg
+/projects/web-development/amazing-project/amazing-project-picture-1.jpg
 ```
 
 6. Go to `src/app/json`, go to the group.json, and add this new project under the format in the section above under "adding new project groups". This file controls the rendering order:
