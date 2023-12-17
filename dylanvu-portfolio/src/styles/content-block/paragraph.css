@@ -9,16 +9,15 @@
 } */
 
 .paragraph-image-container {
-
-    /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
     position: relative;
+    display: block;
+}
+
+.paragraph-image-container img {
+    display: block;
     margin: auto;
-    /* width: 90%; */
-    /* height: 90%; */
-    padding-left: var(--project-card-edge-padding);
-    padding-right: var(--project-card-edge-padding);
-    padding-bottom: var(--project-card-edge-padding);
-    max-width: 70%;
+    max-width: 70vw;
+    max-height: 50vh;
 }
 
 .link {

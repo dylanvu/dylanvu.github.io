@@ -6,6 +6,9 @@ This was a team project for Coders SB’s React workshop. SeenIt is a movie soci
 
 This was the project that essentially taught me the basics behind React.js
 
+/projects/web-development/seenit/seenit_website.png
+
+
 https://seenit-bfe8f.web.app/
 
 https://github.com/vu-dylan/seenit
