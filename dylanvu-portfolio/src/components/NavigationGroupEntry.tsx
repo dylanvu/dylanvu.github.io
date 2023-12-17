@@ -15,7 +15,7 @@ export default function NavigationGroupEntry({ section }: { section: navigationO
 
     return (
         <div>
-            <div className="navigation-link navigation-link-underline" key={section.urlSegment}
+            <div className="navigation-link" key={section.urlSegment}
                 onMouseEnter={() => {
                     setChevronState("right");
                 }}
@@ -27,8 +27,12 @@ export default function NavigationGroupEntry({ section }: { section: navigationO
                 }}
             >
                 <FontAwesomeIcon icon={faChevronUp} className={`chevron-icon chevron-${chevronState}`} />
-                {/* <span className="navigation-link-underline"><Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link></span> */}
-                <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link>
+                <span className="navigation-link-underline">
+                    <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >
+                        {section.displaySection}
+                    </Link>
+                </span>
+                {/* <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} >{section.displaySection}</Link> */}
             </div>
             {section.info && section.info.length > 0 ?
                 <div className={`navigation-entry-info-container ${chevronState == "right" ? "visible" : "invisible"}`}>
