@@ -6,11 +6,6 @@
             "urlSegment": "web-development"
         },
         {
-            "displaySection": "Python",
-            "info": "Computer Vision, Raspberry Pi Stuff, Web Scraping",
-            "urlSegment": "python"
-        },
-        {
             "displaySection": "Mobile Applications",
             "info": "Flutter",
             "urlSegment": "mobile"

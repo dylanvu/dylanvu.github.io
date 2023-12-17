@@ -40,6 +40,10 @@
         {
             "displaySection": "Youtify",
             "urlSegment": "youtify"
+        },
+        {
+            "displaySection": "GOLD Webscraper",
+            "urlSegment": "gold-webscraper"
         }
     ]
 }
