@@ -4,14 +4,6 @@
         {
             "displaySection": "GOLD Webscraper",
             "urlSegment": "gold-webscraper"
-        },
-        {
-            "displaySection": "GRIP Board",
-            "urlSegment": "grip-board"
-        },
-        {
-            "displaySection": "Youtify",
-            "urlSegment": "youtify"
         }
     ]
 }

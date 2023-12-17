@@ -17,7 +17,7 @@
         },
         {
             "displaySection": "Embedded Systems",
-            "info": "Arduino, ESP32, Circuitry, Hardware",
+            "info": "Arduino, ESP32, Circuitry, Hardware, Raspberry Pi",
             "urlSegment": "embedded"
         },
         {

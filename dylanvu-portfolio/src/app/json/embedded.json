@@ -8,6 +8,10 @@
         {
             "displaySection": "Caption",
             "urlSegment": "caption"
+        },
+        {
+            "displaySection": "GRIP Board",
+            "urlSegment": "grip-board"
         }
     ]
 }

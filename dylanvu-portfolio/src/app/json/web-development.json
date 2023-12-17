@@ -36,6 +36,10 @@
         {
             "displaySection": "UCSB Robotics Website",
             "urlSegment": "ucsb-robotics"
+        },
+        {
+            "displaySection": "Youtify",
+            "urlSegment": "youtify"
         }
     ]
 }
