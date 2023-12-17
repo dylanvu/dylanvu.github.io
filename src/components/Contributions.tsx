@@ -1,8 +1,11 @@
+'use client'
+
 import React from 'react';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import "../styles/contribution.css"
 
 const Contributions = () => {
 
@@ -164,7 +167,7 @@ const Contributions = () => {
                         </a>
                     </div>
                     <div>
-                        Or just keep scrolling to find out!
+                        Or take a look at my projects to find out!
                     </div>
                 </div>}
         </div>
