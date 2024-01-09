@@ -35,6 +35,7 @@ export default async function ProjectGroupPage({ params }: { params: { group: st
     //     // navigate to 404
     //     redirect("/404");
     // }
+    console.log(process.cwd() + `/src/app/txt/projects/${group}/${project}.txt`)
     projectsFile = await fs.readFile(process.cwd() + `/src/app/txt/projects/${group}/${project}.txt`, 'utf8');
 
     const paragraphs = projectsFile.split("\n");
