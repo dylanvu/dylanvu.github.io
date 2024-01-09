@@ -1,6 +1,6 @@
 Geoverse
 
-/projects/mobile/geoverse/geoverse_logo.png
+/projects/mobile/geoverse/geoverse.png
 
 This was my submission to Cal Hacks 2021. Geoverse is a text-adventure and fitness mobile game where users are encouraged to run to progress through an AI-generated story. My role here was to develop the frontend myself using Flutter.
 
