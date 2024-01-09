@@ -23,7 +23,7 @@ I felt that the skill of being able to troubleshoot your problems, generate and 
 
 However, SweetStack challenged my algorithm skills way more than I expected. I had to write some gnarly recursive functions to recursively check if the player was making progress, due to the way I represented game items in the backend. I naturally gravitated toward a sort of graph/tree-like structure. Another helpful function to actually combine utilized a sliding window algorithm. Although I didn't write that function myself (thanks Casey Tran!), I still correctly identified that approach as a viable solution. I'm surprised that Leetcode prep actually pulled through for a project.
 
-Also, the frontend itself is a mess of state management. Besides some nasty prop drilling, I also worked with Three.js (well, React Three Fiber) and Rapier (React Three Rapier) and that was pretty difficult. And one of the biggest troubles was tracking objects with the Three.js camera. Adithi, the teammate who was the first to work with Three.js and Rapier, was sorely missed...
+Also, the frontend itself is a mess of state management. Besides some nasty prop drilling, I also worked with Three.js (well, React Three Fiber) and Rapier (React Three Rapier) and that was pretty difficult. And one of the biggest troubles was tracking objects with the Three.js camera. Adhiti, the teammate who was the first to work with Three.js and Rapier, was sorely missed...
 
 /projects/games/sweetstack/sweetstack_game_3.png
 
