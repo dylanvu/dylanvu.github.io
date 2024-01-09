@@ -2,6 +2,10 @@
     "title": "Game Development",
     "data": [
         {
+            "displaySection": "SweetStack",
+            "urlSegment": "sweetstack"
+        },
+        {
             "displaySection": "WordShip",
             "urlSegment": "wordship"
         },
