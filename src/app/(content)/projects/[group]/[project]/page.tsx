@@ -5,19 +5,16 @@ import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import Paragraph from "@/components/content-block/Paragraph";
 import { redirect } from "next/navigation";
 import TransitionTemplate from "@/components/TransitionTemplate";
+import { handleGenerateStaticParams } from "./util";
 
-// dynamically generate each project page from the parameter 
+// dynamically generate each project page from the parameter
+// https://github.com/vercel/next.js/issues/42840#issuecomment-1352105907
 export async function generateStaticParams({
     params: { group },
 }: {
     params: { group: string }
 }) {
-    // for this project group, fetch each project-group.json to get the list of their URLs and displaySections
-    const projectsFile = await fs.readFile(process.cwd() + `/src/app/json/${group}.json`, 'utf8');
-    const parsedJSON = JSON.parse(projectsFile);
-    // unpack the json into the relevant "props"
-    const navigationObjects: navigationObject[] = parsedJSON.data;
-    return navigationObjects.map((project) => { project: project.urlSegment });
+    return handleGenerateStaticParams(group);
 }
 
 
