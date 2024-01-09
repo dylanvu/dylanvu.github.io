@@ -14,7 +14,7 @@ export async function generateStaticParams({
 }: {
     params: { group: string }
 }) {
-    return handleGenerateStaticParams(group);
+    return await handleGenerateStaticParams(group);
 }
 
 
