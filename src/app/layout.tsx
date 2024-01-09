@@ -27,11 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="main">
+        <main className="main">
           {/* floating particles in background  */}
           <ParticlesBg />
           {children}
-        </div>
+        </main>
       </body>
     </html>
   )
