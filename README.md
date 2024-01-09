@@ -31,10 +31,11 @@ Example:
 
 ## How to Add New Projects
 1. Go to the `public` directory
-2. Determine which group the project falls under. Example: "ts-js" for TypeScript/JavaScript projects
-3. Create the project folder, and name it something url friendly. Like: "amazing-project"
-4. Have an image (required: ends in .png) named the same thing: "amazing-project.png"
-5. Create a json file with the following format, where the data is what will be parsed. Each `\n` is the separator, and you can include both links and images. The first line will be the title:
+2. Determine which group the project falls under. Example: "web-development" for Web Development projects
+3. Create the project folder in the `public/projects/web-development`, and name it something url friendly. Like: "amazing-project"
+4. Have an image (required: ends in .png) named the same thing: "amazing-project.png". `public/web-development/amazing-project/amazing-project.png`. You can add more images here, too. The basic name will be what's shown in the project group page as a sort of image header/hook.
+5. Create a txt file under that same group, named the same thing: `src/app/txt/web-development/amazing-project.txt`
+5. Create a txt file with the following format, where the data is what will be parsed. The first line will be the title:
 
 ```txt
 My Amazing Project
@@ -54,6 +55,6 @@ Example:
 ```json
 {
     "displaySection": "Amazing Project",
-    "urlSegment": "string"
+    "urlSegment": "amazing-project"
 }
 ```

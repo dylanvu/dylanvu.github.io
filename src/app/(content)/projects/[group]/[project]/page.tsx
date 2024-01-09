@@ -30,7 +30,7 @@ export default async function ProjectGroupPage({ params }: { params: { group: st
     // then, for this project group, fetch each project-group.json to get the list of their URLs and displaySections
     let projectsFile;
     try {
-        projectsFile = await fs.readFile(process.cwd() + `/public/projects/${group}/${project}/${project}.txt`, 'utf8');
+        projectsFile = await fs.readFile(process.cwd() + `/src/app/txt/projects/${group}/${project}.txt`, 'utf8');
     } catch (e) {
         // navigate to 404
         redirect("/404");
