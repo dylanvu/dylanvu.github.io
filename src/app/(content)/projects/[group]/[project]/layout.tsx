@@ -10,5 +10,4 @@ export async function generateStaticParams({
     return await handleGenerateStaticParams(group);
 }
 
-
 export default function ({ children }: { children: any }) { return children }

@@ -8,5 +8,7 @@ export async function handleGenerateStaticParams(group: string) {
     const parsedJSON = JSON.parse(projectsFile);
     // unpack the json into the relevant "props"
     const navigationObjects: navigationObject[] = parsedJSON.data;
-    return navigationObjects.map((project) => { project: project.urlSegment });
+    return navigationObjects.map((project) => ({
+        project: project.urlSegment
+    }));
 }
