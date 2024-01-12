@@ -8,6 +8,6 @@ Introducing my seventh hackathon submission, this time for SB Hacks VIII, WordSh
 
 I worked on the overall software architecture, defining the tech stacks and tasks while acting as a project manager. I also wrote the Wordle-clone algorithm, figured out WebSockets in Godot, wrote the socket events, and helped with a few Godot game mechanics such as the lunging and the Wordle HUD.
 
-/projects/games/wordship/wordshipreact.png
+/projects/games/wordship/wordship_react.png
 
 https://devpost.com/software/wordship
