@@ -8,6 +8,10 @@ This was my team's submission to UCI WebJam 2023! My team was Casey Tran, Sharon
 
 I focused on the video feed portion. Originally, I wanted to learn WebRTC but that ended up being a bit difficult as I ran into some sort of concurrency issue with OpenCV and Socket.io. Also, I deployed the Fish Cam onto a Raspberry Pi, but I ran into issues with actually getting the right Python version. I ended up effectively compiling the entirety of Python 3.7 on my Raspberry Pi...
 
+I think my Raspberry Pi handling skills do need a little bit of improvement.
+
+Overall though, I'm extremely happy with how this project turned out. We basically finished everything we set out to do, and it was really fun! Next time, I'll definitely try to learn WebRTC properly. While this was probably one of the most random ideas I've ever worked on, it was a really great one!
+
 Check out the demo video below!
 
 https://www.youtube.com/watch?v=VpWZEQg8e4E
