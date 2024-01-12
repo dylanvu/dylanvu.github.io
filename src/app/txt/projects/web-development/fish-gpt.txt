@@ -12,6 +12,10 @@ I think my Raspberry Pi handling skills do need a little bit of improvement.
 
 Overall though, I'm extremely happy with how this project turned out. We basically finished everything we set out to do, and it was really fun! Next time, I'll definitely try to learn WebRTC properly. While this was probably one of the most random ideas I've ever worked on, it was a really great one!
 
+Here's the pet fish I bought for the project: Fork.
+
+/projects/web-development/fish-gpt/fork-the-fish.jpg
+
 Check out the demo video below!
 
 https://www.youtube.com/watch?v=VpWZEQg8e4E
