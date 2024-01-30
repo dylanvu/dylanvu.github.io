@@ -69,7 +69,9 @@
         },
         {
             "name": "React Jam Winter 2023",
-            "awards": ["Honorable Mention"]
+            "awards": [
+                "Honorable Mention"
+            ]
         },
         {
             "name": "SB Hacks X - 2024",
@@ -77,7 +79,15 @@
         },
         {
             "name": "RoseHacks 2024",
-            "awards": ["Best UI/UX"]
+            "awards": [
+                "Best UI/UX"
+            ]
+        },
+        {
+            "name": "IrvineHacks 2024",
+            "awards": [
+                "Hacker's Choice"
+            ]
         }
     ]
 }

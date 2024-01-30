@@ -2,6 +2,10 @@
     "title": "Embedded Systems",
     "data": [
         {
+            "displaySection": "Amelia",
+            "urlSegment": "amelia"
+        },
+        {
             "displaySection": "BlockStalk",
             "urlSegment": "blockstalk"
         },
