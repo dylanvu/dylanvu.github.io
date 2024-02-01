@@ -4,7 +4,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { navigationObject } from "../NavigationGroup";
-import "../../styles/project-card.css";
+import "../../styles/project/project-card.css";
 import Image from "next/image";
 import { motion } from "framer-motion"
 
@@ -16,7 +16,7 @@ export default function ProjectCard({ section }: { section: navigationObject }) 
     return (
         <motion.div initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}>
-            <Link href={`${pathName}/${section.urlSegment}`} className="project-card">
+            <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} className="project-card">
                 <div className="project-card-title">
                     {section.displaySection}
                 </div>

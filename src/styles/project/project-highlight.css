@@ -1,0 +1,97 @@
+:root {
+    --project-highlight-side-size: 80rem;
+    --project-highlight-edge-padding: 1.3rem;
+    --project-highlight-group-left-right-margin: 1.3rem;
+}
+
+.project-highlight-title {
+    font-weight: bold;
+    padding-top: var(--project-highlight-edge-padding);
+    padding-left: var(--project-highlight-edge-padding);
+    padding-right: var(--project-highlight-edge-padding);
+    font-size: 3rem;
+}
+
+.project-highlight-group {
+    display: inline-grid;
+    grid-template-columns: repeat(auto-fit, var(--project-highlight-side-size));
+    justify-items: center;
+    row-gap: 3rem;
+    column-gap: 5rem;
+    padding-bottom: 1rem;
+    padding-left: var(--project-highlight-group-left-right-margin);
+    padding-right: var(--project-highlight-group-left-right-margin);
+    padding-top: 3rem;
+    width: 100%;
+    position: relative;
+    justify-items: center;
+    align-items: center;
+    /* this actually makes the grid centered in the container */
+    justify-content: center;
+}
+
+.project-highlight {
+    width: var(--project-highlight-side-size);
+    /* height: var(--project-highlight-side-size); */
+    border-radius: 0.5rem;
+    background-color: antiquewhite;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    display: grid;
+    row-gap: 1rem;
+    grid-template-rows: 0.5fr 3.5fr;
+    align-items: center;
+    height: 100%;
+    margin: 1rem;
+}
+
+.rotate-left {
+    position: relative;
+    float: right;
+    transform: rotate(4deg);
+    right: 20vw;
+}
+
+.rotate-right {
+    position: relative;
+    float: left;
+    transform: rotate(-4deg);
+    left: 20vw;
+}
+
+.project-highlight:hover {
+    transform: scale(1.05) rotate(2deg);
+}
+
+.project-highlight-image-container {
+    /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
+    position: relative;
+    margin: auto;
+    /* width: 90%; */
+    /* height: 90%; */
+    padding-left: var(--project-highlight-edge-padding);
+    padding-right: var(--project-highlight-edge-padding);
+    padding-bottom: var(--project-highlight-edge-padding);
+}
+
+/* <--------------- mobile most of general rules ----------------> */
+@media screen and (max-width: 1023px) {
+    :root {
+        --project-highlight-side-size: 18rem;
+        --project-highlight-edge-padding: 0.9rem;
+    }
+
+
+    .project-highlight-group {
+        padding-top: 0.5rem;
+        row-gap: 0.5rem;
+    }
+
+    .project-highlight {
+        margin: 0;
+    }
+
+    .project-highlight-title {
+        font-size: 1.2rem;
+    }
+}
