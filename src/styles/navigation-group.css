@@ -95,7 +95,7 @@
 
 
     .navigation-link {
-        font-size: 1.3rem;
+        font-size: 2rem;
     }
 
     .navigation-link-underline:before {
@@ -108,7 +108,7 @@
     }
 
     .navigation-entry-info-text {
-        font-size: 0.9rem;
+        font-size: 1.5rem;
         opacity: 1;
     }
 

@@ -1,7 +1,8 @@
 :root {
-    --project-highlight-side-size: 80rem;
+    --project-highlight-side-size: 45rem;
     --project-highlight-edge-padding: 1.3rem;
     --project-highlight-group-left-right-margin: 1.3rem;
+    --project-highlight-distance-from-edge: 10vw;
 }
 
 .project-highlight-title {
@@ -13,11 +14,10 @@
 }
 
 .project-highlight-group {
-    display: inline-grid;
-    grid-template-columns: repeat(auto-fit, var(--project-highlight-side-size));
+    display: grid;
+    /* grid-template-columns: repeat(auto-fit, var(--project-highlight-side-size)); */
+    grid-template-columns: 50fr 50fr;
     justify-items: center;
-    row-gap: 3rem;
-    column-gap: 5rem;
     padding-bottom: 1rem;
     padding-left: var(--project-highlight-group-left-right-margin);
     padding-right: var(--project-highlight-group-left-right-margin);
@@ -49,14 +49,14 @@
     position: relative;
     float: right;
     transform: rotate(4deg);
-    right: 20vw;
+    right: var(--project-highlight-distance-from-edge);
 }
 
 .rotate-right {
     position: relative;
     float: left;
     transform: rotate(-4deg);
-    left: 20vw;
+    left: var(--project-highlight-distance-from-edge);
 }
 
 .project-highlight:hover {
@@ -67,11 +67,16 @@
     /* https: //stackoverflow.com/questions/67421778/next-js-image-layout-fill-is-broken */
     position: relative;
     margin: auto;
-    /* width: 90%; */
-    /* height: 90%; */
+    width: 90%;
+    height: 90%;
     padding-left: var(--project-highlight-edge-padding);
     padding-right: var(--project-highlight-edge-padding);
     padding-bottom: var(--project-highlight-edge-padding);
+}
+
+.project-highlight-desc {
+    font-weight: bold;
+    font-size: 3rem;
 }
 
 /* <--------------- mobile most of general rules ----------------> */
@@ -84,7 +89,24 @@
 
     .project-highlight-group {
         padding-top: 0.5rem;
+        margin-top: 2rem;
         row-gap: 0.5rem;
+        grid-template-columns: 100fr;
+        grid-template-rows: 50fr 50fr;
+    }
+
+    .project-highlight-desc {
+        font-size: 2rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .rotate-left {
+        float: none
+    }
+
+    .rotate-right {
+        float: none
     }
 
     .project-highlight {

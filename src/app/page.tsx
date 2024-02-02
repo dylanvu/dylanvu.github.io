@@ -1,8 +1,15 @@
-import ProjectHighlight from '@/components/project/ProjectHighlight'
+import ProjectHighlight, { validHighlightExtensions } from '@/components/project/ProjectHighlight'
 import Contributions from '../components/Contributions'
 import Header from '../components/Header'
 import Navbar from '../components/Navbar'
+import "../styles/project/project-highlight.css"
 import NavigationGroup, { navigationObject } from '../components/NavigationGroup'
+import ContentBlockTitle from '@/components/content-block/ContentBlockTitle'
+
+interface highlightObject extends navigationObject {
+  description: string,
+  extension: validHighlightExtensions,
+}
 
 export default function Home() {
 
@@ -21,26 +28,36 @@ export default function Home() {
     }
   ]
 
-  const highlights: navigationObject[] = [
+  const highlights: highlightObject[] = [
     {
       displaySection: "Amelia",
-      urlSegment: "projects/embedded/amelia"
+      urlSegment: "projects/embedded/amelia",
+      description: `A physical generative AI travel companion brought to life through hardware and LLM task decomposition!`,
+      extension: "png",
     },
     {
       displaySection: "SweetStack",
-      urlSegment: "projects/games/sweetstack"
+      urlSegment: "projects/games/sweetstack",
+      description: "An addictive and aesthetic two-player collaborative cake-stacking game—programmed with surprising algorithmic complexity!",
+      extension: "gif",
     },
     {
       displaySection: "FishGPT",
-      urlSegment: "projects/web-development/fishgpt"
+      urlSegment: "projects/web-development/fishgpt",
+      description: `Challenging UCI's conception of a "WebJam." Talk to your fish through a computer vision and hardware-powered chatbot!`,
+      extension: "gif",
     },
     {
       displaySection: "WordShip",
-      urlSegment: "projects/games/wordship"
+      urlSegment: "projects/games/wordship",
+      description: "Wordle + shooter = 1v1 competitive manic shooter. A unique game born from the blending of two very different games!",
+      extension: "gif",
     },
     {
-      displaySection: "Chemical Engineering Careers Bot",
-      urlSegment: "projects/web-development/aiche-careers"
+      displaySection: "Discord Careers Bot",
+      urlSegment: "projects/web-development/aiche-careers",
+      description: "Solving a club's career crisis one job at a time. Circumventing LinkedIn's rules through a creative approach!",
+      extension: "gif",
     }
   ]
 
@@ -52,14 +69,13 @@ export default function Home() {
         {/* place all important content here */}
         <div className="content">
           <Contributions />
-          <div className="project-highlight-group">
-            {highlights.map((item, index) => {
-              return <ProjectHighlight section={item} index={index} key={"highlight-" + item.urlSegment} />
-            })}
-          </div>
+          <ContentBlockTitle title={"Best of the Best"} />
+          {highlights.map((item, index) => {
+            return <ProjectHighlight section={item} index={index} key={"highlight-" + item.urlSegment} description={item.description} extension={item.extension} />
+          })}
           <NavigationGroup sections={sections} title="Where To?" />
         </div>
       </div>
-    </div>
+    </div >
   )
 }
