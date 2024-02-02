@@ -7,6 +7,7 @@ import "../../styles/project/project-highlight.css";
 import Image from "next/image";
 
 import { motion } from "framer-motion"
+import { useEffect, useState } from "react";
 
 export type validHighlightExtensions = "png" | "gif" | "jpg";
 
@@ -14,13 +15,15 @@ export type validHighlightExtensions = "png" | "gif" | "jpg";
  * Component for the main section, a super flashy and large card
  */
 export default function ProjectHighlight({ section, index, description, extension }: { section: navigationObject, index: number, description: string, extension: validHighlightExtensions }) {
+    const [isSmallScreen, setIsSmallScreen] = useState<boolean>(true);
+
+    useEffect(() => {
+        setIsSmallScreen(window.matchMedia('(max-width: 1023px)').matches)
+    }, [])
+
     // use pathname to dynamically link to different subsections
     const pathName = usePathname();
     const imageUrl = `/highlights/${section.urlSegment.split("/").at(-1)}.${extension}`;
-
-    // do a media query
-    const isSmallScreen = window.matchMedia('(max-width: 1023px)').matches;
-    console.log(isSmallScreen)
 
     let first = <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} className={`project-highlight rotate-${index % 2 ? "right" : "left"}`}>
         <div className="project-highlight-title">
