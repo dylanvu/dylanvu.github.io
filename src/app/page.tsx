@@ -43,7 +43,7 @@ export default function Home() {
     },
     {
       displaySection: "FishGPT",
-      urlSegment: "projects/web-development/fishgpt",
+      urlSegment: "projects/web-development/fish-gpt",
       description: `Challenging UCI's perception of a "WebJam." Talk to your fish through a computer vision and hardware-powered chatbot!`,
       extension: "gif",
     },
