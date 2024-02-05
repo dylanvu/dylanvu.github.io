@@ -33,7 +33,7 @@ export default function ProjectHighlight({ section, index, description, extensio
             {/* https://stackoverflow.com/questions/65169431/how-to-set-the-next-image-component-to-100-height */}
             <Image src={imageUrl} alt={section.displaySection}
                 fill
-                objectFit="contain"
+                style={{ "objectFit": "contain" }}
             // width={0}
             // height={0}
             // sizes="100vw"
