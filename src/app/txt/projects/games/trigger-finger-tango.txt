@@ -1,6 +1,6 @@
 Trigger Finger Tango
 
-/projects/games/trigger-finger-tango/trigger-finger-tango.png
+/projects/games/trigger-finger-tango/trigger-finger-tango.gif
 
 My team's entry to QWER Hacks 2024! This is a gesture-based shooting game where you make "finger guns" to fire a gun. This was my first time working in Unreal Engine, and working with WebSockets in Unreal Engine. While I did a similar integration with Godot (see: WordShip), Unreal proved to be a bigger challenge since my teammate responsible for implemeting the assets, physics, and destructible environment, Casey, worked mainly in the Blueprint. So, I ended up breaking the game several times while integrating.
 

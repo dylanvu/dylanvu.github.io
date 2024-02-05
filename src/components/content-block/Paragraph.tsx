@@ -49,7 +49,7 @@ export default function Paragraph({ text }: { text: string }) {
 function isImage(text: string) {
     // The photo refereced in the txt file is a path that's uploaded in the public folder
     // Add more file extensions if needed
-    let validImageExtension = ['.jpg', '.png', '.jpeg', '.svg', '.webp']
+    let validImageExtension = ['.jpg', '.png', '.jpeg', '.svg', '.webp', '.gif']
     for (let i = 0; i < validImageExtension.length; i++) {
         if (text.includes(validImageExtension[i])) {
             return true;
