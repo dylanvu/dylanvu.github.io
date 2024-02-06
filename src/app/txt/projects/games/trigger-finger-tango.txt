@@ -8,4 +8,6 @@ My team's entry to QWER Hacks 2024! This is a gesture-based shooting game where 
 
 Overall, a cool experience! My talented teammates, Bryant and Thao, did an amazing job custom-training the gestures for Mediapipe and sending the data over to Trigger Finger Tango as well.
 
+We got awarded "Most Creative" application!
+
 https://github.com/dylanvu/Trigger-Finger-Tango-Backend

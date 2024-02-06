@@ -7,6 +7,8 @@ This is SweetStack, a two-player cake stacking game built in React, Vite, React 
 
 Featuring custom made Blender assets! Consistent and aesthetic design! Amazing quality backend (at one point)!
 
+/projects/games/sweetstack/sweetstack.gif
+
 /projects/games/sweetstack/sweetstack_game.png
 
 A super amazing looking game! It's cute, wholesome, and has sound effects. Super innocent... right?

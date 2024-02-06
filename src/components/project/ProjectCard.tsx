@@ -7,12 +7,18 @@ import { navigationObject } from "../NavigationGroup";
 import "../../styles/project/project-card.css";
 import Image from "next/image";
 import { motion } from "framer-motion"
+import { ImageExtension } from "../content-block/Paragraph";
 
-export default function ProjectCard({ section }: { section: navigationObject }) {
+export interface ProjectCardInterface extends navigationObject {
+    extension: ImageExtension
+}
+
+export default function ProjectCard({ section }: { section: ProjectCardInterface }) {
     // use pathname to dynamically link to different subsections
     const pathName = usePathname();
     const baseless = pathName.split("/").slice(1).join("/");
-    const imageUrl = `/${baseless}/${section.urlSegment}/${section.urlSegment}.png`
+    const extension: ImageExtension = section.extension ?? "png"
+    const imageUrl = `/${baseless}/${section.urlSegment}/${section.urlSegment}.${extension}`
     return (
         <motion.div initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}>

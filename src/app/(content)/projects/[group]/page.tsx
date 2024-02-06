@@ -1,6 +1,6 @@
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import { navigationObject } from "@/components/NavigationGroup";
-import ProjectCard from "@/components/project/ProjectCard";
+import ProjectCard, { ProjectCardInterface } from "@/components/project/ProjectCard";
 import SurpriseMe from "@/components/SurpriseMe";
 import "../../../../styles/content-block/content-block.css";
 import "../../../../styles/project/project-card.css";
@@ -32,7 +32,7 @@ export default async function ProjectGroupPage({ params }: {
     }
     const parsedJSON = JSON.parse(projectsFile);
     // unpack the json into the relevant "props"
-    const projects: navigationObject[] = parsedJSON.data;
+    const projects: ProjectCardInterface[] = parsedJSON.data;
     const title = parsedJSON.title;
 
 

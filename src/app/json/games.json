@@ -3,11 +3,13 @@
     "data": [
         {
             "displaySection": "SweetStack",
-            "urlSegment": "sweetstack"
+            "urlSegment": "sweetstack",
+            "extension": "gif"
         },
         {
             "displaySection": "WordShip",
-            "urlSegment": "wordship"
+            "urlSegment": "wordship",
+            "extension": "gif"
         },
         {
             "displaySection": "GRIP Controller",
@@ -15,7 +17,8 @@
         },
         {
             "displaySection": "Trigger Finger Tango",
-            "urlSegment": "trigger-finger-tango"
+            "urlSegment": "trigger-finger-tango",
+            "extension": "gif"
         },
         {
             "displaySection": "Rattle",

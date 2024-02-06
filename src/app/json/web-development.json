@@ -3,7 +3,8 @@
     "data": [
         {
             "displaySection": "UCSB AIChE Careers Bot",
-            "urlSegment": "aiche-careers"
+            "urlSegment": "aiche-careers",
+            "extension": "gif"
         },
         {
             "displaySection": "Discord Question of the Day",
@@ -11,7 +12,8 @@
         },
         {
             "displaySection": "Fish GPT",
-            "urlSegment": "fish-gpt"
+            "urlSegment": "fish-gpt",
+            "extension": "gif"
         },
         {
             "displaySection": "F•sync",
