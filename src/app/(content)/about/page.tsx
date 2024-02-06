@@ -66,7 +66,7 @@ export default function About() {
                     Mentored: {filteredHackathonMentorship.length}
                 </div>
             </div>
-            <ContentBlock title="Hackathon List" paragraphs={hackathonList} />
+            <ContentBlock title="Hackathon List" paragraphs={hackathonList.reverse()} />
         </div>
     )
 }

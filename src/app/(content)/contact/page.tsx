@@ -10,14 +10,29 @@ export default function ResumeSocials() {
     return (
         <div>
             <div>
-                <ContentBlockTitle title="Resume" />
+                <ContentBlockTitle title="Contact Me" />
                 <div className="content-block">
                     <div className="contact-icon-block">
                         <div>
-                            <a href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer" className="contact-icon-link">
+                            <a href="mailto:dylanvu9@gmail.com" target="_blank" rel="noreferrer" className="contact-icon-link">
                                 <FontAwesomeIcon
-                                    icon={faFile}
-                                    id="resume"
+                                    icon={faEnvelope}
+                                    className="contact-icon"
+                                />
+                            </a>
+                        </div>
+                        <div>
+                            <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" className="contact-icon-link">
+                                <FontAwesomeIcon
+                                    icon={faGithub}
+                                    className="contact-icon"
+                                />
+                            </a>
+                        </div>
+                        <div>
+                            <a href="https://www.linkedin.com/in/dylanvu9/" target="_blank" rel="noreferrer" className="contact-icon-link">
+                                <FontAwesomeIcon
+                                    icon={faLinkedinIn}
                                     className="contact-icon"
                                 />
                             </a>
@@ -26,29 +41,14 @@ export default function ResumeSocials() {
                 </div>
             </div>
             <div>
-                <ContentBlockTitle title="Contact Me" />
+                <ContentBlockTitle title="Resume" />
                 <div className="content-block">
                     <div className="contact-icon-block">
-                        <div >
-                            <a href="https://github.com/dylanvu" target="_blank" rel="noreferrer" className="contact-icon-link">
+                        <div>
+                            <a href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer" className="contact-icon-link">
                                 <FontAwesomeIcon
-                                    icon={faGithub}
-                                    className="contact-icon"
-                                />
-                            </a>
-                        </div>
-                        <div >
-                            <a href="https://www.linkedin.com/in/dylanvu9/" target="_blank" rel="noreferrer" className="contact-icon-link">
-                                <FontAwesomeIcon
-                                    icon={faLinkedinIn}
-                                    className="contact-icon"
-                                />
-                            </a>
-                        </div>
-                        <div >
-                            <a href="mailto:dylanvu9@gmail.com" target="_blank" rel="noreferrer" className="contact-icon-link">
-                                <FontAwesomeIcon
-                                    icon={faEnvelope}
+                                    icon={faFile}
+                                    id="resume"
                                     className="contact-icon"
                                 />
                             </a>
