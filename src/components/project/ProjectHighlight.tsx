@@ -56,6 +56,7 @@ export default function ProjectHighlight({ section, index, description, extensio
     return (
         <motion.div initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
             className="project-highlight-group">
             {first}
             {second}

@@ -20,8 +20,11 @@ export default function ProjectCard({ section }: { section: ProjectCardInterface
     const extension: ImageExtension = section.extension ?? "png"
     const imageUrl = `/${baseless}/${section.urlSegment}/${section.urlSegment}.${extension}`
     return (
-        <motion.div initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}>
+        <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+        >
             <Link href={pathName == "/" ? `${section.urlSegment}` : `${pathName}/${section.urlSegment}`} className="project-card">
                 <div className="project-card-title">
                     {section.displaySection}
