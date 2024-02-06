@@ -25,7 +25,7 @@
 .navbar a {
     float: left;
     align-items: center;
-    font-size: 20px;
+    font-size: 30px;
     display: flex;
     color: #36393f;
     text-align: center;
@@ -62,7 +62,6 @@
 .navbar .name {
     float: left;
     align-items: center;
-    font-size: 20px;
     display: flex;
     color: #f2f2f2;
     text-align: center;
