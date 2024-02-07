@@ -10,10 +10,11 @@
 import ContentBlock from "@/components/content-block/ContentBlock";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import bio from "../../../../public/about/bio.json";
-import hackathons from "../../../../public/about/hackathons.json"
+import hackathons from "../../../../public/about/hackathons.json";
 
 import "../../../styles/content-block/paragraph.css";
 import "../../../styles/content-block/content-block.css";
+import SpecialityCarousel from "@/components/about/SpecialtyCarousel";
 
 
 /**
@@ -47,9 +48,15 @@ export default function About() {
     const competedHackathons = hackathonItems.filter((hackathon) => !hackathon.name.toLowerCase().includes("mentor"));
     const filteredHackathonWinners = competedHackathons.filter((hackathon) => hackathon.awards.length > 0);
     const filteredHackathonMentorship = hackathonItems.filter((hackathon) => hackathon.name.toLowerCase().includes("mentor"));
+
     return (
         <div >
+            {/* bio */}
             <ContentBlock title="About" paragraphs={aboutParagraphs} />
+            {/* view me in the context of... */}
+            {/* <ContentBlockTitle title="I'm a..." /> */}
+            {/* <SpecialityCarousel /> */}
+            {/* hackathons */}
             <div className="content-block">
                 <ContentBlockTitle title="Hackathon Statistics" />
                 {/* we are not using ContentBlock here because I want to animate the numbers counting up */}
