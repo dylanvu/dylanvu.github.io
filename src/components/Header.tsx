@@ -32,7 +32,7 @@ const Header = () => {
                     <TypeOnce text="Heyo! You might know me as Dylan Vu," cursorClass="welcome-cursor" duration={2} removeCursor={true} />
                 </div>
                 <div>
-                    {showExtras ? <TypeArray texts={["Software Developer", "mentor to all.", "the guy who makes non-traditional stuff at hackathons.", "the one seeking excellence through struggle and challenge."]} cursorClass="welcome-cursor" /> : null}
+                    {showExtras ? <TypeArray texts={["Full-Stack Software Developer", "the guy specializing in Real-Time Communication", "the one who makes cool stuff at hackathons."]} cursorClass="welcome-cursor" /> : null}
                 </div>
             </div>
             <video className="video" preload="auto" id="video" autoPlay loop muted playsInline>
