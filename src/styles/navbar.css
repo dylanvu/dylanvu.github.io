@@ -29,8 +29,8 @@
     display: flex;
     color: #36393f;
     text-align: center;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
     text-decoration: none;
     transition: background-color 0.25s, color 0.25s;
     cursor: pointer;
