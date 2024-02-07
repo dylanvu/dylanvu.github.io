@@ -18,7 +18,7 @@ export default function TypeArray({ texts, cursorClass }: { texts: string[], cur
     useEffect(() => {
         animate(count, 60, {
             type: "tween",
-            duration: 1,
+            duration: 3,
             ease: "linear",
             repeat: Infinity,
             repeatType: "reverse",

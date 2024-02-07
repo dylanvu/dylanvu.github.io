@@ -1,18 +1,25 @@
 'use client'
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CursorBlinker, { validBlinkingCursorTypes } from "./CursorBlinker";
 
 
 // reference: https://blog.noelcserepy.com/how-i-created-a-typing-text-animation-with-framer-motion
-export default function TypeOnce({ text, cursorClass }: { text: string, cursorClass: validBlinkingCursorTypes }) {
+export default function TypeOnce({ text, cursorClass, duration, removeCursor }: { text: string, cursorClass: validBlinkingCursorTypes, duration: number, removeCursor: boolean }) {
     const count = useMotionValue(0);
+    const [showCursor, setShowCursor] = useState(true);
     useEffect(() => {
         const controls = animate(count, text.length, {
             type: "tween",
-            duration: 2,
+            duration: duration,
             ease: "linear"
         });
+        if (removeCursor) {
+            setTimeout(() => {
+                setShowCursor(false);
+            }, duration * 1000)
+        }
+
         return controls.stop;
     }, []);
 
@@ -26,7 +33,7 @@ export default function TypeOnce({ text, cursorClass }: { text: string, cursorCl
             <motion.span>
                 {displayText}
             </motion.span>
-            <CursorBlinker className={cursorClass} />
+            {showCursor ? <CursorBlinker className={cursorClass} /> : null}
         </span>
     )
 }

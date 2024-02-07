@@ -1,9 +1,10 @@
 'use client'
 
 import React from 'react'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import "../styles/header.css";
 import TypeOnce from './animate/TypeOnce';
+import TypeArray from './animate/TypeArray';
 
 const Header = () => {
     useEffect(() => {
@@ -17,14 +18,22 @@ const Header = () => {
             } else {
                 console.error("Could not find video reel")
             }
-        })
+        });
+        setTimeout(() => { setShowExtras(true) }, 3000);
     }, []);
+
+    const [showExtras, setShowExtras] = useState(false);
 
 
     return (
         <div className="header" id="header">
             <div className="welcome">
-                <TypeOnce text="Heyo! I'm Dylan Vu and welcome to my site!" cursorClass="welcome-cursor" />
+                <div>
+                    <TypeOnce text="Heyo! You might know me as Dylan Vu," cursorClass="welcome-cursor" duration={2} removeCursor={true} />
+                </div>
+                <div>
+                    {showExtras ? <TypeArray texts={["Software Developer", "mentor to all.", "the guy who makes non-traditional stuff at hackathons.", "the one seeking excellence through struggle and challenge"]} cursorClass="welcome-cursor" /> : null}
+                </div>
             </div>
             <video className="video" preload="auto" id="video" autoPlay loop muted playsInline>
                 <source src="/reel.mp4" type='video/mp4' />
