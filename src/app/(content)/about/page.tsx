@@ -14,7 +14,6 @@ import hackathons from "../../../../public/about/hackathons.json";
 
 import "../../../styles/content-block/paragraph.css";
 import "../../../styles/content-block/content-block.css";
-import SpecialityCarousel from "@/components/about/SpecialtyCarousel";
 
 
 /**
