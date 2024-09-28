@@ -97,16 +97,24 @@
       "awards": []
     },
     {
-      "name": "Google AI x MHacks",
-      "awards": []
-    },
-    {
       "name": "LA Hacks 2024",
       "awards": []
     },
     {
       "name": "Davis Hacks 2024",
       "awards": ["2nd/3rd Place Intel Developer Cloud"]
+    },
+    {
+      "name": "VenusHacks 2024",
+      "awards": []
+    },
+    {
+      "name": "STEMist Hacks III",
+      "awards": []
+    },
+    {
+      "name": "The Future of Data 2024",
+      "awards": ["Social Impact Best Software"]
     }
   ]
 }
