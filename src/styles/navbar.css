@@ -6,18 +6,21 @@
     vertical-align: middle;
 }
 
-.navbar {
+.sticky {
+    position: sticky;
+    position: -webkit-sticky;
+    z-index: 10;
+    top: 0;
     overflow: hidden;
+}
+
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #333;
-    position: -webkit-sticky;
-    position: sticky;
-    z-index: 10;
     width: 100%;
     font-family: 'Oxygen Mono', monospace;
-    top: 0;
     padding-left: var(--left-right-margin);
     padding-right: var(--left-right-margin);
 }
@@ -27,7 +30,7 @@
 }
 
 /* Navbar links */
-.navbar a {
+.nav-link {
     align-items: center;
     font-size: 30px;
     display: flex;
@@ -54,7 +57,7 @@
     color: none;
 }
 
-.navbar a:hover .icon {
+.nav-link:hover .icon {
     cursor: pointer;
     color: #36393f;
 }
@@ -63,23 +66,23 @@
     color: none;
 }
 
-.navbar .name {
+.name {
     color: #f2f2f2;
     text-align: center;
     text-decoration: none;
     transition: background-color 0.25s, color 0.25s;
 }
 
-.navbar a:hover .name {
+.nav-link:hover .name {
     color: #36393f;
 }
 
-.navbar a span {
+.nav-link span {
     display: inline-block;
     vertical-align: middle;
 }
 
-.navbar a:hover {
+.nav-link:hover {
     background-color: #ddd;
     color: black;
 }
@@ -151,7 +154,7 @@
     /* For small, short mobile devices like iPhone 5 in portrait mode, iPhone 6 in landscape*/
 
     /* shorter orientations get an ugly version of the navbar */
-    .navbar.is-responsive a {
+    .navbar.is-responsive .nav-link {
         display: flex;
         width: auto;
     }
@@ -172,7 +175,7 @@
     /* This is large mobile device portrait mode */
 
     /* Tall enough orientations to accomodate for a "row by row" nav bar */
-    .navbar.is-responsive a {
+    .is-responsive .nav-link {
         display: flex;
         width: 100%;
     }
@@ -189,7 +192,7 @@
     /* This is large mobile device landscape mode and also iPhone X portrait */
 
     /* Tall enough orientations to accomodate for a "row by row" nav bar */
-    .navbar.is-responsive a {
+    .is-responsive .nav-link {
         display: flex;
         width: 100%;
     }
@@ -199,7 +202,7 @@
         scroll-snap-margin-top: 34rem;
     }
 
-    .navbar a,
+    .nav-link,
     .navbar .name {
         font-size: 1.35rem;
     }
@@ -257,11 +260,11 @@
         display: block;
     }
 
-    .navbar a {
+    .nav-link {
         transition: height 0.5s;
     }
 
-    .navbar.inactive a:not(:first-child) {
+    .inactive .nav-link:not(:first-child) {
         display: none;
     }
 
@@ -303,6 +306,12 @@
 
     ul {
         font-size: 0.9em;
+    }
+
+    /* the responsive link menu that shows all other links */
+    .responsive-link-menu {
+        background-color:#333;
+        height: 100vh;
     }
 
 }
