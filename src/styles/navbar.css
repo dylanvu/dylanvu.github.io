@@ -9,9 +9,8 @@
 .navbar {
     overflow: hidden;
     display: flex;
-    justify-content: center;
-    align-items: stretch;
-    /* flex-wrap: wrap; */
+    justify-content: space-between;
+    align-items: center;
     background-color: #333;
     position: -webkit-sticky;
     position: sticky;
@@ -19,11 +18,16 @@
     width: 100%;
     font-family: 'Oxygen Mono', monospace;
     top: 0;
+    padding-left: var(--left-right-margin);
+    padding-right: var(--left-right-margin);
+}
+
+.right {
+    display: flex;
 }
 
 /* Navbar links */
 .navbar a {
-    float: left;
     align-items: center;
     font-size: 30px;
     display: flex;
@@ -60,12 +64,8 @@
 }
 
 .navbar .name {
-    float: left;
-    align-items: center;
-    display: flex;
     color: #f2f2f2;
     text-align: center;
-    /* padding: 14px; */
     text-decoration: none;
     transition: background-color 0.25s, color 0.25s;
 }
@@ -267,12 +267,12 @@
 
     /* Once the hamburger menu is clicked, is-responsive is added to the navbar and all the links are shown */
 
-    .navbar.is-responsive {
-        justify-content: flex-start;
+    .right.is-responsive {
+        flex-direction: column;
     }
 
     .navbar {
-        justify-content: space-between;
+        flex-direction: space-between;
     }
 
     .project-group-title {
