@@ -79,6 +79,7 @@ const Contributions = () => {
             }
         }).catch((e) => {
             console.error(e);
+            setDone(true);
         });
     }, []);
 
@@ -138,6 +139,9 @@ const Contributions = () => {
     }, [index]);
 
     return (
+                    
+            done ?
+                
         <div className="contribution">
             {contribution === "" ?
                 <div>Thanks for stopping by! Come learn more about me and my projects!</div> :
@@ -171,6 +175,12 @@ const Contributions = () => {
                     </div>
                 </div>}
         </div>
+            :
+            // loading circle
+        <div className="lds-ripple">
+            <div></div><div></div>
+        </div>
+            
     )
 }
 
