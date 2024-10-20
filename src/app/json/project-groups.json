@@ -1,23 +1,23 @@
 {
     "data": [
         {
-            "displaySection": "Web Development",
-            "info": "TypeScript, JavaScript, Python",
+            "displaySection": "Weaving the Web",
+            "info": "Web Dev: TypeScript, JavaScript, Python",
             "urlSegment": "web-development"
         },
         {
-            "displaySection": "Mobile Applications",
-            "info": "Flutter",
+            "displaySection": "Code On-The-Go", 
+            "info": "Mobile Dev: Flutter, React Native",
             "urlSegment": "mobile"
         },
         {
-            "displaySection": "Embedded Systems",
-            "info": "Arduino, ESP32, Circuitry, Hardware, Raspberry Pi",
+            "displaySection": "Wires Without Fires",
+            "info": "Embedded Systems: Arduino, ESP32, Circuitry, Hardware, Raspberry Pi",
             "urlSegment": "embedded"
         },
         {
-            "displaySection": "Game Development",
-            "info": "Web, Unreal Engine, Unity, Godot",
+            "displaySection": "Gaming Without Flaming",
+            "info": "Game Dev: Web, Unreal Engine, Unity, Godot",
             "urlSegment": "games"
         }
     ]

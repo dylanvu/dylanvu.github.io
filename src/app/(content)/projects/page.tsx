@@ -13,7 +13,7 @@ export default async function Projects() {
     return (
         <TransitionTemplate>
             <div>
-                <NavigationGroup sections={sections} title="Project Categories" />
+                <NavigationGroup sections={sections} title="What I've Built" />
                 <SurpriseMe sections={sections} />
             </div>
         </TransitionTemplate>

@@ -9,7 +9,7 @@ export default function ContactLinks() {
     return (
         <div>
             <div>
-                <ContentBlockTitle title="Resume" />
+                <ContentBlockTitle title="My Path So Far" />
                 <div className="content-block">
                     <div className="contact-icon-block">
                         <ContactIcon link="/Dylan_Vu_Resume.pdf" icon={faFile} id="resume"/>
@@ -17,7 +17,7 @@ export default function ContactLinks() {
                 </div>
             </div>
             <div>
-                <ContentBlockTitle title="Contact Me" />
+                <ContentBlockTitle title="Find Me Around" />
                 <div className="content-block">
                     <div className="contact-icon-block">
                         <ContactIcon link="mailto:dylanvu9@gmail.com" icon={faEnvelope} id="email"/>
