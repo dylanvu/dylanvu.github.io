@@ -9,6 +9,7 @@ import NavigationGroup, {
   navigationObject,
 } from "../components/NavigationGroup";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
+import ContactLinks from "@/components/contact/ContactLinks";
 
 interface highlightObject extends navigationObject {
   description: string;
@@ -87,7 +88,7 @@ export default function Home() {
               />
             );
           })}
-          <NavigationGroup sections={sections} title="Where To?" />
+          <ContactLinks/>
         </div>
       </div>
     </div>
