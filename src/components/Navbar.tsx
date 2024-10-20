@@ -40,10 +40,10 @@ const Navbar = () => {
     }
 
     const links = [
-        <Link className="nav-link" href="/about"><span className="name">About</span></Link>,
-        <Link className="nav-link" href="/projects"><span className="name">Projects</span></Link>,
-        <Link className="nav-link" href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span className="name">Resume</span></Link>,
-        <Link className="nav-link" href="/contact"><span className="name">Contact</span></Link>,
+        <Link className="nav-link" key= "/about" href="/about"><span className="name">About</span></Link>,
+        <Link className="nav-link" key= "/projects" href="/projects"><span className="name">Projects</span></Link>,
+        <Link className="nav-link" key= "/Dylan_Vu_Resume.pdf" href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span className="name">Resume</span></Link>,
+        <Link className="nav-link" key= "/contact" href="/contact"><span className="name">Contact</span></Link>,
     ]
 
     // colors of interest: #2081C3, #FE5D26, #6DA34D
