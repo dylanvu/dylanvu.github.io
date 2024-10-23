@@ -75,7 +75,7 @@ export default function Home() {
       <div className="content-container">
         {/* place all important content here */}
         <div className="content">
-          <ContentBlockTitle title={"What's I'm Up To"} />
+          <ContentBlockTitle title={"What I'm Up To"} />
           <Contributions />
           <ContentBlockTitle title={"Best of the Best"} />
           {highlights.map((item, index) => {
