@@ -8,6 +8,7 @@ import "../styles/project/project-highlight.css";
 import { navigationObject } from "../components/NavigationGroup";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import ContactLinks from "@/components/contact/ContactLinks";
+import NextUp from "@/components/NextUp";
 
 interface highlightObject extends navigationObject {
   description: string;
@@ -72,7 +73,8 @@ export default function Home() {
               />
             );
           })}
-          <ContactLinks/>
+          <NextUp />
+          <ContactLinks isHorizontal={true} />
         </div>
       </div>
     </div>
