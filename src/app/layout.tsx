@@ -14,9 +14,9 @@ config.autoAddCss = false;
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Dylan Vu',
-  description: 'Dylan Vu is a Computer Science student at the University of California, Irvine (UCI), and is an aspiring Software Developer. He does web development, software development, mobile application development, and game development. He is familiar with TypeScript, JavaScript, Flutter, and Python.',
-  keywords: "Dylan Vu, Portfolio, Software, Developer, Software Developer, Hackathon, Engineer, Software Engineer, NodeJS, TypeScript, JavaScript, Programming, UCSB, UCI, UC Irvine"
+  title: 'Dylan Vu - Software Developer | Web, Embedded, Mobile & Game Development',
+  description: "Dylan Vu is a Software Developer currently working for Amazon Health, One Medical that graduated from UC Irvine. He specializes in web, mobile, and game development with expertise in TypeScript, JavaScript, Flutter, and Python. Dylan's experience spans software engineering, hackathons, and projects in NodeJS and full-stack development.",
+  keywords: "Dylan Vu, Software Developer, Full-Stack Developer, Web Development, Mobile Development, Embedded Systems, IoT, Internet of Things, Game Development, Amazon Health, One Medical, UCI, UC Irvine, Computer Science, TypeScript, JavaScript, Flutter, Python, NodeJS, Hackathon, Software Engineering"
 }
 
 export default function RootLayout({
