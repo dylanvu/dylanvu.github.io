@@ -5,7 +5,7 @@ import { faEnvelope, faFile } from '@fortawesome/free-solid-svg-icons'
 import "../../styles/contact/contact.css"
 import ContactIcon from "./ContactIcon"
 
-export default function ContactLinks() {
+export default function ContactLinks({isHorizontal}: {isHorizontal?: boolean}) {
     return (
         <div>
             <div>
@@ -19,7 +19,7 @@ export default function ContactLinks() {
             <div>
                 <ContentBlockTitle title="Find Me Around" />
                 <div className="content-block">
-                    <div className="contact-icon-block">
+                    <div className={`contact-icon-block ${isHorizontal ? "horizontal" : null}`}>
                         <ContactIcon link="mailto:dylanvu9@gmail.com" icon={faEnvelope} id="email"/>
                         <ContactIcon link="https://github.com/dylanvu" icon={faGithub} id="github"/>
                         <ContactIcon link="https://www.linkedin.com/in/dylanvu9/" icon={faLinkedinIn} id="linkedin"/>

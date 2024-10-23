@@ -11,3 +11,20 @@
     display: grid;
     row-gap: 1rem;
 }
+
+.horizontal {
+    width: 30vw;
+    margin: auto;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* <--------------- mobile most of general rules ----------------> */
+
+@media screen and (max-width: 1023px) {
+    /* override horizontal rules */
+    .horizontal {
+        width: initial;
+        margin: initial;
+        grid-template-columns: initial;
+    }
+}
