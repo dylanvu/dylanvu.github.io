@@ -139,48 +139,45 @@ const Contributions = () => {
     }, [index]);
 
     return (
-                    
-            done ?
-                
-        <div className="contribution">
-            {contribution === "" ?
-                <div>Thanks for stopping by! Come learn more about me and my projects!</div> :
-                <div>
-                    The last thing I&apos;ve worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
-                </div>
-            }
-            {allRepos[0].name === "" || allRepos[0].url === "" || contribution === "" ?
-                null :
-                <div>
+        done ?
+            <div className="contribution">
+                {contribution === "" ?
+                    <div>Thanks for stopping by! Come learn more about me and my projects!</div> :
                     <div>
-                        Think that&apos;s pretty cool? Or maybe it wasn&apos;t your cup of tea?
+                        The last thing I&apos;ve worked on was <span><a href={repoLink} target="_blank" rel="noreferrer">{contribution}</a></span>! Check it out!
                     </div>
+                }
+                {allRepos[0].name === "" || allRepos[0].url === "" || contribution === "" ?
+                    null :
                     <div>
-                        What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
-                    </div>
-                    <div>
-                        Maybe you&apos;ll find even better something here?
-                    </div>
-                    <div>
-                        <a href={`https://github.com/${username}`} target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
-                            <FontAwesomeIcon
-                                icon={faGithub}
-                                id="github"
-                                className="githubIcon"
-                            />
-                        </a>
-                    </div>
-                    <div>
-                        Or take a look at my projects to find out!
-                    </div>
-                </div>}
-        </div>
-            :
+                        <div>
+                            Think that&apos;s pretty cool? Or maybe it wasn&apos;t your cup of tea?
+                        </div>
+                        <div>
+                            What about <span><a href={allRepos[index].url} target="_blank" rel="noreferrer">{backupRepo}</a></span>?
+                        </div>
+                        <div>
+                            Maybe you&apos;ll find even better something here?
+                        </div>
+                        <div>
+                            <a href={`https://github.com/${username}`} target="_blank" rel="noreferrer" style={{ color: "#f2f2f2" }}>
+                                <FontAwesomeIcon
+                                    icon={faGithub}
+                                    id="github"
+                                    className="githubIcon"
+                                />
+                            </a>
+                        </div>
+                        <div>
+                            Or take a look at my projects to find out!
+                        </div>
+                    </div>}
+            </div>
+        :
             // loading circle
-        <div className="lds-ripple">
-            <div></div><div></div>
-        </div>
-            
+            <div className="lds-ripple">
+                <div></div><div></div>
+            </div>
     )
 }
 
