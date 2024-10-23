@@ -5,9 +5,7 @@ import Contributions from "../components/Contributions";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import "../styles/project/project-highlight.css";
-import NavigationGroup, {
-  navigationObject,
-} from "../components/NavigationGroup";
+import { navigationObject } from "../components/NavigationGroup";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import ContactLinks from "@/components/contact/ContactLinks";
 
@@ -17,20 +15,6 @@ interface highlightObject extends navigationObject {
 }
 
 export default function Home() {
-  const sections: navigationObject[] = [
-    {
-      displaySection: "Projects",
-      urlSegment: "projects",
-    },
-    {
-      displaySection: "About",
-      urlSegment: "about",
-    },
-    {
-      displaySection: "Resume & Socials",
-      urlSegment: "contact",
-    },
-  ];
 
   const highlights: highlightObject[] = [
     {
@@ -75,7 +59,6 @@ export default function Home() {
       <div className="content-container">
         {/* place all important content here */}
         <div className="content">
-          <ContentBlockTitle title={"What I'm Up To"} />
           <Contributions />
           <ContentBlockTitle title={"Best of the Best"} />
           {highlights.map((item, index) => {
