@@ -3,7 +3,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import "../styles/contribution.css"
 import Paragraph from './content-block/Paragraph';
