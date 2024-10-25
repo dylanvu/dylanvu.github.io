@@ -16,12 +16,12 @@
     padding-bottom: 0.7rem;
 }
 
-.contribution a:visited {
+.contribution .repo-link:visited {
     color: #36393F;
     text-decoration: underline;
 }
 
-.contribution a {
+.contribution .repo-link {
     color: #36393F;
     text-decoration: underline;
 }
