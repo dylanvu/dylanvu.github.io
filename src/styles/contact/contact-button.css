@@ -30,3 +30,14 @@
     transform: translateX(0.5rem);
 }
 
+/* <--------------- mobile most of general rules ----------------> */
+
+@media screen and (max-width: 1023px) {
+    .contact-button {
+        width: 16rem;
+        font-size: 1.4rem;
+    }
+    .contact-button-icon {
+        font-size: 2rem;
+    }
+}
