@@ -155,7 +155,7 @@ const Contributions = () => {
   const currentPursuits = [
     "Software Dev Engineer I at Amazon Health (One Medical)",
     "Mentoring hackathons",
-    "Writing about mentoring hackathons on Medium! @MentorMementos",
+    "Writing about mentoring hackathons on Medium! @mentor-mementos",
   ];
 
   return (
