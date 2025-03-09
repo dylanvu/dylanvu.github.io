@@ -66,6 +66,7 @@ export default function HackathonMap() {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {/* for each hackathon location, create a marker */}
         {aggregatedHackathonLocations.map((aggregatedLocation, index) => {
           // figure out how large the marker should be
           // the more hackathons there are, the bigger the marker
@@ -90,7 +91,8 @@ export default function HackathonMap() {
                 iconSize: [markerLength, markerWidth],
               })}
             >
-              <Popup>
+              <Popup autoPan={false}>
+                {/* for every hackathon at this location, add the hackathon information */}
                 {aggregatedLocation.map((hackathon, hIndex) => (
                   <HackathonPopup
                     hackathon={hackathon}
@@ -106,6 +108,7 @@ export default function HackathonMap() {
   );
 }
 
-// TODO: add a way to toggle between hackathons and mentorship
-// TODO: add a slider to fast forward through the hackathons, pins can drop over time as an animation
+// TODO: When there are multiple hackathons at the same location, first create a circle of bubbles around the location, and when you click on one, it opens up a full-screen pop up with the information
+// TODO: add a way to toggle between hackathons and mentorship on the map, maybe different colors for each category
+// TODO: add a slider to fast forward through the hackathons, pins can drop over time as an animation progresses to show my hackathon journey
 // TODO: make a button to zoom in on California, and then out to the US
