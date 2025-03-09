@@ -30,11 +30,12 @@ function aggregateHackathons(
 ): HackathonInformation[][] {
   const locationsVisited: Record<string, HackathonInformation[]> = {};
   hackathons.forEach((hackathon) => {
-    // if the city and state combination hasn't been visited yet, create an array for it
-    if (!locationsVisited[hackathon.city + hackathon.state]) {
-      locationsVisited[hackathon.city + hackathon.state] = [];
+    // if the latitude and longitude combination hasn't been visited yet, create an array for it
+    const location = `${hackathon.latitude},${hackathon.longitude}`;
+    if (!locationsVisited[location]) {
+      locationsVisited[location] = [];
     }
-    locationsVisited[hackathon.city + hackathon.state].push(hackathon);
+    locationsVisited[location].push(hackathon);
   });
   // convert the object to an array of arrays
   const locations: HackathonInformation[][] = Object.values(locationsVisited);
