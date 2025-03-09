@@ -1,3 +1,4 @@
+"use client";
 import ProjectHighlight, {
   validHighlightExtensions,
 } from "@/components/project/ProjectHighlight";
@@ -10,13 +11,21 @@ import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import ContactLinks from "@/components/contact/ContactLinks";
 import NextUp from "@/components/NextUp";
 
+import dynamic from "next/dynamic";
+
+const HackathonMap = dynamic(
+  () => import("@/components/about/HackathonMap/HackathonMap"),
+  {
+    ssr: false,
+  }
+);
+
 interface highlightObject extends navigationObject {
   description: string;
   extension: validHighlightExtensions;
 }
 
 export default function Home() {
-
   const highlights: highlightObject[] = [
     {
       displaySection: "Amelia",
@@ -61,6 +70,7 @@ export default function Home() {
         {/* place all important content here */}
         <div className="content">
           <Contributions />
+          <HackathonMap />
           <ContentBlockTitle title={"Best of the Best"} />
           {highlights.map((item, index) => {
             return (
