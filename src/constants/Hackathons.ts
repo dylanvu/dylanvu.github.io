@@ -504,8 +504,8 @@ export const HackathonList: HackathonInformation[] = [
   },
   {
     name: "CalHacks 2024",
-    place: "Metreon",
-    city: "Berkeley",
+    place: "The Metreon",
+    city: "San Francisco",
     state: "CA",
     organizer: "CalHacks",
     type: "In-Person",
