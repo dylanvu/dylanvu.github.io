@@ -608,7 +608,7 @@ export const HackathonList: HackathonInformation[] = [
   },
   {
     name: "hack night",
-    place: "Irvine",
+    place: "Ziba Photo Video",
     city: "Irvine",
     state: "CA",
     organizer: "tech night",
@@ -616,8 +616,8 @@ export const HackathonList: HackathonInformation[] = [
     role: "Mentor",
     awards: [],
     date: new Date("2025-02-22T00:00:00.000Z"),
-    latitude: 33.6703,
-    longitude: -117.7773,
+    latitude: 33.6882,
+    longitude: -117.8585,
   },
   {
     name: "Athena Hacks 2025",
