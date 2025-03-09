@@ -71,7 +71,7 @@ export default function HackathonMap() {
         {aggregatedHackathonLocations.map((aggregatedLocation, index) => {
           // figure out how large the marker should be
           // the more hackathons there are, the bigger the marker
-          const factor = 2;
+          const factor = 2.2;
           const markerLength =
             defaultIconLength + aggregatedLocation.length * factor;
           const markerWidth =
@@ -111,5 +111,6 @@ export default function HackathonMap() {
 
 // TODO: When there are multiple hackathons at the same location, first create a circle of bubbles around the location, and when you click on one, it opens up a full-screen pop up with the information
 // TODO: add a way to toggle between hackathons and mentorship on the map, maybe different colors for each category
-// TODO: add a slider to fast forward through the hackathons, pins can drop over time as an animation progresses to show my hackathon journey
+// TODO: add a way to toggle between in-person and online hackathons
+// TODO: add a slider to fast forward through the hackathons, pins can drop over time as an animation progresses to show my hackathon journey over time
 // TODO: make a button to zoom in on California, and then out to the US
