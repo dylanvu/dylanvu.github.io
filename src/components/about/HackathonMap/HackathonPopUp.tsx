@@ -44,7 +44,10 @@ export default function HackathonPopup({
 
       {hackathon.github && hackathon.github.length > 0 && (
         <div>
-          <strong>GitHub Repositories:</strong>
+          <strong>
+            GitHub {hackathon.github.length > 1 ? "Repositories" : "Repository"}
+            :
+          </strong>
           <div>
             {hackathon.github.map((link, index) => (
               <div key={"github-" + index} style={{ marginBottom: "4px" }}>
