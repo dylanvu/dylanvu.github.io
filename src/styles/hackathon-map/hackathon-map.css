@@ -1,0 +1,8 @@
+.map-filter-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
