@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Oxygen&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -11,6 +11,10 @@
   --background-end-rgb: 255, 255, 255;
   --left-right-margin: 8%;
   --left-right-padding: 4%;
+  /* color themes */
+  --theme-red: #c0392b;
+  --theme-white: #f2f2f2;
+  --theme-dark-gray: #333;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -47,8 +51,8 @@ body {
   top: 0;
   left: 0;
   /* font-size: 20px; */
-  background-color: #f2f2f2;
-  font-family: 'Oxygen', sans-serif;
+  background-color: var(--theme-white);
+  font-family: "Oxygen", sans-serif;
   z-index: 1;
   font-size: 1.8rem;
   margin-left: var(--left-right-margin);
@@ -68,20 +72,20 @@ body {
 /* stolen from https: //stackoverflow.com/questions/68216941/how-to-make-a-css-shimmer-effect-on-image */
 .shimmer {
   display: inline-block;
-  -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/500% 100%;
+  -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/500%
+    100%;
   background-repeat: no-repeat;
   animation: shimmer 10s infinite 10s;
 }
 
 @keyframes shimmer {
-
   /* this will add a delay between each iteration: https: //css-tricks.com/css-keyframe-animation-delay-iterations/ */
   50% {
-    -webkit-mask-position: left
+    -webkit-mask-position: left;
   }
 
   100% {
-    -webkit-mask-position: left
+    -webkit-mask-position: left;
   }
 }
 
