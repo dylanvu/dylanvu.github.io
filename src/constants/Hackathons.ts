@@ -15,6 +15,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/to-mmy/you-tify/"],
     projectName: "You-tify",
     devpost: "https://devpost.com/software/you-tify",
+    duration: 36,
   },
   {
     name: "SacHacks 2021",
@@ -31,6 +32,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/sketchedout"],
     projectName: "SketchedOut",
     devpost: "https://devpost.com/software/sketchedout",
+    duration: 24,
   },
   {
     name: "LA Hacks 2021",
@@ -48,6 +50,7 @@ export const HackathonList: HackathonInformation[] = [
     projectName: "G.R.I.P. - Grasp Responsive Inflatable Pouch Controller",
     devpost:
       "https://devpost.com/software/grip-controller-grasp-responsive-inflatable-pouch-controller",
+    duration: 7 * 24,
   },
   {
     name: "Pinnacle 2021",
@@ -64,6 +67,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/pinnacle"],
     projectName: "G.R.I.P. Board",
     devpost: "https://devpost.com/software/g-r-i-p-board",
+    duration: 24,
   },
   {
     name: "HackHarvard 2021",
@@ -83,6 +87,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "F•Sync",
     devpost: "https://devpost.com/software/f-sync",
+    duration: 36,
   },
   {
     name: "CalHacks 2021",
@@ -102,6 +107,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "Geoverse",
     devpost: "https://devpost.com/software/geoverse",
+    duration: 36,
   },
   {
     name: "SB Hacks 2022",
@@ -122,6 +128,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "WordShip",
     devpost: "https://devpost.com/software/wordship",
+    duration: 36,
   },
   {
     name: "ZotHacks 2022",
@@ -135,6 +142,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2022-11-05T00:00:00.000Z"),
     latitude: 33.6405,
     longitude: -117.8443,
+    devpost: "https://zothacks-2022.devpost.com/",
+    duration: 12,
   },
   {
     name: "UCI WebJam 2022",
@@ -150,6 +159,7 @@ export const HackathonList: HackathonInformation[] = [
     longitude: -117.8443,
     github: ["https://github.com/tyleryy/Rattle"],
     projectName: "Rattle",
+    duration: 5 * 24,
   },
   {
     name: "IrvineHacks 2023",
@@ -171,6 +181,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "Caption",
     devpost: "https://devpost.com/software/caption",
+    duration: 36,
   },
   {
     name: "LA Hacks 2023",
@@ -190,6 +201,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "BlockStalk",
     devpost: "https://devpost.com/software/blockstalk",
+    duration: 36,
   },
   {
     name: "ZotHacks 2023",
@@ -203,6 +215,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2023-11-03T00:00:00.000Z"),
     latitude: 33.6405,
     longitude: -117.8443,
+    devpost: "https://zothacks-2023.devpost.com/",
+    duration: 12,
   },
   {
     name: "UCI WebJam 2023",
@@ -222,6 +236,7 @@ export const HackathonList: HackathonInformation[] = [
       "https://github.com/dylanvu/FishGPT-Backend",
     ],
     projectName: "FishGPT",
+    duration: 5 * 24,
   },
   {
     name: "React Jam Winter 2023",
@@ -237,6 +252,7 @@ export const HackathonList: HackathonInformation[] = [
     longitude: -122.4194,
     github: ["https://github.com/dylanvu/SweetStack"],
     projectName: "SweetStack",
+    duration: 12 * 24,
   },
   {
     name: "SB Hacks X 2024",
@@ -256,6 +272,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "Xpire",
     devpost: "https://devpost.com/software/xpire-gh31qp",
+    duration: 36,
   },
   {
     name: "RoseHacks 2024",
@@ -272,6 +289,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/KevinWu098/mammo"],
     projectName: "Mammo",
     devpost: "https://devpost.com/software/mammo",
+    duration: 24,
   },
   {
     name: "IrvineHacks 2024",
@@ -288,6 +306,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/Amelia-Software"],
     projectName: "Amelia",
     devpost: "https://devpost.com/software/amelia",
+    duration: 36,
   },
   {
     name: "QWER Hacks 2024",
@@ -307,6 +326,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "Trigger Finger Tango",
     devpost: "https://devpost.com/software/finger-guns",
+    duration: 36,
   },
   {
     name: "FullyHacks 2024",
@@ -322,6 +342,7 @@ export const HackathonList: HackathonInformation[] = [
     longitude: -117.8815,
     github: ["https://github.com/IdkwhatImD0ing/CyberTank"],
     projectName: "CyberTank",
+    duration: 24,
   },
   {
     name: "Hack Merced 2024",
@@ -338,6 +359,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/PyPointer"],
     projectName: "PyPointer",
     devpost: "https://devpost.com/software/pypointer",
+    duration: 36,
   },
   {
     name: "Uncommon Hacks 2024",
@@ -354,6 +376,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/Mad-Lyrics"],
     projectName: "Mad Lyrics",
     devpost: "https://devpost.com/software/mad-lyrics",
+    duration: 24,
   },
   {
     name: "YHack 2024",
@@ -370,6 +393,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/Tidbits"],
     projectName: "Tidbits",
     devpost: "https://devpost.com/software/tidbits-n9mrxa",
+    duration: 24,
   },
   {
     name: "DiamondHacks 2024",
@@ -386,6 +410,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/IdkwhatImD0ing/ABSeas"],
     projectName: "ABSeas",
     devpost: "https://devpost.com/software/abseas",
+    duration: 24,
   },
   {
     name: "Google AI x MHacks",
@@ -402,6 +427,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/KevinWu098/gemUI"],
     projectName: "GemUI",
     devpost: "https://devpost.com/software/gemui",
+    duration: 36,
   },
   {
     name: "LA Hacks 2024",
@@ -421,6 +447,7 @@ export const HackathonList: HackathonInformation[] = [
     ],
     projectName: "Haptic Definition",
     devpost: "https://devpost.com/software/haptic-definition",
+    duration: 36,
   },
   {
     name: "Davis Hacks 2024",
@@ -437,6 +464,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/IdkwhatImD0ing/DoggoAI"],
     projectName: "Doggo AI",
     devpost: "https://devpost.com/software/doggo-ai",
+    duration: 24,
   },
   {
     name: "VenusHacks 2024",
@@ -453,6 +481,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/Sechism-Sniper"],
     projectName: "Sechism Sniper",
     devpost: "https://devpost.com/software/discrimination-destroyer",
+    duration: 36,
   },
   {
     name: "STEMist Hacks III",
@@ -469,6 +498,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/Deduction-Buddy"],
     projectName: "Deduction Buddy",
     devpost: "https://devpost.com/software/deduction-buddy",
+    duration: 36,
   },
   {
     name: "The Future of Data 2024",
@@ -485,6 +515,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/StephanieNhiLe/drowsy-guard"],
     projectName: "DrowsyGuard",
     devpost: "https://devpost.com/software/drowsyguard",
+    duration: 11 * 24,
   },
   {
     name: "Cerebral Beach Hacks 2024",
@@ -501,6 +532,7 @@ export const HackathonList: HackathonInformation[] = [
     github: ["https://github.com/dylanvu/Marlin"],
     projectName: "Marlin",
     devpost: "https://devpost.com/software/marlin",
+    duration: 24,
   },
   {
     name: "CalHacks 2024",
@@ -514,6 +546,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2024-10-18T00:00:00.000Z"),
     latitude: 37.7833,
     longitude: -122.4036,
+    devpost: "https://cal-hacks-11-0.devpost.com/",
+    duration: 36,
   },
   {
     name: "SoCal Tech Week 2024",
@@ -527,6 +561,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2024-11-09T00:00:00.000Z"),
     latitude: 34.0224,
     longitude: -118.2851,
+    devpost: "https://socal-tech-week-2024.devpost.com/",
+    duration: 24,
   },
   {
     name: "HackCC 2024",
@@ -540,6 +576,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2024-11-09T00:00:00.000Z"),
     latitude: 33.6658,
     longitude: -117.9114,
+    devpost: "https://hackcc-23092.devpost.com/",
+    duration: 24,
   },
   {
     name: "UCI WebJam 2024",
@@ -553,6 +591,7 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2024-11-18T00:00:00.000Z"),
     latitude: 33.6405,
     longitude: -117.8443,
+    duration: 5 * 24,
   },
   {
     name: "Audrey Chen jia.seed Brainrot Hackathon",
@@ -566,6 +605,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2024-11-26T00:00:00.000Z"),
     latitude: 42.7011,
     longitude: -84.4817,
+    devpost: "https://brainrot-jia-seed-hackathon.devpost.com/",
+    duration: 6 * 24,
   },
   {
     name: "SB Hacks 2025",
@@ -579,6 +620,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-01-11T00:00:00.000Z"),
     latitude: 34.4129,
     longitude: -119.8489,
+    devpost: "https://sb-hacks-xi.devpost.com/",
+    duration: 24,
   },
   {
     name: "Nosu AI Hackathon",
@@ -592,6 +635,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-01-11T00:00:00.000Z"),
     latitude: 37.7749,
     longitude: -122.4194,
+    devpost: "https://nosu-ai-hackathon.devpost.com/",
+    duration: 6 * 24,
   },
   {
     name: "Irvine Hacks 2025",
@@ -605,6 +650,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-01-24T00:00:00.000Z"),
     latitude: 33.6405,
     longitude: -117.8443,
+    devpost: "https://irvinehacks-2025.devpost.com/",
+    duration: 36,
   },
   {
     name: "hack night",
@@ -618,6 +665,7 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-02-22T00:00:00.000Z"),
     latitude: 33.6882,
     longitude: -117.8585,
+    duration: 6,
   },
   {
     name: "Athena Hacks 2025",
@@ -631,6 +679,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-03-01T00:00:00.000Z"),
     latitude: 34.0224,
     longitude: -118.2851,
+    devpost: "https://athenahacks2025.devpost.com/",
+    duration: 24,
   },
   {
     name: "Beach Hacks 2025",
@@ -644,6 +694,8 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-03-22T00:00:00.000Z"),
     latitude: 33.7835,
     longitude: -118.1142,
+    devpost: "https://beachhacks-8-0.devpost.com/",
+    duration: 24,
   },
   {
     name: "BitHacks 2025",
@@ -657,6 +709,7 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-04-11T00:00:00.000Z"),
     latitude: 33.6405,
     longitude: -117.8443,
+    duration: 36,
   },
   {
     name: "LA Hacks 2025",
@@ -670,5 +723,6 @@ export const HackathonList: HackathonInformation[] = [
     date: new Date("2025-04-25T00:00:00.000Z"),
     latitude: 34.0689,
     longitude: -118.4452,
+    duration: 36,
   },
 ];

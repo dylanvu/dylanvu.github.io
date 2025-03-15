@@ -27,4 +27,5 @@ export default interface HackathonInformation {
   github?: string[]; // github link
   projectName?: string; // name of the project
   devpost?: string; // devpost link if applicable
+  duration: number; // duration of the hackathon in hours
 }
