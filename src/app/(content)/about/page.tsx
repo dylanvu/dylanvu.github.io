@@ -28,6 +28,21 @@ export default function About() {
     hackathon.role.toLowerCase().includes("mentor")
   );
 
+  // hours mentored
+  const hoursMentored = filteredHackathonMentorship.reduce(
+    (total, hackathon) => total + hackathon.duration,
+    0
+  );
+
+  // hours competed
+  const hoursCompeted = competedHackathons.reduce(
+    (total, hackathon) => total + hackathon.duration,
+    0
+  );
+
+  // total hours at hackathons
+  const totalHours = hoursCompeted + hoursMentored;
+
   // format the hackathons into bullet points
   const hackathonList = HackathonList.map((hackathon) => {
     // hackathon name
@@ -58,10 +73,19 @@ export default function About() {
       <div className="content-block">
         <ContentBlockTitle title="Hackathon Statistics" />
         {/* we are not using ContentBlock here because I want to animate the numbers counting up */}
-        <div>Participated: {hackathonList.length}</div>
-        <div>Competed: {competedHackathons.length}</div>
+        <div>
+          Participated: {hackathonList.length} hackathons, ~
+          {totalHours.toLocaleString()} hours
+        </div>
+        <div>
+          Competed: {competedHackathons.length} hackathons, ~
+          {hoursCompeted.toLocaleString()} hours
+        </div>
         <div>Awards: {filteredHackathonWinners.length}</div>
-        <div>Mentored: {filteredHackathonMentorship.length}</div>
+        <div>
+          Mentored: {filteredHackathonMentorship.length} hackathons, ~
+          {hoursMentored.toLocaleString()} hours
+        </div>
       </div>
       <ContentBlock
         title="Hackathon List"
