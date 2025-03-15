@@ -1,116 +1,115 @@
 :root {
-    --contribution-margin-left-right: 15%;
-    --contribution-padding-top-bottom: 1rem;
+  --contribution-margin-left-right: 15%;
+  --contribution-padding-top-bottom: 1rem;
 }
 
 .contribution {
-    color: #36393F;
-    padding-top: var(--contribution-padding-top-bottom);
-    padding-bottom: var(--contribution-padding-top-bottom);
-    margin-left: var(--contribution-margin-left-right);
-    margin-right: var(--contribution-margin-left-right);
+  color: var(--theme-background-color);
+  padding-top: var(--contribution-padding-top-bottom);
+  padding-bottom: var(--contribution-padding-top-bottom);
+  margin-left: var(--contribution-margin-left-right);
+  margin-right: var(--contribution-margin-left-right);
 }
 
 .contribution div {
-    padding-top: 0.7rem;
-    padding-bottom: 0.7rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
 }
 
 .contribution .repo-link:visited {
-    color: #36393F;
-    text-decoration: underline;
+  color: var(--theme-background-color);
+  text-decoration: underline;
 }
 
 .contribution .repo-link {
-    color: #36393F;
-    text-decoration: underline;
+  color: var(--theme-background-color);
+  text-decoration: underline;
 }
 
 .githubIcon {
-    color: #36393f;
-    font-size: 6rem;
+  color: var(--theme-background-color);
+  font-size: 6rem;
 }
 
 .githubIcon:hover {
-    transition: transform .7s ease-in-out;
-    transform: rotate(720deg);
+  transition: transform 0.7s ease-in-out;
+  transform: rotate(720deg);
 }
 
 /* <--------------- mobile most of general rules ----------------> */
 @media screen and (max-width: 1023px) {
-    :root {
-        --contribution-margin-left-right: 0%;
-        --contribution-padding-top-bottom: 0.7rem;
-    }
+  :root {
+    --contribution-margin-left-right: 0%;
+    --contribution-padding-top-bottom: 0.7rem;
+  }
 
-    .githubIcon {
-        color: #36393f;
-        font-size: 3.5rem;
-    }
-
+  .githubIcon {
+    color: var(--theme-background-color);
+    font-size: 3.5rem;
+  }
 }
 
 /* <--------------- loading circle from loading.io ----------------> */
 
 .lds-ripple {
-    /* change color here */
-    color: #1c4c5b
+  /* change color here */
+  color: #1c4c5b;
 }
 
 .lds-ripple,
 .lds-ripple div {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .lds-ripple {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
 }
 
 .lds-ripple div {
-    position: absolute;
-    border: 4px solid currentColor;
-    opacity: 1;
-    border-radius: 50%;
-    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  position: absolute;
+  border: 4px solid currentColor;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
 .lds-ripple div:nth-child(2) {
-    animation-delay: -0.5s;
+  animation-delay: -0.5s;
 }
 
 @keyframes lds-ripple {
-    0% {
-        top: 36px;
-        left: 36px;
-        width: 8px;
-        height: 8px;
-        opacity: 0;
-    }
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+  }
 
-    4.9% {
-        top: 36px;
-        left: 36px;
-        width: 8px;
-        height: 8px;
-        opacity: 0;
-    }
+  4.9% {
+    top: 36px;
+    left: 36px;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+  }
 
-    5% {
-        top: 36px;
-        left: 36px;
-        width: 8px;
-        height: 8px;
-        opacity: 1;
-    }
+  5% {
+    top: 36px;
+    left: 36px;
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+  }
 
-    100% {
-        top: 0;
-        left: 0;
-        width: 80px;
-        height: 80px;
-        opacity: 0;
-    }
+  100% {
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
 }

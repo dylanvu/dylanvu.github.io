@@ -1,6 +1,6 @@
 .contact-button {
   width: 20rem;
-  background-color: #36393f;
+  background-color: var(--theme-background-color);
   border-radius: 12px;
   margin: auto;
   display: grid;

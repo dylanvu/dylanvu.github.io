@@ -1,40 +1,40 @@
 :root {
-    --content-block-title-left-right-padding: 2rem;
-    --content-block-top-bottom-padding: 1rem;
+  --content-block-title-left-right-padding: 2rem;
+  --content-block-top-bottom-padding: 1rem;
 }
 
 .content-block {
-    padding-top: var(--content-block-top-bottom-padding);
-    padding-bottom: var(--content-block-top-bottom-padding);
+  padding-top: var(--content-block-top-bottom-padding);
+  padding-bottom: var(--content-block-top-bottom-padding);
 }
 
 .content-block-title {
-    padding-top: 10px;
-    width: fit-content;
-    padding-left: var(--content-block-title-left-right-padding);
-    padding-right: var(--content-block-title-left-right-padding);
-    border-bottom: 0.25rem solid;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    text-align: center;
-    outline: none;
-    font-size: 3.5rem;
-    color: #36393f;
-    background-color: inherit;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1rem;
+  padding-top: 10px;
+  width: fit-content;
+  padding-left: var(--content-block-title-left-right-padding);
+  padding-right: var(--content-block-title-left-right-padding);
+  border-bottom: 0.25rem solid;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: center;
+  outline: none;
+  font-size: 3.5rem;
+  color: var(--theme-background-color);
+  background-color: inherit;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1rem;
 }
 
 /* <--------------- mobile most of general rules ----------------> */
 @media screen and (max-width: 1023px) {
-    :root {
-        --contribution-margin-left-right: 0%;
-    }
+  :root {
+    --contribution-margin-left-right: 0%;
+  }
 
-    .content-block-title {
-        font-size: 2.5rem;
-        border-bottom: 0.15rem solid;
-    }
+  .content-block-title {
+    font-size: 2.5rem;
+    border-bottom: 0.15rem solid;
+  }
 }

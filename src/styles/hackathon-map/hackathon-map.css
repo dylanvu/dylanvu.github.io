@@ -1,8 +1,28 @@
 .map-filter-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   padding-left: 4rem;
   padding-right: 4rem;
+  max-width: 70%;
+  margin: auto;
+}
+
+.map-filter-row {
+  flex: 1;
+}
+
+.map-filter-row-selection-container {
+  display: flex;
+  flex-direction: row;
+}
+
+/* on small screens, switch to a vertical layout */
+@media screen and (max-width: 768px) {
+  .map-filter-row-selection-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 100%;
+  }
 }

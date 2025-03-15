@@ -34,7 +34,7 @@
   align-items: center;
   font-size: 30px;
   display: flex;
-  color: #36393f;
+  color: var(--theme-background-color);
   text-align: center;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -59,7 +59,7 @@
 
 .nav-link:hover .icon {
   cursor: pointer;
-  color: #36393f;
+  color: var(--theme-background-color);
 }
 
 .icon:active {
@@ -74,7 +74,7 @@
 }
 
 .nav-link:hover .name {
-  color: #36393f;
+  color: var(--theme-background-color);
 }
 
 .nav-link span {
@@ -83,8 +83,8 @@
 }
 
 .nav-link:hover {
-  background-color: #ddd;
-  color: black;
+  background-color: var(--theme-white-hover);
+  color: var(--theme-black-hover);
 }
 
 /* <--------------- HAMBURGER AND ANIMATION ----------------> */
