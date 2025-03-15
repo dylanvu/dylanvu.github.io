@@ -3,19 +3,24 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  justify-content: center;
   padding-left: 4rem;
   padding-right: 4rem;
-  max-width: 70%;
+  min-width: 70%;
   margin: auto;
 }
 
 .map-filter-row {
   flex: 1;
+  width: 100%;
 }
 
 .map-filter-row-selection-container {
   display: flex;
   flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
 /* on small screens, switch to a vertical layout */

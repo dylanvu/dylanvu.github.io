@@ -13,7 +13,15 @@ import HackathonInformation, {
   isHackathonType,
 } from "@/interfaces/HackathonInformation";
 import HackathonPopup from "./HackathonPopUp";
+import FilterOption, { FilterOptionType } from "./FilterOption";
 import { useState } from "react";
+
+import {
+  faSignal,
+  faPerson,
+  faPersonChalkboard,
+  faLaptop,
+} from "@fortawesome/free-solid-svg-icons";
 
 import "../../../styles/hackathon-map/hackathon-map.css";
 
@@ -45,13 +53,25 @@ function aggregateHackathons(
   const locationsVisited: Record<string, HackathonInformation[]> = {};
   // filter out hackathons that fit the aggregation options
   const filteredHackathons = hackathons.filter((hackathon) => {
-    // return true if the options are true
-    // first, filter by role
-    // see if the current hackathon role is within the aggregationOption roleType
-    let roleMatch = aggregationOptions.roleFilters.has(hackathon.role);
-
-    // then filter by hackathon type
-    let typeMatch = aggregationOptions.hackathonTypeFilters.has(hackathon.type);
+    // if there are no filters active, return true
+    if (
+      aggregationOptions.roleFilters.size === 0 &&
+      aggregationOptions.hackathonTypeFilters.size === 0
+    ) {
+      return true;
+    }
+    // otherwise, perform an AND across categories, and an OR within the same filter category
+    let roleMatch = true;
+    let typeMatch = true;
+    if (aggregationOptions.roleFilters.size > 0) {
+      // first, filter by role
+      // see if the current hackathon role is within the aggregationOption roleType
+      roleMatch = aggregationOptions.roleFilters.has(hackathon.role);
+    }
+    if (aggregationOptions.hackathonTypeFilters.size > 0) {
+      // then filter by hackathon type
+      typeMatch = aggregationOptions.hackathonTypeFilters.has(hackathon.type);
+    }
     return roleMatch && typeMatch;
   });
 
@@ -78,25 +98,20 @@ export default function HackathonMap() {
   const startingMapPosition = californiaPosition;
 
   // checkbox states
-  const [roleFilters, setRoleFilters] = useState<Set<HackathonRole>>(
-    new Set(["Mentor", "Participant"])
-  );
+  const [roleFilters, setRoleFilters] = useState<Set<HackathonRole>>(new Set());
   const [hackathonTypeFilters, setHackathonTypeFilters] = useState<
     Set<HackathonType>
-  >(new Set(["In-Person", "Online"]));
+  >(new Set());
 
   const aggregatedHackathonLocations = aggregateHackathons(HackathonList, {
     roleFilters: roleFilters,
     hackathonTypeFilters: hackathonTypeFilters,
   });
 
-  function handleFilterChange(
-    event: React.ChangeEvent<HTMLInputElement>,
-    value: HackathonRole | HackathonType
-  ) {
+  function handleFilterChange(isSelected: boolean, value: FilterOptionType) {
     if (isHackathonRole(value)) {
       // if the checkbox is checked, add or remove the role from the set
-      if (event.target.checked) {
+      if (isSelected) {
         setRoleFilters((prev) => {
           const newSet = new Set(prev);
           newSet.add(value);
@@ -111,7 +126,7 @@ export default function HackathonMap() {
       }
     } else if (isHackathonType(value)) {
       // if the checkbox is checked, add or remove the type from the set
-      if (event.target.checked) {
+      if (isSelected) {
         setHackathonTypeFilters((prev) => {
           const newSet = new Set(prev);
           newSet.add(value);
@@ -130,49 +145,41 @@ export default function HackathonMap() {
   return (
     <div>
       <ContentBlockTitle title={"Hackathon Map"} />
-      {/* TOOD: Make this into a accordion or something */}
-      <div>Show:</div>
       <div className="map-filter-container">
-        <span>
-          <input
-            type="checkbox"
-            id="hacker"
-            name="hacker"
-            checked={roleFilters.has("Participant")}
-            onChange={(e) => handleFilterChange(e, "Participant")}
-          />
-          <label htmlFor="hacker">Hacker</label>
-        </span>
-        <span>
-          <input
-            type="checkbox"
-            id="mentorship"
-            name="mentorship"
-            checked={roleFilters.has("Mentor")}
-            onChange={(e) => handleFilterChange(e, "Mentor")}
-          />
-          <label htmlFor="mentorship">Mentor</label>
-        </span>
-        <span>
-          <input
-            type="checkbox"
-            id="inpersonHackathons"
-            name="inpersonHackathons"
-            checked={hackathonTypeFilters.has("In-Person")}
-            onChange={(e) => handleFilterChange(e, "In-Person")}
-          />
-          <label htmlFor="inpersonHackathons">In-Person</label>
-        </span>
-        <span>
-          <input
-            type="checkbox"
-            id="onlineHackathons"
-            name="onlineHackathons"
-            checked={hackathonTypeFilters.has("Online")}
-            onChange={(e) => handleFilterChange(e, "Online")}
-          />
-          <label htmlFor="onlineHackathons">Online</label>
-        </span>
+        <div className="map-filter-row">
+          <div>Role</div>
+          <div className="map-filter-row-selection-container">
+            <FilterOption
+              label="Hacker"
+              filterOptionType="Participant"
+              onClick={handleFilterChange}
+              icon={faLaptop}
+            />
+            <FilterOption
+              label="Mentor"
+              filterOptionType="Mentor"
+              onClick={handleFilterChange}
+              icon={faPersonChalkboard}
+            />
+          </div>
+        </div>
+        <div className="map-filter-row">
+          <div>Format</div>
+          <div className="map-filter-row-selection-container">
+            <FilterOption
+              label="In-Person"
+              filterOptionType="In-Person"
+              onClick={handleFilterChange}
+              icon={faPerson}
+            />
+            <FilterOption
+              label="Online"
+              filterOptionType="Online"
+              onClick={handleFilterChange}
+              icon={faSignal}
+            />
+          </div>
+        </div>
       </div>
 
       <MapContainer
@@ -180,7 +187,7 @@ export default function HackathonMap() {
         zoom={startingMapPosition.zoom}
         scrollWheelZoom={true}
         style={{
-          height: "730px",
+          height: "650px",
         }}
       >
         <TileLayer
