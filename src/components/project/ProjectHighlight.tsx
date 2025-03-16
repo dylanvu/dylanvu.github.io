@@ -6,7 +6,7 @@ import { navigationObject } from "../NavigationGroup";
 import "../../styles/project/project-highlight.css";
 import Image from "next/image";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 export type validHighlightExtensions = "png" | "gif" | "jpg";
@@ -77,11 +77,12 @@ export default function ProjectHighlight({
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
+      className="project-highlight-group"
     >
-      <div className="project-highlight-group">
+      <span>
         {first}
         {second}
-      </div>
+      </span>
     </motion.div>
   );
 }

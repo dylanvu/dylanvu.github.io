@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import SpecialtyCard from "./SpecialityCard";
 import "@/styles/about/carousel.css";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 
 export default function SpecialityCarousel() {
   // carouselIndex[0] is "current"

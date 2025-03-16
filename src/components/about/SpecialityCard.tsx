@@ -1,6 +1,6 @@
 import "@/styles/content-block/paragraph.css";
 import "@/styles/content-block/content-block.css";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 // import "../../styles/content-block/paragraph.css";
 
