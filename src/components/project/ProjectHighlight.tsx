@@ -78,9 +78,10 @@ export default function ProjectHighlight({
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
     >
-      <div className="project-highlight-group"></div>
-      {first}
-      {second}
+      <div className="project-highlight-group">
+        {first}
+        {second}
+      </div>
     </motion.div>
   );
 }
