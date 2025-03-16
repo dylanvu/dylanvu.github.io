@@ -1,17 +1,17 @@
 {
-    "title": "Flutter",
-    "data": [
-        {
-            "displaySection": "Thales Undisclosed App",
-            "urlSegment": "thales"
-        },
-        {
-            "displaySection": "Zot Class Mobile (Mentor)",
-            "urlSegment": "zotclass"
-        },
-        {
-            "displaySection": "Geoverse",
-            "urlSegment": "geoverse"
-        }
-    ]
+  "title": "Flutter",
+  "data": [
+    {
+      "displaySection": "Thales Undisclosed App",
+      "urlSegment": "thales"
+    },
+    {
+      "displaySection": "Zot Class Mobile (Mentor)",
+      "urlSegment": "zotclass"
+    },
+    {
+      "displaySection": "Geoverse",
+      "urlSegment": "geoverse"
+    }
+  ]
 }

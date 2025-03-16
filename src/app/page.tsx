@@ -17,7 +17,7 @@ const HackathonMap = dynamic(
   () => import("@/components/about/HackathonMap/HackathonMap"),
   {
     ssr: false,
-  }
+  },
 );
 
 interface highlightObject extends navigationObject {

@@ -1,7 +1,9 @@
-import { handleGenerateStaticParams } from "./util"
+import { handleGenerateStaticParams } from "./util";
 // we need this layout.tsx: https://github.com/vercel/next.js/issues/42840#issuecomment-1352105907
 export async function generateStaticParams() {
-    return await handleGenerateStaticParams()
+  return await handleGenerateStaticParams();
 }
 
-export default function ({ children }: { children: any }) { return children }
+export default function ({ children }: { children: any }) {
+  return children;
+}

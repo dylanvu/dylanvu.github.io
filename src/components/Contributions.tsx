@@ -30,7 +30,7 @@ const Contributions = () => {
         new Date().getTime(),
       {
         params: { per_page: 200 },
-      }
+      },
     )
       .then((res) => {
         // console.log(res.data);

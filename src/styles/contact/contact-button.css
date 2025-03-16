@@ -11,7 +11,9 @@
   grid-template-columns: 3fr 1fr;
   padding: 0.5rem;
   text-decoration: none;
-  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out,
+  transition:
+    transform 0.3s ease-in-out,
+    color 0.3s ease-in-out,
     background-color 0.3s ease-in-out;
   column-gap: 0.5rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);

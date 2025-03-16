@@ -39,7 +39,9 @@
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   text-decoration: none;
-  transition: background-color 0.25s, color 0.25s;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
   cursor: pointer;
   padding-bottom: 0.75rem;
   padding-top: 0.75rem;
@@ -70,7 +72,9 @@
   color: var(--theme-white);
   text-align: center;
   text-decoration: none;
-  transition: background-color 0.25s, color 0.25s;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
 }
 
 .nav-link:hover .name {

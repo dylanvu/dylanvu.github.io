@@ -17,7 +17,7 @@ export default function TypeArray({
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => Math.round(latest));
   const displayText = useTransform(rounded, (latest) =>
-    baseText.get().slice(0, latest)
+    baseText.get().slice(0, latest),
   );
   const updatedThisRound = useMotionValue(true);
 

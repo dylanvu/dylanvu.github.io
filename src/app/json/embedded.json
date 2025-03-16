@@ -1,21 +1,21 @@
 {
-    "title": "Embedded Systems",
-    "data": [
-        {
-            "displaySection": "Amelia",
-            "urlSegment": "amelia"
-        },
-        {
-            "displaySection": "BlockStalk",
-            "urlSegment": "blockstalk"
-        },
-        {
-            "displaySection": "Caption",
-            "urlSegment": "caption"
-        },
-        {
-            "displaySection": "GRIP Board",
-            "urlSegment": "grip-board"
-        }
-    ]
+  "title": "Embedded Systems",
+  "data": [
+    {
+      "displaySection": "Amelia",
+      "urlSegment": "amelia"
+    },
+    {
+      "displaySection": "BlockStalk",
+      "urlSegment": "blockstalk"
+    },
+    {
+      "displaySection": "Caption",
+      "urlSegment": "caption"
+    },
+    {
+      "displaySection": "GRIP Board",
+      "urlSegment": "grip-board"
+    }
+  ]
 }

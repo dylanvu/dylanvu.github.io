@@ -1,9 +1,9 @@
 .carousel-button {
-    padding: 1rem;
-    margin: 1rem;
-    background-color: beige;
+  padding: 1rem;
+  margin: 1rem;
+  background-color: beige;
 }
 
 .carousel {
-    min-height: 70vh;
+  min-height: 70vh;
 }

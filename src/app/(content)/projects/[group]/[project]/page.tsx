@@ -33,7 +33,7 @@ export default async function ProjectGroupPage({
   try {
     projectsFile = await fs.readFile(
       process.cwd() + `/src/app/txt/projects/${group}/${project}.txt`,
-      "utf8"
+      "utf8",
     );
   } catch (e) {
     // navigate to 404
