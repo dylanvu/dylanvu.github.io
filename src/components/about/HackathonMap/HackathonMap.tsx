@@ -243,7 +243,6 @@ export default function HackathonMap() {
   );
 }
 
-// TODO: make the map mobile compatible... ugh.
 // TODO: When there are multiple hackathons at the same location, first create a circle of bubbles around the location, and when you click on one, it opens up a full-screen pop up with the information
 // TODO: create fancy animations for the pins upon rerender
 // TODO: add a slider to fast forward through the hackathons, pins can drop over time as an animation progresses to show my hackathon journey over time
