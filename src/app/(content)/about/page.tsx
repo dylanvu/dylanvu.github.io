@@ -79,9 +79,9 @@ export default function About() {
         </div>
         <div>
           Competed: {competedHackathons.length} hackathons, ~
-          {hoursCompeted.toLocaleString()} hours
+          {hoursCompeted.toLocaleString()} hours,{" "}
+          {filteredHackathonWinners.length} awards
         </div>
-        <div>Awards: {filteredHackathonWinners.length}</div>
         <div>
           Mentored: {filteredHackathonMentorship.length} hackathons, ~
           {hoursMentored.toLocaleString()} hours
