@@ -20,7 +20,7 @@ export async function generateStaticParams({
 export default async function ProjectGroupPage({
   params,
 }: {
-  params: { group: string; project: string };
+  params: Promise<{ group: string; project: string }>;
 }) {
   // generate project pages based on the txt file located in public
 

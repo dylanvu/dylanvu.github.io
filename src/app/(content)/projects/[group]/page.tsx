@@ -18,9 +18,9 @@ export async function generateStaticParams() {
 export default async function ProjectGroupPage({
   params,
 }: {
-  params: {
+  params: Promise<{
     group: string;
-  };
+  }>;
 }) {
   // fetch the project data
   const projectParams = await params;
