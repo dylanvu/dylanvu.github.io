@@ -79,10 +79,8 @@ export default function ProjectHighlight({
       viewport={{ once: true }}
       className="project-highlight-group"
     >
-      <span>
-        {first}
-        {second}
-      </span>
+      {first}
+      {second}
     </motion.div>
   );
 }

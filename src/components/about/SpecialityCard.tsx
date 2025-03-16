@@ -30,25 +30,24 @@ export default function SpecialtyCard({
   }
   return (
     <motion.div
+      className="content-block"
       initial={{ x: animationOffset, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -1 * animationOffset, opacity: 0 }}
     >
-      <div className="content-block">
-        <div>{title}</div>
-        <div className="paragraph">Specializing in...</div>
-        {skills.map((skill) => (
-          <div className="paragraph" key={skill}>
-            <li className="paragraph-bullet">{skill}</li>
-          </div>
-        ))}
-        <div className="paragraph">Proven by...</div>
-        {proof.map((evidence) => (
-          <div className="paragraph" key={evidence}>
-            <li className="paragraph-bullet">{evidence}</li>
-          </div>
-        ))}
-      </div>
+      <div>{title}</div>
+      <div className="paragraph">Specializing in...</div>
+      {skills.map((skill) => (
+        <div className="paragraph" key={skill}>
+          <li className="paragraph-bullet">{skill}</li>
+        </div>
+      ))}
+      <div className="paragraph">Proven by...</div>
+      {proof.map((evidence) => (
+        <div className="paragraph" key={evidence}>
+          <li className="paragraph-bullet">{evidence}</li>
+        </div>
+      ))}
     </motion.div>
   );
 }

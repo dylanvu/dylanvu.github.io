@@ -29,8 +29,7 @@ export default function CursorBlinker({
       variants={cursorVariants}
       animate="blinking"
       // className="inline-block h-5 w-[1px] translate-y-1 bg-slate-900"
-    >
-      <div className={`typing-cursor ${className}`} />
-    </motion.div>
+      className={`typing-cursor ${className}`}
+    />
   );
 }
