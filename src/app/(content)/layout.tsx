@@ -1,15 +1,12 @@
 "use client";
 import Navbar from "@/components/Navbar";
-import { AnimatePresence, motion } from "motion/react";
-import { usePathname } from "next/navigation";
+import { AnimatePresence } from "motion/react";
 
 export default function PageLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
     <div>
       <Navbar />

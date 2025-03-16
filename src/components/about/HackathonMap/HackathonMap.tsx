@@ -90,7 +90,7 @@ function aggregateHackathons(
 }
 
 export default function HackathonMap() {
-  const usPosition: MapPosition = { zoom: 5, center: [37.0902, -95.8129] };
+  // const usPosition: MapPosition = { zoom: 5, center: [37.0902, -95.8129] };
   const californiaPosition: MapPosition = {
     zoom: 6,
     center: [37.7833, -122.4036],

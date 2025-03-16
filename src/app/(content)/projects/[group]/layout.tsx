@@ -4,6 +4,6 @@ export async function generateStaticParams() {
   return await handleGenerateStaticParams();
 }
 
-export default function ({ children }: { children: any }) {
+export default function ({ children }: { children: React.ReactNode }) {
   return children;
 }

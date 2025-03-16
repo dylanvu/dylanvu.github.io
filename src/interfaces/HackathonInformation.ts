@@ -4,11 +4,11 @@ export type HackathonType = "Online" | "In-Person";
 export type HackathonRole = "Mentor" | "Participant";
 
 // create typeguards for the types
-export function isHackathonType(value: any): value is HackathonType {
+export function isHackathonType(value: unknown): value is HackathonType {
   return value === "Online" || value === "In-Person";
 }
 
-export function isHackathonRole(value: any): value is HackathonRole {
+export function isHackathonRole(value: unknown): value is HackathonRole {
   return value === "Mentor" || value === "Participant";
 }
 

@@ -30,7 +30,7 @@ const Contributions = () => {
         new Date().getTime(),
       {
         params: { per_page: 200 },
-      },
+      }
     )
       .then((res) => {
         // console.log(res.data);
@@ -48,8 +48,7 @@ const Contributions = () => {
             ) {
               name = "this website";
             } else {
-              let nameArr = name.split("-");
-              let i = 0;
+              const nameArr = name.split("-");
               name = "";
               nameArr.forEach((namePart: string) => {
                 if (i) {
@@ -111,7 +110,7 @@ const Contributions = () => {
     let i = 0;
     // Animate "typing"
     setTimeout(() => {
-      let textHandle = setInterval(() => {
+      const textHandle = setInterval(() => {
         setbackupRepo(currText);
         i++;
         currText = currText + text[i];
@@ -130,7 +129,7 @@ const Contributions = () => {
     let i = text.length;
     // Animate "deletion"
     setTimeout(() => {
-      let textHandle = setInterval(() => {
+      const textHandle = setInterval(() => {
         setbackupRepo(text.slice(0, i));
         i--;
         if (i < 0) {

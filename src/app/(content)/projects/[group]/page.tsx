@@ -1,5 +1,4 @@
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
-import { navigationObject } from "@/components/NavigationGroup";
 import ProjectCard, {
   ProjectCardInterface,
 } from "@/components/project/ProjectCard";
@@ -30,9 +29,9 @@ export default async function ProjectGroupPage({
   try {
     projectsFile = await fs.readFile(
       process.cwd() + `/src/app/json/${projectGroup}.json`,
-      "utf8",
+      "utf8"
     );
-  } catch (e) {
+  } catch {
     // navigate to 404
     redirect("/404");
   }

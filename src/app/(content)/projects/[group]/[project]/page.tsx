@@ -1,5 +1,4 @@
 import "../../../../../styles/content-block/content-block.css";
-import { navigationObject } from "@/components/NavigationGroup";
 import { promises as fs } from "fs";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import Paragraph from "@/components/content-block/Paragraph";
@@ -33,9 +32,9 @@ export default async function ProjectGroupPage({
   try {
     projectsFile = await fs.readFile(
       process.cwd() + `/src/app/txt/projects/${group}/${project}.txt`,
-      "utf8",
+      "utf8"
     );
-  } catch (e) {
+  } catch {
     // navigate to 404
     redirect("/404");
   }

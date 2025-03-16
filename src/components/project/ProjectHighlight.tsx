@@ -67,7 +67,7 @@ export default function ProjectHighlight({
 
   if (index % 2 && !isSmallScreen) {
     // swap order
-    let temp = first;
+    const temp = first;
     first = second;
     second = temp;
   }

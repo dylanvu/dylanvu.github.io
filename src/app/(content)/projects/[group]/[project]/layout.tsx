@@ -1,3 +1,4 @@
+import React from "react";
 import { handleGenerateStaticParams } from "./util";
 
 // dynamically generate each project page from the parameter
@@ -10,6 +11,6 @@ export async function generateStaticParams({
   return await handleGenerateStaticParams(group);
 }
 
-export default function ({ children }: { children: any }) {
+export default function ({ children }: { children: React.ReactNode }) {
   return children;
 }

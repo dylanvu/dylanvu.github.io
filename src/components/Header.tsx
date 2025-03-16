@@ -11,7 +11,7 @@ const Header = () => {
     // Play video and animate header typing
     // React has an issue with the muted in the video tag not being set properly.
     document.addEventListener("DOMContentLoaded", () => {
-      let video = document.getElementById("video");
+      const video = document.getElementById("video");
       if (video) {
         (video as HTMLVideoElement).muted = true;
         (video as HTMLVideoElement).play(); // Might be necessary for chrome

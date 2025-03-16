@@ -3,11 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { useState } from "react";
-// Import font awesome icons. Follow these instructions: https://fontawesome.com/how-to-use/on-the-web/using-with/react
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import "../styles/navbar.css";
 
 // The eslint-disable-next-line is necessary because these are <a> and not <button> so tons of warnings pop up.
@@ -15,18 +10,6 @@ import "../styles/navbar.css";
 const Navbar = () => {
   const [responsiveClass, setResponsive] = useState("inactive");
   const [showLinks, setShowLinks] = useState(false);
-
-  function scrolling(id: string) {
-    if (responsiveClass === "is-responsive") {
-      setResponsive("inactive");
-    }
-    let scrollable = document.getElementById(id);
-    if (scrollable) {
-      scrollable.scrollIntoView({ behavior: "smooth" });
-    } else {
-      console.error(`could not find scrollable with id ${id}`);
-    }
-  }
 
   function toggleBurger() {
     // console.log("Burger clicked");
