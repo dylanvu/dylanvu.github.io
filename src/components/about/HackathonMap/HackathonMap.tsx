@@ -182,10 +182,10 @@ export default function HackathonMap() {
             />
           </div>
         </div>
-        <div className="map-filter-row">
-          Showing {shownHackathons.length} out of {HackathonList.length}{" "}
-          hackathons
-        </div>
+      </div>
+      <div className="map-results-container">
+        Showing {shownHackathons.length} out of {HackathonList.length}{" "}
+        hackathons
       </div>
 
       <MapContainer

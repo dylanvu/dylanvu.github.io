@@ -5,7 +5,7 @@
   border-radius: 0.5rem;
   padding: 0.5rem;
   transition: background-color 0.2s ease-in-out;
-  min-width: 20%;
+  width: 100%;
 }
 
 .filter-option-button:hover {
