@@ -142,6 +142,8 @@ export default function HackathonMap() {
     }
   }
 
+  const shownHackathons = aggregatedHackathonLocations.flat();
+
   return (
     <div>
       <ContentBlockTitle title={"Hackathon Map"} />
@@ -179,6 +181,10 @@ export default function HackathonMap() {
               icon={faSignal}
             />
           </div>
+        </div>
+        <div className="map-filter-row">
+          Showing {shownHackathons.length} out of {HackathonList.length}{" "}
+          hackathons
         </div>
       </div>
 
