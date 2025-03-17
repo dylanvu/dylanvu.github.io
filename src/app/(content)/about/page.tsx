@@ -15,29 +15,29 @@ export default function About() {
 
   // hackathons participated (mentored, participated)
   const competedHackathons = HackathonList.filter(
-    (hackathon) => !hackathon.role.toLowerCase().includes("mentor"),
+    (hackathon) => !hackathon.role.toLowerCase().includes("mentor")
   );
 
   // hackathons won
   const filteredHackathonWinners = competedHackathons.filter(
-    (hackathon) => hackathon.awards.length > 0,
+    (hackathon) => hackathon.awards.length > 0
   );
 
   // hackathons mentored
   const filteredHackathonMentorship = HackathonList.filter((hackathon) =>
-    hackathon.role.toLowerCase().includes("mentor"),
+    hackathon.role.toLowerCase().includes("mentor")
   );
 
   // hours mentored
   const hoursMentored = filteredHackathonMentorship.reduce(
     (total, hackathon) => total + hackathon.duration,
-    0,
+    0
   );
 
   // hours competed
   const hoursCompeted = competedHackathons.reduce(
     (total, hackathon) => total + hackathon.duration,
-    0,
+    0
   );
 
   // total hours at hackathons
@@ -47,6 +47,10 @@ export default function About() {
   const hackathonList = HackathonList.map((hackathon) => {
     // hackathon name
     let hackathonParagraph = "* " + hackathon.name;
+    // add mentor if mentored
+    if (hackathon.role === "Mentor") {
+      hackathonParagraph += " (Mentored)";
+    }
     // append awards if won
     const awards = hackathon.awards;
     if (awards.length > 0) {
