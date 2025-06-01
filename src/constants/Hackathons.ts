@@ -739,4 +739,18 @@ export const HackathonList: HackathonInformation[] = [
     longitude: -118.4452,
     duration: 36,
   },
+  {
+    name: "VenusHacks 2025",
+    place: "UC Irvine",
+    city: "Irvine",
+    state: "CA",
+    organizer: "Women in Information and Computer Science",
+    type: "In-Person",
+    role: "Mentor",
+    awards: [],
+    date: new Date("2025-05-23T00:00:00.000Z"),
+    latitude: 33.6405,
+    longitude: -117.8443,
+    duration: 36,
+  },
 ];
