@@ -1,5 +1,5 @@
 "use client";
-import "../styles/navigation-group.css";
+import "@/styles/navigation-group.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
@@ -15,7 +15,7 @@ export default function NavigationGroupEntry({
   // use pathname to dynamically link to different subsections
   const pathName = usePathname();
   const [chevronState, setChevronState] = useState<"up" | "right" | "left">(
-    "up",
+    "up"
   );
 
   return (

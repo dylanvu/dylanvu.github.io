@@ -1,6 +1,6 @@
 "use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../../../styles/hackathon-map/filter-option.css";
+import "@/styles/hackathon-map/filter-option.css";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 import { useState } from "react";

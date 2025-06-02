@@ -1,6 +1,6 @@
 import ContentBlockTitle from "./content-block/ContentBlockTitle";
 import Paragraph from "./content-block/Paragraph";
-import "../styles/contribution.css";
+import "@/styles/contribution.css";
 
 export default function NextUp() {
   const nextSteps = [

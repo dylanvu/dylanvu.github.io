@@ -5,7 +5,7 @@ import ProjectHighlight, {
 import Contributions from "../components/Contributions";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
-import "../styles/project/project-highlight.css";
+import "@/styles/project/project-highlight.css";
 import { navigationObject } from "../components/NavigationGroup";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import ContactLinks from "@/components/contact/ContactLinks";
@@ -17,7 +17,7 @@ const HackathonMap = dynamic(
   () => import("@/components/about/HackathonMap/HackathonMap"),
   {
     ssr: false,
-  },
+  }
 );
 
 interface highlightObject extends navigationObject {

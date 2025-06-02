@@ -1,5 +1,5 @@
 import Paragraph from "./Paragraph";
-import "../../styles/content-block/content-block.css";
+import "@/styles/content-block/content-block.css";
 import ContentBlockTitle from "./ContentBlockTitle";
 
 export default function ContentBlock({

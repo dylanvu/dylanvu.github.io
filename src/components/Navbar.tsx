@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useState } from "react";
-import "../styles/navbar.css";
+import "@/styles/navbar.css";
 
 // The eslint-disable-next-line is necessary because these are <a> and not <button> so tons of warnings pop up.
 //I'm a bit lazy to fix this because it would involve fixing the css styling and this works as it is

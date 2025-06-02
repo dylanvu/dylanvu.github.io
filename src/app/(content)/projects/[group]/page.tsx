@@ -3,8 +3,8 @@ import ProjectCard, {
   ProjectCardInterface,
 } from "@/components/project/ProjectCard";
 import SurpriseMe from "@/components/SurpriseMe";
-import "../../../../styles/content-block/content-block.css";
-import "../../../../styles/project/project-card.css";
+import "@/styles/content-block/content-block.css";
+import "@/styles/project/project-card.css";
 import { handleGenerateStaticParams } from "./util";
 import { promises as fs } from "fs";
 import TransitionTemplate from "@/components/TransitionTemplate";

@@ -1,4 +1,4 @@
-import "../styles/navigation-group.css";
+import "@/styles/navigation-group.css";
 import ContentBlockTitle from "./content-block/ContentBlockTitle";
 import NavigationGroupEntry from "./NavigationGroupEntry";
 

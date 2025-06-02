@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useEffect, useState } from "react";
-import "../styles/header.css";
+import "@/styles/header.css";
 import TypeOnce from "./animate/TypeOnce";
 import TypeArray from "./animate/TypeArray";
 

@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { navigationObject } from "../NavigationGroup";
-import "../../styles/project/project-card.css";
+import "@/styles/project/project-card.css";
 import Image from "next/image";
 import { motion } from "motion/react";
 import { ImageExtension } from "../content-block/Paragraph";

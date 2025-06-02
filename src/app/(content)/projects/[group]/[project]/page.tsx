@@ -1,4 +1,4 @@
-import "../../../../../styles/content-block/content-block.css";
+import "@/styles/content-block/content-block.css";
 import { promises as fs } from "fs";
 import { redirect } from "next/navigation";
 import TransitionTemplate from "@/components/TransitionTemplate";

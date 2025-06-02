@@ -1,5 +1,5 @@
 import ReactMarkdown from "react-markdown";
-import "../../styles/content-block/paragraph.css";
+import "@/styles/content-block/paragraph.css";
 import ContentBlockTitle from "./ContentBlockTitle";
 import gfm from "remark-gfm";
 

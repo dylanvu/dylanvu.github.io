@@ -23,7 +23,7 @@ import {
   faLaptop,
 } from "@fortawesome/free-solid-svg-icons";
 
-import "../../../styles/hackathon-map/hackathon-map.css";
+import "@/styles/hackathon-map/hackathon-map.css";
 
 const defaultIconLength = 25;
 const defaultIconWidth = 41;

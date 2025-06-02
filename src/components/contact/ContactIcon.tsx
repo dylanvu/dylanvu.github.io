@@ -1,7 +1,7 @@
 import solid from "@fortawesome/free-solid-svg-icons";
 import brands from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../../styles/contact/contact.css";
+import "@/styles/contact/contact.css";
 
 export default function ContactIcon({
   link,

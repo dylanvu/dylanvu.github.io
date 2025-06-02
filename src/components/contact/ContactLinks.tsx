@@ -6,7 +6,7 @@ import {
   faMediumM,
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faFile } from "@fortawesome/free-solid-svg-icons";
-import "../../styles/contact/contact.css";
+import "@/styles/contact/contact.css";
 import ContactIcon from "./ContactIcon";
 
 export default function ContactLinks({

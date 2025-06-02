@@ -1,8 +1,8 @@
 "use client";
 import { navigationObject } from "./NavigationGroup";
 import { usePathname, useRouter } from "next/navigation";
-import "../styles/buttons.css";
-import "../styles/surprise-me.css";
+import "@/styles/buttons.css";
+import "@/styles/surprise-me.css";
 
 export default function SurpriseMe({
   sections,
@@ -20,7 +20,7 @@ export default function SurpriseMe({
         onClick={() => {
           // send to random page
           router.push(
-            `${pathName}/${sections[Math.floor(Math.random() * sections.length)].urlSegment}`,
+            `${pathName}/${sections[Math.floor(Math.random() * sections.length)].urlSegment}`
           );
         }}
       >

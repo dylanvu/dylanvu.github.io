@@ -2,7 +2,7 @@ import "@/styles/content-block/paragraph.css";
 import "@/styles/content-block/content-block.css";
 import { motion } from "motion/react";
 
-// import "../../styles/content-block/paragraph.css";
+// import "@/styles/content-block/paragraph.css";
 
 export default function SpecialtyCard({
   title,

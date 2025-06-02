@@ -3,8 +3,8 @@ import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import bio from "../../../../public/about/bio.json";
 import { HackathonList } from "@/constants/Hackathons";
 
-import "../../../styles/content-block/paragraph.css";
-import "../../../styles/content-block/content-block.css";
+import "@/styles/content-block/paragraph.css";
+import "@/styles/content-block/content-block.css";
 
 export default function About() {
   // parse the text, separate by newline, and then create many Paragraph blocks

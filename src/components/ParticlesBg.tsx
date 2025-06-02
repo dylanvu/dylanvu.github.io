@@ -3,7 +3,7 @@
 // code taken from react-particles documentation: https://github.com/tsparticles/react
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim"; // if you are going to use `loadSlim`, install the "tsparticles-slim" package too.
-import "../styles/particles-bg.css";
+import "@/styles/particles-bg.css";
 import { useState, useEffect } from "react";
 
 export default function ParticlesBg() {

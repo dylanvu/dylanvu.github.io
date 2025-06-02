@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import "../../styles/animate/cursor-blinker.css";
+import "@/styles/animate/cursor-blinker.css";
 
 const cursorVariants = {
   blinking: {

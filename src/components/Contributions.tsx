@@ -4,7 +4,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import Axios from "axios";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import "../styles/contribution.css";
+import "@/styles/contribution.css";
 import Paragraph from "./content-block/Paragraph";
 import ContentBlockTitle from "./content-block/ContentBlockTitle";
 import ContactButton from "./contact/ContactButton";

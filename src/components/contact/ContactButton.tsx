@@ -1,7 +1,7 @@
 import solid from "@fortawesome/free-solid-svg-icons";
 import brands from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../../styles/contact/contact-button.css";
+import "@/styles/contact/contact-button.css";
 
 /*
     Button that brings a user to an external website, with an icon and an arrow and a title

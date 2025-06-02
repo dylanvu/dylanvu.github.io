@@ -1,4 +1,4 @@
-import "../../styles/content-block/paragraph.css";
+import "@/styles/content-block/paragraph.css";
 
 const validImageExtension = [
   ".jpg",
