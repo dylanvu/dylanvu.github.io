@@ -12,11 +12,6 @@
   text-align: left;
 }
 
-.contribution div {
-  padding-top: 0.7rem;
-  padding-bottom: 0.7rem;
-}
-
 .contribution .repo-link:visited {
   color: var(--theme-background-color);
   text-decoration: underline;
