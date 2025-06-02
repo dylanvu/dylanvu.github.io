@@ -10,27 +10,23 @@ export default function MarkdownRenderer({ text }: { text: string }) {
         remarkPlugins={[gfm]}
         components={{
           h1: ({ children }) => <ContentBlockTitle title={String(children)} />,
-          h2: ({ node, ...props }) => <h2 {...props} />,
-          h3: ({ node, ...props }) => <h3 {...props} />,
-          h4: ({ node, ...props }) => <h4 {...props} />,
-          h5: ({ node, ...props }) => <h5 {...props} />,
-          h6: ({ node, ...props }) => <h6 {...props} />,
-          p: ({ node, ...props }) => (
-            <div className="paragraph-text" {...props} />
-          ),
-          a: ({ node, ...props }) => (
+          h2: ({ ...props }) => <h2 {...props} />,
+          h3: ({ ...props }) => <h3 {...props} />,
+          h4: ({ ...props }) => <h4 {...props} />,
+          h5: ({ ...props }) => <h5 {...props} />,
+          h6: ({ ...props }) => <h6 {...props} />,
+          p: ({ ...props }) => <div className="paragraph-text" {...props} />,
+          a: ({ ...props }) => (
             <a className="link" target="_blank" rel="noreferrer" {...props} />
           ),
-          li: ({ node, ...props }) => (
-            <li className="paragraph-bullet" {...props} />
-          ),
-          ul: ({ node, ...props }) => <ul {...props} />,
-          ol: ({ node, ...props }) => <ol {...props} />,
-          strong: ({ node, ...props }) => <strong {...props} />,
-          em: ({ node, ...props }) => <em {...props} />,
-          code: ({ node, ...props }) => <code {...props} />,
-          pre: ({ node, ...props }) => <pre {...props} />,
-          img: ({ node, ...props }) => (
+          li: ({ ...props }) => <li className="paragraph-bullet" {...props} />,
+          ul: ({ ...props }) => <ul {...props} />,
+          ol: ({ ...props }) => <ol {...props} />,
+          strong: ({ ...props }) => <strong {...props} />,
+          em: ({ ...props }) => <em {...props} />,
+          code: ({ ...props }) => <code {...props} />,
+          pre: ({ ...props }) => <pre {...props} />,
+          img: ({ ...props }) => (
             <div className="paragraph-image-container">
               <img src={props.src} {...props} />
             </div>
