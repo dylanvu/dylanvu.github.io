@@ -31,7 +31,7 @@ export default async function ProjectGroupPage({
   let projectsFile;
   try {
     projectsFile = await fs.readFile(
-      process.cwd() + `/src/app/txt/projects/${group}/${project}.txt`,
+      process.cwd() + `/src/app/md/projects/${group}/${project}.md`,
       "utf8"
     );
   } catch {
