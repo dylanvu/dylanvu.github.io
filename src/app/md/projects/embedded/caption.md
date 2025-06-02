@@ -1,6 +1,6 @@
-Caption
+# Caption
 
-/projects/embedded/caption/caption.png
+![Picture of Caption](/projects/embedded/caption/caption.png)
 
 Caption, submitted to HackUCI 2023, is a device meant to generate subtitles in real time and display them on glasses. BCaption was built using ESP32 CAM, MAX 9814 microphone and amplifier, an OLED Display, and an FTDI programmer.
 

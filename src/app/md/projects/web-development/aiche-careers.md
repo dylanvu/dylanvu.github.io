@@ -1,6 +1,6 @@
-UCSB AIChE Careers Bot
+# UCSB AIChE Careers Bot
 
-/projects/web-development/aiche-careers/aiche-careers.gif
+![GIF of the AIChE Careers Bot in action](/projects/web-development/aiche-careers/aiche-careers.gif)
 
 This was actually my first project in TypeScript and my second-ever Discord Bot! I had been wanting to learn TypeScript, since I consider JavaScript my main language and the static typing of TypeScript would be handy to pick up.
 

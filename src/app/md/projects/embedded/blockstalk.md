@@ -1,6 +1,6 @@
-BlockStalk
+# BlockStalk
 
-/projects/embedded/blockstalk/blockstalk.png
+![Picture of BlockStalk](/projects/embedded/blockstalk/blockstalk.png)
 
 This was my team's submission to LA Hacks 2023. BlockStalk is a device that works in tandem with software meant to warn you if someone is following you using human recognition. Built using Mediapipe API, a Raspberry Pi, and the Raspberry Pi NoIR camera, this project had so many challenges, especially in hardware.
 

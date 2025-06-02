@@ -1,6 +1,6 @@
-F•sync
+# F•sync
 
-/projects/web-development/fsync/fsync.png
+![F•sync Logo](/projects/web-development/fsync/fsync.png)
 
 This was my team's submission to HackHarvard 2021. F•sync is an inventory management app to enable brands to view their inventory across any retailer as well as enable other retailers to view the stock of any other retailer.
 

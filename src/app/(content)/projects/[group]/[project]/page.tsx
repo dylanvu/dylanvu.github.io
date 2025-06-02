@@ -1,10 +1,9 @@
 import "../../../../../styles/content-block/content-block.css";
 import { promises as fs } from "fs";
-import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
-import Paragraph from "@/components/content-block/Paragraph";
 import { redirect } from "next/navigation";
 import TransitionTemplate from "@/components/TransitionTemplate";
 import { handleGenerateStaticParams } from "./util";
+import MarkdownRenderer from "@/components/content-block/MarkdownRenderer";
 
 // dynamically generate each project page from the parameter
 // https://github.com/vercel/next.js/issues/42840#issuecomment-1352105907
@@ -39,20 +38,10 @@ export default async function ProjectGroupPage({
     redirect("/404");
   }
 
-  const paragraphs = projectsFile.split("\n");
-  const title = paragraphs[0];
-  const content = paragraphs.slice(1);
-
   return (
     <TransitionTemplate>
-      <ContentBlockTitle title={title} />
       <div className="content-block">
-        {content.map((paragraph, index) => (
-          <Paragraph
-            text={paragraph}
-            key={"_" + paragraph + index.toString()}
-          />
-        ))}
+        <MarkdownRenderer text={projectsFile} />
       </div>
     </TransitionTemplate>
   );

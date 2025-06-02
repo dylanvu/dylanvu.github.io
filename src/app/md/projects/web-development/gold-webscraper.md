@@ -1,6 +1,6 @@
-GOLD (Gaucho On-Line Data) Web Scraper
+# GOLD (Gaucho On-Line Data) Web Scraper
 
-/projects/web-development/gold-webscraper/gold-webscraper.png
+![Picture of a spreadsheet with classes capacities](/projects/web-development/gold-webscraper/gold-webscraper.png)
 
 This was my first ever Python project, and the project that inspired me to cultivate my current interest in coding. Developed initially for UCSB’s American Institute of Chemical Engineers chapter, GOLDWebscraper obtains the current course spaces and other associated information from UCSB GOLD (Gaucho OnLine Data). The script uses Selenium to navigate through the site and BeautifulSoup4 to parse through the HTML.
 

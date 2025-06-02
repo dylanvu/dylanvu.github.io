@@ -1,4 +1,4 @@
-UCSB Robotics Club Website
+# UCSB Robotics Club Website
 
 As I was elected the webmaster for UCSB's robotics club, I was tasked with moving our current website away from WordPress. I chose to use the frameworks and technology I was most familiar with: React. So, this was my first website-oriented project. I also used this as an opportunity to focus on accessibility via media queries in CSS.
 

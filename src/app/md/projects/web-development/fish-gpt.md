@@ -1,6 +1,6 @@
-FishGPT
+# FishGPT
 
-/projects/web-development/fish-gpt/fish-gpt.gif
+![FishGPT in action](/projects/web-development/fish-gpt/fish-gpt.gif)
 
 FishGPT is an online chatbot built with ChatGPT that allows a user to simultaneously watch a fish and ask it questions to be answered! It uses computer vision to track the fish location in the tank to select a response and simulate different fish emotions and mood.
 
@@ -14,7 +14,7 @@ Overall though, I'm extremely happy with how this project turned out. We basical
 
 Here's the pet fish I bought for the project: Fork.
 
-/projects/web-development/fish-gpt/fork-the-fish.jpg
+![Picture of an orange fish](/projects/web-development/fish-gpt/fork-the-fish.jpg)
 
 Check out the demo video below!
 
