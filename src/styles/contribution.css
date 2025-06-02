@@ -9,6 +9,7 @@
   padding-bottom: var(--contribution-padding-top-bottom);
   margin-left: var(--contribution-margin-left-right);
   margin-right: var(--contribution-margin-left-right);
+  text-align: left;
 }
 
 .contribution div {

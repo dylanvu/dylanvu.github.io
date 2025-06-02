@@ -6,6 +6,7 @@
 .content-block {
   padding-top: var(--content-block-top-bottom-padding);
   padding-bottom: var(--content-block-top-bottom-padding);
+  text-align: left;
 }
 
 .content-block-title {
