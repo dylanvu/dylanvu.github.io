@@ -7,7 +7,6 @@ export default function NextUp() {
     "Go through my current learning bucket list: WebRTC and Go Lang",
     "Finish a major robotics project",
     "Think of another long-term project",
-    "Get into a Masters Program",
     "Not get fired from my job :P",
   ];
 

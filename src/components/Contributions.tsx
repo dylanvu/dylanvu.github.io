@@ -149,7 +149,9 @@ const Contributions = () => {
 
   const currentPursuits = [
     "Software Dev Engineer I at Amazon Health (One Medical)",
-    "Mentoring hackathons",
+    "Mentoring hackathons!",
+    "Trying out new areas, like game development",
+    "Georgia Tech Online Masters of CS",
   ];
 
   return (
