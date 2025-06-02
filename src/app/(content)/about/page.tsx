@@ -74,7 +74,7 @@ export default function About() {
       {/* <ContentBlockTitle title="I'm a..." /> */}
       {/* <SpecialityCarousel /> */}
       {/* hackathons */}
-      <div className="content-block">
+      <div className="content-block left-align">
         <ContentBlockTitle title="Hackathon Statistics" />
         {/* we are not using ContentBlock here because I want to animate the numbers counting up */}
         <div>

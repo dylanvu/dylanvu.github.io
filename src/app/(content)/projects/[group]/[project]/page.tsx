@@ -40,7 +40,7 @@ export default async function ProjectGroupPage({
 
   return (
     <TransitionTemplate>
-      <div className="content-block">
+      <div className="content-block left-align">
         <MarkdownRenderer text={projectsFile} />
       </div>
     </TransitionTemplate>

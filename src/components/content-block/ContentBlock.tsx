@@ -10,7 +10,7 @@ export default function ContentBlock({
   paragraphs: string[];
 }) {
   return (
-    <div className="content-block">
+    <div className="content-block left-align">
       {/* header/title */}
       <ContentBlockTitle title={title} />
       {paragraphs.map((paragraph, index) => (

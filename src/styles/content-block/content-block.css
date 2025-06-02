@@ -6,6 +6,9 @@
 .content-block {
   padding-top: var(--content-block-top-bottom-padding);
   padding-bottom: var(--content-block-top-bottom-padding);
+}
+
+.left-align {
   text-align: left;
 }
 
