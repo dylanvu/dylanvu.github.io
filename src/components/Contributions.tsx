@@ -24,14 +24,10 @@ const Contributions = () => {
     // https://docs.github.com/en/rest/reference/activity#list-public-events-for-a-user
     // Use Github API to get most recent push
     // Safari was broken so try this: https://stackoverflow.com/questions/47877808/axios-get-not-working-in-safari-browser
-    Axios.get(
-      `https://api.github.com/users/${username}/events/public` +
-        "?nocache=" +
-        new Date().getTime(),
-      {
-        params: { per_page: 200 },
-      }
-    )
+    const githubAPI = `https://api.github.com/users/${username}/events/public?nocache=${new Date().getTime()}`;
+    Axios.get(githubAPI, {
+      params: { per_page: 100 },
+    })
       .then((res) => {
         // console.log(res.data);
         let allPush = [];
@@ -154,7 +150,6 @@ const Contributions = () => {
   const currentPursuits = [
     "Software Dev Engineer I at Amazon Health (One Medical)",
     "Mentoring hackathons",
-    "Writing about mentoring hackathons on Medium! @mentor-mementos",
   ];
 
   return (
