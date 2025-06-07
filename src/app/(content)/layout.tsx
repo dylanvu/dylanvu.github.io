@@ -1,3 +1,6 @@
+"use client"
+// the use client is necessary for the animations
+
 import Navbar from "@/components/Navbar";
 import { AnimatePresence } from "motion/react";
 
