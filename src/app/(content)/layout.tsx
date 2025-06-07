@@ -1,4 +1,3 @@
-"use client";
 import Navbar from "@/components/Navbar";
 import { AnimatePresence } from "motion/react";
 
