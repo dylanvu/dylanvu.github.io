@@ -6,6 +6,10 @@ import "./globals.css";
 // fix the large flashing icon: https://blog.cetindere.de/fix-huge-flashing-icons-fontawesome/
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
+
+// AI agent provider
+import AgentProvider from "@/providers/ai/AgentProvider";
+
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
 
@@ -45,13 +49,15 @@ export default function RootLayout({
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossOrigin=""
       />
-      <body className={inter.className}>
-        <main className="main">
-          {/* floating particles in background  */}
-          <ParticlesBg />
-          {children}
-        </main>
-      </body>
+      <AgentProvider>
+        <body className={inter.className}>
+          <main className="main">
+            {/* floating particles in background  */}
+            <ParticlesBg />
+            {children}
+          </main>
+        </body>
+      </AgentProvider>
     </html>
   );
 }

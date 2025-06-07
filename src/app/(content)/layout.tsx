@@ -12,7 +12,7 @@ export default function PageLayout({
       <Navbar />
       <div className="content-container">
         <div className="content">
-          <div className="page">
+          <div className="page" id="agent_root">
             <AnimatePresence
               mode="wait"
               onExitComplete={() => console.log("Animate exit")}
