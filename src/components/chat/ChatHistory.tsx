@@ -2,6 +2,7 @@
 
 import { ChatMessage, useAgentContext } from "@/contexts/ai/AgentContext"
 import { useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
     // TODO: Add prebuilt options:
     // "can't decide = triggers the random button",
@@ -12,10 +13,8 @@ export default function ChatHistory() {
     const chatHistoryRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        console.log(agentContext?.agentHistory)
         // scroll to bottom if agent history changes
         if (chatHistoryRef.current) {
-            console.log("scrolling to bottom")
             chatHistoryRef.current.style.scrollBehavior = "smooth";
             chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
         }
@@ -36,14 +35,22 @@ export default function ChatHistory() {
         <div className="chat-history-contents"
             ref={chatHistoryRef}>
             <div className="chat-history-messages">
-                {agentContext?.agentHistory.map((message, index) => {
-                    const messageType = message.role === "model" ? "model-message": "user-message"
-                    return (
-                        <div key={`${"chat-message-" + index}`} className={`chat-message ${messageType}`}>
-                            {message.message}
-                        </div>
-                    )
-                })}
+                <AnimatePresence>
+                    {agentContext?.agentHistory.map((message, index) => {
+                        const messageType = message.role === "model" ? "model-message": "user-message"
+                        return (
+                            <motion.div
+                                key={`${"chat-message-" + index}`}
+                                className={`chat-message ${messageType}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ ease: "easeInOut", duration: 0.2 }}
+                            >
+                                {message.message}
+                            </motion.div>
+                        )
+                    })}
+                </AnimatePresence>
             </div>
             <div className="chat-history-presets">
                 <button className="interactable-element" onClick={() => submitQuery("Surprise me!")}>

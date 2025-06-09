@@ -17,7 +17,6 @@ export default function PageLayout({
           <div className="page" id="agent_root">
             <AnimatePresence
               mode="wait"
-              onExitComplete={() => console.log("Animate exit")}
             >
               {/* <motion.div initial={{ x: "100vw" }}
                                 animate={{ x: 0 }}

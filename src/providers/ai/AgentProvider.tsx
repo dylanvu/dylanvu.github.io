@@ -39,7 +39,6 @@ export default function AgentProvider({ children }: {
 
     useEffect(() => {
         // fetch current page information
-        console.log(pathName)
         retrieveCurrentPageContents();
     }, [pathName])
 
