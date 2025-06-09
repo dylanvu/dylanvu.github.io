@@ -32,14 +32,6 @@ export default function ChatHistory() {
         }
     }
 
-    function triggerSurpriseMe() {
-        submitQuery
-    }
-
-    function triggerFullTour() {
-
-    }
-
     return (
         <div className="chat-history-contents"
             ref={chatHistoryRef}>

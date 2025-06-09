@@ -54,7 +54,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <main className="main">
             {/* floating particles in background  */}
-            {/* <ParticlesBg /> */}
+            <ParticlesBg />
             {children}
             <Chat />
           </main>
