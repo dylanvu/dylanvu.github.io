@@ -1,5 +1,4 @@
 "use client";
-import { Project } from "@/app/api/projects/route";
 import { createContext, useContext } from "react";
 
 export interface CurrentPageType {
@@ -17,6 +16,8 @@ interface AgentContextInterface {
   setAgentHistory: (newHistory: ChatMessage[]) => void;
   currentPageRef: React.RefObject<CurrentPageType>;
   goToRandomProject: () => void;
+  talkToAgent: (newMessage: string) => void;
+  isThinking: boolean;
 }
 
 export const AgentContext = createContext<AgentContextInterface | null>(null);

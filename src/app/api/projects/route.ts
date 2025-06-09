@@ -41,6 +41,11 @@ async function readMarkdownFilesRecursively(
   return files.flat();
 }
 
+export async function getAllProjectInformation() {
+  const fileContents = await readMarkdownFilesRecursively(ROOT_DIR);
+  return fileContents;
+}
+
 export async function GET() {
   try {
     const markdownFiles = await readMarkdownFilesRecursively(ROOT_DIR);

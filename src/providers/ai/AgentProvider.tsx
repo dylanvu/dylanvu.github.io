@@ -8,6 +8,7 @@ import {
 } from "@/contexts/ai/AgentContext";
 
 import { Project } from "@/app/api/projects/route";
+import { GeminiMessage } from "@/app/api/tour-guide/route";
 
 export default function AgentProvider({
   children,
@@ -20,12 +21,7 @@ export default function AgentProvider({
   const initialMessage: ChatMessage = {
     role: "model",
     message:
-      "Hi there! Welcome to Dylan's website! What would you like to see?",
-  };
-
-  const testUserMessage: ChatMessage = {
-    role: "user",
-    message: "Hey there!",
+      "Hi there! Welcome to Dylan's website! What would you like to see or know?",
   };
 
   /**
@@ -33,8 +29,9 @@ export default function AgentProvider({
    */
   const [agentHistory, setAgentHistory] = useState<ChatMessage[]>([
     initialMessage,
-    testUserMessage,
   ]);
+
+  const [isThinking, setIsThinking] = useState<boolean>(false);
 
   const projectsRef = useRef<Project[]>([]);
 
@@ -100,6 +97,52 @@ export default function AgentProvider({
   // scrolling?
   // ability to talk?
 
+  async function talkToAgent(newMessage: string) {
+    const newUserMessage: ChatMessage = {
+      role: "user",
+      message: newMessage,
+    };
+
+    const newAgentHistory = [...agentHistory, newUserMessage];
+
+    setAgentHistory(newAgentHistory);
+
+    const history: GeminiMessage[] = newAgentHistory.map((message) => {
+      return {
+        role: message.role,
+        parts: [
+          {
+            text: message.message,
+          },
+        ],
+      };
+    });
+    setIsThinking(true);
+    const res = await fetch("/api/tour-guide", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        context: history,
+      }),
+    });
+
+    const resJson = await res.json();
+
+    // handle gemini response
+    const llmResponse = resJson.response;
+    console.log(llmResponse);
+    // add to history
+    const newModelMessage: ChatMessage = {
+      role: "model",
+      message: llmResponse,
+    };
+
+    setAgentHistory([...newAgentHistory, newModelMessage]);
+    setIsThinking(false);
+  }
+
   function goToRandomProject() {
     // remove out matching url from the list of projects
     const validProjects = projectsRef.current.filter(
@@ -118,6 +161,8 @@ export default function AgentProvider({
         setAgentHistory,
         currentPageRef,
         goToRandomProject,
+        talkToAgent,
+        isThinking,
       }}
     >
       {children}

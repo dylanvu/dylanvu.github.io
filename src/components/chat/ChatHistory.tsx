@@ -43,6 +43,7 @@ export default function ChatHistory() {
             const messageType =
               message.role === "model" ? "model-message" : "user-message";
             return (
+              // TODO: need to figure out how to render the LLM's response better. It has lists (unordered), and bold text.
               <motion.div
                 key={`${"chat-message-" + index}`}
                 className={`chat-message interactable-element-border ${messageType}`}
@@ -65,7 +66,14 @@ export default function ChatHistory() {
         >
           Surprise me
         </button>
-        <button onClick={() => submitQuery("Give me the full tour.")}>
+        {/* <button onClick={() => submitQuery("Give me the full tour.")}>
+          The full tour
+        </button> */}
+        <button
+          onClick={() => {
+            agentContext?.talkToAgent("Summarize all of Dylan's projects.");
+          }}
+        >
           The full tour
         </button>
       </div>

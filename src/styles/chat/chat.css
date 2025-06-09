@@ -137,17 +137,27 @@ button.interactable-element-border:hover {
 /* the chat input */
 .chat-main #chat {
   width: 100%;
-  background-color: var(--chat-main-color);
   padding: 0.4rem;
   transition:
     border-color 0.1s ease-in-out,
-    border-width 0.1s ease-in-out;
+    border-width 0.1s ease-in-out,
+    background-color 0.1s ease-in-out,
+    color 0.1s ease-in-out;
   resize: none;
 }
 
 .chat-main #chat:focus {
   outline: none;
   border-color: var(--theme-white);
+}
+
+.chat-input-enabled {
+  background-color: var(--chat-main-color);
+}
+
+.chat-input-disabled {
+  background-color: var(--chat-secondary-color);
+  color: var(--chat-main-color);
 }
 
 .chat-main button {

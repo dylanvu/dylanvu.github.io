@@ -1,40 +1,41 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
-import "@/styles/chat/chat.css"
-import { ChatMessage, useAgentContext } from "@/contexts/ai/AgentContext";
+import "@/styles/chat/chat.css";
+import { useAgentContext } from "@/contexts/ai/AgentContext";
 
 export default function ChatInput() {
-    const [query, setQuery] = useState<string>("")
-    const agentContext = useAgentContext();
+  const [query, setQuery] = useState<string>("");
+  const agentContext = useAgentContext();
 
-    function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        setQuery(e.target.value);
+  function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setQuery(e.target.value);
+  }
+
+  function handleKeydown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // prevent newline
+      submitQuery();
     }
+  }
 
-    function handleKeydown(e: React.KeyboardEvent) {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault(); // prevent newline
-            submitQuery();
-        }
-    }
+  function submitQuery() {
+    agentContext?.talkToAgent(query);
+    // clear the input area
+    setQuery("");
+  }
 
-    function submitQuery() {
-        const newUserMessage: ChatMessage = {
-            role: "user",
-            message: query
-        }
-        // add to the agent history
-        if (agentContext?.agentHistory) {
-            const newHistory = [...agentContext?.agentHistory, newUserMessage]
-            agentContext?.setAgentHistory(newHistory)
-        }
-
-        // clear the input area
-        setQuery("");
-    }
-    
-    return (
-        <textarea className="interactable-element-border" id="chat" placeholder="What do you want to see?" value={query} onChange={handleInput} onKeyDown={handleKeydown}/>
-    )
+  return (
+    <textarea
+      className={`interactable-element-border ${agentContext?.isThinking ? "chat-input-disabled" : "chat-input-enabled"}`}
+      id="chat"
+      placeholder={
+        !agentContext?.isThinking ? "What do you want to see?" : "Thinking..."
+      }
+      value={query}
+      onChange={handleInput}
+      onKeyDown={handleKeydown}
+      disabled={agentContext?.isThinking}
+    />
+  );
 }
