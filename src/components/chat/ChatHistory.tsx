@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatMessage, useAgentContext } from "@/contexts/ai/AgentContext";
+import { useAgentContext } from "@/contexts/ai/AgentContext";
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import "@/styles/chat/chat.css";
@@ -20,20 +20,6 @@ export default function ChatHistory() {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
     }
   }, [agentContext?.agentHistory]);
-
-  function submitQuery(query: string) {
-    const newUserMessage: ChatMessage = {
-      role: "user",
-      message: query,
-    };
-
-    if (agentContext?.agentHistory) {
-      agentContext?.setAgentHistory([
-        ...agentContext?.agentHistory,
-        newUserMessage,
-      ]);
-    }
-  }
 
   return (
     <div className="chat-history-contents" ref={chatHistoryRef}>

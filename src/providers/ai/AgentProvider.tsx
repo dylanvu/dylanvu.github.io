@@ -7,7 +7,7 @@ import {
   CurrentPageType,
 } from "@/contexts/ai/AgentContext";
 
-import { Project } from "@/app/api/projects/route";
+import { Project } from "@/app/api/util";
 import { GeminiMessage } from "@/app/api/tour-guide/route";
 
 export default function AgentProvider({
@@ -86,16 +86,16 @@ export default function AgentProvider({
     currentPageRef.current = currentPage;
   }
 
-  // DOM manipulation functions
-  function applyStyleToDom() {
-    // adjusting or applying style (highlight, boxing)
-  }
+  // // DOM manipulation functions
+  // function applyStyleToDom() {
+  //   // adjusting or applying style (highlight, boxing)
+  // }
 
-  function addIdToDom() {
-    // adding ID dynamically (for the scrolling ability)
-  }
-  // scrolling?
-  // ability to talk?
+  // function addIdToDom() {
+  //   // adding ID dynamically (for the scrolling ability)
+  // }
+  // // scrolling?
+  // // ability to talk?
 
   async function talkToAgent(newMessage: string) {
     const newUserMessage: ChatMessage = {

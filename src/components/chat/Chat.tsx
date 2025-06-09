@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useAgentContext } from "@/contexts/ai/AgentContext";
 import "@/styles/chat/chat.css";
 import ChatHistory from "@/components/chat/ChatHistory";
 import ChatInput from "./ChatInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
-import { AnimatePresence, motion, useAnimate } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 export default function Chat() {
-  const agentContext = useAgentContext();
-
   const [showChat, setShowChat] = useState<boolean>(false);
   /**
    * Ref to show the chat automatically after a delay, on initial render
@@ -57,7 +54,7 @@ export default function Chat() {
             transition={{ ease: "easeInOut", duration: 0.2 }}
             key="chat-content-container"
           >
-            <div className="chat-header">Dylan's Tour Guide</div>
+            <div className="chat-header">Dylan&apos;s Tour Guide</div>
             <div className="chat-main">
               <ChatHistory />
               <ChatInput />

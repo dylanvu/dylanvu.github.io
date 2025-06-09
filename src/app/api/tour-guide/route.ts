@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { getAllProjectInformation } from "../projects/route";
+import { getAllProjectInformation } from "@/app/api/util";
 
 export interface GeminiMessagePart {
   text: string;
