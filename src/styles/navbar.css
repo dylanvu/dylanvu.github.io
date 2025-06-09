@@ -2,14 +2,13 @@
 
 .logo-nav {
   width: 40px;
-  z-index: 10;
   vertical-align: middle;
 }
 
 .sticky {
   position: sticky;
   position: -webkit-sticky;
-  z-index: 10;
+  z-index: 2;
   top: 0;
   overflow: hidden;
 }

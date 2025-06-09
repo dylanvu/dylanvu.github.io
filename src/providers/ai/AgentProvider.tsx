@@ -1,7 +1,7 @@
 'use client'
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { AgentContext, CurrentPageType } from "@/contexts/ai/AgentContext";
+import { AgentContext, ChatMessage, CurrentPageType } from "@/contexts/ai/AgentContext";
 
 export default function AgentProvider({ children }: {
   children: React.ReactNode;
@@ -9,11 +9,21 @@ export default function AgentProvider({ children }: {
 
     const router = useRouter();
     const pathName = usePathname();
+
+    const initialMessage: ChatMessage = {
+        role: "model",
+        message: "Hi there! Welcome to Dylan's website! What would you like to see?"
+    }
+
+    const testUserMessage: ChatMessage = {
+        role: "user",
+        message: "Hey there!"
+    }
     
     /**
      * the chat history the agent needs to know what's going on
      */
-    const agentHistoryRef = useRef<string[]>([]);
+    const [agentHistory, setAgentHistory] = useState<ChatMessage[]>([initialMessage, testUserMessage])
 
     /**
      * the page content so the agent knows where the user is at
@@ -32,7 +42,6 @@ export default function AgentProvider({ children }: {
         console.log(pathName)
         retrieveCurrentPageContents();
     }, [pathName])
-
 
     // define all the agent actions
 
@@ -68,7 +77,7 @@ export default function AgentProvider({ children }: {
     // ability to talk?
 
     return (
-        <AgentContext.Provider value={{ agentHistoryRef, currentPageRef }}>
+        <AgentContext.Provider value={{ agentHistory, setAgentHistory, currentPageRef }}>
             {children}
         </AgentContext.Provider>
     )

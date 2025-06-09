@@ -6,8 +6,14 @@ export interface CurrentPageType {
     contents: string,
 }
 
+export interface ChatMessage {
+    role: "user" | "model",
+    message: string
+}
+
 interface AgentContextInterface {
-    agentHistoryRef: React.RefObject<string[]>;
+    agentHistory: ChatMessage[];
+    setAgentHistory: (newHistory: ChatMessage[]) => void;
     currentPageRef: React.RefObject<CurrentPageType>;
 }
 

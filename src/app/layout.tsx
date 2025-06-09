@@ -16,6 +16,7 @@ config.autoAddCss = false;
 import Head from "next/head";
 
 import Script from "next/script";
+import Chat from "@/components/chat/Chat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,8 +54,9 @@ export default function RootLayout({
         <body className={inter.className}>
           <main className="main">
             {/* floating particles in background  */}
-            <ParticlesBg />
+            {/* <ParticlesBg /> */}
             {children}
+            <Chat />
           </main>
         </body>
       </AgentProvider>

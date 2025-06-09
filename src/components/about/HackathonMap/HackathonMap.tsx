@@ -194,6 +194,7 @@ export default function HackathonMap() {
         scrollWheelZoom={true}
         style={{
           height: "650px",
+          zIndex: 1,
         }}
       >
         <TileLayer
