@@ -58,7 +58,6 @@ export default function ChatHistory() {
         </AnimatePresence>
       </div>
       <div className="chat-history-presets">
-        {/* <button onClick={() => submitQuery("Surprise me!")}>Surprise me</button> */}
         <button
           onClick={() => {
             agentContext?.goToRandomProject();
@@ -66,9 +65,6 @@ export default function ChatHistory() {
         >
           Surprise me
         </button>
-        {/* <button onClick={() => submitQuery("Give me the full tour.")}>
-          The full tour
-        </button> */}
         <button
           onClick={() => {
             agentContext?.talkToAgent("Summarize all of Dylan's projects.");
