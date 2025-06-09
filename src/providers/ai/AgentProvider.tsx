@@ -101,10 +101,12 @@ export default function AgentProvider({
   // ability to talk?
 
   function goToRandomProject() {
+    // remove out matching url from the list of projects
+    const validProjects = projectsRef.current.filter(
+      (project) => project.url !== pathName
+    );
     const randomProject =
-      projectsRef.current[
-        Math.floor(Math.random() * projectsRef.current.length)
-      ];
+      validProjects[Math.floor(Math.random() * validProjects.length)];
 
     navigate(randomProject.url);
   }
