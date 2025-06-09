@@ -4,6 +4,7 @@
     --hover-scale: 1.1;
     --chat-content-container-border-radius: 0.4rem;
     --chat-content-container-padding: 0rem;
+    --chat-message-gap: 0.4rem;
 }
 
 .show-chat-button {
@@ -73,7 +74,7 @@
 /* wraps the chat history itself, all the messages only */
 .chat-history-messages {
     display: grid;
-    gap: 0.4rem;
+    gap: var(--chat-message-gap);
 }
 
 .interactable-element-border {
@@ -108,7 +109,7 @@ button.interactable-element-border:hover {
 }
 
 .chat-history-presets {
-    margin-top: 2rem;
+    margin-top: var(--chat-message-gap);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.4rem;
