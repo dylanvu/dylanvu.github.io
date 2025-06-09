@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   Projects that Dylan has built:
   ${projectsString}
   
-  You can use the images given in the project by directly referencing them in your response.
+  You can use the images given in the project by using them as defined in the markdown format in your response.
   `;
 
   const config = {
