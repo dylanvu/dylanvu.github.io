@@ -85,5 +85,5 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // TODO: handle rate limiting, inappropriate content warnings, and rotate API keys
+  // TODO: handle rate limiting, inappropriate content warnings, missing api key, and rotate API keys
 }
