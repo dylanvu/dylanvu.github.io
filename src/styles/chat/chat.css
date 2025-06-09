@@ -63,6 +63,7 @@
 }
 
 /* wraps the chat history, input, presets, etc without the input */
+/* TODO: prevent further scrolling when the bottom is reached */
 .chat-history-contents {
     margin-bottom: 0.8rem;
     overflow-y: scroll;
