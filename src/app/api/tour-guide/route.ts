@@ -84,4 +84,6 @@ export async function POST(request: NextRequest) {
       response: "No response due to missing candidates",
     });
   }
+
+  // TODO: handle rate limiting, inappropriate content warnings, and rotate API keys
 }
