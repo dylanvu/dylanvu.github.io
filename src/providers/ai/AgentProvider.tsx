@@ -4,7 +4,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { AgentContext, ChatMessage, CurrentPageType } from "@/contexts/ai/AgentContext";
 
 export default function AgentProvider({ children }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
 
     const router = useRouter();
