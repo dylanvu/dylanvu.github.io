@@ -300,10 +300,6 @@
     font-size: 0.9rem;
   }
 
-  ul {
-    font-size: 0.9em;
-  }
-
   /* the responsive link menu that shows all other links */
   .responsive-link-menu {
     background-color: var(--theme-dark-gray);

@@ -110,6 +110,17 @@ button.interactable-element-border:hover {
   color: var(--chat-main-color);
 }
 
+.chat-message-response .chat-list {
+  list-style-type: disc; /* Or 'circle', 'square', etc. */
+  padding-left: 20px; /* Adjust for desired indentation */
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.chat-message-response .chat-list li {
+  margin-bottom: 0.25em;
+}
+
 .chat-history-presets {
   margin-top: var(--chat-message-gap);
   display: grid;
