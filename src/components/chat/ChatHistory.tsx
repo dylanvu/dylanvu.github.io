@@ -71,37 +71,53 @@ export default function ChatHistory() {
 }
 
 // honestly I used an LLM for this part but I understand it
-// A reusable helper to handle inline formatting like **bold**
+// A reusable helper to handle inline formatting like **bold** and ![images]()
 function renderInlineFormatting(text: string) {
-  // Regex to find chunks of text wrapped in **
-  const parts = text.split(/(\*\*.*?\*\*)/g);
+  // New regex splits by EITHER bold OR image syntax, keeping the delimiters.
+  const parts = text.split(/(\*\*.*?\*\*|!\[.*?\]\(.*?\))/g);
 
   return parts.map((part, index) => {
+    // Check for bold text
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={index}>{part.slice(2, -2)}</strong>;
     }
+
+    // NEW: Check for image syntax
+    if (part.startsWith("![") && part.endsWith(")")) {
+      // Extract the alt text and src using another regex
+      const match = /!\[(.*?)\]\((.*?)\)/.exec(part);
+      if (match) {
+        const alt = match[1];
+        const src = match[2];
+        return <img key={index} src={src} alt={alt} className="chat-image" />;
+      }
+    }
+
+    // Otherwise, it's just regular text
     return part;
   });
 }
 
 // The main function to render the entire message
 function renderMessageContent(message: string) {
-  // Regex to split the message by list blocks
-  const blocks = message.split(/((?:[\*\-] .+\n?)+)/g);
+  // This regex is now more specific. It ensures lines start with * or -
+  // followed by a space, and groups them.
+  const blocks = message.split(/((?:(?:^[\*\-]\s).*(?:\n|$))+)/gm);
 
   return blocks.map((block, index) => {
     if (!block.trim()) {
       return null;
     }
 
-    // Check if this block is a list
-    if (block.trim().startsWith("* ") || block.trim().startsWith("- ")) {
+    // MORE ROBUST CHECK: Test if the block is a list using regex.
+    // This ensures it only matches lines that START with a list marker.
+    if (/^[\*\-]\s/.test(block.trim())) {
       const listItems = block.split("\n").filter((line) => line.trim());
 
       return (
         <ul key={`list-${index}`} className="chat-list">
           {listItems.map((item, itemIndex) => {
-            const itemContent = item.substring(item.indexOf(" ") + 1); // More robust than substring(2)
+            const itemContent = item.substring(item.indexOf(" ") + 1).trim();
             return (
               <li key={`item-${itemIndex}`}>
                 {renderInlineFormatting(itemContent)}
@@ -112,8 +128,7 @@ function renderMessageContent(message: string) {
       );
     }
 
-    // If it's not a list, treat it as one or more paragraphs.
-    // Split the block by double newlines to create paragraphs.
+    // It's not a list, so treat it as paragraphs
     const paragraphs = block.split(/\n\s*\n/).filter((p) => p.trim());
 
     return paragraphs.map((paragraph, pIndex) => (

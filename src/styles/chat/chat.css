@@ -110,15 +110,32 @@ button.interactable-element-border:hover {
   color: var(--chat-main-color);
 }
 
+/* llm response */
+.chat-message-response {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em; /* This one property handles spacing for all direct children */
+}
+
 .chat-message-response .chat-list {
   list-style-type: disc; /* Or 'circle', 'square', etc. */
   padding-left: 20px; /* Adjust for desired indentation */
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  /* margin-top: 0.5em; */
+  /* margin-bottom: 0.5em; */
 }
 
 .chat-message-response .chat-list li {
   margin-bottom: 0.25em;
+}
+
+.chat-message-response .chat-image {
+  display: block; /* Treat the image as a block, forcing line breaks */
+
+  /* margin-top: 0.75em; */
+  /* margin-bottom: 0.75em; */
+
+  max-width: 100%; /* Ensures images don't overflow the chat bubble */
+  border-radius: 8px; /* Optional: adds nice rounded corners */
 }
 
 .chat-history-presets {
