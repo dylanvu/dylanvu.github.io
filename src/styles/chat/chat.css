@@ -56,6 +56,7 @@
 .chat-header {
     background-color: var(--theme-background-color);
     border-radius: calc(var(--chat-content-container-border-radius) - var(--chat-content-container-padding));
+    padding: 0.2rem;
 }
 
 /* the chat input and also the chat history, excludes the header */
@@ -76,13 +77,13 @@
     gap: 0.4rem;
 }
 
-.interactable-element {
+.interactable-element-border {
     border-color: var(--chat-secondary-color);
     border-width: 0.2rem;
     border-radius: 0.2rem;
 }
 
-button.interactable-element:hover {
+button.interactable-element-border:hover {
     transition: border-color 0.1s ease-in-out;
     border-color: var(--theme-white);
 }
@@ -97,6 +98,7 @@ button.interactable-element:hover {
 
 .model-message {
     left: 0;
+    border-color: var(--theme-white);
 }
 
 .user-message {
@@ -113,6 +115,19 @@ button.interactable-element:hover {
     gap: 0.4rem;
     bottom: 0;
     position: relative;
+}
+
+.chat-history-presets button {
+    background-color: var(--chat-secondary-color);
+    color: var(--theme-white);
+    border-width: 0.2rem;
+    border-radius: 0.2rem;
+    transition: background-color ease-in-out 0.1s, color ease-in-out 0.1s
+}
+
+.chat-history-presets button:hover {
+    background-color: var(--theme-white);
+    color: var(--chat-secondary-color);
 }
 
 /* the chat input */

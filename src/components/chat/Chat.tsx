@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAgentContext } from "@/contexts/ai/AgentContext";
 import "@/styles/chat/chat.css"
 import ChatHistory from "@/components/chat/ChatHistory";
@@ -11,17 +11,37 @@ import { AnimatePresence, motion, useAnimate } from "motion/react";
 
 export default function Chat() {
     const agentContext = useAgentContext();
-    const [scope, animate] = useAnimate();
 
-    const [showChat, setShowChat] = useState<boolean>(true);
+    const [showChat, setShowChat] = useState<boolean>(false);
+    /**
+     * Ref to show the chat automatically after a delay, on initial render
+     */
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     function toggleChat() {
-        setShowChat((prev) => !prev)
+        if (timerRef.current) {
+            // Cancel the timer if it's still running
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+        setShowChat((prev) => !prev);
     }
-
+    
     useEffect(() => {
-        // add a slight delay to the rendering of the chat
-        animate(scope.current, { opacity: 1 }, { delay: 0.7 })
+        // TODO: make it so that the chat automatically opens up when you go past the navbar
+        // TODO: or, make it so that the robot sends a little message saying "Got any questions?" without opening the chat
+        // set up delayed automatic chat showing
+        timerRef.current = setTimeout(() => {
+            setShowChat(true);
+            timerRef.current = null;
+        }, 2000);
+
+        // clean up timer if chat unrenders
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
     }, []);
 
     return (
@@ -34,7 +54,6 @@ export default function Chat() {
                         exit={{ opacity: 0 }}
                         transition={{ ease: "easeInOut", duration: 0.2 }}
                         key="chat-content-container"
-                        ref={scope}
                     >
                         <div className="chat-header">
                             Dylan's Tour Guide

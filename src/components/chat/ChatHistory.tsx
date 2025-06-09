@@ -3,6 +3,7 @@
 import { ChatMessage, useAgentContext } from "@/contexts/ai/AgentContext"
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import "@/styles/chat/chat.css"
 
     // TODO: Add prebuilt options:
     // "can't decide = triggers the random button",
@@ -41,7 +42,7 @@ export default function ChatHistory() {
                         return (
                             <motion.div
                                 key={`${"chat-message-" + index}`}
-                                className={`chat-message ${messageType}`}
+                                className={`chat-message interactable-element-border ${messageType}`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ ease: "easeInOut", duration: 0.2 }}
@@ -53,10 +54,10 @@ export default function ChatHistory() {
                 </AnimatePresence>
             </div>
             <div className="chat-history-presets">
-                <button className="interactable-element" onClick={() => submitQuery("Surprise me!")}>
+                <button onClick={() => submitQuery("Surprise me!")}>
                     Surprise me
                 </button>
-                <button className="interactable-element" onClick={() => submitQuery("Give me the full tour.")}>
+                <button onClick={() => submitQuery("Give me the full tour.")}>
                     The full tour
                 </button>
             </div>

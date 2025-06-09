@@ -35,6 +35,6 @@ export default function ChatInput() {
     }
     
     return (
-        <textarea className="interactable-element" id="chat" placeholder="What do you want to see?" value={query} onChange={handleInput} onKeyDown={handleKeydown}/>
+        <textarea className="interactable-element-border" id="chat" placeholder="What do you want to see?" value={query} onChange={handleInput} onKeyDown={handleKeydown}/>
     )
 }
