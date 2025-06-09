@@ -1,6 +1,6 @@
 # Rattle
 
-![Rattle Anteater](Rattle/projects/games/rattle/rattle.png)
+![Rattle Anteater](/projects/games/rattle/rattle.png)
 
 From our UCI WebJam 2022 project description:
 
@@ -26,4 +26,4 @@ I also want to feature Casey's amazing art!
 
 ![Male Character Spritesheet](/projects/games/rattle/char1spritesheet.png)
 
-![Female Character Spritesheet](/projects/games/rattle/char2spritesheet.png)
+![Female Character Spritesheet](/projects/games/rattle/char2.png)
