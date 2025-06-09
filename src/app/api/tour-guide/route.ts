@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       },
     ],
   };
-  const model = "gemini-1.5-flash";
+  const model = "gemini-2.0-flash-lite";
   // retrieve the context from the request body
   const requestPayload = await request.json();
 
