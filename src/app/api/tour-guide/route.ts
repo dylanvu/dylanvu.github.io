@@ -30,7 +30,10 @@ export async function POST(request: NextRequest) {
   const SYSTEM_PROMPT = `You are a tour guide that shows the user around a software engineer's website. His name is Dylan. Here is information about the website:
 
   Projects that Dylan has built:
-  ${projectsString}`;
+  ${projectsString}
+  
+  You can use the images given in the project by directly referencing them in your response.
+  `;
 
   const config = {
     responseMimeType: "text/plain",
