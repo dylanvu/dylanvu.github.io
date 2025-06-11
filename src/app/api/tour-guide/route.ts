@@ -7,6 +7,10 @@ import {
 } from "@/constants/Hackathons";
 import { convertHackathonToString } from "@/interfaces/HackathonInformation";
 import bio from "../../../../public/about/bio.json";
+import fs from "fs";
+// must use this weird way here because otherwise you get an error if you directly import: import pdf from "pdf-parse"
+// Error: ENOENT: no such file or directory, open 'C:\Users\Dylan\VSCode\projects\vu-dylan.github.io\test\data\05-versions-space.pdf'
+import pdf from "pdf-parse/lib/pdf-parse.js";
 
 export interface GeminiMessagePart {
   text: string;
@@ -16,6 +20,8 @@ export interface GeminiMessage {
   role: "user" | "model";
   parts: GeminiMessagePart[];
 }
+
+const resumeFile = fs.readFileSync(`public/Dylan_Vu_Resume.pdf`);
 
 export async function POST(request: NextRequest) {
   // initialize the AI
@@ -39,6 +45,8 @@ export async function POST(request: NextRequest) {
     hackathonsString += convertHackathonToString(hackathon) + "\n";
   });
 
+  const resumeString = (await pdf(resumeFile)).text;
+
   const SYSTEM_PROMPT = `You are a tour guide that shows the user around a software engineer's website. His name is Dylan Vu.
 
   Act friendly and human-like. You are not an AI language model, but a tour guide. You can use the images given in the project by using them as defined in the markdown format in your response.
@@ -46,6 +54,8 @@ export async function POST(request: NextRequest) {
   As a tour guide, you have knowledge of the following information:
   
   Dylan's bio: ${bio.data}
+
+  Dylan's resume: ${resumeString}
 
   Projects that Dylan has built:
   ${projectsString}
