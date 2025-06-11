@@ -828,7 +828,7 @@ export function returnHackathonStatisticsString() {
     totalHours,
   } = calculateHackathonStatistics();
 
-  `Hackathons Participated: ${competedHackathons.length} hackathons, ~ ${hoursCompeted.toLocaleString()} hours
+  return `Hackathons Participated (Mentored and Competed): ${competedHackathons.length} hackathons, ~ ${totalHours.toLocaleString()} hours
   Competed: ${competedHackathons.length} hackathons, ~ ${hoursCompeted.toLocaleString()} hours, ${filteredHackathonWinners.length} awards
   Mentored: ${filteredHackathonMentorship.length} hackathons, ~ ${hoursMentored.toLocaleString()} hours`;
 }
