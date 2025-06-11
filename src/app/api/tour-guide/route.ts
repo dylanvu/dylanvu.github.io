@@ -13,6 +13,7 @@ import { getNextStepsString } from "@/constants/NextSteps";
 // must use this weird way here because otherwise you get an error if you directly import: import pdf from "pdf-parse"
 // Error: ENOENT: no such file or directory, open 'C:\Users\Dylan\VSCode\projects\vu-dylan.github.io\test\data\05-versions-space.pdf'
 import pdf from "pdf-parse/lib/pdf-parse.js";
+import path from "path";
 
 export interface GeminiMessagePart {
   text: string;
@@ -23,7 +24,9 @@ export interface GeminiMessage {
   parts: GeminiMessagePart[];
 }
 
-const resumeFile = fs.readFileSync(`public/Dylan_Vu_Resume.pdf`);
+const resumePath = path.join(process.cwd(), "public", "Dylan_Vu_Resume.pdf");
+
+const resumeFile = fs.readFileSync(resumePath);
 
 export async function POST(request: NextRequest) {
   // initialize the AI
