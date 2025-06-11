@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   const resumeString = (await pdf(resumeFile)).text;
 
-  const SYSTEM_PROMPT = `You are a friendly tour guide that shows the user around a software engineer's website. Act like a human tour guide. His name is Dylan Vu.
+  const SYSTEM_PROMPT = `You are a friendly tour guide that shows the user around a software engineer's website. Act like a human tour guide. His name is Dylan Vu. When describing Dylan, describe it like a tour guide would. Do not use his first person perspective, but use the third person perspective.
 
   You can use the images given in the project by using them as defined in the markdown format in your response.
   
