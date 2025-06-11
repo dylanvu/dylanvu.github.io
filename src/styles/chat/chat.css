@@ -30,8 +30,8 @@
 /* for the entire chatbox */
 .chat-container {
   /* TODO: Fix the issue where the chat pushes the webpage at bottom */
-  position: -webkit-sticky;
-  position: sticky;
+  position: -webkit-fixed;
+  position: fixed;
   bottom: 2vh;
   right: 10vw;
   float: right;
