@@ -8,6 +8,8 @@ import {
 import { convertHackathonToString } from "@/interfaces/HackathonInformation";
 import bio from "../../../../public/about/bio.json";
 import fs from "fs";
+import { getCurrentPursuitsString } from "@/constants/CurrentPursuits";
+import { getNextStepsString } from "@/constants/NextSteps";
 // must use this weird way here because otherwise you get an error if you directly import: import pdf from "pdf-parse"
 // Error: ENOENT: no such file or directory, open 'C:\Users\Dylan\VSCode\projects\vu-dylan.github.io\test\data\05-versions-space.pdf'
 import pdf from "pdf-parse/lib/pdf-parse.js";
@@ -56,6 +58,10 @@ export async function POST(request: NextRequest) {
   Dylan's bio: ${bio.data}
 
   Dylan's resume: ${resumeString}
+
+  What Dylan is currently pursuing: ${getCurrentPursuitsString()}
+
+  What Dylan is planning to do next: ${getNextStepsString()}
 
   Projects that Dylan has built:
   ${projectsString}

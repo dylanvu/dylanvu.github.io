@@ -8,6 +8,7 @@ import "@/styles/contribution.css";
 import Paragraph from "./content-block/Paragraph";
 import ContentBlockTitle from "./content-block/ContentBlockTitle";
 import ContactButton from "./contact/ContactButton";
+import CurrentPursuits from "@/constants/CurrentPursuits";
 
 const Contributions = () => {
   const [contribution, setContrib] = useState("");
@@ -147,18 +148,11 @@ const Contributions = () => {
     }
   }, [index]);
 
-  const currentPursuits = [
-    "Software Dev Engineer I at Amazon Health (One Medical)",
-    "Mentoring hackathons!",
-    "Trying out new areas, like game development",
-    "Georgia Tech Online Masters of CS",
-  ];
-
   return (
     <>
       <ContentBlockTitle title={"What I'm Up To"} />
       <div className="contribution">
-        {currentPursuits.map((pursuit, index) => (
+        {CurrentPursuits.map((pursuit, index) => (
           <Paragraph text={"* " + pursuit} key={"pursuit" + index} />
         ))}
       </div>
