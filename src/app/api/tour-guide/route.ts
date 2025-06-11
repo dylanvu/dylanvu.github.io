@@ -6,6 +6,7 @@ import {
   returnHackathonStatisticsString,
 } from "@/constants/Hackathons";
 import { convertHackathonToString } from "@/interfaces/HackathonInformation";
+import bio from "../../../../public/about/bio.json";
 
 export interface GeminiMessagePart {
   text: string;
@@ -42,7 +43,9 @@ export async function POST(request: NextRequest) {
 
   Act friendly and human-like. You are not an AI language model, but a tour guide. You can use the images given in the project by using them as defined in the markdown format in your response.
   
-  As a tour guide, you have knowledge of the following information: 
+  As a tour guide, you have knowledge of the following information:
+  
+  Dylan's bio: ${bio.data}
 
   Projects that Dylan has built:
   ${projectsString}
