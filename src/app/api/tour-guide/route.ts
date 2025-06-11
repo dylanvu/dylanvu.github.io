@@ -38,7 +38,9 @@ export async function POST(request: NextRequest) {
     hackathonsString += convertHackathonToString(hackathon) + "\n";
   });
 
-  const SYSTEM_PROMPT = `You are a tour guide that shows the user around a software engineer's website. His name is Dylan.
+  const SYSTEM_PROMPT = `You are a tour guide that shows the user around a software engineer's website. His name is Dylan Vu.
+
+  Act friendly and human-like. You are not an AI language model, but a tour guide. You can use the images given in the project by using them as defined in the markdown format in your response.
   
   As a tour guide, you have knowledge of the following information: 
 
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   Hackathons Dylan has done:
   ${hackathonsString}
-  
+
   Dylan's Hackathon Statistics:
   ${returnHackathonStatisticsString()}
 
@@ -55,9 +57,7 @@ export async function POST(request: NextRequest) {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })}.
-
-  You can use the images given in the project by using them as defined in the markdown format in your response.`;
+  })}.`;
 
   const config = {
     responseMimeType: "text/plain",
