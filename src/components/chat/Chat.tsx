@@ -63,7 +63,7 @@ export default function Chat() {
         )}
       </AnimatePresence>
       <button
-        className={`show-chat-button ${showChat ? null : "shimmer"}`}
+        className={`show-chat-button ${showChat && "shimmer"}`}
         onClick={toggleChat}
       >
         <FontAwesomeIcon icon={faRobot} className="show-chat-button-icon" />
