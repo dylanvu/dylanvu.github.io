@@ -754,3 +754,81 @@ export const HackathonList: HackathonInformation[] = [
     duration: 36,
   },
 ];
+
+/**
+ * calculates the statistics for the hackathons, such as the number of hackathons participated, the number of hackathons won, and the total hours of hackathons
+ * @returns
+ */
+export function calculateHackathonStatistics() {
+  // hackathons participated (mentored, participated)
+  const competedHackathons = HackathonList.filter(
+    (hackathon) => !hackathon.role.toLowerCase().includes("mentor")
+  );
+
+  // hackathons won
+  const filteredHackathonWinners = competedHackathons.filter(
+    (hackathon) => hackathon.awards.length > 0
+  );
+
+  // hackathons mentored
+  const filteredHackathonMentorship = HackathonList.filter((hackathon) =>
+    hackathon.role.toLowerCase().includes("mentor")
+  );
+
+  // hours mentored
+  const hoursMentored = filteredHackathonMentorship.reduce(
+    (total, hackathon) => total + hackathon.duration,
+    0
+  );
+
+  // hours competed
+  const hoursCompeted = competedHackathons.reduce(
+    (total, hackathon) => total + hackathon.duration,
+    0
+  );
+
+  // total hours at hackathons
+  const totalHours = hoursCompeted + hoursMentored;
+
+  return {
+    /**
+     * hackathons participated (mentored, participated)
+     */
+    competedHackathons,
+    /**
+     * hackathons won
+     */
+    filteredHackathonWinners,
+    /**
+     * hackathons mentored
+     */
+    filteredHackathonMentorship,
+    /**
+     * hours mentored
+     */
+    hoursMentored,
+    /**
+     * hours competed
+     */
+    hoursCompeted,
+    /**
+     * total hours at hackathons
+     */
+    totalHours,
+  };
+}
+
+export function returnHackathonStatisticsString() {
+  const {
+    competedHackathons,
+    filteredHackathonWinners,
+    filteredHackathonMentorship,
+    hoursMentored,
+    hoursCompeted,
+    totalHours,
+  } = calculateHackathonStatistics();
+
+  `Hackathons Participated: ${competedHackathons.length} hackathons, ~ ${hoursCompeted.toLocaleString()} hours
+  Competed: ${competedHackathons.length} hackathons, ~ ${hoursCompeted.toLocaleString()} hours, ${filteredHackathonWinners.length} awards
+  Mentored: ${filteredHackathonMentorship.length} hackathons, ~ ${hoursMentored.toLocaleString()} hours`;
+}

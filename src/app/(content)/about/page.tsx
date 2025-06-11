@@ -1,7 +1,10 @@
 import ContentBlock from "@/components/content-block/ContentBlock";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
 import bio from "../../../../public/about/bio.json";
-import { HackathonList } from "@/constants/Hackathons";
+import {
+  calculateHackathonStatistics,
+  HackathonList,
+} from "@/constants/Hackathons";
 
 import "@/styles/content-block/paragraph.css";
 import "@/styles/content-block/content-block.css";
@@ -11,37 +14,14 @@ export default function About() {
   const aboutParagraphs: string[] = bio.data.split("\n");
   // process the hackathons
 
-  // calculate some statistics
-
-  // hackathons participated (mentored, participated)
-  const competedHackathons = HackathonList.filter(
-    (hackathon) => !hackathon.role.toLowerCase().includes("mentor")
-  );
-
-  // hackathons won
-  const filteredHackathonWinners = competedHackathons.filter(
-    (hackathon) => hackathon.awards.length > 0
-  );
-
-  // hackathons mentored
-  const filteredHackathonMentorship = HackathonList.filter((hackathon) =>
-    hackathon.role.toLowerCase().includes("mentor")
-  );
-
-  // hours mentored
-  const hoursMentored = filteredHackathonMentorship.reduce(
-    (total, hackathon) => total + hackathon.duration,
-    0
-  );
-
-  // hours competed
-  const hoursCompeted = competedHackathons.reduce(
-    (total, hackathon) => total + hackathon.duration,
-    0
-  );
-
-  // total hours at hackathons
-  const totalHours = hoursCompeted + hoursMentored;
+  const {
+    competedHackathons,
+    filteredHackathonWinners,
+    filteredHackathonMentorship,
+    hoursMentored,
+    hoursCompeted,
+    totalHours,
+  } = calculateHackathonStatistics();
 
   // format the hackathons into bullet points
   const hackathonList = HackathonList.map((hackathon) => {

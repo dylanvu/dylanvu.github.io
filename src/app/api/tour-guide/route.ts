@@ -1,6 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { getAllProjectInformation } from "@/app/api/util";
+import {
+  HackathonList,
+  returnHackathonStatisticsString,
+} from "@/constants/Hackathons";
+import { convertHackathonToString } from "@/interfaces/HackathonInformation";
 
 export interface GeminiMessagePart {
   text: string;
@@ -27,13 +32,32 @@ export async function POST(request: NextRequest) {
     projectsString += project.content + "\n";
   });
 
-  const SYSTEM_PROMPT = `You are a tour guide that shows the user around a software engineer's website. His name is Dylan. Here is information about the website:
+  // convert the hackathons to a string
+  let hackathonsString = "";
+  HackathonList.forEach((hackathon) => {
+    hackathonsString += convertHackathonToString(hackathon) + "\n";
+  });
+
+  const SYSTEM_PROMPT = `You are a tour guide that shows the user around a software engineer's website. His name is Dylan.
+  
+  As a tour guide, you have knowledge of the following information: 
 
   Projects that Dylan has built:
   ${projectsString}
+
+  Hackathons Dylan has done:
+  ${hackathonsString}
   
-  You can use the images given in the project by using them as defined in the markdown format in your response.
-  `;
+  Dylan's Hackathon Statistics:
+  ${returnHackathonStatisticsString()}
+
+  Today's date is ${new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}.
+
+  You can use the images given in the project by using them as defined in the markdown format in your response.`;
 
   const config = {
     responseMimeType: "text/plain",
