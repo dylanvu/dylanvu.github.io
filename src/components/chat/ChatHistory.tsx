@@ -54,22 +54,37 @@ export default function ChatHistory() {
           })}
         </AnimatePresence>
       </div>
-      <div className="chat-history-presets">
-        <button
-          onClick={() => {
-            agentContext?.goToRandomProject();
-          }}
-        >
-          Surprise me
-        </button>
-        <button
-          onClick={() => {
-            agentContext?.talkToAgent("Summarize all of Dylan's projects.");
-          }}
-        >
-          The full tour
-        </button>
-      </div>
+      <AnimatePresence>
+        {agentContext?.isThinking ? (
+          <motion.div
+            key="thinking-chat-history-presets"
+            animate={{ opacity: 1 }}
+          >
+            Thinking...
+          </motion.div>
+        ) : (
+          <motion.div
+            className="chat-history-presets"
+            key="chat-history-presets"
+            animate={{ opacity: 1 }}
+          >
+            <button
+              onClick={() => {
+                agentContext?.goToRandomProject();
+              }}
+            >
+              Surprise me
+            </button>
+            <button
+              onClick={() => {
+                agentContext?.talkToAgent("Summarize all of Dylan's projects.");
+              }}
+            >
+              The full tour
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
