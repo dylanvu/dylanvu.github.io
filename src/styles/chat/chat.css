@@ -29,8 +29,6 @@
 
 /* for the entire chatbox */
 .chat-container {
-  /* TODO: Fix the issue where the chat pushes the webpage at bottom */
-  position: -webkit-fixed;
   position: fixed;
   bottom: 2vh;
   right: 10vw;
@@ -187,8 +185,11 @@ button.interactable-element-border:hover {
 
 /* <--------------- mobile most of general rules ----------------> */
 @media screen and (max-width: 1023px) {
-  .chat-container {
-    width: 70vw;
-    /* center the chat container, it will be hidden by default on mobile */
+  .chat-content-container {
+    width: 85vw;
+  }
+
+  .show-chat-button {
+    float: right;
   }
 }
