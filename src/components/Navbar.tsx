@@ -4,9 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import "@/styles/navbar.css";
+import { AnimatePresence, motion } from "motion/react";
 
-// The eslint-disable-next-line is necessary because these are <a> and not <button> so tons of warnings pop up.
-//I'm a bit lazy to fix this because it would involve fixing the css styling and this works as it is
 const Navbar = () => {
   const [responsiveClass, setResponsive] = useState("inactive");
   const [showLinks, setShowLinks] = useState(false);
@@ -68,10 +67,6 @@ const Navbar = () => {
             <span className="line"></span>
             <span className="line"></span>
           </div>
-          {/* <Link className="nav-link" href="/about"><span className="name">About</span></Link>
-        <Link className="nav-link" href="/projects"><span className="name">Projects</span></Link>
-        <Link className="nav-link" href="/Dylan_Vu_Resume.pdf" target="_blank" rel="noreferrer"><span className="name">Resume</span></Link>
-        <Link className="nav-link" href="/contact"><span className="name">Contact</span></Link> */}
           {responsiveClass !== "is-responsive"
             ? links.map((link) => link) // non-responsive view
             : null}
@@ -79,8 +74,14 @@ const Navbar = () => {
       </nav>
       {/* responsive links when you press the hamburger menu */}
       {showLinks ? (
-        // TODO: add framer motion to animate the rendering of this when the hamburger menu is clicked
-        <div className="responsive-link-menu">{links.map((link) => link)}</div>
+        <AnimatePresence>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ ease: "easeInOut", duration: 0.4 }}
+            className="responsive-link-menu">{links.map((link) => link)}</motion.div>
+        </AnimatePresence>
       ) : null}
     </div>
   );
