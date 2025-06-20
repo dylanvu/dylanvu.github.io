@@ -78,7 +78,7 @@ export default function Chat() {
         {showChat && (
           <motion.div
             className="chat-content-container"
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0, height: currentHeight, width: currentWidth }}
             animate={{ opacity: 1, height: currentHeight, width: currentWidth }}
             exit={{ opacity: 0 }}
             transition={{ ease: "easeInOut", duration: 0.2 }}
