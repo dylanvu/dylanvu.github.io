@@ -43,10 +43,12 @@
   border-width: 0.4rem;
   border-radius: var(--chat-content-container-border-radius);
   background-color: var(--chat-main-color);
-  width: 20vw;
+  /* width is controlled in the react component due to dynamic resizing */
   color: var(--theme-white);
   margin-bottom: 0.4rem;
   padding: 0.1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-header {
@@ -55,20 +57,33 @@
     var(--chat-content-container-border-radius) -
       var(--chat-content-container-padding)
   );
-  padding: 0.2rem;
+  padding: 0.4rem;
+  display: grid;
+  grid-template-columns: 5fr 2fr;
+  align-items: center;
 }
 
-/* the chat input and also the chat history, excludes the header */
-.chat-main {
-  margin: 0.8rem;
+.chat-header-title {
+  justify-self: start;
+  text-align: left;
+}
+
+.chat-header-buttons {
+  justify-self: end;
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
 }
 
 /* wraps the chat history, input, presets, etc without the input */
 /* TODO: prevent further scrolling when the bottom is reached */
 .chat-history-contents {
+  margin: 0.8rem;
+  /* height: 100%; */
   margin-bottom: 0.8rem;
   overflow-y: scroll;
   height: 32vh;
+  flex-grow: 1;
 }
 
 /* wraps the chat history itself, all the messages only */
@@ -96,9 +111,32 @@ button.interactable-element-border:hover {
   position: relative;
 }
 
+/* llm response rendering */
 .model-message {
   left: 0;
   border-color: var(--theme-white);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem; /* This single property now controls all vertical spacing! */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+
+.model-message ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.model-message li {
+  margin-bottom: 0.25em;
+}
+
+.model-message img {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
 }
 
 .user-message {
@@ -108,26 +146,7 @@ button.interactable-element-border:hover {
   color: var(--chat-main-color);
 }
 
-/* llm response rendering */
-.chat-message-response {
-  display: grid;
-  gap: 0.75em; /* This single property now controls all vertical spacing! */
-}
 
-.chat-message-response ul {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-.chat-message-response li {
-  margin-bottom: 0.25em;
-}
-
-.chat-message-response img {
-  display: block;
-  max-width: 100%;
-  border-radius: 8px;
-}
 
 .chat-history-presets {
   margin-top: var(--chat-message-gap);
@@ -154,7 +173,7 @@ button.interactable-element-border:hover {
 }
 
 /* the chat input */
-.chat-main #chat {
+.chat-input {
   width: 100%;
   padding: 0.4rem;
   transition:
@@ -165,7 +184,7 @@ button.interactable-element-border:hover {
   resize: none;
 }
 
-.chat-main #chat:focus {
+.chat-input:focus {
   outline: none;
   border-color: var(--theme-white);
 }
@@ -179,14 +198,11 @@ button.interactable-element-border:hover {
   color: var(--chat-main-color);
 }
 
-.chat-main button {
-  padding: 0.4rem;
-}
-
 /* <--------------- mobile most of general rules ----------------> */
 @media screen and (max-width: 1023px) {
+  /* mobile width for .chat-content-container is controlled in the react component */
   .chat-content-container {
-    width: 85vw;
+    font-size: 1.2rem;
   }
 
   .show-chat-button {

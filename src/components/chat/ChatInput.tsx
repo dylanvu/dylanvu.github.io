@@ -27,8 +27,7 @@ export default function ChatInput() {
 
   return (
     <textarea
-      className={`interactable-element-border ${agentContext?.isThinking ? "chat-input-disabled" : "chat-input-enabled"}`}
-      id="chat"
+      className={`interactable-element-border chat-input ${agentContext?.isThinking ? "chat-input-disabled" : "chat-input-enabled"}`}
       placeholder={
         !agentContext?.isThinking ? "What do you want to see?" : "Thinking..."
       }

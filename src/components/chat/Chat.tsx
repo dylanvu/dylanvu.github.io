@@ -5,7 +5,7 @@ import "@/styles/chat/chat.css";
 import ChatHistory from "@/components/chat/ChatHistory";
 import ChatInput from "./ChatInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRobot } from "@fortawesome/free-solid-svg-icons";
+import { faRobot, faUpRightAndDownLeftFromCenter, faDownLeftAndUpRightToCenter, faWindowMinimize } from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence, motion } from "motion/react";
 
 export default function Chat() {
@@ -41,6 +41,36 @@ export default function Chat() {
     };
   }, []);
 
+  const LARGE_CHAT_WIDTH = "80vw";
+  const LARGE_CHAT_WIDTH_MOBILE = "85vw";
+  const LARGE_CHAT_HEIGHT = "80vh";
+  const SMALL_CHAT_WIDTH = "20vw";
+  const SMALL_CHAT_WIDTH_MOBILE = "85vw";
+
+  const [chatSize, setChatSize] = useState<"small" | "large">("small");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1023);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Call once to set initial state
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const currentWidth = chatSize === "small"
+  ? (isMobile ? SMALL_CHAT_WIDTH_MOBILE : SMALL_CHAT_WIDTH)
+  : (isMobile ? LARGE_CHAT_WIDTH_MOBILE : LARGE_CHAT_WIDTH);
+
+  const currentHeight = chatSize === "small" ? "auto" : LARGE_CHAT_HEIGHT;
+
+  function toggleChatSize() {
+    setChatSize(chatSize === "large" ? "small" : "large")
+  }
+
   return (
     // TODO: be able to resize the chat window
     <div className="chat-container">
@@ -49,16 +79,26 @@ export default function Chat() {
           <motion.div
             className="chat-content-container"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 1, height: currentHeight, width: currentWidth }}
             exit={{ opacity: 0 }}
             transition={{ ease: "easeInOut", duration: 0.2 }}
             key="chat-content-container"
           >
-            <div className="chat-header">Dylan&apos;s Tour Guide</div>
-            <div className="chat-main">
-              <ChatHistory />
-              <ChatInput />
+            <div className="chat-header">
+              <div className="chat-header-title">
+                Dylan&apos;s Tour Guide
+              </div>
+              <div className="chat-header-buttons">
+                <button onClick={toggleChatSize}>
+                  <FontAwesomeIcon icon={ chatSize === "small" ? faUpRightAndDownLeftFromCenter : faDownLeftAndUpRightToCenter}/>
+                </button>
+                <button onClick={toggleChat}>
+                  <FontAwesomeIcon icon={faWindowMinimize}/>
+                </button>
+              </div>
             </div>
+            <ChatHistory />
+            <ChatInput />
           </motion.div>
         )}
       </AnimatePresence>

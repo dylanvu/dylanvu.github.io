@@ -41,11 +41,9 @@ export default function ChatHistory() {
               >
                 {/* // handle the LLM's response with special rendering*/}
                 {message.role === "model" ? (
-                  <div className="chat-message-response">
-                    <ReactMarkdown remarkPlugins={[gfm]}>
-                      {message.message}
-                    </ReactMarkdown>
-                  </div>
+                  <ReactMarkdown remarkPlugins={[gfm]}>
+                    {message.message}
+                  </ReactMarkdown>
                 ) : (
                   message.message
                 )}
