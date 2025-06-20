@@ -165,6 +165,7 @@ button.interactable-element-border:hover {
   transition:
     background-color ease-in-out 0.1s,
     color ease-in-out 0.1s;
+  padding: 0.4rem;
 }
 
 .chat-history-presets button:hover {
