@@ -88,7 +88,8 @@
 
 /* wraps the chat history itself, all the messages only */
 .chat-history-messages {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--chat-message-gap);
 }
 
@@ -121,6 +122,7 @@ button.interactable-element-border:hover {
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
+  margin-right: auto;
 }
 
 
