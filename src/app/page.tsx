@@ -28,6 +28,13 @@ interface highlightObject extends navigationObject {
 export default function Home() {
   const highlights: highlightObject[] = [
     {
+      displaySection: "Epicdle",
+      urlSegment: "projects/games/epicdle",
+      description:
+        "A polished and addictive daily musical song guessing game designed with operational scale and a love of the musical first and foremost.",
+      extension: "gif",
+    },
+    {
       displaySection: "Amelia",
       urlSegment: "projects/embedded/amelia",
       description: `A physical generative AI travel companion brought to life through hardware and a Large Action Model!`,

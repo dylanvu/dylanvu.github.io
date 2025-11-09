@@ -2,6 +2,11 @@
   "title": "Game Development",
   "data": [
     {
+      "displaySection": "Epicdle",
+      "urlSegment": "epicdle",
+      "extension": "gif"
+    },
+    {
       "displaySection": "SweetStack",
       "urlSegment": "sweetstack",
       "extension": "gif"
