@@ -12,18 +12,6 @@ Epicdle is a daily song guessing game, inspired by Wordle, Heardle, and my-shot 
 
 Here are the technologies I used:
 
-<ul>
-  <li>Next.js</li>
-  <li>React</li>
-  <li>TypeScript</li>
-  <li>Maintine UI</li>
-  <li>Google Cloud Firestore</li>
-  <li>Google CLoud Storage</li>
-  <li>CloudFlare R2 CDN</li>
-  <li>FFmpeg</li>
-  <li>Motion</li>
-</ul>
-
 * Next.js
 * React
 * TypeScript

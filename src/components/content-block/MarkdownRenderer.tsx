@@ -10,26 +10,37 @@ export default function MarkdownRenderer({ text }: { text: string }) {
         remarkPlugins={[gfm]}
         components={{
           h1: ({ children }) => <ContentBlockTitle title={String(children)} />,
-          h2: ({ ...props }) => <h2 {...props} />,
-          h3: ({ ...props }) => <h3 {...props} />,
-          h4: ({ ...props }) => <h4 {...props} />,
-          h5: ({ ...props }) => <h5 {...props} />,
-          h6: ({ ...props }) => <h6 {...props} />,
-          p: ({ ...props }) => <div className="paragraph-text" {...props} />,
-          a: ({ ...props }) => (
-            <a className="link" target="_blank" rel="noreferrer" {...props} />
+          h2: ({ children }) => <h2>{children}</h2>,
+          h3: ({ children }) => <h3>{children}</h3>,
+          h4: ({ children }) => <h4>{children}</h4>,
+          h5: ({ children }) => <h5>{children}</h5>,
+          h6: ({ children }) => <h6>{children}</h6>,
+
+          p: ({ children }) => <p className="paragraph-text">{children}</p>,
+
+          a: ({ children, href }) => (
+            <a className="link" href={href} target="_blank" rel="noreferrer">
+              {children}
+            </a>
           ),
-          li: ({ ...props }) => <li className="paragraph-bullet" {...props} />,
-          ul: ({ ...props }) => <ul {...props} />,
-          ol: ({ ...props }) => <ol {...props} />,
-          strong: ({ ...props }) => <strong {...props} />,
-          em: ({ ...props }) => <em {...props} />,
-          code: ({ ...props }) => <code {...props} />,
-          pre: ({ ...props }) => <pre {...props} />,
-          img: ({ ...props }) => (
-            <div className="paragraph-image-container">
-              <img src={props.src} {...props} />
-            </div>
+
+          ul: ({ children }) => <ul>{children}</ul>,
+          ol: ({ children }) => <ol>{children}</ol>,
+          li: ({ children }) => (
+            <li className="paragraph-bullet">{children}</li>
+          ),
+
+          strong: ({ children }) => <strong>{children}</strong>,
+          em: ({ children }) => <em>{children}</em>,
+
+          code: ({ children }) => <code> {children} </code>,
+
+          pre: ({ children }) => <pre>{children}</pre>,
+
+          img: ({ src, alt }) => (
+            <span className="paragraph-image-container">
+              <img src={src} alt={alt} />
+            </span>
           ),
         }}
       >
