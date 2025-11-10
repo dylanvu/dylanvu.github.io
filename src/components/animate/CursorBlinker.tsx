@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, Variants } from "motion/react";
 import "@/styles/animate/cursor-blinker.css";
 
-const cursorVariants = {
+const cursorVariants: Variants = {
   blinking: {
     opacity: [0, 0, 1, 1],
     transition: {
