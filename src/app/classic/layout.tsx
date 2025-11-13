@@ -1,3 +1,4 @@
+import ParticlesBg from "@/components/ParticlesBg";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -5,12 +6,16 @@ import "./globals.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 
+// AI agent provider
+import AgentProvider from "@/providers/ai/AgentProvider";
+
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
 
 import Head from "next/head";
 
 import Script from "next/script";
+import Chat from "@/components/chat/Chat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,27 +34,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <Head>
-        {/* Configure leaflet for the hackathon map component */}
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossOrigin=""
-        />
-      </Head>
-      <Script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossOrigin=""
-      />
-      <body className={inter.className}>
-        <main className="main">
-          {/* floating particles in background  */}
-          {children}
-        </main>
-      </body>
-    </html>
+    <AgentProvider>
+      <main className="main">
+        {/* floating particles in background  */}
+        <ParticlesBg />
+        {children}
+        <Chat />
+      </main>
+    </AgentProvider>
   );
 }

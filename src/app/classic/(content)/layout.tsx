@@ -1,4 +1,4 @@
-"use client"
+"use client";
 // the use client is necessary for the animations
 
 import Navbar from "@/components/Navbar";
@@ -15,9 +15,7 @@ export default function PageLayout({
       <div className="content-container">
         <div className="content">
           <div className="page" id="agent_root">
-            <AnimatePresence
-              mode="wait"
-            >
+            <AnimatePresence mode="wait">
               {/* <motion.div initial={{ x: "100vw" }}
                                 animate={{ x: 0 }}
                                 exit={{ x: "-100vw" }}

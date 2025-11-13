@@ -1,6 +1,6 @@
 import ContentBlock from "@/components/content-block/ContentBlock";
 import ContentBlockTitle from "@/components/content-block/ContentBlockTitle";
-import bio from "../../../../public/about/bio.json";
+import bio from "../../../../../public/about/bio.json";
 import {
   calculateHackathonStatistics,
   HackathonList,

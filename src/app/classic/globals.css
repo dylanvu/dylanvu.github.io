@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Oxygen&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --left-right-margin: 8%;
+  --left-right-padding: 4%;
+  /* color themes */
+  --theme-red: #c0392b;
+  --theme-white: #f2f2f2;
+  --theme-dark-gray: #333;
+  --theme-white-hover: #ddd;
+  --theme-black-hover: black;
+  --theme-background-color: #36393f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+HTML,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--theme-background-color);
+  /* color: #f2f2f2; */
+  text-align: center;
+  overflow-x: hidden;
+}
+
+.main {
+  position: relative;
+}
+
+.content-container {
+  height: 100%;
+  position: relative;
+}
+
+.content {
+  position: relative;
+  top: 0;
+  left: 0;
+  /* font-size: 20px; */
+  background-color: var(--theme-white);
+  font-family: "Oxygen", sans-serif;
+  font-size: 1.8rem;
+  margin-left: var(--left-right-margin);
+  margin-right: var(--left-right-margin);
+  word-wrap: break-word;
+  padding-left: var(--left-right-padding);
+  padding-right: var(--left-right-padding);
+  min-height: 100vh;
+  height: 100%;
+}
+
+.page {
+  width: 80%;
+  margin: auto;
+}
+
+/* stolen from https: //stackoverflow.com/questions/68216941/how-to-make-a-css-shimmer-effect-on-image */
+.shimmer {
+  display: inline-block;
+  -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/500%
+    100%;
+  background-repeat: no-repeat;
+  animation: shimmer 10s infinite 10s;
+}
+
+@keyframes shimmer {
+  /* this will add a delay between each iteration: https: //css-tricks.com/css-keyframe-animation-delay-iterations/ */
+  50% {
+    -webkit-mask-position: left;
+  }
+
+  100% {
+    -webkit-mask-position: left;
+  }
+}
+
+/* <--------------- mobile most of general rules ----------------> */
+
+@media screen and (max-width: 1023px) {
+  .content {
+    font-size: 2rem;
+  }
+
+  .page {
+    width: 100%;
+    margin: auto;
+  }
+}
