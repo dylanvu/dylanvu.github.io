@@ -6,7 +6,9 @@ Play it here: https://epicdle.com
 
 Introducting the first project I've actively marketed online and one that I've had to implement tons of optimizations and perform operational improvements on.
 
-Epicdle is a daily song guessing game, inspired by Wordle, Heardle, and my-shot (Hamilton's version), built for the Epic the Musical fandom. I absolutely love this musical and listen to it all the time, so this project I wanted to impart as much of my love for it as possible.
+Epicdle is a daily song guessing game, inspired by Wordle, Heardle, and my-shot (Hamilton's version), built for the Epic the Musical fandom. I absolutely love this musical and listen to it all the time, so this project I wanted to impart as much of my love for this musical as possible into this game.
+
+Upon launch, I saw 600 daily active users. I take user feedback and iterate on the game to make it better and independently market it on the Epic the Musical subreddit.
 
 ![Epicdle](/projects/games/epicdle/epicdle.png)
 
@@ -17,12 +19,12 @@ Here are the technologies I used:
 * TypeScript
 * Maintine UI
 * Google Cloud Firestore
-* Google CLoud Storage
+* Google Cloud Storage
 * CloudFlare R2 CDN
 * FFmpeg
 * Motion
 
-I'm quite proud of this project because I wanted to serve this to the fandom without spending a lot of money on maintenance. I made the cloud architecture be able to support a theoretical daily active user cound of 300,000 users for free. This was accomplished by minimizing the frequency and size of files served to users. I also accomplished daily resets with zero downtime or maintenance by pregenerating the song a day ahead using a cron job.
+I'm quite proud of this project because I wanted to serve this to the fandom without spending a lot of money on maintenance. I made the cloud architecture be able to support a theoretical daily active user count of 300,000 users for free. This was accomplished by minimizing the frequency and size of files served to users. I also accomplished daily resets with zero downtime or maintenance by pregenerating the song a day ahead using a cron job.
 
 Here is how the architecture works:
 
