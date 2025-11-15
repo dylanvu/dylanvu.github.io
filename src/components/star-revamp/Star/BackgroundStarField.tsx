@@ -19,7 +19,13 @@ export default function StarField({
   return (
     <Group>
       {stars.map((star, i) => (
-        <BackgroundStar key={i} x={star.x} y={star.y} radius={star.radius} />
+        <BackgroundStar
+          key={i}
+          x={star.x}
+          y={star.y}
+          radius={star.radius}
+          delay={i * 0.05} // sequential fade-in
+        />
       ))}
     </Group>
   );

@@ -10,9 +10,9 @@ export default function IntroScreen({
   setIntroDoneAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const INTRO_TEXT = [
-    "Each star is a piece of me.",
-    "Each constellation is a part of who I am.",
-    "Here is my sky.",
+    "Each star is a piece of me",
+    "Each constellation is a part of who I am",
+    "Here is my sky",
   ];
 
   const FADE_DURATION = 1; // seconds per line

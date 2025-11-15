@@ -1,6 +1,7 @@
 import { Shape } from "react-konva";
+import { useEffect, useRef } from "react";
+import Konva from "konva";
 
-// Define reusable colors for stars
 const STAR_COLORS = {
   bright: "#FFFFFF",
   paleBlue: "#E0F7FF",
@@ -11,17 +12,19 @@ const STAR_COLORS = {
 export default function MainStar({
   x = 0,
   y = 0,
-  size = 5, // base radius of the star
-  brightness = 1, // 0.5 = dim, 1 = normal, 1.5 = bright
+  size = 5,
+  brightness = 1,
+  delay = 0, // delay in seconds for sequential fade-in
 }: {
   x?: number;
   y?: number;
   size?: number;
   brightness?: number;
+  delay?: number;
 }) {
+  const shapeRef = useRef<Konva.Shape>(null);
   const radius = size * brightness;
 
-  // Random subtle color tint per star
   const starColor = [
     STAR_COLORS.bright,
     STAR_COLORS.paleBlue,
@@ -29,12 +32,26 @@ export default function MainStar({
     STAR_COLORS.palePink,
   ][Math.floor(Math.random() * 4)];
 
+  useEffect(() => {
+    if (shapeRef.current) {
+      const tween = new Konva.Tween({
+        node: shapeRef.current,
+        duration: 0.5, // fade-in duration
+        opacity: 1, // target opacity
+        delay, // stagger delay
+        easing: Konva.Easings.Linear,
+      });
+      tween.play();
+    }
+  }, [delay]);
+
   return (
     <Shape
+      ref={shapeRef}
       x={x}
       y={y}
+      opacity={0} // start invisible
       sceneFunc={(ctx, shape) => {
-        // Glowing radial gradient
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
         gradient.addColorStop(0, starColor);
         gradient.addColorStop(0.5, "rgba(255,255,255,0.5)");
@@ -46,12 +63,10 @@ export default function MainStar({
         ctx.fill();
       }}
       hitFunc={(ctx, shape) => {
-        // Simple hit detection: circle radius
         ctx.beginPath();
         ctx.arc(0, 0, radius, 0, Math.PI * 2);
         ctx.fillShape(shape);
       }}
-      draggable
       onClick={() => console.log("Star clicked!", { x, y })}
     />
   );
