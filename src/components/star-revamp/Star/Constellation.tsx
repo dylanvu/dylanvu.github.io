@@ -7,14 +7,16 @@ export default function Constellation({
   stars,
   connections,
   showBoundingBox,
+  totalDuration = 2, // seconds
 }: {
   stars: { x: number; y: number; size?: number }[];
   connections?: [number, number][];
   showBoundingBox?: boolean;
+  totalDuration?: number;
 }) {
   const [brightness, setBrightness] = useState(1);
+  const brightnessHover = 1.2;
 
-  // Bounding box
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
   const minX = Math.min(...xs) - 10;
@@ -24,9 +26,36 @@ export default function Constellation({
   const width = maxX - minX;
   const height = maxY - minY;
 
-  const lineDuration = 0.25; // faster line animation
-  const delayMultiplier = lineDuration; // sync stars exactly with line
-  const brightnessHover = 1.2;
+  // Helper: distance between points
+  const getDistance = (
+    p1: { x: number; y: number },
+    p2: { x: number; y: number }
+  ) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
+
+  // Determine line segments
+  const lineSegments =
+    connections && connections.length > 0
+      ? connections
+      : stars.slice(1).map((_, i) => [i, i + 1] as [number, number]);
+
+  // Compute lengths
+  const lineLengths = lineSegments.map(([i1, i2]) =>
+    getDistance(stars[i1], stars[i2])
+  );
+
+  const totalLineLength = lineLengths.reduce((sum, l) => sum + l, 0);
+
+  // Compute per-line duration proportional to length
+  const lineDurations = lineLengths.map(
+    (l) => (l / totalLineLength) * totalDuration
+  );
+
+  // Compute cumulative delays for each line
+  const lineDelays = lineDurations.reduce<number[]>((acc, dur, idx) => {
+    if (idx === 0) acc.push(0);
+    else acc.push(acc[idx - 1] + lineDurations[idx - 1]);
+    return acc;
+  }, []);
 
   return (
     <Group
@@ -42,40 +71,40 @@ export default function Constellation({
         fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""}
         listening={true}
       />
-      {/* Lines */}
-      {connections && connections.length > 0
-        ? connections.map(([i1, i2], idx) => (
-            <AnimatedLine
-              key={idx}
-              p1={stars[i1]}
-              p2={stars[i2]}
-              duration={lineDuration}
-              delay={idx * delayMultiplier}
-            />
-          ))
-        : stars
-            .slice(1)
-            .map((star, i) => (
-              <AnimatedLine
-                key={i}
-                p1={stars[i]}
-                p2={star}
-                duration={lineDuration}
-                delay={i * delayMultiplier}
-              />
-            ))}
 
-      {/* Stars */}
-      {stars.map((star, i) => (
-        <MainStar
-          key={i}
-          x={star.x}
-          y={star.y}
-          size={star.size || 5}
-          brightness={brightness}
-          delay={i * delayMultiplier} // fade-in synced with line
+      {/* Lines */}
+      {lineSegments.map(([i1, i2], idx) => (
+        <AnimatedLine
+          key={idx}
+          p1={stars[i1]}
+          p2={stars[i2]}
+          duration={lineDurations[idx]}
+          delay={lineDelays[idx]}
         />
       ))}
+
+      {/* Stars */}
+      {stars.map((star, i) => {
+        // Find the line that ends at this star
+        const incomingLineIndex = lineSegments.findIndex(
+          ([start, end]) => end === i || start === i
+        );
+        const delay =
+          incomingLineIndex >= 0
+            ? lineDelays[incomingLineIndex] + lineDurations[incomingLineIndex]
+            : 0;
+
+        return (
+          <MainStar
+            key={i}
+            x={star.x}
+            y={star.y}
+            size={star.size || 5}
+            brightness={brightness}
+            delay={delay} // fade-in when incoming line finishes
+          />
+        );
+      })}
     </Group>
   );
 }

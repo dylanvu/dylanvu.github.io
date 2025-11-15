@@ -16,15 +16,18 @@ const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
 // Define constellations with positions relative to design canvas
 type ConstellationData = {
+  name: string;
   stars: { x: number; y: number; size?: number }[];
   connections?: [number, number][]; // ensure tuple type
   designX: number;
   designY: number;
   rotation?: number;
   scale?: number;
+  totalDuration?: number;
 };
 const CONSTELLATIONS: ConstellationData[] = [
   {
+    name: "Contact",
     stars: [
       { x: 80, y: 40, size: 5 },
       { x: 50, y: 70, size: 5 },
@@ -43,6 +46,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     scale: 1.5,
   },
   {
+    name: "Career",
     stars: [
       { x: 200, y: 50, size: 5 },
       { x: 220, y: 70, size: 4 },
@@ -54,6 +58,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     designY: 400,
   },
   {
+    name: "Projects",
     stars: [
       { x: 80, y: 145, size: 4 },
       { x: 100, y: 150, size: 5 },
@@ -71,11 +76,13 @@ const CONSTELLATIONS: ConstellationData[] = [
     designY: 700,
   },
   {
+    name: "Hackathons",
     stars: US_MAP,
     designX: 1500,
     designY: 600,
     rotation: 10,
     scale: 1.5,
+    totalDuration: 6,
   },
 ];
 
@@ -100,7 +107,11 @@ export default function MainStarField() {
             scaleX={c.scale ?? 1}
             scaleY={c.scale ?? 1}
           >
-            <Constellation stars={c.stars} connections={c.connections} />
+            <Constellation
+              stars={c.stars}
+              connections={c.connections}
+              totalDuration={c.totalDuration}
+            />
           </Group>
         );
       })}
