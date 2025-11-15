@@ -1,46 +1,47 @@
 "use client";
+import IntroScreen from "@/components/star-revamp/IntroScreen/IntroScreen";
+import MainStar from "@/components/star-revamp/Star/Star";
+import { useState } from "react";
+import { Stage, Layer } from "react-konva";
+import { Html } from "react-konva-utils";
+import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarField";
+import { SPACE_BACKGROUND_COLOR } from "@/app/theme";
 
-import React, { useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-
-function Box(props) {
-  // This reference will give us direct access to the mesh
-  const meshRef = useRef();
-  // Set up state for the hovered and active state
-  const [hovered, setHover] = useState(false);
-  const [active, setActive] = useState(false);
-  // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (meshRef.current.rotation.x += delta));
-  // Return view, these are regular three.js elements expressed in JSX
+function MainStage() {
   return (
-    <mesh
-      {...props}
-      ref={meshRef}
-      scale={active ? 1.5 : 1}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}
+    <Stage
+      width={window.innerWidth}
+      height={window.innerHeight}
+      style={{ background: SPACE_BACKGROUND_COLOR }}
     >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
-    </mesh>
+      <Layer>
+        <BackgroundStarField
+          width={window.innerWidth}
+          height={window.innerHeight}
+          starCount={200}
+        />
+        <MainStar x={20} y={20} />
+      </Layer>
+    </Stage>
   );
 }
 
 export default function Home() {
-  return (
-    <Canvas>
-      <ambientLight intensity={Math.PI / 2} />
-      <spotLight
-        position={[10, 10, 10]}
-        angle={0.15}
-        penumbra={1}
-        decay={0}
-        intensity={Math.PI}
-      />
-      <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
-    </Canvas>
+  const [introDone, setIntroDone] = useState(false);
+  return introDone ? (
+    <MainStage />
+  ) : (
+    <div
+      style={{
+        background: SPACE_BACKGROUND_COLOR,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <IntroScreen setIntroDoneAction={setIntroDone} />
+    </div>
   );
 }
