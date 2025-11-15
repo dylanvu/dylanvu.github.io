@@ -1,146 +1,79 @@
-import { Group, Line, Rect } from "react-konva";
-import { useEffect, useRef } from "react";
-import Konva from "konva";
+import { Group, Rect } from "react-konva";
+import { useState } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
+import AnimatedLine from "./AnimatedLine";
 
 export default function Constellation({
   stars,
-  showBoundingBox,
   connections,
+  showBoundingBox,
 }: {
   stars: { x: number; y: number; size?: number }[];
+  connections?: [number, number][];
   showBoundingBox?: boolean;
-  connections?: [number, number][]; // optional array of line segments
 }) {
-  const getDistance = (
-    p1: { x: number; y: number },
-    p2: { x: number; y: number }
-  ) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
+  const [brightness, setBrightness] = useState(1);
 
-  const getLineLength = (points: number[]) => {
-    let length = 0;
-    for (let i = 0; i < points.length - 2; i += 2) {
-      const dx = points[i + 2] - points[i];
-      const dy = points[i + 3] - points[i + 1];
-      length += Math.sqrt(dx * dx + dy * dy);
-    }
-    return length;
-  };
-
-  // Compute bounding box
+  // Bounding box
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
-
-  const minX = Math.min(...xs) - 10; // padding so it's not tight
+  const minX = Math.min(...xs) - 10;
   const maxX = Math.max(...xs) + 10;
   const minY = Math.min(...ys) - 10;
   const maxY = Math.max(...ys) + 10;
-
   const width = maxX - minX;
   const height = maxY - minY;
 
+  const lineDuration = 0.25; // faster line animation
+  const delayMultiplier = lineDuration; // sync stars exactly with line
+  const brightnessHover = 1.2;
+
   return (
     <Group
-      onClick={() => {
-        console.log("Constellation clicked!", stars);
-      }}
+      onClick={() => console.log("Constellation clicked!", stars)}
+      onMouseEnter={() => setBrightness(brightnessHover)}
+      onMouseLeave={() => setBrightness(1)}
     >
-      {/* TEMP BOX: visualize clickable area */}
       <Rect
         x={minX}
         y={minY}
         width={width}
         height={height}
-        fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""} // <--- color to see area
-        listening={true} // clickable
+        fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""}
+        listening={true}
       />
+      {/* Lines */}
       {connections && connections.length > 0
-        ? connections.map(([i1, i2], idx) => {
-            const lineRef = useRef<Konva.Line>(null);
-            const p1 = stars[i1];
-            const p2 = stars[i2];
-            const totalLength = getDistance(p1, p2);
-
-            useEffect(() => {
-              if (!lineRef.current) return;
-              const line = lineRef.current;
-
-              line.dash([totalLength, totalLength]);
-              line.dashOffset(totalLength);
-              line.getLayer()?.batchDraw();
-
-              let start: number | null = null;
-              const duration = 0.5;
-
-              const animate = (timestamp: number) => {
-                if (!start) start = timestamp;
-                const elapsed = (timestamp - start) / 1000;
-                const progress = Math.min(elapsed / duration, 1);
-                line.dashOffset(totalLength * (1 - progress));
-                line.getLayer()?.batchDraw();
-                if (progress < 1) requestAnimationFrame(animate);
-              };
-              requestAnimationFrame(animate);
-            }, [p1, p2]);
-
-            return (
-              <Line
-                key={idx}
-                ref={lineRef}
-                points={[p1.x, p1.y, p2.x, p2.y]}
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth={1}
-                lineCap="round"
-                lineJoin="round"
+        ? connections.map(([i1, i2], idx) => (
+            <AnimatedLine
+              key={idx}
+              p1={stars[i1]}
+              p2={stars[i2]}
+              duration={lineDuration}
+              delay={idx * delayMultiplier}
+            />
+          ))
+        : stars
+            .slice(1)
+            .map((star, i) => (
+              <AnimatedLine
+                key={i}
+                p1={stars[i]}
+                p2={star}
+                duration={lineDuration}
+                delay={i * delayMultiplier}
               />
-            );
-          })
-        : (() => {
-            const lineRef = useRef<Konva.Line>(null);
-            const linePoints = stars.flatMap((s) => [s.x, s.y]);
-            const totalLength = getLineLength(linePoints);
+            ))}
 
-            useEffect(() => {
-              if (!lineRef.current) return;
-              const line = lineRef.current;
-
-              line.dash([totalLength, totalLength]);
-              line.dashOffset(totalLength);
-              line.getLayer()?.batchDraw();
-
-              let start: number | null = null;
-              const duration = stars.length * 0.1 + 0.5;
-
-              const animate = (timestamp: number) => {
-                if (!start) start = timestamp;
-                const elapsed = (timestamp - start) / 1000;
-                const progress = Math.min(elapsed / duration, 1);
-                line.dashOffset(totalLength * (1 - progress));
-                line.getLayer()?.batchDraw();
-                if (progress < 1) requestAnimationFrame(animate);
-              };
-              requestAnimationFrame(animate);
-            }, [linePoints, stars.length]);
-
-            return (
-              <Line
-                ref={lineRef}
-                points={linePoints}
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth={1}
-                lineCap="round"
-                lineJoin="round"
-              />
-            );
-          })()}
-
+      {/* Stars */}
       {stars.map((star, i) => (
         <MainStar
           key={i}
           x={star.x}
           y={star.y}
           size={star.size || 5}
-          delay={i * 0.1}
+          brightness={brightness}
+          delay={i * delayMultiplier} // fade-in synced with line
         />
       ))}
     </Group>
