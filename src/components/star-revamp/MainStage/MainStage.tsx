@@ -45,11 +45,19 @@ export default function MainStage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            fontSize: "5rem",
+            flexDirection: "column",
+            gap: "1rem",
           }}
           className={FONT_FAMILY.className}
         >
-          Dylan Vu
+          <div
+            style={{
+              fontSize: "5rem",
+            }}
+          >
+            Dylan Vu
+          </div>
+          <div>Explore a constellation to learn more</div>
         </motion.div>
       </AnimatePresence>
       {ready && width > 0 && height > 0 && (
