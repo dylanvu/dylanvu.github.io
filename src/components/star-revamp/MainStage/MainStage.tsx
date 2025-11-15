@@ -1,4 +1,8 @@
-import { SPACE_BACKGROUND_COLOR, SPACE_TEXT_COLOR } from "@/app/theme";
+import {
+  FONT_FAMILY,
+  SPACE_BACKGROUND_COLOR,
+  SPACE_TEXT_COLOR,
+} from "@/app/theme";
 import { Layer, Stage } from "react-konva";
 import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
@@ -26,6 +30,7 @@ export default function MainStage() {
             alignItems: "center",
             fontSize: "5rem",
           }}
+          className={FONT_FAMILY.className}
         >
           Dylan Vu
         </motion.div>

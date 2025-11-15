@@ -2,22 +2,39 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { SPACE_BACKGROUND_COLOR, SPACE_TEXT_COLOR } from "@/app/theme";
+import {
+  FONT_FAMILY,
+  SPACE_BACKGROUND_COLOR,
+  SPACE_TEXT_COLOR,
+} from "@/app/theme";
 
 export default function IntroScreen({
   setIntroDoneAction,
 }: {
   setIntroDoneAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  // const INTRO_TEXT = [
+  //   "Every star, a piece of me",
+  //   "Every constellation, a world",
+  //   "This is my universe",
+  // ];
+
+  // const INTRO_TEXT = [
+  //   "Every star, a word",
+  //   "Every constellation, a chapter",
+  //   "This night sky is my story",
+  // ];
+
   const INTRO_TEXT = [
-    "Each star is a piece of me",
-    "Each constellation is a part of who I am",
-    "Here is my sky",
+    "A star, a part of me",
+    "A constellation, a guide for you",
+    "Welcome to my night sky",
   ];
 
   const FADE_DURATION = 1; // seconds per line
   const STAGGER_DURATION = 2; // delay between lines
   const VISIBLE_DURATION = 1; // how long all lines stay fully visible
+  const GAP = "1.5rem"; // <- change this to adjust spacing between lines
 
   const [show, setShow] = useState(true);
 
@@ -27,7 +44,6 @@ export default function IntroScreen({
     STAGGER_DURATION * (INTRO_TEXT.length - 1) + // stagger for remaining lines
     VISIBLE_DURATION;
 
-  // Start container exit after all lines have appeared + visible duration
   useEffect(() => {
     const timeout = setTimeout(() => setShow(false), totalDelay * 1000);
     return () => clearTimeout(timeout);
@@ -37,7 +53,7 @@ export default function IntroScreen({
     <AnimatePresence
       onExitComplete={() => {
         console.log("Intro complete, parent callback fired!");
-        setIntroDoneAction(true); // parent notified reliably
+        setIntroDoneAction(true);
       }}
     >
       {show && (
@@ -69,7 +85,10 @@ export default function IntroScreen({
               }}
               style={{
                 color: SPACE_TEXT_COLOR,
+                fontSize: "2rem",
+                marginTop: i === 0 ? 0 : GAP, // <- apply gap only after first element
               }}
+              className={FONT_FAMILY.className}
             >
               {text}
             </motion.div>
