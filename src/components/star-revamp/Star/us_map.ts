@@ -1005,9 +1005,15 @@ export type Point = {
  */
 export function transformPoints(
   points: Point[],
-  options: { tx?: number; ty?: number; rotation?: number; scale?: number } = {}
+  options: {
+    tx?: number;
+    ty?: number;
+    rotation?: number;
+    scale?: number;
+    starScale?: number;
+  } = {}
 ): Point[] {
-  const { tx = 0, ty = 0, rotation = 0, scale = 1 } = options;
+  const { tx = 0, ty = 0, rotation = 0, scale = 1, starScale = 1 } = options;
   const rad = (rotation * Math.PI) / 180;
 
   return points.map((p) => {
@@ -1023,7 +1029,7 @@ export function transformPoints(
     return {
       x: rotatedX + tx,
       y: rotatedY + ty,
-      size: p.size, // size unchanged
+      size: p.size * starScale, // size unchanged
     };
   });
 }
