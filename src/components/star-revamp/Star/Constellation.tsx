@@ -1,22 +1,22 @@
-import { Group, Line } from "react-konva";
+import { Group, Line, Rect } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 
 export default function Constellation({
   stars,
+  showBoundingBox,
   connections,
 }: {
   stars: { x: number; y: number; size?: number }[];
+  showBoundingBox?: boolean;
   connections?: [number, number][]; // optional array of line segments
 }) {
-  // Helper: calculate distance between two points
   const getDistance = (
     p1: { x: number; y: number },
     p2: { x: number; y: number }
   ) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
 
-  // Helper: calculate total polyline length
   const getLineLength = (points: number[]) => {
     let length = 0;
     for (let i = 0; i < points.length - 2; i += 2) {
@@ -27,8 +27,33 @@ export default function Constellation({
     return length;
   };
 
+  // Compute bounding box
+  const xs = stars.map((s) => s.x);
+  const ys = stars.map((s) => s.y);
+
+  const minX = Math.min(...xs) - 10; // padding so it's not tight
+  const maxX = Math.max(...xs) + 10;
+  const minY = Math.min(...ys) - 10;
+  const maxY = Math.max(...ys) + 10;
+
+  const width = maxX - minX;
+  const height = maxY - minY;
+
   return (
-    <Group>
+    <Group
+      onClick={() => {
+        console.log("Constellation clicked!", stars);
+      }}
+    >
+      {/* TEMP BOX: visualize clickable area */}
+      <Rect
+        x={minX}
+        y={minY}
+        width={width}
+        height={height}
+        fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""} // <--- color to see area
+        listening={true} // clickable
+      />
       {connections && connections.length > 0
         ? connections.map(([i1, i2], idx) => {
             const lineRef = useRef<Konva.Line>(null);
@@ -71,7 +96,6 @@ export default function Constellation({
             );
           })
         : (() => {
-            // Default sequential polyline if no connections
             const lineRef = useRef<Konva.Line>(null);
             const linePoints = stars.flatMap((s) => [s.x, s.y]);
             const totalLength = getLineLength(linePoints);

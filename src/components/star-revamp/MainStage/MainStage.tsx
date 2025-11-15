@@ -1,3 +1,5 @@
+"use client";
+
 import {
   FONT_FAMILY,
   SPACE_BACKGROUND_COLOR,
@@ -7,10 +9,25 @@ import { Layer, Stage } from "react-konva";
 import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
 import { motion, AnimatePresence } from "motion/react";
+import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
+import { useRef } from "react";
 
 export default function MainStage() {
+  const containerRef = useRef<HTMLDivElement>(null!);
+
+  // use the hook. ready becomes true after the first synchronous measurement.
+  const { width, height, ready } = useWindowSizeContext();
   return (
-    <>
+    <div
+      ref={containerRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
       {/* full screen overlay */}
       <AnimatePresence>
         <motion.div
@@ -35,20 +52,22 @@ export default function MainStage() {
           Dylan Vu
         </motion.div>
       </AnimatePresence>
-      <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
-        style={{ background: SPACE_BACKGROUND_COLOR }}
-      >
-        <Layer>
-          <BackgroundStarField
-            width={window.innerWidth}
-            height={window.innerHeight}
-            starCount={200}
-          />
-          <MainStarField />
-        </Layer>
-      </Stage>
-    </>
+      {ready && width > 0 && height > 0 && (
+        <Stage
+          width={width}
+          height={height}
+          style={{ background: SPACE_BACKGROUND_COLOR }}
+        >
+          <Layer>
+            <BackgroundStarField
+              width={width}
+              height={height}
+              starCount={200}
+            />
+            <MainStarField />
+          </Layer>
+        </Stage>
+      )}
+    </div>
   );
 }
