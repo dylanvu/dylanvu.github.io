@@ -91,7 +91,17 @@ const CONSTELLATIONS: ConstellationData[] = [
 
 export default function MainStarField() {
   const { width, height } = useWindowSizeContext();
-  const { setOverlayVisibility } = useMainStageOverlayContext();
+  const {
+    setOverlayVisibility,
+    setTitleText,
+    setOriginText,
+    setAboutText,
+    setIntroText,
+    DEFAULT_INTRO_TEXT,
+    DEFAULT_ABOUT_TEXT,
+    DEFAULT_ORIGIN_TEXT,
+    DEFAULT_TITLE_TEXT,
+  } = useMainStageOverlayContext();
   const windowCenter = { x: width / 2, y: height / 2 };
   const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
 
@@ -172,6 +182,18 @@ export default function MainStarField() {
             brightness={5}
             twinkleMin={4.9}
             twinkleMax={5.1}
+            onHoverEnterCallback={() => {
+              setTitleText("Polaris");
+              setOriginText("The Guiding Star");
+              setAboutText("A beacon to help you navigate the night sky");
+              setIntroText("Star");
+            }}
+            onHoverLeaveCallback={() => {
+              setTitleText(DEFAULT_TITLE_TEXT);
+              setOriginText(DEFAULT_ORIGIN_TEXT);
+              setAboutText(DEFAULT_ABOUT_TEXT);
+              setIntroText(DEFAULT_INTRO_TEXT);
+            }}
           />
         ) : null;
       })()}

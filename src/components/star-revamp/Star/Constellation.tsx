@@ -188,6 +188,8 @@ export default function Constellation({
         setOriginText(data.origin);
         setAboutText(data.about);
         setIntroText("Constellation");
+        document.body.style.cursor = "pointer";
+
         if (onHoverEnterCallback) onHoverEnterCallback();
       }}
       onMouseLeave={() => {
@@ -202,6 +204,7 @@ export default function Constellation({
         setAboutText(DEFAULT_ABOUT_TEXT);
         setIntroText(DEFAULT_INTRO_TEXT);
         if (onHoverLeaveCallback) onHoverLeaveCallback();
+        document.body.style.cursor = "default";
       }}
       // move the Group so that the center point remains where it was before we set offsets
       x={unfocusedConstellationX}

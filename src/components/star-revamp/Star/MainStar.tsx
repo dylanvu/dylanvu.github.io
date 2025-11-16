@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Shape } from "react-konva";
+import Konva from "konva";
 
 const STAR_COLORS = {
   bright: "#FFFFFF",
@@ -20,6 +21,8 @@ type Props = {
   twinkleMax?: number; // max brightness target (e.g. 1.1)
   twinkleMinDuration?: number; // ms
   twinkleMaxDuration?: number; // ms
+  onHoverEnterCallback?: () => void;
+  onHoverLeaveCallback?: () => void;
 };
 
 export default function MainStar({
@@ -33,6 +36,8 @@ export default function MainStar({
   twinkleMax = 1.1,
   twinkleMinDuration = 700,
   twinkleMaxDuration = 1400,
+  onHoverEnterCallback,
+  onHoverLeaveCallback,
 }: Props) {
   const shapeRef = useRef<any>(null);
 
@@ -131,6 +136,30 @@ export default function MainStar({
     twinkleMaxDuration,
   ]); // restart if controls change
 
+  const hoverTweenRef = useRef<Konva.Tween | null>(null);
+  const SCALE_ANIMATION_DURATION = 0.75; // seconds
+
+  const EASING = Konva.Easings.EaseInOut;
+
+  const playHoverTween = (toScaleX: number, toScaleY: number) => {
+    const node = shapeRef.current;
+    if (!node) return;
+
+    // finish any running tween to avoid overlap
+    hoverTweenRef.current?.finish();
+
+    // create & play a new tween
+    hoverTweenRef.current = new Konva.Tween({
+      node,
+      duration: SCALE_ANIMATION_DURATION,
+      scaleX: toScaleX,
+      scaleY: toScaleY,
+      easing: EASING,
+    });
+
+    hoverTweenRef.current.play();
+  };
+
   return (
     <Shape
       ref={shapeRef}
@@ -140,7 +169,6 @@ export default function MainStar({
         const currentBrightness = brightnessRef.current;
         const radius = size * currentBrightness;
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
-
         gradient.addColorStop(0, starColor);
         gradient.addColorStop(0.5, `rgba(255,255,255,${0.5 * opacity})`);
         gradient.addColorStop(1, "transparent");
@@ -150,8 +178,28 @@ export default function MainStar({
         ctx.arc(0, 0, radius, 0, Math.PI * 2);
         ctx.fill();
       }}
+      hitFunc={(ctx, shape) => {
+        const currentBrightness = brightnessRef.current;
+        const radius = size * currentBrightness;
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fillStrokeShape(shape); // mark this as hittable
+      }}
       listening={true}
       onClick={() => console.log("Star clicked!", { x, y })}
+      onMouseEnter={() => {
+        if (onHoverEnterCallback) onHoverEnterCallback();
+        // optional: change cursor
+        document.body.style.cursor = "pointer";
+        playHoverTween(1.1, 1.1);
+      }}
+      onMouseLeave={() => {
+        if (onHoverLeaveCallback) onHoverLeaveCallback();
+        document.body.style.cursor = "default";
+        playHoverTween(1, 1);
+      }}
     />
   );
 }
