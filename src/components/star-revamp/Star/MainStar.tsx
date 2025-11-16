@@ -50,7 +50,7 @@ export default function MainStar({
     ["#FFFFFF", "#E0F7FF", "#FFFACD", "#FFDDEE"][Math.floor(Math.random() * 4)]
   ).current;
 
-  const SCALE_ANIMATION_DURATION = 0.75;
+  const SCALE_ANIMATION_DURATION = 0.25;
   const EASING = Konva.Easings.EaseInOut;
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
