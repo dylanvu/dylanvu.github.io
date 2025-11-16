@@ -256,6 +256,7 @@ export default function Constellation({
         if (!isFocused) {
           groupRef.current.moveToTop();
         }
+        document.body.style.cursor = "default";
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {

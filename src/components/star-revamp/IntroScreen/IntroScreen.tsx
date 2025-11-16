@@ -14,8 +14,8 @@ export default function IntroScreen({
   setIntroDoneAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const INTRO_TEXT = [
-    "Every star is a piece of me",
-    "Every constellation is a guide for you",
+    "Every star, a piece of me",
+    "Every constellation, a guide for you",
     "Welcome to my night sky",
   ];
 
