@@ -40,9 +40,9 @@ export function MainStageOverlayProvider({
 }) {
   const DEFAULT_INTRO_TEXT = "Software Engineer";
   const DEFAULT_TITLE_TEXT = "Dylan Vu";
-  const DEFAULT_ORIGIN_TEXT = "Currently at Amazon";
-  const DEFAULT_ABOUT_TEXT =
+  const DEFAULT_ORIGIN_TEXT =
     "Explore a constellation or find Polaris to learn more";
+  const DEFAULT_ABOUT_TEXT = " ";
 
   const [titleText, setTitleText] = useState<string>(DEFAULT_TITLE_TEXT);
   const [originText, setOriginText] = useState<string>(DEFAULT_ORIGIN_TEXT);

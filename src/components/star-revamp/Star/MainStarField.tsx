@@ -20,10 +20,14 @@ const DESIGN = { width: 2560, height: 1271 }; // design reference
 const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
 const ViaeStars = [
-  { x: 80, y: 40, size: 5, label: "Email" },
-  { x: 50, y: 70, size: 5, label: "LinkedIn" },
-  { x: 80, y: 140, size: 5, label: "Medium" },
-  { x: 110, y: 70, size: 5, label: "GitHub" },
+  { x: 80, y: 70, size: 5, label: "Email" },
+  { x: 100, y: 40, size: 4, label: "GitHub" },
+  { x: 55, y: 90, size: 4, label: "LinkedIn" },
+  { x: 105, y: 100, size: 3, label: "Medium" },
+
+  // { x: 50, y: 70, size: 5, label: "LinkedIn" },
+  // { x: 80, y: 140, size: 5, label: "Medium" },
+  // { x: 110, y: 70, size: 5, label: "GitHub" },
 ];
 
 const CONSTELLATIONS: ConstellationData[] = [
@@ -33,7 +37,11 @@ const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Latin: "roads"',
     about: "The gateway to worlds beyond this night sky",
     stars: ViaeStars,
-    connections: createSequentialLoopingConnections(ViaeStars),
+    connections: [
+      [0, 1],
+      [0, 2],
+      [0, 3],
+    ],
     designX: 850,
     designY: 400,
     rotation: 32,
@@ -60,7 +68,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     // the projects constellation
     name: "Arete",
     origin: 'Greek: "excellence, skill"',
-    about: "A constellation of creations I've built and designed",
+    about: "The constellation of creations I've dreamed of and built",
     // make this a crown
     stars: [
       // remember, larger x = right, larger y = down
@@ -96,7 +104,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     // hackathon map constellation
     name: "Elevare",
     origin: 'Latin: "to elevate"',
-    about: "A map of hackathons where I've grown and mentored others",
+    about: "The map of hackathons where I've grown and mentored",
     stars: US_MAP,
     connections: createSequentialLoopingConnections(US_MAP),
     designX: 1600,
