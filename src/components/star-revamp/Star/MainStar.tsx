@@ -17,6 +17,7 @@ type Props = {
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   label?: string;
+  labelSize?: number;
 };
 
 export default function MainStar({
@@ -33,6 +34,7 @@ export default function MainStar({
   onHoverEnterCallback,
   onHoverLeaveCallback,
   label,
+  labelSize = 12,
 }: Props) {
   const shapeRef = useRef<any>(null);
   const textRef = useRef<any>(null);
@@ -167,9 +169,9 @@ export default function MainStar({
         <Text
           ref={textRef}
           x={x}
-          y={y + size * 2.4} // spacing below the star
+          y={y + size + labelSize} // spacing below the star
           text={label}
-          fontSize={12}
+          fontSize={labelSize}
           fill={SPACE_TEXT_COLOR}
           fontFamily={FONT_FAMILY.style.fontFamily}
           align="center"

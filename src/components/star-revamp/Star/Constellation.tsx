@@ -179,35 +179,33 @@ export default function Constellation({
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {
-        setBrightness(brightnessHover);
         if (!isFocused) {
+          setBrightness(brightnessHover);
           playHoverTween(
             (transformData.scaleX ?? 1) * HOVER_SCALE,
             (transformData.scaleY ?? 1) * HOVER_SCALE
           );
+          document.body.style.cursor = "pointer";
+          setTitleText(data.name);
+          setOriginText(data.origin);
+          setAboutText(data.about);
+          setIntroText("Constellation");
         }
-
-        setTitleText(data.name);
-        setOriginText(data.origin);
-        setAboutText(data.about);
-        setIntroText("Constellation");
-        document.body.style.cursor = "pointer";
 
         if (onHoverEnterCallback) onHoverEnterCallback();
       }}
       onMouseLeave={() => {
-        setBrightness(1);
-
         if (!isFocused) {
+          setBrightness(1);
           playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
+          document.body.style.cursor = "default";
+          setTitleText(DEFAULT_TITLE_TEXT);
+          setOriginText(DEFAULT_ORIGIN_TEXT);
+          setAboutText(DEFAULT_ABOUT_TEXT);
+          setIntroText(DEFAULT_INTRO_TEXT);
         }
 
-        setTitleText(DEFAULT_TITLE_TEXT);
-        setOriginText(DEFAULT_ORIGIN_TEXT);
-        setAboutText(DEFAULT_ABOUT_TEXT);
-        setIntroText(DEFAULT_INTRO_TEXT);
         if (onHoverLeaveCallback) onHoverLeaveCallback();
-        document.body.style.cursor = "default";
       }}
       // move the Group so that the center point remains where it was before we set offsets
       x={unfocusedConstellationX}
@@ -255,6 +253,8 @@ export default function Constellation({
             size={star.size || 5}
             brightness={brightness}
             delay={delay}
+            label={isFocused ? star.label : undefined}
+            labelSize={4}
           />
         );
       })}

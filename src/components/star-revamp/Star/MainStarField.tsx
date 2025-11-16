@@ -20,10 +20,10 @@ const DESIGN = { width: 2560, height: 1271 }; // design reference
 const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
 const ViaeStars = [
-  { x: 80, y: 40, size: 5 },
-  { x: 50, y: 70, size: 5 },
-  { x: 80, y: 140, size: 5 },
-  { x: 110, y: 70, size: 5 },
+  { x: 80, y: 40, size: 5, label: "Email" },
+  { x: 50, y: 70, size: 5, label: "LinkedIn" },
+  { x: 80, y: 140, size: 5, label: "Medium" },
+  { x: 110, y: 70, size: 5, label: "GitHub" },
 ];
 
 const CONSTELLATIONS: ConstellationData[] = [
@@ -45,11 +45,11 @@ const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Latin: "journey, path"',
     about: "The path I've traveled from learning to creating",
     stars: [
-      { x: 200, y: 50, size: 5 },
-      { x: 220, y: 55, size: 4 },
-      { x: 240, y: 48, size: 5 },
-      { x: 260, y: 52, size: 4 },
-      { x: 280, y: 50, size: 6 },
+      { x: 200, y: 50, size: 5, label: "Resume" },
+      { x: 220, y: 55, size: 4, label: "Amazon" },
+      { x: 240, y: 48, size: 5, label: "UC Irvine" },
+      { x: 260, y: 54, size: 4, label: "Ansync Labs" },
+      { x: 280, y: 60, size: 6, label: "UC Santa Barbara" },
     ],
     designX: 1300,
     designY: 400,
@@ -64,16 +64,16 @@ const CONSTELLATIONS: ConstellationData[] = [
     // make this a crown
     stars: [
       // remember, larger x = right, larger y = down
-      { x: 80, y: 145, size: 4 }, // bottom left of first spike
-      { x: 100, y: 120, size: 5 }, // first spike
-      { x: 140, y: 142, size: 4 }, // left base of middle spike
-      { x: 180, y: 100, size: 5 }, // top of middle spike
-      { x: 200, y: 145, size: 3 }, // right base of middle spike
-      { x: 225, y: 115, size: 4 }, // top of right spike
-      { x: 240, y: 140, size: 5 }, // bottom right of right spike
-      { x: 238, y: 190, size: 3 }, // directly down from right spike
-      { x: 168, y: 190, size: 4 }, // mid of spike base
-      { x: 82, y: 190, size: 4 }, // now directly left
+      { x: 80, y: 145, size: 4, label: "Epicdle" }, // bottom left of first spike
+      { x: 100, y: 120, size: 5, label: "Amelia" }, // first spike
+      { x: 140, y: 142, size: 4, label: "FishGPT" }, // left base of middle spike
+      { x: 180, y: 100, size: 5, label: "Haptic Definition" }, // top of middle spike
+      { x: 200, y: 145, size: 3, label: "SweetStack" }, // right base of middle spike
+      { x: 225, y: 115, size: 4, label: "WordShip" }, // top of right spike
+      { x: 240, y: 140, size: 5, label: "GRIP Board" }, // bottom right of right spike
+      { x: 238, y: 190, size: 3, label: "GRIP Controller" }, // directly down from right spike
+      { x: 168, y: 190, size: 4, label: "Trigger Finger Tango" }, // mid of spike base
+      { x: 82, y: 190, size: 4, label: "Discord Careers Bot" }, // now directly left
     ],
     connections: [
       [0, 1],
