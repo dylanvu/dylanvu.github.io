@@ -47,6 +47,9 @@ importers:
       next:
         specifier: 15.2.4
         version: 15.2.4(react-dom@19.0.0(react@19.2.0))(react@19.2.0)
+      opentype.js:
+        specifier: ^1.3.4
+        version: 1.3.4
       pdf-parse:
         specifier: ^1.1.4
         version: 1.1.4
@@ -87,6 +90,9 @@ importers:
       '@types/node':
         specifier: ^20.19.25
         version: 20.19.25
+      '@types/opentype.js':
+        specifier: ^1.3.8
+        version: 1.3.8
       '@types/pdf-parse':
         specifier: ^1.1.5
         version: 1.1.5
@@ -622,6 +628,9 @@ packages:
 
   '@types/node@20.19.25':
     resolution: {integrity: sha512-ZsJzA5thDQMSQO788d7IocwwQbI8B5OPzmqNvpf3NY/+MHDAS759Wo0gd2WQeXYt5AAAQjzcrTVC6SKCuYgoCQ==}
+
+  '@types/opentype.js@1.3.8':
+    resolution: {integrity: sha512-H6qeTp03jrknklSn4bpT1/9+1xCAEIU2CnjcWPkicJy8A1SKuthanbvoHYMiv79/2W3Xn1XE4gfSJFzt2U3JSw==}
 
   '@types/pdf-parse@1.1.5':
     resolution: {integrity: sha512-kBfrSXsloMnUJOKi25s3+hRmkycHfLK6A09eRGqF/N8BkQoPUmaCr+q8Cli5FnfohEz/rsv82zAiPz/LXtOGhA==}
@@ -2070,6 +2079,11 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
+  opentype.js@1.3.4:
+    resolution: {integrity: sha512-d2JE9RP/6uagpQAVtJoF0pJJA/fgai89Cc50Yp0EJHk+eLp6QQ7gBoblsnubRULNY132I0J1QKMJ+JTbMqz4sw==}
+    engines: {node: '>= 8.0.0'}
+    hasBin: true
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -2417,6 +2431,9 @@ packages:
     resolution: {integrity: sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA==}
     engines: {node: '>=12'}
 
+  string.prototype.codepointat@0.2.1:
+    resolution: {integrity: sha512-2cBVCj6I4IOvEnjgO/hWqXjqBGsY+zwPmHl12Srk9IXSZ56Jwwmy+66XO5Iut/oQVR7t5ihYdLB0GMa4alEUcg==}
+
   string.prototype.includes@2.0.1:
     resolution: {integrity: sha512-o7+c9bW6zpAdJHTtujeePODAhkuicdAryFsfVKwA+wGw89wJ4GTY484WTucM9hLtDEOpOvI+aHnzqnC5lHp4Rg==}
     engines: {node: '>= 0.4'}
@@ -2505,6 +2522,9 @@ packages:
 
   three@0.181.1:
     resolution: {integrity: sha512-bz9xZUQMw3pJbjKy7roiwXWgAp+oVUa+4k5o0oBAQ+IFJuru1xzvtk63h6k72XZanXS/SgoEhV6927Vgazyq2w==}
+
+  tiny-inflate@1.0.3:
+    resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
 
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
@@ -3216,6 +3236,8 @@ snapshots:
   '@types/node@20.19.25':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/opentype.js@1.3.8': {}
 
   '@types/pdf-parse@1.1.5':
     dependencies:
@@ -5055,6 +5077,11 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
+  opentype.js@1.3.4:
+    dependencies:
+      string.prototype.codepointat: 0.2.1
+      tiny-inflate: 1.0.3
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -5474,6 +5501,8 @@ snapshots:
       emoji-regex: 9.2.2
       strip-ansi: 7.1.2
 
+  string.prototype.codepointat@0.2.1: {}
+
   string.prototype.includes@2.0.1:
     dependencies:
       call-bind: 1.0.8
@@ -5607,6 +5636,8 @@ snapshots:
       any-promise: 1.3.0
 
   three@0.181.1: {}
+
+  tiny-inflate@1.0.3: {}
 
   tinyglobby@0.2.15:
     dependencies:

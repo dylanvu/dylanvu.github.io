@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         // Match all .gif, .png, .jpg, .mp4 files
-        source: "/:all*\\.(gif|png|jpg|mp4)$",
+        source: "/:all*\\.(gif|png|jpg|mp4|ttf)$",
         headers: [
           {
             key: "Cache-Control",

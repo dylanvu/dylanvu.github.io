@@ -250,6 +250,13 @@ export default function Constellation({
     focusTweenRef.current.play();
   };
 
+  const setMainOverlayToDefault = () => {
+    setTitleText(DEFAULT_TITLE_TEXT);
+    setOriginText(DEFAULT_ORIGIN_TEXT);
+    setAboutText(DEFAULT_ABOUT_TEXT);
+    setIntroText(DEFAULT_INTRO_TEXT);
+  };
+
   return (
     <Group
       ref={groupRef}
@@ -260,6 +267,7 @@ export default function Constellation({
           groupRef.current.moveToTop();
         }
         document.body.style.cursor = "default";
+        setMainOverlayToDefault();
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {
@@ -283,10 +291,7 @@ export default function Constellation({
           setBrightness(1);
           playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
           document.body.style.cursor = "default";
-          setTitleText(DEFAULT_TITLE_TEXT);
-          setOriginText(DEFAULT_ORIGIN_TEXT);
-          setAboutText(DEFAULT_ABOUT_TEXT);
-          setIntroText(DEFAULT_INTRO_TEXT);
+          setMainOverlayToDefault();
         }
 
         if (onHoverLeaveCallback) onHoverLeaveCallback();
