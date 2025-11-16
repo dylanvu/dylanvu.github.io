@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from "motion/react";
 import { FONT_FAMILY } from "@/app/theme";
+import { NextFont } from "next/dist/compiled/@next/font";
 
 interface FadeLettersProps {
   text: string;
   size?: string | number;
+  fontFamily?: NextFont;
   color?: string;
   duration?: number; // total time for all letters
   lineIndex?: number; // index of the line (for staggered line overlap)
@@ -13,6 +15,7 @@ interface FadeLettersProps {
 export function FadeLetters({
   text,
   size,
+  fontFamily = FONT_FAMILY,
   color = "white",
   duration = 0.5,
   lineIndex = 0,
@@ -66,7 +69,7 @@ export function FadeLetters({
                 verticalAlign: "top",
                 fontSize: size,
                 color,
-                fontFamily: FONT_FAMILY.style.fontFamily,
+                fontFamily: fontFamily.style.fontFamily,
               }}
               variants={letterVariants}
               transition={{ duration: perLetterDuration, ease: "linear" }}

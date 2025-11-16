@@ -1,15 +1,16 @@
 import { motion } from "motion/react";
 import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
 import { FadeLetters } from "./FadeLetters";
-import { SPACE_TEXT_COLOR } from "@/app/theme";
+import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 
 export default function MainStageOverlay() {
-  const { titleText, originText, aboutText } = useMainStageOverlayContext();
+  const { titleText, originText, aboutText, DEFAULT_TITLE_TEXT } =
+    useMainStageOverlayContext();
 
   const lines = [
     { key: "title", text: titleText, size: "5.5rem" },
-    { key: "origin", text: originText, size: undefined },
-    { key: "about", text: aboutText, size: undefined },
+    { key: "origin", text: originText, size: "1.2rem" },
+    { key: "about", text: aboutText, size: "1.2rem" },
   ];
 
   const visibleLines = lines.filter((l) => !!l.text);
@@ -43,6 +44,7 @@ export default function MainStageOverlay() {
           duration={lineDuration}
           lineIndex={index}
           lineStep={lineStep}
+          fontFamily={index === 0 ? FANCY_FONT_FAMILY : FONT_FAMILY}
         />
       ))}
     </motion.div>
