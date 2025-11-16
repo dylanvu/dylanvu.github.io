@@ -5,7 +5,7 @@ import { SPACE_BACKGROUND_COLOR } from "@/app/theme";
 import MainStage from "@/components/star-revamp/MainStage/MainStage";
 
 export default function Home() {
-  const [introDone, setIntroDone] = useState(false);
+  const [introDone, setIntroDone] = useState(true);
   return introDone ? (
     <MainStage />
   ) : (

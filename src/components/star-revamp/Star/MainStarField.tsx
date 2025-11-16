@@ -20,6 +20,7 @@ const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
 const CONSTELLATIONS: ConstellationData[] = [
   {
+    // my contact me links
     name: "Viae",
     origin: 'Latin: "roads"',
     about: "The gateway to worlds beyond this night sky",
@@ -32,8 +33,8 @@ const CONSTELLATIONS: ConstellationData[] = [
     connections: [
       [0, 1],
       [1, 3],
-      [0, 2],
-      [2, 3],
+      [3, 2],
+      [2, 0],
     ],
     designX: 850,
     designY: 400,
@@ -41,6 +42,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     scale: 1.5,
   },
   {
+    // the career constellation
     name: "Iter",
     origin: 'Latin: "journey, path"',
     about: "The path I've traveled from learning to creating",
@@ -53,27 +55,43 @@ const CONSTELLATIONS: ConstellationData[] = [
     ],
     designX: 1300,
     designY: 400,
-    scale: 2.2,
+    scale: 1.8,
   },
   {
+    // the projects constellation
     name: "Arete",
     origin: 'Greek: "excellence, skill"',
     about: "A constellation of creations I've built and designed",
+    // make this a crown
     stars: [
-      { x: 80, y: 145, size: 4 },
-      { x: 100, y: 150, size: 5 },
-      { x: 140, y: 130, size: 4 },
-      { x: 180, y: 160, size: 5 },
-      { x: 160, y: 190, size: 3 },
-      { x: 200, y: 210, size: 4 },
-      { x: 240, y: 180, size: 5 },
-      { x: 220, y: 150, size: 3 },
-      { x: 260, y: 130, size: 4 },
-      { x: 280, y: 170, size: 3 },
-      { x: 300, y: 150, size: 4 },
+      // remember, larger x = right, larger y = down
+      { x: 80, y: 145, size: 4 }, // bottom left of first spike
+      { x: 100, y: 120, size: 5 }, // first spike
+      { x: 140, y: 142, size: 4 }, // left base of middle spike
+      { x: 180, y: 100, size: 5 }, // top of middle spike
+      { x: 200, y: 145, size: 3 }, // right base of middle spike
+      { x: 225, y: 115, size: 4 }, // top of right spike
+      { x: 240, y: 140, size: 5 }, // bottom right of right spike
+      { x: 238, y: 190, size: 3 }, // directly down from right spike
+      { x: 168, y: 190, size: 4 }, // mid of spike base
+      { x: 82, y: 190, size: 4 }, // now directly left
+    ],
+    connections: [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 5],
+      [5, 6],
+      [6, 7],
+      [7, 8],
+      [8, 9],
+      [9, 0],
     ],
     designX: 700,
     designY: 700,
+    rotation: 2,
+    scale: 1.5,
   },
   {
     // hackathon map constellation
@@ -162,14 +180,14 @@ export default function MainStarField() {
               setOverlayVisibility(false);
             }}
             isFocused={isFocused}
-            // showBoundingBox={true}
+            showBoundingBox={true}
           />
         );
       })}
       {/* Polaris, the guiding chatbot star */}
       {(() => {
-        const polarisDesignX = designCenter.x - 100;
-        const polarisDesignY = 400; // biiger number moves it down
+        const polarisDesignX = designCenter.x;
+        const polarisDesignY = 200; // biiger number moves it down
         const polarisOffsetX = (polarisDesignX - designCenter.x) * scale;
         const polarisOffsetY = (polarisDesignY - designCenter.y) * scale;
         const polarisScreenX = windowCenter.x + polarisOffsetX;
@@ -194,6 +212,7 @@ export default function MainStarField() {
               setAboutText(DEFAULT_ABOUT_TEXT);
               setIntroText(DEFAULT_INTRO_TEXT);
             }}
+            label="Polaris"
           />
         ) : null;
       })()}

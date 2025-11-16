@@ -124,6 +124,16 @@ export default function Constellation({
     // finish any running tween to avoid overlap
     focusTweenRef.current?.finish();
 
+    let rotationAngle = transformData.rotation ?? 0;
+
+    if (data.name === "Elevare") {
+      // tilt the map to be 0 degrees for easier viewing
+      rotationAngle = 0;
+    } else if (data.name === "Iter") {
+      // let's make sure this constellation is pretty flat
+      rotationAngle = -30;
+    }
+
     // create & play the focus tween
     focusTweenRef.current = new Konva.Tween({
       node,
@@ -133,7 +143,7 @@ export default function Constellation({
       y: windowCenter.y,
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
-      rotation: data.name === "Elevare" ? 0 : transformData.rotation,
+      rotation: rotationAngle,
     });
 
     focusTweenRef.current.play();
