@@ -40,3 +40,18 @@ export function transformPoints(
     };
   });
 }
+
+export function createSequentialLoopingConnections(
+  stars: Point[]
+): [number, number][] {
+  const connections: [number, number][] = [];
+  for (let i = 0; i < stars.length; i++) {
+    const star = stars[i];
+    if (i === stars.length - 1) {
+      connections.push([i, 0]);
+    } else {
+      connections.push([i, i + 1]);
+    }
+  }
+  return connections;
+}

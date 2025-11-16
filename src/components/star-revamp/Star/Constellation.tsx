@@ -124,15 +124,8 @@ export default function Constellation({
     // finish any running tween to avoid overlap
     focusTweenRef.current?.finish();
 
-    let rotationAngle = transformData.rotation ?? 0;
-
-    if (data.name === "Elevare") {
-      // tilt the map to be 0 degrees for easier viewing
-      rotationAngle = 0;
-    } else if (data.name === "Iter") {
-      // let's make sure this constellation is pretty flat
-      rotationAngle = -30;
-    }
+    // the rotation has to be zero because I will add labels to each star and I don't want them to rotate
+    let rotationAngle = 0;
 
     // create & play the focus tween
     focusTweenRef.current = new Konva.Tween({

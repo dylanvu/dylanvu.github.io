@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
 import { Group, Rect } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
+import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -18,24 +19,21 @@ const DESIGN = { width: 2560, height: 1271 }; // design reference
 /** Pre-computed offsets from design center */
 const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
+const ViaeStars = [
+  { x: 80, y: 40, size: 5 },
+  { x: 50, y: 70, size: 5 },
+  { x: 80, y: 140, size: 5 },
+  { x: 110, y: 70, size: 5 },
+];
+
 const CONSTELLATIONS: ConstellationData[] = [
   {
     // my contact me links
     name: "Viae",
     origin: 'Latin: "roads"',
     about: "The gateway to worlds beyond this night sky",
-    stars: [
-      { x: 80, y: 40, size: 5 },
-      { x: 50, y: 70, size: 5 },
-      { x: 110, y: 70, size: 5 },
-      { x: 80, y: 140, size: 5 },
-    ],
-    connections: [
-      [0, 1],
-      [1, 3],
-      [3, 2],
-      [2, 0],
-    ],
+    stars: ViaeStars,
+    connections: createSequentialLoopingConnections(ViaeStars),
     designX: 850,
     designY: 400,
     rotation: 32,
@@ -48,14 +46,15 @@ const CONSTELLATIONS: ConstellationData[] = [
     about: "The path I've traveled from learning to creating",
     stars: [
       { x: 200, y: 50, size: 5 },
-      { x: 220, y: 70, size: 4 },
-      { x: 240, y: 60, size: 5 },
-      { x: 260, y: 80, size: 4 },
-      { x: 280, y: 90, size: 6 },
+      { x: 220, y: 55, size: 4 },
+      { x: 240, y: 48, size: 5 },
+      { x: 260, y: 52, size: 4 },
+      { x: 280, y: 50, size: 6 },
     ],
     designX: 1300,
     designY: 400,
     scale: 1.8,
+    rotation: 30,
   },
   {
     // the projects constellation
@@ -99,6 +98,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Latin: "to elevate"',
     about: "A map of hackathons where I've grown and mentored others",
     stars: US_MAP,
+    connections: createSequentialLoopingConnections(US_MAP),
     designX: 1600,
     designY: 800,
     rotation: 10,
@@ -180,7 +180,7 @@ export default function MainStarField() {
               setOverlayVisibility(false);
             }}
             isFocused={isFocused}
-            showBoundingBox={true}
+            // showBoundingBox={true}
           />
         );
       })}

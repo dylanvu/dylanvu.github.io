@@ -1232,9 +1232,4 @@ export const US_MAP_SIMPLE = [
     y: 58,
     size: 4,
   },
-  {
-    x: 199,
-    y: 51,
-    size: 5,
-  },
 ];
