@@ -3,6 +3,7 @@ import { useState } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
+import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
 
 export default function Constellation({
   data,
@@ -65,21 +66,45 @@ export default function Constellation({
     return acc;
   }, []);
 
+  const {
+    setTitleText,
+    setOriginText,
+    setAboutText,
+    DEFAULT_TITLE_TEXT,
+    DEFAULT_ORIGIN_TEXT,
+    DEFAULT_ABOUT_TEXT,
+  } = useMainStageOverlayContext();
+
   return (
     <Group
       onClick={() => {
         console.log("Constellation clicked!", stars);
+        setTitleText(data.name);
+        setOriginText(data.origin);
+        setAboutText(data.about);
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {
         setBrightness(brightnessHover);
         setHovered(true);
+        setTitleText(data.name);
+        setOriginText(data.origin);
+        setAboutText(data.about);
         console.log("hovered", hovered);
         if (onHoverEnterCallback) onHoverEnterCallback();
       }}
       onMouseLeave={() => {
         setBrightness(1);
         setHovered(false);
+        console.log(
+          "setting overlay text to default",
+          DEFAULT_TITLE_TEXT,
+          DEFAULT_ORIGIN_TEXT,
+          DEFAULT_ABOUT_TEXT
+        );
+        setTitleText(DEFAULT_TITLE_TEXT);
+        setOriginText(DEFAULT_ORIGIN_TEXT);
+        setAboutText(DEFAULT_ABOUT_TEXT);
         console.log("hovered", hovered);
         if (onHoverLeaveCallback) onHoverLeaveCallback();
       }}

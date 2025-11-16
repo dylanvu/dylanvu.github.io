@@ -13,18 +13,6 @@ export default function IntroScreen({
 }: {
   setIntroDoneAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  // const INTRO_TEXT = [
-  //   "Every star, a piece of me",
-  //   "Every constellation, a world",
-  //   "This is my universe",
-  // ];
-
-  // const INTRO_TEXT = [
-  //   "Every star, a word",
-  //   "Every constellation, a chapter",
-  //   "This night sky is my story",
-  // ];
-
   const INTRO_TEXT = [
     "Every star is a part of me",
     "Every constellation is a guide for you",

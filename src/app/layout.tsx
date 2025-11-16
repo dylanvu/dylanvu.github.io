@@ -12,6 +12,7 @@ config.autoAddCss = false;
 import Head from "next/head";
 
 import Script from "next/script";
+import { MainStageOverlayProvider } from "@/hooks/useMainStageOverlayProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,7 +48,9 @@ export default function RootLayout({
       />
       <body className={inter.className}>
         <main className="main">
-          <WindowSizeProvider>{children}</WindowSizeProvider>
+          <WindowSizeProvider>
+            <MainStageOverlayProvider>{children}</MainStageOverlayProvider>
+          </WindowSizeProvider>
         </main>
       </body>
     </html>

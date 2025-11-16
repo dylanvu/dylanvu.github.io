@@ -53,7 +53,7 @@ const CONSTELLATIONS: ConstellationData[] = [
   {
     name: "Arete",
     origin: 'Greek: "excellence"',
-    about: "A constellatiojn of creations I've built and designed",
+    about: "A constellation of creations I've built and designed",
     stars: [
       { x: 80, y: 145, size: 4 },
       { x: 100, y: 150, size: 5 },
