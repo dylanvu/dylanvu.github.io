@@ -41,7 +41,7 @@ export function MainStageOverlayProvider({
   const DEFAULT_INTRO_TEXT = "Software Engineer";
   const DEFAULT_TITLE_TEXT = "Dylan Vu";
   const DEFAULT_ORIGIN_TEXT =
-    "Explore a constellation or find Polaris to learn more";
+    "Hover constellations to explore, or consult Polaris above to find your way";
   const DEFAULT_ABOUT_TEXT = " ";
 
   const [titleText, setTitleText] = useState<string>(DEFAULT_TITLE_TEXT);

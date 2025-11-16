@@ -243,7 +243,7 @@ export default function MainStarField() {
               setAboutText(DEFAULT_ABOUT_TEXT);
               setIntroText(DEFAULT_INTRO_TEXT);
             }}
-            label="Polaris"
+            // label="Polaris"
           />
         );
       })()}
