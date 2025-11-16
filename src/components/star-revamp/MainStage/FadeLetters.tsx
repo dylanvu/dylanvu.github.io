@@ -10,6 +10,7 @@ interface FadeLettersProps {
   duration?: number;
   lineIndex?: number;
   lineStep?: number;
+  totalLines?: number; // <-- new prop
   yOffset?: number;
   ease?: Easing | Easing[]; // correctly typed easing
 }
@@ -22,6 +23,7 @@ export function FadeLetters({
   duration = 0.5,
   lineIndex = 0,
   lineStep = 0.4,
+  totalLines = 1, // <-- default if not passed
   yOffset = 6,
   ease = [0.42, 0, 0.58, 1], // cubic-bezier works
 }: FadeLettersProps) {
@@ -32,7 +34,8 @@ export function FadeLetters({
   const perLetterDuration = duration / n;
 
   const enterDelay = lineIndex * lineStep;
-  const exitDelay = lineIndex * lineStep;
+  // compute exit delay so lines exit in reverse order (bottom -> top)
+  const exitDelay = Math.max(0, totalLines - 1 - lineIndex) * lineStep;
 
   const rootVariants = {
     visible: {
@@ -44,7 +47,7 @@ export function FadeLetters({
     hidden: {
       transition: {
         staggerChildren: perLetterDuration,
-        staggerDirection: -1,
+        staggerDirection: -1, // keep letters inside the line reversing on exit
         delayChildren: exitDelay,
       },
     },

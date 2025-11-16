@@ -15,6 +15,7 @@ export default function MainStageOverlay() {
   ];
 
   const visibleLines = lines.filter((l) => !!l.text);
+  const totalLines = visibleLines.length; // <-- new
   const lineDuration = 0.5;
   const overlapFactor = 0.2;
   const lineStep = lineDuration * (1 - overlapFactor);
@@ -45,6 +46,7 @@ export default function MainStageOverlay() {
           duration={lineDuration}
           lineIndex={index}
           lineStep={lineStep}
+          totalLines={totalLines} // <-- pass totalLines
           fontFamily={index === 1 ? FANCY_FONT_FAMILY : FONT_FAMILY}
         />
       ))}
