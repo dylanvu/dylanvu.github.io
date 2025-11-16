@@ -6,6 +6,7 @@ import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useState } from "react";
 import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
 import { Group, Rect } from "react-konva";
+import MainStar from "@/components/star-revamp/Star/MainStar";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -52,6 +53,7 @@ const CONSTELLATIONS: ConstellationData[] = [
     ],
     designX: 1300,
     designY: 400,
+    scale: 2.2,
   },
   {
     name: "Arete",
@@ -74,11 +76,12 @@ const CONSTELLATIONS: ConstellationData[] = [
     designY: 700,
   },
   {
+    // hackathon map constellation
     name: "Elevare",
     origin: 'Latin: "to elevate"',
     about: "A map of hackathons where I've grown and mentored others",
     stars: US_MAP,
-    designX: 1500,
+    designX: 1600,
     designY: 800,
     rotation: 10,
     scale: 1.5,
@@ -94,6 +97,11 @@ export default function MainStarField() {
 
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
+
+  const windowCenterValue = {
+    x: windowCenter.x,
+    y: windowCenter.y,
+  };
 
   return (
     <Group>
@@ -133,10 +141,6 @@ export default function MainStarField() {
           scaleY: c.scale ?? 1,
         };
 
-        const windowCenterValue = {
-          x: windowCenter.x,
-          y: windowCenter.y,
-        };
         return (
           <Constellation
             data={c}
@@ -152,6 +156,25 @@ export default function MainStarField() {
           />
         );
       })}
+      {/* Polaris, the guiding chatbot star */}
+      {(() => {
+        const polarisDesignX = designCenter.x - 100;
+        const polarisDesignY = 400; // biiger number moves it down
+        const polarisOffsetX = (polarisDesignX - designCenter.x) * scale;
+        const polarisOffsetY = (polarisDesignY - designCenter.y) * scale;
+        const polarisScreenX = windowCenter.x + polarisOffsetX;
+        const polarisScreenY = windowCenter.y + polarisOffsetY;
+        return !selectedConstellation ? (
+          <MainStar
+            x={polarisScreenX}
+            y={polarisScreenY}
+            size={5}
+            brightness={5}
+            twinkleMin={4.9}
+            twinkleMax={5.1}
+          />
+        ) : null;
+      })()}
     </Group>
   );
 }

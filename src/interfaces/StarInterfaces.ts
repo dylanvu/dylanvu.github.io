@@ -4,8 +4,8 @@ export type ConstellationData = {
   about: string; // the flavor text explaining the constellation
   stars: { x: number; y: number; size?: number }[];
   connections?: [number, number][]; // ensure tuple type
-  designX: number;
-  designY: number;
+  designX: number; // bigger number moves to the right
+  designY: number; // bigger number moves down
   rotation?: number;
   scale?: number;
   totalDuration?: number;
