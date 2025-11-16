@@ -4,10 +4,11 @@ import { FadeLetters } from "./FadeLetters";
 import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 
 export default function MainStageOverlay() {
-  const { titleText, originText, aboutText, DEFAULT_TITLE_TEXT } =
+  const { titleText, originText, aboutText, introText } =
     useMainStageOverlayContext();
 
   const lines = [
+    { key: "intro-text", text: introText, size: "1.2rem" },
     { key: "title", text: titleText, size: "5.5rem" },
     { key: "origin", text: originText, size: "1.2rem" },
     { key: "about", text: aboutText, size: "1.2rem" },
@@ -44,7 +45,7 @@ export default function MainStageOverlay() {
           duration={lineDuration}
           lineIndex={index}
           lineStep={lineStep}
-          fontFamily={index === 0 ? FANCY_FONT_FAMILY : FONT_FAMILY}
+          fontFamily={index === 1 ? FANCY_FONT_FAMILY : FONT_FAMILY}
         />
       ))}
     </motion.div>

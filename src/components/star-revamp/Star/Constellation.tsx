@@ -69,9 +69,11 @@ export default function Constellation({
     setTitleText,
     setOriginText,
     setAboutText,
+    setIntroText,
     DEFAULT_TITLE_TEXT,
     DEFAULT_ORIGIN_TEXT,
     DEFAULT_ABOUT_TEXT,
+    DEFAULT_INTRO_TEXT,
   } = useMainStageOverlayContext();
 
   const HOVER_SCALE = 1.1;
@@ -104,6 +106,7 @@ export default function Constellation({
         setTitleText(data.name);
         setOriginText(data.origin);
         setAboutText(data.about);
+        setIntroText("Constellation");
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {
@@ -117,6 +120,7 @@ export default function Constellation({
         setTitleText(data.name);
         setOriginText(data.origin);
         setAboutText(data.about);
+        setIntroText("Constellation");
         if (onHoverEnterCallback) onHoverEnterCallback();
       }}
       onMouseLeave={() => {
@@ -127,6 +131,7 @@ export default function Constellation({
         setTitleText(DEFAULT_TITLE_TEXT);
         setOriginText(DEFAULT_ORIGIN_TEXT);
         setAboutText(DEFAULT_ABOUT_TEXT);
+        setIntroText(DEFAULT_INTRO_TEXT);
         if (onHoverLeaveCallback) onHoverLeaveCallback();
       }}
       // move the Group so that the center point remains where it was before we set offsets
