@@ -26,8 +26,8 @@ export default function IntroScreen({
   // ];
 
   const INTRO_TEXT = [
-    "A star, a part of me",
-    "A constellation, a guide for you",
+    "Every star is a part of me",
+    "Every constellation is a guide for you",
     "Welcome to my night sky",
   ];
 

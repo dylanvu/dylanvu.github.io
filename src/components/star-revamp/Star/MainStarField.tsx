@@ -1,8 +1,8 @@
 "use client";
-import { Group } from "react-konva";
 import Constellation from "@/components/star-revamp/Star/Constellation";
 import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
+import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -14,20 +14,11 @@ const DESIGN = { width: 2560, height: 1271 }; // design reference
 /** Pre-computed offsets from design center */
 const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
-// Define constellations with positions relative to design canvas
-type ConstellationData = {
-  name: string;
-  stars: { x: number; y: number; size?: number }[];
-  connections?: [number, number][]; // ensure tuple type
-  designX: number;
-  designY: number;
-  rotation?: number;
-  scale?: number;
-  totalDuration?: number;
-};
 const CONSTELLATIONS: ConstellationData[] = [
   {
-    name: "Contact",
+    name: "Viae",
+    origin: 'Latin: "roads"',
+    about: "The gateway to worlds beyond this night sky",
     stars: [
       { x: 80, y: 40, size: 5 },
       { x: 50, y: 70, size: 5 },
@@ -46,7 +37,9 @@ const CONSTELLATIONS: ConstellationData[] = [
     scale: 1.5,
   },
   {
-    name: "Career",
+    name: "Iter",
+    origin: 'Latin: "journey, path"',
+    about: "The path I've traveled from learning to creating",
     stars: [
       { x: 200, y: 50, size: 5 },
       { x: 220, y: 70, size: 4 },
@@ -58,7 +51,9 @@ const CONSTELLATIONS: ConstellationData[] = [
     designY: 400,
   },
   {
-    name: "Projects",
+    name: "Arete",
+    origin: 'Greek: "excellence"',
+    about: "A constellatiojn of creations I've built and designed",
     stars: [
       { x: 80, y: 145, size: 4 },
       { x: 100, y: 150, size: 5 },
@@ -76,7 +71,9 @@ const CONSTELLATIONS: ConstellationData[] = [
     designY: 700,
   },
   {
-    name: "Hackathons",
+    name: "Elevare",
+    origin: 'Latin: "to elevate"',
+    about: "A map of hackathons where I've grown and guided others",
     stars: US_MAP,
     designX: 1500,
     designY: 600,
@@ -97,23 +94,14 @@ export default function MainStarField() {
         // compute offset from design center and scale it
         const offsetX = (c.designX - designCenter.x) * scale;
         const offsetY = (c.designY - designCenter.y) * scale;
-
-        return (
-          <Group
-            key={i}
-            x={windowCenter.x + offsetX}
-            y={windowCenter.y + offsetY}
-            rotation={c.rotation ?? 0}
-            scaleX={c.scale ?? 1}
-            scaleY={c.scale ?? 1}
-          >
-            <Constellation
-              stars={c.stars}
-              connections={c.connections}
-              totalDuration={c.totalDuration}
-            />
-          </Group>
-        );
+        const transformData: TransformData = {
+          x: windowCenter.x + offsetX,
+          y: windowCenter.y + offsetY,
+          rotation: c.rotation ?? 0,
+          scaleX: c.scale ?? 1,
+          scaleY: c.scale ?? 1,
+        };
+        return <Constellation data={c} transformData={transformData} key={i} />;
       })}
     </>
   );

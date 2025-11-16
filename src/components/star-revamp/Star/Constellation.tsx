@@ -2,19 +2,27 @@ import { Group, Rect } from "react-konva";
 import { useState } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
+import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 
 export default function Constellation({
-  stars,
-  connections,
+  data,
+  transformData,
   showBoundingBox,
-  totalDuration = 2, // seconds
+  onHoverEnterCallback,
+  onHoverLeaveCallback,
+  onClickCallback,
 }: {
-  stars: { x: number; y: number; size?: number }[];
-  connections?: [number, number][];
+  data: ConstellationData;
+  transformData: TransformData;
   showBoundingBox?: boolean;
-  totalDuration?: number;
+  onHoverEnterCallback?: () => void;
+  onHoverLeaveCallback?: () => void;
+  onClickCallback?: () => void;
 }) {
+  const { stars, connections, totalDuration } = data;
+  const DEFAULT_TOTAL_DURATION = 2; // seconds
   const [brightness, setBrightness] = useState(1);
+  const [hovered, setHovered] = useState(false);
   const brightnessHover = 1.2;
 
   const xs = stars.map((s) => s.x);
@@ -47,7 +55,7 @@ export default function Constellation({
 
   // Compute per-line duration proportional to length
   const lineDurations = lineLengths.map(
-    (l) => (l / totalLineLength) * totalDuration
+    (l) => (l / totalLineLength) * (totalDuration ?? DEFAULT_TOTAL_DURATION)
   );
 
   // Compute cumulative delays for each line
@@ -59,9 +67,27 @@ export default function Constellation({
 
   return (
     <Group
-      onClick={() => console.log("Constellation clicked!", stars)}
-      onMouseEnter={() => setBrightness(brightnessHover)}
-      onMouseLeave={() => setBrightness(1)}
+      onClick={() => {
+        console.log("Constellation clicked!", stars);
+        if (onClickCallback) onClickCallback();
+      }}
+      onMouseEnter={() => {
+        setBrightness(brightnessHover);
+        setHovered(true);
+        console.log("hovered", hovered);
+        if (onHoverEnterCallback) onHoverEnterCallback();
+      }}
+      onMouseLeave={() => {
+        setBrightness(1);
+        setHovered(false);
+        console.log("hovered", hovered);
+        if (onHoverLeaveCallback) onHoverLeaveCallback();
+      }}
+      x={transformData.x}
+      y={transformData.y}
+      rotation={transformData.rotation}
+      scaleX={transformData.scaleX}
+      scaleY={transformData.scaleY}
     >
       <Rect
         x={minX}

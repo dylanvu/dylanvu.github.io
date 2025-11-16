@@ -10,16 +10,12 @@ import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarFie
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
 import { motion, AnimatePresence } from "motion/react";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import { useRef } from "react";
 
 export default function MainStage() {
-  const containerRef = useRef<HTMLDivElement>(null!);
-
   // use the hook. ready becomes true after the first synchronous measurement.
   const { width, height, ready } = useWindowSizeContext();
   return (
     <div
-      ref={containerRef}
       style={{
         position: "absolute",
         inset: 0,
@@ -47,6 +43,8 @@ export default function MainStage() {
             alignItems: "center",
             flexDirection: "column",
             gap: "1rem",
+            zIndex: 10,
+            pointerEvents: "none",
           }}
           className={FONT_FAMILY.className}
         >
