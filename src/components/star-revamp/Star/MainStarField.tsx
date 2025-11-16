@@ -189,9 +189,6 @@ export default function MainStarField() {
           scaleY: c.scale ?? 1,
         };
 
-        // compute local center so the Constellation and the parent agree on the screen center
-        const { centerX, centerY } = computeCenter(c.stars);
-
         return (
           <Constellation
             data={c}
@@ -216,7 +213,7 @@ export default function MainStarField() {
         const polarisOffsetY = (polarisDesignY - designCenter.y) * scale;
         const polarisScreenX = windowCenter.x + polarisOffsetX;
         const polarisScreenY = windowCenter.y + polarisOffsetY;
-        return !selectedConstellation ? (
+        return (
           <MainStar
             x={polarisScreenX}
             y={polarisScreenY}
@@ -224,6 +221,8 @@ export default function MainStarField() {
             brightness={5}
             twinkleMin={4.9}
             twinkleMax={5.1}
+            windowCenter={windowCenter} // fallback
+            focusedScreenPos={focusedScreenPos} // pass in the focused constellation's screen center
             onHoverEnterCallback={() => {
               setTitleText("Polaris");
               setOriginText("The Guiding Star");
@@ -238,7 +237,7 @@ export default function MainStarField() {
             }}
             label="Polaris"
           />
-        ) : null;
+        );
       })()}
     </Group>
   );

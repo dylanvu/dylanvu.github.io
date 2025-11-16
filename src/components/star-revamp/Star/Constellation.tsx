@@ -335,6 +335,7 @@ export default function Constellation({
             delay={delay}
             label={isFocused ? star.label : undefined}
             labelSize={4}
+            windowCenter={windowCenter}
           />
         );
       })}
