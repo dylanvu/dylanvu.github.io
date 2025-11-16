@@ -126,10 +126,41 @@ export default function MainStarField() {
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
 
-  const windowCenterValue = {
-    x: windowCenter.x,
-    y: windowCenter.y,
+  // helper to compute the constellation center in its local coordinates
+  const computeCenter = (stars: { x: number; y: number }[]) => {
+    const xs = stars.map((s) => s.x);
+    const ys = stars.map((s) => s.y);
+    const minX = Math.min(...xs) - 10;
+    const maxX = Math.max(...xs) + 10;
+    const minY = Math.min(...ys) - 10;
+    const maxY = Math.max(...ys) + 10;
+    const widthLocal = maxX - minX;
+    const heightLocal = maxY - minY;
+    const centerX = minX + widthLocal / 2;
+    const centerY = minY + heightLocal / 2;
+    return { minX, minY, widthLocal, heightLocal, centerX, centerY };
   };
+
+  // compute focused constellation screen center (if any)
+  let focusedScreenPos: { x: number; y: number } | null = null;
+  if (selectedConstellation) {
+    const c = selectedConstellation;
+    const { centerX, centerY } = computeCenter(c.stars);
+    const offsetX = (c.designX - designCenter.x) * scale;
+    const offsetY = (c.designY - designCenter.y) * scale;
+    const transformDataForSelected = {
+      x: windowCenter.x + offsetX,
+      y: windowCenter.y + offsetY,
+      rotation: c.rotation ?? 0,
+      scaleX: c.scale ?? 1,
+      scaleY: c.scale ?? 1,
+    } as TransformData;
+
+    focusedScreenPos = {
+      x: transformDataForSelected.x + centerX,
+      y: transformDataForSelected.y + centerY,
+    };
+  }
 
   return (
     <Group>
@@ -138,27 +169,16 @@ export default function MainStarField() {
         y={0}
         width={width}
         height={height}
-        // 'transparent' won't reliably pick events; use tiny alpha so Konva treats it as filled
         fill="rgba(0,0,0,0.001)"
         onClick={() => {
-          console.log("Clicked background");
           if (selectedConstellation) {
-            console.log("Unselecting constellation");
             setSelectedConstellation(null);
             setOverlayVisibility(true);
           }
         }}
       />
       {CONSTELLATIONS.map((c, i) => {
-        let isFocused = false;
-        if (selectedConstellation) {
-          if (selectedConstellation.name === c.name) {
-            isFocused = true;
-          } else {
-            return null;
-          }
-        }
-        // compute offset from design center and scale it
+        // compute offset from design center and scale it (same as you already have)
         const offsetX = (c.designX - designCenter.x) * scale;
         const offsetY = (c.designY - designCenter.y) * scale;
         const transformData: TransformData = {
@@ -169,18 +189,22 @@ export default function MainStarField() {
           scaleY: c.scale ?? 1,
         };
 
+        // compute local center so the Constellation and the parent agree on the screen center
+        const { centerX, centerY } = computeCenter(c.stars);
+
         return (
           <Constellation
             data={c}
-            windowCenter={windowCenterValue}
+            windowCenter={windowCenter}
             transformData={transformData}
             key={i}
             onClickCallback={() => {
               setSelectedConstellation(c);
               setOverlayVisibility(false);
             }}
-            isFocused={isFocused}
-            // showBoundingBox={true}
+            focusedConstellation={selectedConstellation}
+            // pass the focused constellation screen position (same for all constellations)
+            focusedScreenPos={focusedScreenPos}
           />
         );
       })}

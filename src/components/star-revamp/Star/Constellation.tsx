@@ -11,7 +11,8 @@ export default function Constellation({
   transformData,
   showBoundingBox,
   windowCenter,
-  isFocused,
+  focusedConstellation,
+  focusedScreenPos,
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
@@ -20,11 +21,18 @@ export default function Constellation({
   transformData: TransformData;
   showBoundingBox?: boolean;
   windowCenter: { x: number; y: number };
-  isFocused: boolean;
+  focusedConstellation: ConstellationData | null;
+  focusedScreenPos?: { x: number; y: number } | null; // NEW
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
 }) {
+  let isFocused = false;
+  if (focusedConstellation) {
+    if (focusedConstellation.name === data.name) {
+      isFocused = true;
+    }
+  }
   const { stars, connections, totalDuration } = data;
   const DEFAULT_TOTAL_DURATION = 2; // seconds
   const [brightness, setBrightness] = useState(1);
@@ -91,7 +99,12 @@ export default function Constellation({
     if (!isFocused) {
       playUnfocusTween();
     }
-  }, [isFocused]);
+    if (focusedConstellation) {
+      if (!isFocused) {
+        playVanishTween();
+      }
+    }
+  }, [isFocused, focusedConstellation]);
 
   const HOVER_SCALE = 1.1;
   const SCALE_ANIMATION_DURATION = 0.75; // seconds
@@ -145,6 +158,10 @@ export default function Constellation({
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
+  /**
+   * This tween will move the constellation from the center to the unfocused position
+   * @returns
+   */
   const playUnfocusTween = () => {
     const node = groupRef.current;
     if (!node) return;
@@ -161,6 +178,69 @@ export default function Constellation({
       y: unfocusedConstellationY,
       scaleX: transformData.scaleX ?? 1,
       scaleY: transformData.scaleY ?? 1,
+      rotation: transformData.rotation ?? 0,
+    });
+
+    focusTweenRef.current.play();
+  };
+
+  /**
+   * This tween will move the constellation from the unfocused position to off the screen
+   */
+  const playVanishTween = () => {
+    const node = groupRef.current;
+    if (!node) return;
+
+    // finish any running tween to avoid overlap
+    focusTweenRef.current?.finish();
+
+    // current on-screen center (where the Group is positioned right now)
+    const currentX = unfocusedConstellationX;
+    const currentY = unfocusedConstellationY;
+
+    // focal point: use passed focused screen position if available, otherwise use screen center
+    const focal = focusedScreenPos ?? windowCenter;
+
+    // compute vector from focal -> this constellation
+    let vx = currentX - focal.x;
+    let vy = currentY - focal.y;
+    let vlen = Math.hypot(vx, vy);
+
+    // fallback direction if the two centers coincide (very unlikely but safe)
+    if (vlen < 0.0001) {
+      vx = 0;
+      vy = -1;
+      vlen = 1;
+    }
+
+    const nx = vx / vlen;
+    const ny = vy / vlen;
+
+    // choose a distance large enough to place the constellation off-screen
+    // using viewport diagonal * factor ensures it goes off in the same direction
+    const vw =
+      typeof window !== "undefined" ? window.innerWidth : windowCenter.x * 2;
+    const vh =
+      typeof window !== "undefined" ? window.innerHeight : windowCenter.y * 2;
+    const viewportDiagonal = Math.hypot(vw, vh);
+    const offscreenDist = viewportDiagonal * 1.4 + Math.max(width, height);
+
+    const targetX = currentX + nx * offscreenDist;
+    const targetY = currentY + ny * offscreenDist;
+
+    // optionally shrink slightly as it moves away (feel free to tweak)
+    const targetScaleX = (transformData.scaleX ?? 1) * 0.9;
+    const targetScaleY = (transformData.scaleY ?? 1) * 0.9;
+
+    focusTweenRef.current = new Konva.Tween({
+      node,
+      duration: FOCUS_ANIMATION_DURATION,
+      easing: EASING,
+      x: targetX,
+      y: targetY,
+      scaleX: targetScaleX,
+      scaleY: targetScaleY,
+      // keep rotation as-is so labels remain aligned
       rotation: transformData.rotation ?? 0,
     });
 
