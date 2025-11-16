@@ -201,6 +201,11 @@ export default function HackathonMap() {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {/* dark mode map below, this is for the starry revamp */}
+        {/* <TileLayer
+          attribution="https://github.com/CartoDB/basemap-styles?tab=readme-ov-file"
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        /> */}
         {/* for each hackathon location, create a marker */}
         {aggregatedHackathonLocations.map((aggregatedLocation, index) => {
           // figure out how large the marker should be
