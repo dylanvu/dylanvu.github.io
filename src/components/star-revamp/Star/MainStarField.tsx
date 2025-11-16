@@ -3,6 +3,9 @@ import Constellation from "@/components/star-revamp/Star/Constellation";
 import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
+import { useState } from "react";
+import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
+import { Group, Rect } from "react-konva";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -73,7 +76,7 @@ const CONSTELLATIONS: ConstellationData[] = [
   {
     name: "Elevare",
     origin: 'Latin: "to elevate"',
-    about: "A map of hackathons where I've grown and guided others",
+    about: "A map of hackathons where I've grown and mentored others",
     stars: US_MAP,
     designX: 1500,
     designY: 800,
@@ -85,12 +88,40 @@ const CONSTELLATIONS: ConstellationData[] = [
 
 export default function MainStarField() {
   const { width, height } = useWindowSizeContext();
+  const { setOverlayVisibility } = useMainStageOverlayContext();
   const windowCenter = { x: width / 2, y: height / 2 };
   const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
 
+  const [selectedConstellation, setSelectedConstellation] =
+    useState<ConstellationData | null>(null);
+
   return (
-    <>
+    <Group>
+      <Rect
+        x={0}
+        y={0}
+        width={width}
+        height={height}
+        // 'transparent' won't reliably pick events; use tiny alpha so Konva treats it as filled
+        fill="rgba(0,0,0,0.001)"
+        onClick={() => {
+          console.log("Clicked background");
+          if (selectedConstellation) {
+            console.log("Unselecting constellation");
+            setSelectedConstellation(null);
+            setOverlayVisibility(true);
+          }
+        }}
+      />
       {CONSTELLATIONS.map((c, i) => {
+        let isFocused = false;
+        if (selectedConstellation) {
+          if (selectedConstellation.name === c.name) {
+            isFocused = true;
+          } else {
+            return null;
+          }
+        }
         // compute offset from design center and scale it
         const offsetX = (c.designX - designCenter.x) * scale;
         const offsetY = (c.designY - designCenter.y) * scale;
@@ -101,8 +132,26 @@ export default function MainStarField() {
           scaleX: c.scale ?? 1,
           scaleY: c.scale ?? 1,
         };
-        return <Constellation data={c} transformData={transformData} key={i} />;
+
+        const windowCenterValue = {
+          x: windowCenter.x,
+          y: windowCenter.y,
+        };
+        return (
+          <Constellation
+            data={c}
+            windowCenter={windowCenterValue}
+            transformData={transformData}
+            key={i}
+            onClickCallback={() => {
+              setSelectedConstellation(c);
+              setOverlayVisibility(false);
+            }}
+            isFocused={isFocused}
+            // showBoundingBox={true}
+          />
+        );
       })}
-    </>
+    </Group>
   );
 }

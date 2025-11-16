@@ -1,10 +1,10 @@
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
 import { FadeLetters } from "./FadeLetters";
 import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 
 export default function MainStageOverlay() {
-  const { titleText, originText, aboutText, introText } =
+  const { titleText, originText, aboutText, introText, overlayVisibility } =
     useMainStageOverlayContext();
 
   const lines = [
@@ -21,35 +21,42 @@ export default function MainStageOverlay() {
   const lineStep = lineDuration * (1 - overlapFactor);
 
   return (
-    <motion.div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        gap: "1rem",
-        zIndex: 10,
-        pointerEvents: "none",
-      }}
-    >
-      {visibleLines.map((line, index) => (
-        <FadeLetters
-          key={line.key}
-          text={line.text!}
-          size={line.size}
-          color={SPACE_TEXT_COLOR}
-          duration={lineDuration}
-          lineIndex={index}
-          lineStep={lineStep}
-          totalLines={totalLines} // <-- pass totalLines
-          fontFamily={index === 1 ? FANCY_FONT_FAMILY : FONT_FAMILY}
-        />
-      ))}
-    </motion.div>
+    <AnimatePresence>
+      {overlayVisibility && (
+        <motion.div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            gap: "1rem",
+            zIndex: 10,
+            pointerEvents: "none",
+          }}
+          exit={{
+            opacity: 0,
+          }}
+        >
+          {visibleLines.map((line, index) => (
+            <FadeLetters
+              key={line.key}
+              text={line.text!}
+              size={line.size}
+              color={SPACE_TEXT_COLOR}
+              duration={lineDuration}
+              lineIndex={index}
+              lineStep={lineStep}
+              totalLines={totalLines} // <-- pass totalLines
+              fontFamily={index === 1 ? FANCY_FONT_FAMILY : FONT_FAMILY}
+            />
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

@@ -19,6 +19,8 @@ interface MainStageOverlayContextType {
   setAboutText: Dispatch<SetStateAction<string>>;
   introText: string;
   setIntroText: Dispatch<SetStateAction<string>>;
+  overlayVisibility: boolean;
+  setOverlayVisibility: Dispatch<SetStateAction<boolean>>;
   DEFAULT_INTRO_TEXT: string;
   DEFAULT_TITLE_TEXT: string;
   DEFAULT_ORIGIN_TEXT: string;
@@ -45,6 +47,7 @@ export function MainStageOverlayProvider({
   const [originText, setOriginText] = useState<string>(DEFAULT_ORIGIN_TEXT);
   const [aboutText, setAboutText] = useState<string>(DEFAULT_ABOUT_TEXT);
   const [introText, setIntroText] = useState<string>(DEFAULT_INTRO_TEXT);
+  const [overlayVisibility, setOverlayVisibility] = useState<boolean>(true);
 
   return (
     <MainStageOverlayContext.Provider
@@ -57,6 +60,8 @@ export function MainStageOverlayProvider({
         setAboutText,
         introText,
         setIntroText,
+        overlayVisibility,
+        setOverlayVisibility,
         DEFAULT_TITLE_TEXT,
         DEFAULT_ORIGIN_TEXT,
         DEFAULT_ABOUT_TEXT,

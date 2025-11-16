@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { Group, Rect } from "react-konva";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
@@ -10,6 +10,8 @@ export default function Constellation({
   data,
   transformData,
   showBoundingBox,
+  windowCenter,
+  isFocused,
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
@@ -17,6 +19,8 @@ export default function Constellation({
   data: ConstellationData;
   transformData: TransformData;
   showBoundingBox?: boolean;
+  windowCenter: { x: number; y: number };
+  isFocused: boolean;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
@@ -28,6 +32,13 @@ export default function Constellation({
 
   const groupRef = useRef<any>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
+
+  /**
+   * This tween will move the constellation from where it is currently at, to the center of the screen.
+   * It is played when the constellation is clicked and goes into focus
+   */
+  const focusTweenRef = useRef<Konva.Tween | null>(null);
+  const focusScale = 3;
 
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
@@ -76,11 +87,18 @@ export default function Constellation({
     DEFAULT_INTRO_TEXT,
   } = useMainStageOverlayContext();
 
+  useEffect(() => {
+    if (!isFocused) {
+      playUnfocusTween();
+    }
+  }, [isFocused]);
+
   const HOVER_SCALE = 1.1;
   const SCALE_ANIMATION_DURATION = 0.75; // seconds
+  const FOCUS_ANIMATION_DURATION = 0.5; // seconds
   const EASING = Konva.Easings.EaseInOut;
 
-  const playTween = (toScaleX: number, toScaleY: number) => {
+  const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
     if (!node) return;
 
@@ -99,23 +117,72 @@ export default function Constellation({
     hoverTweenRef.current.play();
   };
 
+  const playFocusTween = () => {
+    const node = groupRef.current;
+    if (!node) return;
+
+    // finish any running tween to avoid overlap
+    focusTweenRef.current?.finish();
+
+    // create & play the focus tween
+    focusTweenRef.current = new Konva.Tween({
+      node,
+      duration: FOCUS_ANIMATION_DURATION,
+      easing: EASING,
+      x: windowCenter.x,
+      y: windowCenter.y,
+      scaleX: (transformData.scaleX ?? 1) * focusScale,
+      scaleY: (transformData.scaleY ?? 1) * focusScale,
+      rotation: data.name === "Elevare" ? 0 : transformData.rotation,
+    });
+
+    focusTweenRef.current.play();
+  };
+
+  const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
+  const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
+
+  const playUnfocusTween = () => {
+    const node = groupRef.current;
+    if (!node) return;
+
+    // finish any running tween to avoid overlap
+    focusTweenRef.current?.finish();
+
+    // create & play the focus tween
+    focusTweenRef.current = new Konva.Tween({
+      node,
+      duration: FOCUS_ANIMATION_DURATION,
+      easing: EASING,
+      x: unfocusedConstellationX,
+      y: unfocusedConstellationY,
+      scaleX: transformData.scaleX ?? 1,
+      scaleY: transformData.scaleY ?? 1,
+      rotation: transformData.rotation ?? 0,
+    });
+
+    focusTweenRef.current.play();
+  };
+
   return (
     <Group
       ref={groupRef}
-      onClick={() => {
-        setTitleText(data.name);
-        setOriginText(data.origin);
-        setAboutText(data.about);
-        setIntroText("Constellation");
+      onClick={(e) => {
+        e.cancelBubble = true;
+        playFocusTween();
+        if (!isFocused) {
+          groupRef.current.moveToTop();
+        }
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {
         setBrightness(brightnessHover);
-
-        playTween(
-          (transformData.scaleX ?? 1) * HOVER_SCALE,
-          (transformData.scaleY ?? 1) * HOVER_SCALE
-        );
+        if (!isFocused) {
+          playHoverTween(
+            (transformData.scaleX ?? 1) * HOVER_SCALE,
+            (transformData.scaleY ?? 1) * HOVER_SCALE
+          );
+        }
 
         setTitleText(data.name);
         setOriginText(data.origin);
@@ -126,7 +193,9 @@ export default function Constellation({
       onMouseLeave={() => {
         setBrightness(1);
 
-        playTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
+        if (!isFocused) {
+          playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
+        }
 
         setTitleText(DEFAULT_TITLE_TEXT);
         setOriginText(DEFAULT_ORIGIN_TEXT);
@@ -135,8 +204,8 @@ export default function Constellation({
         if (onHoverLeaveCallback) onHoverLeaveCallback();
       }}
       // move the Group so that the center point remains where it was before we set offsets
-      x={(transformData.x ?? 0) + centerX}
-      y={(transformData.y ?? 0) + centerY}
+      x={unfocusedConstellationX}
+      y={unfocusedConstellationY}
       // offset the group so scale/rotation happen around the constellation center
       offsetX={centerX}
       offsetY={centerY}
