@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, Easing } from "motion/react";
 import { FONT_FAMILY } from "@/app/theme";
 import { NextFont } from "next/dist/compiled/@next/font";
 
@@ -7,9 +7,11 @@ interface FadeLettersProps {
   size?: string | number;
   fontFamily?: NextFont;
   color?: string;
-  duration?: number; // total time for all letters
-  lineIndex?: number; // index of the line (for staggered line overlap)
-  lineStep?: number; // delay step between lines (for overlap)
+  duration?: number;
+  lineIndex?: number;
+  lineStep?: number;
+  yOffset?: number;
+  ease?: Easing | Easing[]; // correctly typed easing
 }
 
 export function FadeLetters({
@@ -20,25 +22,28 @@ export function FadeLetters({
   duration = 0.5,
   lineIndex = 0,
   lineStep = 0.4,
+  yOffset = 6,
+  ease = [0.42, 0, 0.58, 1], // cubic-bezier works
 }: FadeLettersProps) {
   if (!text) return null;
 
   const letters = text.split("");
   const n = Math.max(1, letters.length);
   const perLetterDuration = duration / n;
-  const letterStagger = perLetterDuration;
 
-  // Calculate delay based on line index and overlap step
   const enterDelay = lineIndex * lineStep;
-  const exitDelay = lineIndex * lineStep; // can tweak for exit overlap
+  const exitDelay = lineIndex * lineStep;
 
   const rootVariants = {
     visible: {
-      transition: { staggerChildren: letterStagger, delayChildren: enterDelay },
+      transition: {
+        staggerChildren: perLetterDuration,
+        delayChildren: enterDelay,
+      },
     },
     hidden: {
       transition: {
-        staggerChildren: letterStagger,
+        staggerChildren: perLetterDuration,
         staggerDirection: -1,
         delayChildren: exitDelay,
       },
@@ -46,8 +51,17 @@ export function FadeLetters({
   };
 
   const letterVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
+    hidden: { opacity: 0, y: yOffset },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: perLetterDuration, ease },
+    },
+    exit: {
+      opacity: 0,
+      y: yOffset,
+      transition: { duration: perLetterDuration, ease },
+    },
   };
 
   return (
@@ -70,9 +84,9 @@ export function FadeLetters({
                 fontSize: size,
                 color,
                 fontFamily: fontFamily.style.fontFamily,
+                lineHeight: 1,
               }}
               variants={letterVariants}
-              transition={{ duration: perLetterDuration, ease: "linear" }}
             >
               {letter === " " ? "\u00A0" : letter}
             </motion.span>
