@@ -20,6 +20,7 @@ type Props = {
   labelSize?: number;
   focusedScreenPos?: { x: number; y: number } | null;
   windowCenter: { x: number; y: number };
+  showHitBox?: boolean; // new prop for debugging
 };
 
 export default function MainStar({
@@ -39,6 +40,7 @@ export default function MainStar({
   labelSize = 12,
   focusedScreenPos,
   windowCenter,
+  showHitBox = false,
 }: Props) {
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
@@ -200,21 +202,44 @@ export default function MainStar({
       <Shape
         ref={shapeRef}
         sceneFunc={(ctx, _shape) => {
-          const radius = size * brightnessRef.current;
-          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+          const starRadius = size * brightnessRef.current;
+          const labelWidth = textRef.current?.width() || 0;
+          const labelHeight = textRef.current?.height() || 0;
+          const labelY = size + labelSize; // Text.y offset
+
+          // Single hitbox calculation
+          const hitRadiusX = Math.max(starRadius, labelWidth / 2);
+          const hitRadiusY = starRadius + labelHeight + labelY;
+
+          // Draw the star
+          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, starRadius);
           gradient.addColorStop(0, starColor);
           gradient.addColorStop(0.5, `rgba(255,255,255,${0.5 * opacity})`);
           gradient.addColorStop(1, "transparent");
 
           ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(0, 0, radius, 0, Math.PI * 2);
+          ctx.arc(0, 0, starRadius, 0, Math.PI * 2);
           ctx.fill();
+
+          // DEBUG hitbox
+          if (showHitBox) {
+            ctx.fillStyle = "rgba(255,0,0,0.2)";
+            ctx.fillRect(-hitRadiusX, -starRadius, hitRadiusX * 2, hitRadiusY);
+          }
         }}
         hitFunc={(ctx, shape) => {
-          const radius = size * brightnessRef.current;
+          const starRadius = size * brightnessRef.current;
+          const labelWidth = textRef.current?.width() || 0;
+          const labelHeight = textRef.current?.height() || 0;
+          const labelY = size + labelSize; // same Text.y offset
+
+          // Reuse exact same hitbox
+          const hitRadiusX = Math.max(starRadius, labelWidth / 2);
+          const hitRadiusY = starRadius + labelHeight + labelY;
+
           ctx.beginPath();
-          ctx.arc(0, 0, radius, 0, Math.PI * 2);
+          ctx.rect(-hitRadiusX, -starRadius, hitRadiusX * 2, hitRadiusY);
           ctx.closePath();
           ctx.fillStrokeShape(shape);
         }}
