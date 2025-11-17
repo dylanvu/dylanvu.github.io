@@ -154,9 +154,9 @@ export default function MainStarField() {
             focusedScreenPos={focusedScreenPos} // pass in the focused constellation's screen center
             onHoverEnterCallback={() => {
               setTitleText("Polaris");
-              setOriginText("The Celestial Guide");
+              setOriginText("Latin: Pole Star. A celestial guide.");
               setAboutText("A beacon to help you navigate the stars");
-              setIntroText("Guiding Star");
+              setIntroText("The North Star");
             }}
             onHoverLeaveCallback={() => {
               resetOverlayTextContents();

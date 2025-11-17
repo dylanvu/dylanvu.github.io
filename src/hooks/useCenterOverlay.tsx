@@ -9,6 +9,6 @@ export const {
   introText: "Codeweaver",
   titleText: "Dylan Vu",
   originText: "Explore the night sky to learn more about me",
-  aboutText: "or consult Polaris above to find your way",
+  aboutText: "or consult the North Star above to find your way",
   titlePosition: "center",
 });
