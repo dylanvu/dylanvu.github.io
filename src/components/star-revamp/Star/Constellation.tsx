@@ -257,6 +257,8 @@ export default function Constellation({
     setIntroText(DEFAULT_INTRO_TEXT);
   };
 
+  const { setTitlePosition } = useMainStageOverlayContext();
+
   return (
     <Group
       ref={groupRef}
@@ -267,7 +269,6 @@ export default function Constellation({
           groupRef.current.moveToTop();
         }
         document.body.style.cursor = "default";
-        setMainOverlayToDefault();
         if (onClickCallback) onClickCallback();
       }}
       onMouseEnter={() => {

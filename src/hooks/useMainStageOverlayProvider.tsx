@@ -25,6 +25,9 @@ interface MainStageOverlayContextType {
   DEFAULT_TITLE_TEXT: string;
   DEFAULT_ORIGIN_TEXT: string;
   DEFAULT_ABOUT_TEXT: string;
+  titlePosition: "center" | "bottom";
+  setTitlePosition: Dispatch<SetStateAction<"center" | "bottom">>;
+  resetOverlayTextContents: () => void;
 }
 
 // Create the context
@@ -48,6 +51,16 @@ export function MainStageOverlayProvider({
   const [aboutText, setAboutText] = useState<string>(DEFAULT_ABOUT_TEXT);
   const [introText, setIntroText] = useState<string>(DEFAULT_INTRO_TEXT);
   const [overlayVisibility, setOverlayVisibility] = useState<boolean>(true);
+  const [titlePosition, setTitlePosition] = useState<"center" | "bottom">(
+    "center"
+  );
+
+  function resetOverlayTextContents() {
+    setTitleText(DEFAULT_TITLE_TEXT);
+    setOriginText(DEFAULT_ORIGIN_TEXT);
+    setAboutText(DEFAULT_ABOUT_TEXT);
+    setIntroText(DEFAULT_INTRO_TEXT);
+  }
 
   return (
     <MainStageOverlayContext.Provider
@@ -66,6 +79,9 @@ export function MainStageOverlayProvider({
         DEFAULT_ORIGIN_TEXT,
         DEFAULT_ABOUT_TEXT,
         DEFAULT_INTRO_TEXT,
+        titlePosition,
+        setTitlePosition,
+        resetOverlayTextContents,
       }}
     >
       {children}

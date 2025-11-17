@@ -102,7 +102,7 @@ const CONSTELLATIONS: ConstellationData[] = [
 export default function MainStarField() {
   const { width, height } = useWindowSizeContext();
   const {
-    setOverlayVisibility,
+    setTitlePosition,
     setTitleText,
     setOriginText,
     setAboutText,
@@ -111,6 +111,7 @@ export default function MainStarField() {
     DEFAULT_ABOUT_TEXT,
     DEFAULT_ORIGIN_TEXT,
     DEFAULT_TITLE_TEXT,
+    resetOverlayTextContents,
   } = useMainStageOverlayContext();
   const windowCenter = { x: width / 2, y: height / 2 };
   const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
@@ -165,7 +166,8 @@ export default function MainStarField() {
         onClick={() => {
           if (selectedConstellation) {
             setSelectedConstellation(null);
-            setOverlayVisibility(true);
+            resetOverlayTextContents();
+            setTitlePosition("center");
           }
         }}
       />
@@ -189,7 +191,10 @@ export default function MainStarField() {
             key={i}
             onClickCallback={() => {
               setSelectedConstellation(c);
-              setOverlayVisibility(false);
+              setTitlePosition("bottom");
+              setIntroText("");
+              setOriginText(c.about);
+              setAboutText("");
             }}
             focusedConstellation={selectedConstellation}
             // pass the focused constellation screen position (same for all constellations)

@@ -6,8 +6,14 @@ import DrawLetters from "./DrawLetters";
 import { FadeLine } from "./FadeLine";
 
 export default function MainStageOverlay() {
-  const { titleText, originText, aboutText, introText, overlayVisibility } =
-    useMainStageOverlayContext();
+  const {
+    titleText,
+    originText,
+    aboutText,
+    introText,
+    overlayVisibility,
+    titlePosition,
+  } = useMainStageOverlayContext();
 
   const lines = useMemo(
     () => [
@@ -55,7 +61,7 @@ export default function MainStageOverlay() {
     >
       {overlayVisibility && (
         <motion.div
-          key={`overlay-${contentKey}`} // change triggers exit -> enter (mode="wait")
+          key={`overlay-${contentKey}`}
           style={{
             position: "absolute",
             top: 0,
@@ -69,12 +75,16 @@ export default function MainStageOverlay() {
             gap: "1rem",
             zIndex: 10,
             pointerEvents: "none",
+            y: titlePosition === "bottom" ? "35vh" : 0, // move down
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: 1,
+          }}
           exit={{ opacity: 0 }}
-          // make container enter quicker so DrawLetters appears promptly
-          transition={{ duration: 0.16 }}
+          transition={{ duration: 0.16, ease: "easeInOut" }}
         >
           {visibleLines.map((line, idx) => {
             if (idx === titleIndex) {
