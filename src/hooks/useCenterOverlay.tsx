@@ -8,7 +8,7 @@ export const {
 } = createOverlayContext({
   introText: "Codeweaver",
   titleText: "Dylan Vu",
-  originText: "Hover a constellation to explore",
+  originText: "Explore the night sky to learn more about me",
   aboutText: "or consult Polaris above to find your way",
   titlePosition: "center",
 });

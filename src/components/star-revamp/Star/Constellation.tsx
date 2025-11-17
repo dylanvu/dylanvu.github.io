@@ -527,7 +527,7 @@ export default function Constellation({
             enableOnClick={isFocused}
             onHoverEnterCallback={() => {
               if (star.data) {
-                setIntroText("Star");
+                setIntroText(star.data.intro);
                 setTitleText(star.data.label);
                 setOriginText(star.data.origin);
                 setAboutText(star.data.about);
@@ -543,7 +543,7 @@ export default function Constellation({
             }}
             onClickCallback={() => {
               if (star.data) {
-                setIntroText("Star");
+                setIntroText(star.data.intro);
                 setTitleText(star.data.label);
                 setOriginText(star.data.origin);
                 setAboutText(star.data.about);

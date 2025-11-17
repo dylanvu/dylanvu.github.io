@@ -30,6 +30,15 @@ type BaseStarData = {
   label: string;
   origin: string;
   about: string;
+  intro: "Star" | "Supergiant" | "Giant" | "Dwarf";
+  color?:
+    | "Blue"
+    | "Blue-White"
+    | "White"
+    | "Yellow-White"
+    | "Yellow"
+    | "Orange"
+    | "Red";
 };
 
 /**
