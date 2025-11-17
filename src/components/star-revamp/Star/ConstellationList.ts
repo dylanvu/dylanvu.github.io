@@ -2,20 +2,50 @@ import { ConstellationData } from "@/interfaces/StarInterfaces";
 import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
 
-const ViaeStars = [
-  { x: 80, y: 70, size: 5, label: "Email" },
-  { x: 100, y: 40, size: 4, label: "GitHub" },
-  { x: 55, y: 90, size: 4, label: "LinkedIn" },
-  { x: 105, y: 100, size: 3, label: "Medium" },
-];
-
 export const CONSTELLATIONS: ConstellationData[] = [
   {
     // my contact me links
     name: "Viae",
     origin: 'Latin: "roads". Outlines converging roads.',
     about: "The gateway to worlds beyond this night sky",
-    stars: ViaeStars,
+    stars: [
+      {
+        x: 80,
+        y: 70,
+        size: 5,
+        data: { label: "Email", origin: "dylanvu9@gmail.com", about: "" },
+      },
+      {
+        x: 100,
+        y: 40,
+        size: 4,
+        data: {
+          label: "GitHub",
+          origin: "github.com/dylanvu",
+          about: "See my code",
+        },
+      },
+      {
+        x: 55,
+        y: 90,
+        size: 4,
+        data: {
+          label: "LinkedIn",
+          origin: "/in/dylanvu9",
+          about: "Connect with me",
+        },
+      },
+      {
+        x: 105,
+        y: 100,
+        size: 3,
+        data: {
+          label: "Medium",
+          origin: "@mentor-mementos",
+          about: "I write about hackathon mentoring",
+        },
+      },
+    ],
     connections: [
       [0, 1],
       [0, 2],
