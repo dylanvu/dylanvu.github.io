@@ -46,7 +46,14 @@ export default function Constellation({
    * It is played when the constellation is clicked and goes into focus
    */
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-  const focusScale = 3;
+
+  const constellationFocusScale: Record<string, number> = {
+    Viae: 3,
+    Iter: 3,
+    Arete: 2.4,
+    Elevare: 2,
+  };
+  const focusScale: number = constellationFocusScale[data.name];
 
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);

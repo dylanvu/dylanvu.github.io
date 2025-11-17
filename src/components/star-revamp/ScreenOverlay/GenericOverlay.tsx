@@ -26,7 +26,7 @@ export default function GenericOverlay({
   // note that 0 y is the center of the screen
   const OverlayPositionToCSS = {
     center: 0,
-    bottom: "35vh",
+    bottom: "40vh",
     top: "-35vh",
   };
 
@@ -64,6 +64,12 @@ export default function GenericOverlay({
 
   const staggerDelay = 0.16;
 
+  // this section is kinda nasty lol
+  const gap = 0.8;
+  const gapUnit = "rem";
+  const gapValue = gap + gapUnit;
+  const gapTitleOverride = -1 * 1.5 * gap + gapUnit;
+
   return (
     <AnimatePresence
       mode="wait"
@@ -84,9 +90,10 @@ export default function GenericOverlay({
             height: "100%",
             display: "flex",
             justifyContent: "center",
+            alignContent: "center",
             alignItems: "center",
             flexDirection: "column",
-            gap: "1rem",
+            gap: gapValue,
             zIndex: 10,
             pointerEvents: "none",
             y: OverlayPositionToCSS[titlePosition],
@@ -106,7 +113,12 @@ export default function GenericOverlay({
               return (
                 <div
                   key={`${line.key}-${line.text}`}
-                  style={{ display: "inline-block" }}
+                  style={{
+                    display: "inline-block",
+                    // override the gap for this title only
+                    marginBottom: gapTitleOverride,
+                    marginTop: gapTitleOverride,
+                  }}
                 >
                   <DrawLetters
                     key={`${line.key}-${line.text}`} // force rerender when text changes
