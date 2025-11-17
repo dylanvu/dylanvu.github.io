@@ -1,17 +1,11 @@
 "use client";
 
-import {
-  FONT_FAMILY,
-  SPACE_BACKGROUND_COLOR,
-  SPACE_TEXT_COLOR,
-} from "@/app/theme";
+import { SPACE_BACKGROUND_COLOR } from "@/app/theme";
 import { Layer, Stage } from "react-konva";
 import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
-import { motion, AnimatePresence } from "motion/react";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
-import MainStageOverlay from "./MainStageOverlay";
+import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay";
 
 export default function MainStage() {
   // use the hook. ready becomes true after the first synchronous measurement.
@@ -26,7 +20,7 @@ export default function MainStage() {
         overflow: "hidden",
       }}
     >
-      <MainStageOverlay />
+      <CenterOverlay />
       {ready && width > 0 && height > 0 && (
         <Stage
           width={width}

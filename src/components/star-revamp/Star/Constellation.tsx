@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
-import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
+import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import { text } from "stream/consumers";
 import ConstellationLabel from "./ConstellationLabel";
@@ -87,16 +87,8 @@ export default function Constellation({
     return acc;
   }, []);
 
-  const {
-    setTitleText,
-    setOriginText,
-    setAboutText,
-    setIntroText,
-    DEFAULT_TITLE_TEXT,
-    DEFAULT_ORIGIN_TEXT,
-    DEFAULT_ABOUT_TEXT,
-    DEFAULT_INTRO_TEXT,
-  } = useMainStageOverlayContext();
+  const { setTitleText, setOriginText, setAboutText, setIntroText } =
+    useCenterOverlayContext();
 
   useEffect(() => {
     if (!isFocused) {
@@ -250,14 +242,7 @@ export default function Constellation({
     focusTweenRef.current.play();
   };
 
-  const setMainOverlayToDefault = () => {
-    setTitleText(DEFAULT_TITLE_TEXT);
-    setOriginText(DEFAULT_ORIGIN_TEXT);
-    setAboutText(DEFAULT_ABOUT_TEXT);
-    setIntroText(DEFAULT_INTRO_TEXT);
-  };
-
-  const { setTitlePosition } = useMainStageOverlayContext();
+  const { setTitlePosition } = useCenterOverlayContext();
 
   return (
     <Group
@@ -292,7 +277,6 @@ export default function Constellation({
           setBrightness(1);
           playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
           document.body.style.cursor = "default";
-          setMainOverlayToDefault();
         }
 
         if (onHoverLeaveCallback) onHoverLeaveCallback();

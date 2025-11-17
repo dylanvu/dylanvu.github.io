@@ -1,19 +1,31 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
 import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
-import DrawLetters from "./DrawLetters";
-import { FadeLine } from "./FadeLine";
+import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
+import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
+import { TitlePosition } from "@/hooks/GenericOverlayProvider";
 
-export default function MainStageOverlay() {
-  const {
-    titleText,
-    originText,
-    aboutText,
-    introText,
-    overlayVisibility,
-    titlePosition,
-  } = useMainStageOverlayContext();
+export default function GenericOverlay({
+  titleText,
+  originText,
+  aboutText,
+  introText,
+  overlayVisibility,
+  titlePosition,
+}: {
+  titleText: string;
+  originText: string;
+  aboutText: string;
+  introText: string;
+  overlayVisibility: boolean;
+  titlePosition: TitlePosition;
+}) {
+  // create an enum for the title position to position
+  const OverlayPositionToCSS = {
+    center: "center",
+    bottom: "35vh",
+    top: "5vh",
+  };
 
   const lines = useMemo(
     () => [
@@ -75,7 +87,7 @@ export default function MainStageOverlay() {
             gap: "1rem",
             zIndex: 10,
             pointerEvents: "none",
-            y: titlePosition === "bottom" ? "35vh" : 0, // move down
+            y: OverlayPositionToCSS[titlePosition], // move down
           }}
           initial={{
             opacity: 0,

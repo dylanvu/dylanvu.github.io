@@ -4,7 +4,7 @@ import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useState } from "react";
-import { useMainStageOverlayContext } from "@/hooks/useMainStageOverlayProvider";
+import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Group, Rect } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
@@ -107,12 +107,8 @@ export default function MainStarField() {
     setOriginText,
     setAboutText,
     setIntroText,
-    DEFAULT_INTRO_TEXT,
-    DEFAULT_ABOUT_TEXT,
-    DEFAULT_ORIGIN_TEXT,
-    DEFAULT_TITLE_TEXT,
     resetOverlayTextContents,
-  } = useMainStageOverlayContext();
+  } = useCenterOverlayContext();
   const windowCenter = { x: width / 2, y: height / 2 };
   const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
 
@@ -227,10 +223,7 @@ export default function MainStarField() {
               setIntroText("Star");
             }}
             onHoverLeaveCallback={() => {
-              setTitleText(DEFAULT_TITLE_TEXT);
-              setOriginText(DEFAULT_ORIGIN_TEXT);
-              setAboutText(DEFAULT_ABOUT_TEXT);
-              setIntroText(DEFAULT_INTRO_TEXT);
+              resetOverlayTextContents();
             }}
             // label="Polaris"
           />
