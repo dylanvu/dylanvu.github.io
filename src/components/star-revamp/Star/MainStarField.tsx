@@ -195,6 +195,19 @@ export default function MainStarField() {
             focusedConstellation={selectedConstellation}
             // pass the focused constellation screen position (same for all constellations)
             focusedScreenPos={focusedScreenPos}
+            onHoverEnterCallback={() => {
+              if (!selectedConstellation) {
+                setTitleText(c.name);
+                setOriginText(c.origin);
+                setAboutText(c.about);
+                setIntroText("Constellation");
+              }
+            }}
+            onHoverLeaveCallback={() => {
+              if (selectedConstellation !== c) {
+                resetOverlayTextContents();
+              }
+            }}
           />
         );
       })}
@@ -224,6 +237,8 @@ export default function MainStarField() {
             }}
             onHoverLeaveCallback={() => {
               resetOverlayTextContents();
+              // polaris is outside of any constellation, so leaving the star should bring the cursor back to normal, whereas other constellations still have the pointer style
+              document.body.style.cursor = "default";
             }}
             // label="Polaris"
           />

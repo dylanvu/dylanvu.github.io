@@ -1,13 +1,10 @@
 import Konva from "konva";
-import { Group, Rect, Text } from "react-konva";
+import { Group, Rect } from "react-konva";
 import { useState, useRef, useEffect } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
-import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
-import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
-import { text } from "stream/consumers";
-import ConstellationLabel from "./ConstellationLabel";
+import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 
 export default function Constellation({
   data,
@@ -86,9 +83,6 @@ export default function Constellation({
     else acc.push(acc[idx - 1] + lineDurations[idx - 1]);
     return acc;
   }, []);
-
-  const { setTitleText, setOriginText, setAboutText, setIntroText } =
-    useCenterOverlayContext();
 
   useEffect(() => {
     if (!isFocused) {
@@ -242,7 +236,13 @@ export default function Constellation({
     focusTweenRef.current.play();
   };
 
-  const { setTitlePosition } = useCenterOverlayContext();
+  const {
+    setTitleText,
+    setOriginText,
+    setAboutText,
+    setIntroText,
+    resetOverlayTextContents,
+  } = useTopOverlayContext();
 
   return (
     <Group
@@ -264,10 +264,6 @@ export default function Constellation({
             (transformData.scaleY ?? 1) * HOVER_SCALE
           );
           document.body.style.cursor = "pointer";
-          setTitleText(data.name);
-          setOriginText(data.origin);
-          setAboutText(data.about);
-          setIntroText("Constellation");
         }
 
         if (onHoverEnterCallback) onHoverEnterCallback();
@@ -276,8 +272,8 @@ export default function Constellation({
         if (!isFocused) {
           setBrightness(1);
           playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
-          document.body.style.cursor = "default";
         }
+        document.body.style.cursor = "default";
 
         if (onHoverLeaveCallback) onHoverLeaveCallback();
       }}
@@ -330,6 +326,33 @@ export default function Constellation({
             label={isFocused ? star.label : undefined}
             labelSize={4}
             windowCenter={windowCenter}
+            onHoverEnterCallback={() => {
+              // we need this check so that the US does not render the top text!
+              if (star.label) {
+                setIntroText("Star");
+                setTitleText(star.label);
+                setOriginText("Type of Project");
+                setAboutText("Description");
+              }
+            }}
+            onHoverLeaveCallback={() => {
+              if (star.label) {
+                resetOverlayTextContents();
+              }
+              // when the constellation is focused, leaving the star should bring the cursor back to normal
+              if (isFocused) {
+                document.body.style.cursor = "default";
+              }
+            }}
+            onClickCallback={() => {
+              if (star.label) {
+                console.log("click on star", star.label ?? "undefined label");
+                setIntroText("Star");
+                setTitleText(star.label ?? "");
+                setOriginText("Type of Project");
+                setAboutText("Description");
+              }
+            }}
           />
         );
       })}

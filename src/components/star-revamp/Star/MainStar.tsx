@@ -16,6 +16,7 @@ type Props = {
   twinkleMaxDuration?: number;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
+  onClickCallback?: () => void;
   label?: string;
   labelSize?: number;
   focusedScreenPos?: { x: number; y: number } | null;
@@ -36,6 +37,7 @@ export default function MainStar({
   twinkleMaxDuration = 1400,
   onHoverEnterCallback,
   onHoverLeaveCallback,
+  onClickCallback,
   label,
   labelSize = 12,
   focusedScreenPos,
@@ -192,11 +194,11 @@ export default function MainStar({
       }}
       onMouseLeave={() => {
         onHoverLeaveCallback?.();
-        document.body.style.cursor = "default";
         playHoverTween(1, 1);
       }}
       onClick={() => {
         console.log("click");
+        if (onClickCallback) onClickCallback();
       }}
     >
       <Shape

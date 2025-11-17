@@ -6,6 +6,7 @@ import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarFie
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay";
+import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 
 export default function MainStage() {
   // use the hook. ready becomes true after the first synchronous measurement.
@@ -21,6 +22,7 @@ export default function MainStage() {
       }}
     >
       <CenterOverlay />
+      <TopOverlay />
       {ready && width > 0 && height > 0 && (
         <Stage
           width={width}

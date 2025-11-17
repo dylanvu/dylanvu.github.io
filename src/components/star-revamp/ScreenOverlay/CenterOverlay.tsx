@@ -12,6 +12,7 @@ export default function CenterOverlay() {
   } = useCenterOverlayContext();
   return (
     <GenericOverlay
+      overlayName="Center"
       titleText={titleText}
       originText={originText}
       aboutText={aboutText}

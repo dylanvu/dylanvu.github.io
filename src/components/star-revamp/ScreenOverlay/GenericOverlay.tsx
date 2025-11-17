@@ -6,6 +6,7 @@ import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
 import { TitlePosition } from "@/hooks/GenericOverlayProvider";
 
 export default function GenericOverlay({
+  overlayName, // used for debugging purposes if I need it
   titleText,
   originText,
   aboutText,
@@ -13,6 +14,7 @@ export default function GenericOverlay({
   overlayVisibility,
   titlePosition,
 }: {
+  overlayName: string;
   titleText: string;
   originText: string;
   aboutText: string;
@@ -21,21 +23,21 @@ export default function GenericOverlay({
   titlePosition: TitlePosition;
 }) {
   // create an enum for the title position to position
+  // note that 0 y is the center of the screen
   const OverlayPositionToCSS = {
-    center: "center",
+    center: 0,
     bottom: "35vh",
-    top: "5vh",
+    top: "-35vh",
   };
 
-  const lines = useMemo(
-    () => [
+  const lines = useMemo(() => {
+    return [
       { key: "intro-text", text: introText ?? "", size: "1.2rem" },
       { key: "title", text: titleText ?? "", size: "5.5rem" },
       { key: "origin", text: originText ?? "", size: "1.2rem" },
       { key: "about", text: aboutText ?? "", size: "1.2rem" },
-    ],
-    [introText, titleText, originText, aboutText]
-  );
+    ];
+  }, [introText, titleText, originText, aboutText]);
 
   const visibleLines = lines.filter(
     (l) => l.text !== undefined && l.text !== null
@@ -87,7 +89,7 @@ export default function GenericOverlay({
             gap: "1rem",
             zIndex: 10,
             pointerEvents: "none",
-            y: OverlayPositionToCSS[titlePosition], // move down
+            y: OverlayPositionToCSS[titlePosition],
           }}
           initial={{
             opacity: 0,
