@@ -24,17 +24,13 @@ const ViaeStars = [
   { x: 100, y: 40, size: 4, label: "GitHub" },
   { x: 55, y: 90, size: 4, label: "LinkedIn" },
   { x: 105, y: 100, size: 3, label: "Medium" },
-
-  // { x: 50, y: 70, size: 5, label: "LinkedIn" },
-  // { x: 80, y: 140, size: 5, label: "Medium" },
-  // { x: 110, y: 70, size: 5, label: "GitHub" },
 ];
 
 const CONSTELLATIONS: ConstellationData[] = [
   {
     // my contact me links
     name: "Viae",
-    origin: 'Latin: "roads"',
+    origin: 'Latin: "roads". Outlines converging roads.',
     about: "The gateway to worlds beyond this night sky",
     stars: ViaeStars,
     connections: [
@@ -50,8 +46,8 @@ const CONSTELLATIONS: ConstellationData[] = [
   {
     // the career constellation
     name: "Iter",
-    origin: 'Latin: "journey, path"',
-    about: "The path I've traveled from learning to creating",
+    origin: 'Latin: "journey, path". Draws a winding path.',
+    about: "My journey from learning to creating",
     stars: [
       { x: 200, y: 50, size: 5, label: "Resume" },
       { x: 220, y: 55, size: 4, label: "Amazon" },
@@ -67,44 +63,32 @@ const CONSTELLATIONS: ConstellationData[] = [
   {
     // the projects constellation
     name: "Arete",
-    origin: 'Greek: "excellence, skill"',
-    about: "The constellation of creations I've dreamed of and built",
+    origin: 'Greek: "excellence, skill". Forms a laurel.',
+    about: "The creations I've dreamed of and built",
     // make this a crown
     stars: [
       // remember, larger x = right, larger y = down
-      { x: 80, y: 145, size: 4, label: "Epicdle" }, // bottom left of first spike
-      { x: 100, y: 120, size: 5, label: "Amelia" }, // first spike
-      { x: 140, y: 142, size: 4, label: "FishGPT" }, // left base of middle spike
-      { x: 180, y: 100, size: 5, label: "Haptic Definition" }, // top of middle spike
-      { x: 200, y: 145, size: 3, label: "SweetStack" }, // right base of middle spike
-      { x: 225, y: 115, size: 4, label: "WordShip" }, // top of right spike
-      { x: 240, y: 140, size: 5, label: "GRIP Board" }, // bottom right of right spike
-      { x: 238, y: 190, size: 3, label: "GRIP Controller" }, // directly down from right spike
-      { x: 168, y: 190, size: 4, label: "Trigger Finger Tango" }, // mid of spike base
-      { x: 82, y: 190, size: 4, label: "Discord Careers Bot" }, // now directly left
-    ],
-    connections: [
-      [0, 1],
-      [1, 2],
-      [2, 3],
-      [3, 4],
-      [4, 5],
-      [5, 6],
-      [6, 7],
-      [7, 8],
-      [8, 9],
-      [9, 0],
+      { x: 88, y: 110, size: 4, label: "Epicdle" },
+      { x: 75, y: 140, size: 5, label: "Amelia" },
+      { x: 80, y: 170, size: 4, label: "SweetStack" },
+      { x: 90, y: 190, size: 5, label: "Haptic Definition" },
+      { x: 112, y: 210, size: 3, label: "FishGPT" },
+      { x: 140, y: 202, size: 4, label: "WordShip" },
+      { x: 160, y: 193, size: 5, label: "GRIP Board" },
+      { x: 173, y: 167, size: 3, label: "GRIP Controller" },
+      { x: 180, y: 138, size: 4, label: "Trigger Finger Tango" },
+      { x: 176, y: 123, size: 4, label: "Discord Careers Bot" },
     ],
     designX: 700,
     designY: 700,
-    rotation: 2,
+    rotation: 200,
     scale: 1.5,
   },
   {
     // hackathon map constellation
     name: "Elevare",
-    origin: 'Latin: "to elevate"',
-    about: "The map of hackathons where I've grown and mentored",
+    origin: 'Latin: "to elevate". Depicts a nation.',
+    about: "The hackathons where I've grown and mentored",
     stars: US_MAP,
     connections: createSequentialLoopingConnections(US_MAP),
     designX: 1600,
@@ -215,7 +199,7 @@ export default function MainStarField() {
       })}
       {/* Polaris, the guiding chatbot star */}
       {(() => {
-        const polarisDesignX = designCenter.x;
+        const polarisDesignX = designCenter.x + 2;
         const polarisDesignY = 200; // biiger number moves it down
         const polarisOffsetX = (polarisDesignX - designCenter.x) * scale;
         const polarisOffsetY = (polarisDesignY - designCenter.y) * scale;
@@ -233,8 +217,8 @@ export default function MainStarField() {
             focusedScreenPos={focusedScreenPos} // pass in the focused constellation's screen center
             onHoverEnterCallback={() => {
               setTitleText("Polaris");
-              setOriginText("The Guiding Star");
-              setAboutText("A beacon to help you navigate the night sky");
+              setOriginText("The Celestial Guide");
+              setAboutText("A beacon to help you navigate the stars");
               setIntroText("Star");
             }}
             onHoverLeaveCallback={() => {

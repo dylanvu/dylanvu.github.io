@@ -38,11 +38,10 @@ export function MainStageOverlayProvider({
 }: {
   children: ReactNode;
 }) {
-  const DEFAULT_INTRO_TEXT = "Software Engineer";
+  const DEFAULT_INTRO_TEXT = "Codeweaver";
   const DEFAULT_TITLE_TEXT = "Dylan Vu";
-  const DEFAULT_ORIGIN_TEXT =
-    "Hover constellations to explore, or consult Polaris above to find your way";
-  const DEFAULT_ABOUT_TEXT = " ";
+  const DEFAULT_ORIGIN_TEXT = "Hover a constellation to explore";
+  const DEFAULT_ABOUT_TEXT = "or consult Polaris above to find your way";
 
   const [titleText, setTitleText] = useState<string>(DEFAULT_TITLE_TEXT);
   const [originText, setOriginText] = useState<string>(DEFAULT_ORIGIN_TEXT);
