@@ -10,6 +10,13 @@ export default function Constellation({
   data,
   transformData,
   showBoundingBox,
+  showStarBoundingBox, // existing toggle
+  // new props for padding + exact-fit
+  boundingBoxPaddingX = 3,
+  boundingBoxPaddingY = 3,
+  useExactLabelFit = true,
+  bboxLabelSize = 4,
+  bboxLabelFontFamily = "sans-serif",
   windowCenter,
   focusedConstellation,
   focusedScreenPos,
@@ -20,9 +27,15 @@ export default function Constellation({
   data: ConstellationData;
   transformData: TransformData;
   showBoundingBox?: boolean;
+  showStarBoundingBox?: boolean;
+  boundingBoxPaddingX?: number;
+  boundingBoxPaddingY?: number;
+  useExactLabelFit?: boolean;
+  bboxLabelSize?: number;
+  bboxLabelFontFamily?: string;
   windowCenter: { x: number; y: number };
   focusedConstellation: ConstellationData | null;
-  focusedScreenPos?: { x: number; y: number } | null; // NEW
+  focusedScreenPos?: { x: number; y: number } | null;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
@@ -33,6 +46,7 @@ export default function Constellation({
       isFocused = true;
     }
   }
+
   const { stars, connections, totalDuration } = data;
   const DEFAULT_TOTAL_DURATION = 2; // seconds
   const [brightness, setBrightness] = useState(1);
@@ -40,16 +54,11 @@ export default function Constellation({
 
   const groupRef = useRef<any>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
-
-  /**
-   * This tween will move the constellation from where it is currently at, to the center of the screen.
-   * It is played when the constellation is clicked and goes into focus
-   */
   const focusTweenRef = useRef<Konva.Tween | null>(null);
 
   const constellationFocusScale: Record<string, number> = {
-    Viae: 3,
-    Iter: 3,
+    Viae: 2.4,
+    Iter: 2.4,
     Arete: 2.4,
     Elevare: 2,
   };
@@ -57,10 +66,103 @@ export default function Constellation({
 
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
-  const minX = Math.min(...xs) - 10;
-  const maxX = Math.max(...xs) + 10;
-  const minY = Math.min(...ys) - 10;
-  const maxY = Math.max(...ys) + 10;
+
+  const LABEL_VISIBLE = isFocused && stars.some((s) => !!s.data?.label);
+
+  //
+  // ====== BOUNDING BOX: exact-fit OR padded ======
+  //
+  // We measure existing labels when useExactLabelFit && LABEL_VISIBLE.
+  // Otherwise we use simple padding props.
+  //
+  // Per-star label layout in MainStar:
+  //  - label is centered at star.x
+  //  - label Y offset relative to star center is `size + labelSize`
+  //  - we measure label width/height using Konva.Text
+  //
+  const measuredExtents = (() => {
+    // default extents computed from stars themselves (star radius only)
+    // we'll expand these by padding / label extents below
+    const defaultMinX = Math.min(...xs);
+    const defaultMaxX = Math.max(...xs);
+    const defaultMinY = Math.min(...ys);
+    const defaultMaxY = Math.max(...ys);
+
+    if (!useExactLabelFit || !LABEL_VISIBLE) {
+      // simple padding fallback — same behaviour as before but exposed via props
+      const minX = defaultMinX - boundingBoxPaddingX;
+      const maxX = defaultMaxX + boundingBoxPaddingX;
+      const minY = defaultMinY - boundingBoxPaddingY;
+      const maxY = defaultMaxY + boundingBoxPaddingY;
+      return { minX, maxX, minY, maxY };
+    }
+
+    // Exact-fit mode: measure each label and include its rect into extents
+    // We'll use Konva.Text purely for measurement (not added to stage)
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const s of stars) {
+      const sx = s.x;
+      const sy = s.y;
+      const starRadius = s.size ?? 5;
+
+      // include star circle extents
+      minX = Math.min(minX, sx - starRadius);
+      maxX = Math.max(maxX, sx + starRadius);
+      minY = Math.min(minY, sy - starRadius);
+      maxY = Math.max(maxY, sy + starRadius);
+
+      if (s.data?.label) {
+        // measure label using Konva.Text
+        // Note: creating a Konva.Text instance is cheap for measurement purposes
+        const temp = new Konva.Text({
+          text: String(s.data.label),
+          fontSize: bboxLabelSize,
+          fontFamily: bboxLabelFontFamily,
+        });
+        const labelW = temp.width();
+        const labelH = temp.height();
+        // MainStar places label at y = size + labelSize (relative)
+        const labelTop = sy + starRadius + bboxLabelSize; // top edge of label
+        const labelBottom = labelTop + labelH;
+
+        // horizontally label is centered on sx
+        const labelLeft = sx - labelW / 2;
+        const labelRight = sx + labelW / 2;
+
+        minX = Math.min(minX, labelLeft);
+        maxX = Math.max(maxX, labelRight);
+        minY = Math.min(minY, labelTop);
+        maxY = Math.max(maxY, labelBottom);
+      }
+    }
+
+    // finally apply the small explicit padding props as a buffer
+    minX -= boundingBoxPaddingX;
+    maxX += boundingBoxPaddingX;
+    minY -= boundingBoxPaddingY;
+    maxY += boundingBoxPaddingY;
+
+    // sanity fallback (if no stars)
+    if (!isFinite(minX) || !isFinite(minY)) {
+      return {
+        minX: (Math.min(...xs) || 0) - boundingBoxPaddingX,
+        maxX: (Math.max(...xs) || 0) + boundingBoxPaddingX,
+        minY: (Math.min(...ys) || 0) - boundingBoxPaddingY,
+        maxY: (Math.max(...ys) || 0) + boundingBoxPaddingY,
+      };
+    }
+
+    return { minX, maxX, minY, maxY };
+  })();
+
+  const minX = measuredExtents.minX - 10; // keep a conservative -10 like you had earlier
+  const maxX = measuredExtents.maxX + 10;
+  const minY = measuredExtents.minY - 10;
+  const maxY = measuredExtents.maxY + 10;
   const width = maxX - minX;
   const height = maxY - minY;
 
@@ -100,6 +202,7 @@ export default function Constellation({
         playVanishTween();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, focusedConstellation]);
 
   const HOVER_SCALE = 1.1;
@@ -111,10 +214,8 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    // finish any running tween to avoid overlap
     hoverTweenRef.current?.finish();
 
-    // create & play a new tween
     hoverTweenRef.current = new Konva.Tween({
       node,
       duration: SCALE_ANIMATION_DURATION,
@@ -130,13 +231,10 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    // finish any running tween to avoid overlap
     focusTweenRef.current?.finish();
 
-    // the rotation has to be zero because I will add labels to each star and I don't want them to rotate
     let rotationAngle = 0;
 
-    // create & play the focus tween
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
@@ -154,18 +252,12 @@ export default function Constellation({
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
-  /**
-   * This tween will move the constellation from the center to the unfocused position
-   * @returns
-   */
   const playUnfocusTween = () => {
     const node = groupRef.current;
     if (!node) return;
 
-    // finish any running tween to avoid overlap
     focusTweenRef.current?.finish();
 
-    // create & play the focus tween
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
@@ -180,29 +272,21 @@ export default function Constellation({
     focusTweenRef.current.play();
   };
 
-  /**
-   * This tween will move the constellation from the unfocused position to off the screen
-   */
   const playVanishTween = () => {
     const node = groupRef.current;
     if (!node) return;
 
-    // finish any running tween to avoid overlap
     focusTweenRef.current?.finish();
 
-    // current on-screen center (where the Group is positioned right now)
     const currentX = unfocusedConstellationX;
     const currentY = unfocusedConstellationY;
 
-    // focal point: use passed focused screen position if available, otherwise use screen center
     const focal = focusedScreenPos ?? windowCenter;
 
-    // compute vector from focal -> this constellation
     let vx = currentX - focal.x;
     let vy = currentY - focal.y;
     let vlen = Math.hypot(vx, vy);
 
-    // fallback direction if the two centers coincide (very unlikely but safe)
     if (vlen < 0.0001) {
       vx = 0;
       vy = -1;
@@ -212,8 +296,6 @@ export default function Constellation({
     const nx = vx / vlen;
     const ny = vy / vlen;
 
-    // choose a distance large enough to place the constellation off-screen
-    // using viewport diagonal * factor ensures it goes off in the same direction
     const vw =
       typeof window !== "undefined" ? window.innerWidth : windowCenter.x * 2;
     const vh =
@@ -224,7 +306,6 @@ export default function Constellation({
     const targetX = currentX + nx * offscreenDist;
     const targetY = currentY + ny * offscreenDist;
 
-    // optionally shrink slightly as it moves away (feel free to tweak)
     const targetScaleX = (transformData.scaleX ?? 1) * 0.9;
     const targetScaleY = (transformData.scaleY ?? 1) * 0.9;
 
@@ -236,7 +317,6 @@ export default function Constellation({
       y: targetY,
       scaleX: targetScaleX,
       scaleY: targetScaleY,
-      // keep rotation as-is so labels remain aligned
       rotation: transformData.rotation ?? 0,
     });
 
@@ -250,6 +330,39 @@ export default function Constellation({
     setIntroText,
     resetOverlayTextContents,
   } = useTopOverlayContext();
+
+  /**
+   * STAR BOUNDING BOX LOGIC
+   * showStarBoundingBox: when true, render four MainStar at the corners and AnimatedLine that outline the box
+   */
+  const showBox = isFocused || showStarBoundingBox;
+  // corner positions (local group coordinates)
+  const tl = { x: minX, y: minY };
+  const tr = { x: maxX, y: minY };
+  const br = { x: maxX, y: maxY };
+  const bl = { x: minX, y: maxY };
+
+  // perimeter-based durations
+  const bboxDuration = (totalDuration ?? DEFAULT_TOTAL_DURATION) / 2;
+  const edgeLengths = [width, height, width, height];
+  const bboxPerimeter = edgeLengths.reduce((s, l) => s + l, 0) || 1;
+  const edgeDurations = edgeLengths.map(
+    (l) => (l / bboxPerimeter) * bboxDuration
+  );
+  const edgeDelays = edgeDurations.reduce<number[]>((acc, dur, idx) => {
+    if (idx === 0) acc.push(0);
+    else acc.push(acc[idx - 1] + edgeDurations[idx - 1]);
+    return acc;
+  }, []);
+
+  // star delays — appear when the line that reaches them completes:
+  // TL: 0 (start), TR: end of top edge, BR: end of right edge, BL: end of bottom edge
+  const cornerStarDelays = [
+    0,
+    edgeDelays[0] + edgeDurations[0],
+    edgeDelays[1] + edgeDurations[1],
+    edgeDelays[2] + edgeDurations[2],
+  ];
 
   return (
     <Group
@@ -284,10 +397,8 @@ export default function Constellation({
 
         if (onHoverLeaveCallback) onHoverLeaveCallback();
       }}
-      // move the Group so that the center point remains where it was before we set offsets
       x={unfocusedConstellationX}
       y={unfocusedConstellationY}
-      // offset the group so scale/rotation happen around the constellation center
       offsetX={centerX}
       offsetY={centerY}
       rotation={transformData.rotation}
@@ -303,9 +414,10 @@ export default function Constellation({
         listening={true}
       />
 
+      {/* Constellation lines */}
       {lineSegments.map(([i1, i2], idx) => (
         <AnimatedLine
-          key={idx}
+          key={`conn-${idx}`}
           p1={stars[i1]}
           p2={stars[i2]}
           duration={lineDurations[idx]}
@@ -313,6 +425,84 @@ export default function Constellation({
         />
       ))}
 
+      {/* Corner bounding-box outline (optional) */}
+      {showBox && (
+        <>
+          {/* edges in order TL -> TR -> BR -> BL -> TL */}
+          <AnimatedLine
+            p1={tl}
+            p2={tr}
+            duration={edgeDurations[0]}
+            delay={edgeDelays[0]}
+          />
+          <AnimatedLine
+            p1={tr}
+            p2={br}
+            duration={edgeDurations[1]}
+            delay={edgeDelays[1]}
+          />
+          <AnimatedLine
+            p1={br}
+            p2={bl}
+            duration={edgeDurations[2]}
+            delay={edgeDelays[2]}
+          />
+          <AnimatedLine
+            p1={bl}
+            p2={tl}
+            duration={edgeDurations[3]}
+            delay={edgeDelays[3]}
+          />
+
+          {/* corner stars (slightly bigger) */}
+          <MainStar
+            key="bbox-tl"
+            x={tl.x}
+            y={tl.y}
+            size={2}
+            brightness={brightness}
+            delay={cornerStarDelays[0]}
+            windowCenter={windowCenter}
+            onHoverEnterCallback={() => {}}
+            onHoverLeaveCallback={() => {}}
+          />
+          <MainStar
+            key="bbox-tr"
+            x={tr.x}
+            y={tr.y}
+            size={3}
+            brightness={brightness}
+            delay={cornerStarDelays[1]}
+            windowCenter={windowCenter}
+            onHoverEnterCallback={() => {}}
+            onHoverLeaveCallback={() => {}}
+          />
+          <MainStar
+            key="bbox-br"
+            x={br.x}
+            y={br.y}
+            size={4}
+            brightness={brightness}
+            delay={cornerStarDelays[2]}
+            windowCenter={windowCenter}
+            onHoverEnterCallback={() => {}}
+            onHoverLeaveCallback={() => {}}
+          />
+          <MainStar
+            key="bbox-bl"
+            x={bl.x}
+            y={bl.y}
+            size={2}
+            brightness={brightness}
+            delay={cornerStarDelays[3]}
+            windowCenter={windowCenter}
+            onHoverEnterCallback={() => {}}
+            onHoverLeaveCallback={() => {}}
+          />
+        </>
+      )}
+
+      {/* original stars */}
       {stars.map((star, i) => {
         const incomingLineIndex = lineSegments.findIndex(
           ([start, end]) => end === i || start === i
@@ -334,7 +524,6 @@ export default function Constellation({
             labelSize={4}
             windowCenter={windowCenter}
             onHoverEnterCallback={() => {
-              // we need this check so that the US does not render the top text!
               if (star.data) {
                 setIntroText("Star");
                 setTitleText(star.data.label);
@@ -346,7 +535,6 @@ export default function Constellation({
               if (star.data?.label) {
                 resetOverlayTextContents();
               }
-              // when the constellation is focused, leaving the star should bring the cursor back to normal
               if (isFocused) {
                 document.body.style.cursor = "default";
               }
@@ -362,7 +550,6 @@ export default function Constellation({
           />
         );
       })}
-      {/* if you ever want to add a constellation label, remember that you have a component made for it already that needs to be fixed up */}
     </Group>
   );
 }
