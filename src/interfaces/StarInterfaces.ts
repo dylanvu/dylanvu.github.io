@@ -2,7 +2,7 @@ export type Star = {
   x: number;
   y: number;
   size?: number;
-  label?: string;
+  data?: StarData;
 };
 
 export type ConstellationData = {
@@ -24,4 +24,10 @@ export type TransformData = {
   rotation?: number;
   scaleX?: number;
   scaleY?: number;
+};
+
+export type StarData = {
+  label: string;
+  origin: string;
+  about: string;
 };

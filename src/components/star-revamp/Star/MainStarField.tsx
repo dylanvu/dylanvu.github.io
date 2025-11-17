@@ -1,13 +1,12 @@
 "use client";
 import Constellation from "@/components/star-revamp/Star/Constellation";
-import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Group, Rect } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
-import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
+import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -18,86 +17,6 @@ const DESIGN = { width: 2560, height: 1271 }; // design reference
 
 /** Pre-computed offsets from design center */
 const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
-
-const ViaeStars = [
-  { x: 80, y: 70, size: 5, label: "Email" },
-  { x: 100, y: 40, size: 4, label: "GitHub" },
-  { x: 55, y: 90, size: 4, label: "LinkedIn" },
-  { x: 105, y: 100, size: 3, label: "Medium" },
-];
-
-const CONSTELLATIONS: ConstellationData[] = [
-  {
-    // my contact me links
-    name: "Viae",
-    origin: 'Latin: "roads". Outlines converging roads.',
-    about: "The gateway to worlds beyond this night sky",
-    stars: ViaeStars,
-    connections: [
-      [0, 1],
-      [0, 2],
-      [0, 3],
-    ],
-    designX: 850,
-    designY: 400,
-    rotation: 32,
-    scale: 1.5,
-  },
-  {
-    // the career constellation
-    name: "Iter",
-    origin: 'Latin: "journey, path". Draws a winding path.',
-    about: "My journey from learning to creating",
-    stars: [
-      { x: 200, y: 50, size: 5, label: "Resume" },
-      { x: 220, y: 55, size: 4, label: "Amazon" },
-      { x: 240, y: 48, size: 5, label: "UC Irvine" },
-      { x: 260, y: 54, size: 4, label: "Ansync Labs" },
-      { x: 280, y: 60, size: 6, label: "UC Santa Barbara" },
-    ],
-    designX: 1300,
-    designY: 400,
-    scale: 1.8,
-    rotation: 30,
-  },
-  {
-    // the projects constellation
-    name: "Arete",
-    origin: 'Greek: "excellence, skill". Forms a laurel.',
-    about: "The creations I've dreamed of and built",
-    // make this a crown
-    stars: [
-      // remember, larger x = right, larger y = down
-      { x: 88, y: 110, size: 4, label: "Epicdle" },
-      { x: 75, y: 140, size: 5, label: "Amelia" },
-      { x: 80, y: 170, size: 4, label: "SweetStack" },
-      { x: 90, y: 190, size: 5, label: "Haptic Definition" },
-      { x: 112, y: 210, size: 3, label: "FishGPT" },
-      { x: 140, y: 202, size: 4, label: "WordShip" },
-      { x: 160, y: 193, size: 5, label: "GRIP Board" },
-      { x: 173, y: 167, size: 3, label: "GRIP Controller" },
-      { x: 180, y: 138, size: 4, label: "Trigger Finger Tango" },
-      { x: 176, y: 123, size: 4, label: "Discord Careers Bot" },
-    ],
-    designX: 700,
-    designY: 700,
-    rotation: 200,
-    scale: 1.5,
-  },
-  {
-    // hackathon map constellation
-    name: "Elevare",
-    origin: 'Latin: "to elevate". Depicts a nation.',
-    about: "The hackathons where I've grown and mentored",
-    stars: US_MAP,
-    connections: createSequentialLoopingConnections(US_MAP),
-    designX: 1600,
-    designY: 800,
-    rotation: 10,
-    scale: 1.5,
-    totalDuration: 6,
-  },
-];
 
 export default function MainStarField() {
   const { width, height } = useWindowSizeContext();

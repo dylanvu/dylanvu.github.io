@@ -323,20 +323,20 @@ export default function Constellation({
             size={star.size || 5}
             brightness={brightness}
             delay={delay}
-            label={isFocused ? star.label : undefined}
+            label={isFocused ? star.data?.label : undefined}
             labelSize={4}
             windowCenter={windowCenter}
             onHoverEnterCallback={() => {
               // we need this check so that the US does not render the top text!
-              if (star.label) {
+              if (star.data) {
                 setIntroText("Star");
-                setTitleText(star.label);
-                setOriginText("Type of Project");
-                setAboutText("Description");
+                setTitleText(star.data.label);
+                setOriginText(star.data.origin);
+                setAboutText(star.data.about);
               }
             }}
             onHoverLeaveCallback={() => {
-              if (star.label) {
+              if (star.data?.label) {
                 resetOverlayTextContents();
               }
               // when the constellation is focused, leaving the star should bring the cursor back to normal
@@ -345,12 +345,11 @@ export default function Constellation({
               }
             }}
             onClickCallback={() => {
-              if (star.label) {
-                console.log("click on star", star.label ?? "undefined label");
+              if (star.data) {
                 setIntroText("Star");
-                setTitleText(star.label ?? "");
-                setOriginText("Type of Project");
-                setAboutText("Description");
+                setTitleText(star.data.label);
+                setOriginText(star.data.origin);
+                setAboutText(star.data.about);
               }
             }}
           />
