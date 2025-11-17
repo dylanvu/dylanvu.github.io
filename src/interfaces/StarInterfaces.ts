@@ -26,8 +26,38 @@ export type TransformData = {
   scaleY?: number;
 };
 
-export type StarData = {
+type BaseStarData = {
   label: string;
   origin: string;
   about: string;
 };
+
+/**
+ * This star will render the markdown in the site
+ */
+type StarDataWithFilePath = BaseStarData & {
+  filePath: string;
+  externalLink?: never;
+};
+
+/**
+ * This star will open a new tab with the link
+ */
+type StarDataWithExternalLink = BaseStarData & {
+  filePath?: never;
+  externalLink: string;
+};
+
+/**
+ * This star has nothing
+ */
+type StarDataWithoutLink = BaseStarData & {
+  filePath?: never;
+  externalLink?: never;
+};
+
+// The star data is a union of valid star data types
+export type StarData =
+  | StarDataWithFilePath
+  | StarDataWithExternalLink
+  | StarDataWithoutLink;

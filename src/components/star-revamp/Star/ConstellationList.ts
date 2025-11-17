@@ -13,7 +13,12 @@ export const CONSTELLATIONS: ConstellationData[] = [
         x: 80,
         y: 70,
         size: 5,
-        data: { label: "Email", origin: "dylanvu9@gmail.com", about: "" },
+        data: {
+          label: "Email",
+          origin: "dylanvu9@gmail.com",
+          about: "",
+          externalLink: "mailto:dylanvu9@gmail.com",
+        },
       },
       {
         x: 100,
@@ -23,6 +28,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "GitHub",
           origin: "github.com/dylanvu",
           about: "See my code",
+          externalLink: "https://github.com/dylanvu",
         },
       },
       {
@@ -33,6 +39,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "LinkedIn",
           origin: "/in/dylanvu9",
           about: "Connect with me",
+          externalLink: "https://www.linkedin.com/in/dylanvu9/",
         },
       },
       {
@@ -43,6 +50,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "Medium",
           origin: "@mentor-mementos",
           about: "I write about hackathon mentoring",
+          externalLink: "https://medium.com/@mentor-mementos",
         },
       },
     ],
@@ -63,13 +71,14 @@ export const CONSTELLATIONS: ConstellationData[] = [
     about: "My journey from learning to creating",
     stars: [
       {
-        x: 188,
+        x: 183,
         y: 50,
         size: 5,
         data: {
           label: "Resume",
           origin: "Present",
-          about: "",
+          about: "See Iter outside this night sky",
+          externalLink: "/Dylan_Vu_Resume.pdf",
         },
       },
       {
@@ -94,7 +103,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
       },
 
       {
-        x: 280,
+        x: 265,
         y: 60,
         size: 6,
         data: {
@@ -106,17 +115,17 @@ export const CONSTELLATIONS: ConstellationData[] = [
 
       // education only
       {
-        x: 200,
+        x: 222,
         y: 80,
         size: 4,
         data: {
-          label: "Georgia Institute of Technology",
+          label: "Georgia Tech",
           origin: "Aug. 2024 - Present",
           about: "Computer Science, M.S.",
         },
       },
       {
-        x: 260,
+        x: 245,
         y: 94,
         size: 4,
         data: {
@@ -126,7 +135,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         },
       },
       {
-        x: 305,
+        x: 274,
         y: 82,
         size: 4,
         data: {

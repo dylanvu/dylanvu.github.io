@@ -520,9 +520,11 @@ export default function Constellation({
             size={star.size || 5}
             brightness={brightness}
             delay={delay}
-            label={isFocused ? star.data?.label : undefined}
+            data={star.data}
+            showLabel={isFocused}
             labelSize={4}
             windowCenter={windowCenter}
+            enableOnClick={isFocused}
             onHoverEnterCallback={() => {
               if (star.data) {
                 setIntroText("Star");

@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Group, Shape, Text } from "react-konva";
 import Konva from "konva";
 import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
+import { StarData } from "@/interfaces/StarInterfaces";
 
 type Props = {
+  data?: StarData;
   x?: number;
   y?: number;
   size?: number;
@@ -17,7 +19,9 @@ type Props = {
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
-  label?: string;
+  enableOnClick?: boolean;
+  labelOverride?: string;
+  showLabel?: boolean;
   labelSize?: number;
   focusedScreenPos?: { x: number; y: number } | null;
   windowCenter: { x: number; y: number };
@@ -25,6 +29,7 @@ type Props = {
 };
 
 export default function MainStar({
+  data,
   x = 0,
   y = 0,
   size = 5,
@@ -38,7 +43,9 @@ export default function MainStar({
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
-  label,
+  enableOnClick = false,
+  labelOverride,
+  showLabel,
   labelSize = 12,
   focusedScreenPos,
   windowCenter,
@@ -197,8 +204,16 @@ export default function MainStar({
         playHoverTween(1, 1);
       }}
       onClick={() => {
-        console.log("click");
-        if (onClickCallback) onClickCallback();
+        if (enableOnClick) {
+          if (data) {
+            if (data.externalLink) {
+              window.open(data.externalLink, "_blank", "noopener,noreferrer");
+            } else {
+              console.log("File");
+            }
+          }
+          if (onClickCallback) onClickCallback();
+        }
       }}
     >
       <Shape
@@ -247,12 +262,12 @@ export default function MainStar({
         }}
         listening
       />
-      {label && (
+      {showLabel && (data?.label || labelOverride) && (
         <Text
           ref={textRef}
           x={0} // relative to group
           y={size + labelSize}
-          text={label}
+          text={labelOverride || data?.label}
           fontSize={labelSize}
           fill={SPACE_TEXT_COLOR}
           fontFamily={FONT_FAMILY.style.fontFamily}

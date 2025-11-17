@@ -119,7 +119,11 @@ export default function MainStarField() {
                 setTitleText(c.name);
                 setOriginText(c.origin);
                 setAboutText(c.about);
-                setIntroText("Constellation");
+                if (c.name === "Iter") {
+                  setIntroText("The Major & Minor");
+                } else {
+                  setIntroText("Constellation");
+                }
               }
             }}
             onHoverLeaveCallback={() => {
