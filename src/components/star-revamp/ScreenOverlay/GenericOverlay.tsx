@@ -6,6 +6,7 @@ import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
 import { TitlePosition } from "@/hooks/GenericOverlayProvider";
 
 export default function GenericOverlay({
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   overlayName, // used for debugging purposes if I need it
   titleText,
   originText,

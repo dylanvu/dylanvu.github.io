@@ -218,7 +218,7 @@ export default function MainStar({
     >
       <Shape
         ref={shapeRef}
-        sceneFunc={(ctx, _shape) => {
+        sceneFunc={(ctx) => {
           const starRadius = size * brightnessRef.current;
           const labelWidth = textRef.current?.width() || 0;
           const labelHeight = textRef.current?.height() || 0;

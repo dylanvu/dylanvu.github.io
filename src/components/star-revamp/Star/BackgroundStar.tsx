@@ -39,7 +39,7 @@ export default function BackgroundStar({
       x={x}
       y={y}
       opacity={0} // start invisible
-      sceneFunc={(ctx, shape) => {
+      sceneFunc={(ctx) => {
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
         gradient.addColorStop(0, color);
         gradient.addColorStop(0.5, "rgba(255,255,255,0.2)");

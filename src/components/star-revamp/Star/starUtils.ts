@@ -25,8 +25,8 @@ export function transformPoints(
 
   return points.map((p) => {
     // Scale
-    let x = p.x * scale;
-    let y = p.y * scale;
+    const x = p.x * scale;
+    const y = p.y * scale;
 
     // Rotate around origin (0,0)
     const rotatedX = x * Math.cos(rad) - y * Math.sin(rad);
@@ -46,7 +46,6 @@ export function createSequentialLoopingConnections(
 ): [number, number][] {
   const connections: [number, number][] = [];
   for (let i = 0; i < stars.length; i++) {
-    const star = stars[i];
     if (i === stars.length - 1) {
       connections.push([i, 0]);
     } else {

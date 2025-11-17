@@ -8,7 +8,7 @@ interface FadeLineProps {
   size?: string | number;
   color?: string;
   duration?: number;
-  fontFamily?: NextFont | { className?: string; style?: any } | undefined;
+  fontFamily?: NextFont ;
   delay?: number; // stagger delay (seconds)
   style?: React.CSSProperties;
 }
@@ -40,7 +40,7 @@ export function FadeLine({
         ...style,
       }}
       // support NextFont objects (className), or plain strings if you pass style.fontFamily
-      className={(fontFamily as any)?.className}
+      className={fontFamily?.className}
     >
       {displayText}
     </motion.div>

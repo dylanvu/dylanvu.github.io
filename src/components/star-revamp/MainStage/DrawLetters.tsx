@@ -54,7 +54,7 @@ export default function DrawLetters({
   useEffect(() => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    opentype.load(fontUrl, (err: any, f?: Font) => {
+    opentype.load(fontUrl, (err, f?: Font) => {
       if (err) {
         console.error("DrawLetters: could not load font", err);
         setFont(undefined);
@@ -98,8 +98,8 @@ export default function DrawLetters({
     let currX = 0;
     const glyphs = fontInstance.stringToGlyphs(textValue || "");
     for (let i = 0; i < glyphs.length; i++) {
-      const glyph: any = glyphs[i];
-      const glyphPath: any = glyph.getPath(currX, baselineY, fontSize);
+      const glyph: opentype.Glyph = glyphs[i];
+      const glyphPath: opentype.Path = glyph.getPath(currX, baselineY, fontSize);
       const d: string = glyphPath.toPathData(4);
 
       const glyphG = createSVG("g");
@@ -117,7 +117,7 @@ export default function DrawLetters({
       group.appendChild(glyphG);
 
       const adv =
-        glyph.advanceWidth * (fontSize / (fontInstance.unitsPerEm || 1000));
+        (glyph.advanceWidth || 1) * (fontSize / (fontInstance.unitsPerEm || 1000));
       currX += adv;
       if (i < glyphs.length - 1) {
         const kern = fontInstance.getKerningValue(
@@ -273,7 +273,7 @@ export default function DrawLetters({
       try {
         lastEntry.maskPath.removeEventListener(
           "transitionend",
-          onFinish as any
+          onFinish
         );
       } catch {}
       if (fallbackTimeoutRef.current) {
@@ -284,7 +284,7 @@ export default function DrawLetters({
     };
 
     // listen once and also provide a short fallback
-    lastEntry.maskPath.addEventListener("transitionend", onFinish as any, {
+    lastEntry.maskPath.addEventListener("transitionend", onFinish, {
       once: true,
     });
     fallbackTimeoutRef.current = window.setTimeout(
@@ -303,12 +303,12 @@ export default function DrawLetters({
     const unitsPerEm = font.unitsPerEm || 1000;
     const scale = fontSize / unitsPerEm;
     const ascender =
-      (font as any).ascender ??
-      (font as any).tables?.hhea?.ascender ??
+      font.ascender ??
+      font.tables?.hhea?.ascender ??
       Math.round(unitsPerEm * 0.8);
     const descender =
-      (font as any).descender ??
-      (font as any).tables?.hhea?.descender ??
+      font.descender ??
+      font.tables?.hhea?.descender ??
       Math.round(-unitsPerEm * 0.2);
     const ascPx = ascender * scale;
     const descPx = descender * scale;

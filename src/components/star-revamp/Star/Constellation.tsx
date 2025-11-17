@@ -52,7 +52,7 @@ export default function Constellation({
   const [brightness, setBrightness] = useState(1);
   const brightnessHover = 1.2;
 
-  const groupRef = useRef<any>(null);
+  const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
 
@@ -233,7 +233,7 @@ export default function Constellation({
 
     focusTweenRef.current?.finish();
 
-    let rotationAngle = 0;
+    const rotationAngle = 0;
 
     focusTweenRef.current = new Konva.Tween({
       node,
@@ -371,7 +371,7 @@ export default function Constellation({
         e.cancelBubble = true;
         playFocusTween();
         if (!isFocused) {
-          groupRef.current.moveToTop();
+          groupRef.current?.moveToTop();
         }
         document.body.style.cursor = "default";
         if (onClickCallback) onClickCallback();

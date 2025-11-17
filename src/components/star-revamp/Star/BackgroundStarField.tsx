@@ -10,7 +10,7 @@ export default function StarField({
   height: number;
   starCount?: number;
 }) {
-  const stars = Array.from({ length: starCount }, (_, i) => ({
+  const stars = Array.from({ length: starCount }, () => ({
     x: Math.random() * width,
     y: Math.random() * height,
     radius: Math.random() * 1.5 + 0.5, // subtle variation in size
