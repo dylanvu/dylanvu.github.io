@@ -43,7 +43,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         },
       },
       {
-        x: 220,
+        x: 210,
         y: 55,
         size: 4,
         data: {
@@ -87,7 +87,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
       },
       {
         x: 260,
-        y: 84,
+        y: 94,
         size: 4,
         data: {
           label: "UC Irvine",
