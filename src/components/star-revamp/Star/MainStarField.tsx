@@ -156,7 +156,7 @@ export default function MainStarField() {
               setTitleText("Polaris");
               setOriginText("The Celestial Guide");
               setAboutText("A beacon to help you navigate the stars");
-              setIntroText("Star");
+              setIntroText("Guiding Star");
             }}
             onHoverLeaveCallback={() => {
               resetOverlayTextContents();
