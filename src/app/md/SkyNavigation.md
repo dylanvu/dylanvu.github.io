@@ -4,7 +4,7 @@ The constellations serve as a meaningful way to organize the atomic aspects of D
 
 Why is Dylan represented by a night sky? He loves star gazing and looking at the night sky. He also loves metaphors.
 
-Fun fact: about 70% of the initial version of this night sky was programmed in a single rainy weekend of November, 2025 while Dylan was sick with a cold.
+Fun fact: about 70% of the initial version of this night sky was programmed in a single rainy weekend of November, 2025 while Dylan was sick with a cold. This night sky was programmed with React-Konva, Motion, TypeScript, React, Next.js, and lots of fun and joy. And some help from ChatGPT, but the second day was relatively ChatGPT-free.
 
 The current constellations in this night sky are:
 
