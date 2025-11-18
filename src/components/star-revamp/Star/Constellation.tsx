@@ -5,6 +5,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
+import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 
 export default function Constellation({
   data,
@@ -324,12 +325,14 @@ export default function Constellation({
   };
 
   const {
-    setTitleText,
-    setOriginText,
-    setAboutText,
-    setIntroText,
-    resetOverlayTextContents,
+    setOverlayTextContents: setTopOverlayTextContents,
+    resetOverlayTextContents: resetTopOverlayTextContents,
   } = useTopOverlayContext();
+
+  const {
+    setOverlayTextContents: setCenterOverlayTextContents,
+    resetOverlayTextContents: resetCenterOverlayTextContents,
+  } = useCenterOverlayContext();
 
   /**
    * STAR BOUNDING BOX LOGIC
@@ -463,8 +466,6 @@ export default function Constellation({
             brightness={brightness}
             delay={cornerStarDelays[0]}
             windowCenter={windowCenter}
-            onHoverEnterCallback={() => {}}
-            onHoverLeaveCallback={() => {}}
           />
           <MainStar
             key="bbox-tr"
@@ -474,8 +475,6 @@ export default function Constellation({
             brightness={brightness}
             delay={cornerStarDelays[1]}
             windowCenter={windowCenter}
-            onHoverEnterCallback={() => {}}
-            onHoverLeaveCallback={() => {}}
           />
           <MainStar
             key="bbox-br"
@@ -485,8 +484,6 @@ export default function Constellation({
             brightness={brightness}
             delay={cornerStarDelays[2]}
             windowCenter={windowCenter}
-            onHoverEnterCallback={() => {}}
-            onHoverLeaveCallback={() => {}}
           />
           <MainStar
             key="bbox-bl"
@@ -496,8 +493,6 @@ export default function Constellation({
             brightness={brightness}
             delay={cornerStarDelays[3]}
             windowCenter={windowCenter}
-            onHoverEnterCallback={() => {}}
-            onHoverLeaveCallback={() => {}}
           />
         </>
       )}
@@ -527,15 +522,44 @@ export default function Constellation({
             enableOnClick={isFocused}
             onHoverEnterCallback={() => {
               if (star.data) {
-                setIntroText(star.data.intro);
-                setTitleText(star.data.label);
-                setOriginText(star.data.origin);
-                setAboutText(star.data.about);
+                if (isFocused) {
+                  setTopOverlayTextContents({
+                    intro: star.data.intro,
+                    title: star.data.label,
+                    origin: star.data.origin,
+                    about: star.data.about,
+                  });
+                } else {
+                  setCenterOverlayTextContents({
+                    intro: star.data.intro,
+                    title: star.data.label,
+                    origin: star.data.origin,
+                    about: star.data.about,
+                  });
+                }
               }
             }}
             onHoverLeaveCallback={() => {
               if (star.data?.label) {
-                resetOverlayTextContents();
+                if (isFocused) {
+                  // set it back to the constellation information from coming in
+                  setTopOverlayTextContents({
+                    intro: data.intro,
+                    title: data.name,
+                    // this mismatch between origin and about is intentional
+                    // It is weird because I want less information in the focus view
+                    origin: data.about,
+                    about: "",
+                  });
+                } else {
+                  resetTopOverlayTextContents();
+                  setCenterOverlayTextContents({
+                    intro: data.intro,
+                    title: data.name,
+                    origin: data.origin,
+                    about: data.about,
+                  });
+                }
               }
               if (isFocused) {
                 document.body.style.cursor = "default";
@@ -543,10 +567,13 @@ export default function Constellation({
             }}
             onClickCallback={() => {
               if (star.data) {
-                setIntroText(star.data.intro);
-                setTitleText(star.data.label);
-                setOriginText(star.data.origin);
-                setAboutText(star.data.about);
+                // TODO: Need to open up the side panels and such instead
+                setTopOverlayTextContents({
+                  intro: star.data.intro,
+                  title: star.data.label,
+                  origin: star.data.origin,
+                  about: star.data.about,
+                });
               }
             }}
           />

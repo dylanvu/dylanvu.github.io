@@ -9,6 +9,7 @@ export type ConstellationData = {
   name: string; // the name of the constellation
   origin: string; // the origin and meaning of the constellation name
   about: string; // the flavor text explaining the constellation
+  intro: string; // the intro text for the constellation
   stars: Star[];
   connections?: [number, number][]; // ensure tuple type
   designX: number; // bigger number moves to the right

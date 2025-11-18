@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
 import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
-import { TitlePosition } from "@/hooks/GenericOverlayProvider";
 
 export default function GenericOverlay({
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -21,7 +20,7 @@ export default function GenericOverlay({
   aboutText: string;
   introText: string;
   overlayVisibility: boolean;
-  titlePosition: TitlePosition;
+  titlePosition: "center" | "bottom" | "top";
 }) {
   // create an enum for the title position to position
   // note that 0 y is the center of the screen

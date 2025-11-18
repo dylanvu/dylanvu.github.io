@@ -10,5 +10,4 @@ export const {
   titleText: "",
   originText: "",
   aboutText: "",
-  titlePosition: "top",
 });

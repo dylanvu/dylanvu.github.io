@@ -8,6 +8,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     name: "Viae",
     origin: 'Latin: "roads". Outlines converging roads.',
     about: "The gateway to worlds beyond this night sky",
+    intro: "Constellation",
     stars: [
       {
         x: 80,
@@ -73,6 +74,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     name: "Iter",
     origin: 'Latin: "journey, path". Draws a winding path.',
     about: "My journey from learning to creating",
+    intro: "The Major & Minor",
     stars: [
       {
         x: 183,
@@ -173,7 +175,8 @@ export const CONSTELLATIONS: ConstellationData[] = [
     name: "Arete",
     origin: 'Greek: "excellence, skill". Forms a laurel.',
     about: "The creations I've dreamed of and built",
-    // make this a crown
+    intro: "Constellation",
+    // make this a laurel
     stars: [
       // remember, larger x = right, larger y = down
       {
@@ -297,6 +300,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     name: "Elevare",
     origin: 'Latin: "to elevate". Depicts a nation.',
     about: "The hackathons where I've grown and mentored",
+    intro: "Constellation",
     stars: US_MAP,
     connections: createSequentialLoopingConnections(US_MAP),
     designX: 1600,

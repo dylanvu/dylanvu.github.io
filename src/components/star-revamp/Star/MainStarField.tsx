@@ -7,6 +7,7 @@ import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Group, Rect } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
+import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -21,13 +22,17 @@ const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 export default function MainStarField() {
   const { width, height } = useWindowSizeContext();
   const {
-    setTitlePosition,
-    setTitleText,
-    setOriginText,
-    setAboutText,
-    setIntroText,
-    resetOverlayTextContents,
+    setOverlayTextContents: setCenterOverlayTextContents,
+    resetOverlayTextContents: resetCenterOverlayTextContents,
+    setOverlayVisibility: setCenterOverlayVisibility,
   } = useCenterOverlayContext();
+
+  const {
+    setOverlayTextContents: setTopOverlayTextContents,
+    resetOverlayTextContents: resetTopOverlayTextContents,
+    setOverlayVisibility: setTopOverlayVisibility,
+  } = useTopOverlayContext();
+
   const windowCenter = { x: width / 2, y: height / 2 };
   const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
 
@@ -70,6 +75,8 @@ export default function MainStarField() {
     };
   }
 
+  const iterIntro = "The Major & Minor";
+
   return (
     <Group>
       <Rect
@@ -81,8 +88,9 @@ export default function MainStarField() {
         onClick={() => {
           if (selectedConstellation) {
             setSelectedConstellation(null);
-            resetOverlayTextContents();
-            setTitlePosition("center");
+            resetCenterOverlayTextContents();
+            setCenterOverlayVisibility(true);
+            setTopOverlayVisibility(false);
           }
         }}
       />
@@ -106,29 +114,31 @@ export default function MainStarField() {
             key={i}
             onClickCallback={() => {
               setSelectedConstellation(c);
-              setTitlePosition("bottom");
-              setIntroText("");
-              setOriginText(c.about);
-              setAboutText("");
+              setTopOverlayTextContents({
+                intro: c.intro,
+                title: c.name,
+                origin: c.about,
+                about: "",
+              });
+              setCenterOverlayVisibility(false);
+              setTopOverlayVisibility(true);
             }}
             focusedConstellation={selectedConstellation}
             // pass the focused constellation screen position (same for all constellations)
             focusedScreenPos={focusedScreenPos}
             onHoverEnterCallback={() => {
               if (!selectedConstellation) {
-                setTitleText(c.name);
-                setOriginText(c.origin);
-                setAboutText(c.about);
-                if (c.name === "Iter") {
-                  setIntroText("The Major & Minor");
-                } else {
-                  setIntroText("Constellation");
-                }
+                setCenterOverlayTextContents({
+                  intro: c.intro,
+                  title: c.name,
+                  origin: c.origin,
+                  about: c.about,
+                });
               }
             }}
             onHoverLeaveCallback={() => {
               if (selectedConstellation !== c) {
-                resetOverlayTextContents();
+                resetCenterOverlayTextContents();
               }
             }}
           />
@@ -153,13 +163,15 @@ export default function MainStarField() {
             windowCenter={windowCenter} // fallback
             focusedScreenPos={focusedScreenPos} // pass in the focused constellation's screen center
             onHoverEnterCallback={() => {
-              setTitleText("Polaris");
-              setOriginText("Latin: Pole Star. A celestial guide.");
-              setAboutText("A beacon to help you navigate the stars");
-              setIntroText("The North Star");
+              setCenterOverlayTextContents({
+                intro: "The North Star",
+                title: "Polaris",
+                origin: 'Latin: "pole star". A celestial guide.',
+                about: "A beacon to help you navigate the stars",
+              });
             }}
             onHoverLeaveCallback={() => {
-              resetOverlayTextContents();
+              resetCenterOverlayTextContents();
               // polaris is outside of any constellation, so leaving the star should bring the cursor back to normal, whereas other constellations still have the pointer style
               document.body.style.cursor = "default";
             }}
