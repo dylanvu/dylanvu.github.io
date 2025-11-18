@@ -24,7 +24,11 @@ export default function MainStarField({
   setFocusedConstellationPosAction,
 }: {
   setFocusedConstellationPosAction: React.Dispatch<
-    React.SetStateAction<{ x: number; y: number } | null>
+    React.SetStateAction<{
+      x: number;
+      y: number;
+      constellation: ConstellationData;
+    } | null>
   >;
 }) {
   const { width, height } = useWindowSizeContext();
@@ -85,7 +89,10 @@ export default function MainStarField({
         x: transformDataForSelected.x + centerX,
         y: transformDataForSelected.y + centerY,
       };
-      setFocusedConstellationPosAction(focusedScreenPos);
+      setFocusedConstellationPosAction({
+        ...focusedScreenPos,
+        constellation: c,
+      });
       setFocusedScreenPos(focusedScreenPos);
     }
   }, [selectedConstellation]);

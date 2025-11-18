@@ -1,6 +1,7 @@
 import { Group } from "react-konva";
 import { useMemo } from "react";
 import BackgroundStar from "./BackgroundStar";
+import { ConstellationData } from "@/interfaces/StarInterfaces";
 
 export default function StarField({
   width,
@@ -11,7 +12,11 @@ export default function StarField({
   width: number;
   height: number;
   starCount?: number;
-  focusedConstellationPos: { x: number; y: number } | null;
+  focusedConstellationPos: {
+    x: number;
+    y: number;
+    constellation: ConstellationData;
+  } | null;
 }) {
   const stars = useMemo(
     () =>
@@ -33,6 +38,7 @@ export default function StarField({
           radius={star.radius}
           delay={i * 0.05}
           focusedConstellationPos={focusedConstellationPos}
+          enableFocusMovement={true}
         />
       ))}
     </Group>

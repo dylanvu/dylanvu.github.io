@@ -1,6 +1,7 @@
 import { Group, Rect, Shape } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
+import { ConstellationData } from "@/interfaces/StarInterfaces";
 
 const BG_STAR_COLORS = ["#888888", "#AAAAAA", "#CCCCCC", "#EEEEEE"];
 
@@ -16,9 +17,15 @@ export default function BackgroundStar({
   y: number;
   radius?: number;
   delay?: number;
-  focusedConstellationPos: { x: number; y: number } | null;
+  focusedConstellationPos: {
+    x: number;
+    y: number;
+    constellation: ConstellationData;
+  } | null;
   enableFocusMovement?: boolean;
 }) {
+  const focusedConstellationRotation =
+    focusedConstellationPos?.constellation?.rotation ?? 0;
   // node refs
   const groupRef = useRef<Konva.Group | null>(null);
   const starRef = useRef<Konva.Shape | null>(null);
@@ -59,7 +66,6 @@ export default function BackgroundStar({
     };
   }, [delay]);
 
-  // Main effect: when focus changes, animate out OR reset back
   useEffect(() => {
     if (!enableFocusMovement) return;
     const group = groupRef.current;
@@ -67,13 +73,13 @@ export default function BackgroundStar({
     const star = starRef.current;
     if (!group || !streak || !star) return;
 
-    // finish currently-running tweens to avoid conflicts
+    // finish currently-running tweens
     vanishTweenRef.current?.finish();
     streakFadeInRef.current?.finish();
     streakFadeOutRef.current?.finish();
     resetTweenRef.current?.finish();
 
-    // If there's no focal point -> reset to initial position & hide streak
+    // If no constellation is focused -> reset position & scale
     if (!focusedConstellationPos) {
       resetTweenRef.current = new Konva.Tween({
         node: group,
@@ -85,7 +91,6 @@ export default function BackgroundStar({
         scaleY: 1,
       });
 
-      // hide streak immediately (opacity -> 0)
       streakFadeOutRef.current = new Konva.Tween({
         node: streak,
         duration: 0.28,
@@ -93,7 +98,6 @@ export default function BackgroundStar({
         opacity: 0,
       });
 
-      // bring star back to full opacity
       const starReset = new Konva.Tween({
         node: star,
         duration: 0.2,
@@ -104,7 +108,6 @@ export default function BackgroundStar({
       resetTweenRef.current.play();
       streakFadeOutRef.current.play();
       starReset.play();
-
       return () => {
         resetTweenRef.current?.finish();
         streakFadeOutRef.current?.finish();
@@ -112,68 +115,68 @@ export default function BackgroundStar({
       };
     }
 
-    // --- Focused: compute vector away from focal point and animate out ---
-    // Use group's current position (handles previous animations)
+    // --- FOCUSED CONSTELLATION PARALLAX ---
     const currentX = group.x();
     const currentY = group.y();
 
+    // compute relative offset to constellation center
+    let dx = initialX.current - focusedConstellationPos.x;
+    let dy = initialY.current - focusedConstellationPos.y;
+
+    // depth factor based on star size (smaller = farther)
+    const depth = 1 - Math.min(radius / 4, 0.8); // adjust MAX_RADIUS if needed
+    dx *= depth;
+    dy *= depth;
+
+    // rotation of the focused constellation
+    const rotationRad = (focusedConstellationRotation ?? 0) * (Math.PI / 180); // convert deg -> rad
+    const cosTheta = Math.cos(rotationRad);
+    const sinTheta = Math.sin(rotationRad);
+
+    const rotatedX = dx * cosTheta - dy * sinTheta;
+    const rotatedY = dx * sinTheta + dy * cosTheta;
+
+    // optional: small scale factor for parallax effect
+    const scaleFactor = 1; // could tweak 0.95–1.05 if desired
+    const finalX = focusedConstellationPos.x + rotatedX * scaleFactor;
+    const finalY = focusedConstellationPos.y + rotatedY * scaleFactor;
+
+    // compute streak direction / magnitude as before
     let vx = currentX - focusedConstellationPos.x;
     let vy = currentY - focusedConstellationPos.y;
     let vlen = Math.hypot(vx, vy);
-
     if (vlen < 1e-5) {
       vx = 0;
       vy = -1;
       vlen = 1;
     }
-
     const nx = vx / vlen;
     const ny = vy / vlen;
+    const nudgeFactor = Math.min(Math.max(vlen / 300, 0), 1);
+    const nudgeDistance = 5 + nudgeFactor * (30 - 5);
 
-    // compute distance-based nudge factor
-    const MAX_NUDGE = 30; // max movement in px
-    const MIN_NUDGE = 5; // min movement in px
-    // vlen is the distance from the star to the focus
-    const nudgeFactor = Math.min(Math.max(vlen / 300, 0), 1); // normalize by 300px
-    const nudgeDistance = MIN_NUDGE + nudgeFactor * (MAX_NUDGE - MIN_NUDGE);
-    const targetX = currentX + nx * nudgeDistance;
-    const targetY = currentY + ny * nudgeDistance;
+    const targetX = finalX + nx * nudgeDistance;
+    const targetY = finalY + ny * nudgeDistance;
 
     const streakLength = Math.max(8, nudgeDistance * 1.5);
     const streakHeight = Math.max(1, radius * 2.2);
 
-    // set rect geometry so gradient endpoints can be correct
     streak.width(streakLength);
     streak.height(streakHeight);
-
-    // make rotation pivot the left-center of the rect, so the left end sits at star center
     streak.offsetX(0);
     streak.offsetY(streakHeight / 2);
-
-    // place streak's left end at group origin
     streak.x(0);
     streak.y(0);
-
-    // set gradient endpoint of the rect to the computed length so gradient spans full trail
-    // use Konva setter to ensure runtime update
-    // @ts-ignore runtime setter
+    // @ts-ignore
     streak.fillLinearGradientEndPoint({ x: streakLength, y: 0 });
-
-    // rotation so it points away from focal point
-    const angleRad = Math.atan2(ny, nx);
-    const angleDeg = (angleRad * 180) / Math.PI;
+    const angleDeg = (Math.atan2(ny, nx) * 180) / Math.PI;
     streak.rotation(angleDeg);
-
-    // make streak look soft & streak-like via corner radius and subtle shadow (shadow optional)
     streak.cornerRadius(Math.max(1, radius));
     streak.shadowColor(color);
-    streak.shadowBlur(Math.max(0, radius * 2.5)); // small blur only; main visual is the gradient
+    streak.shadowBlur(Math.max(0, radius * 2.5));
     streak.shadowOpacity(0.45);
-
-    // ensure streak starts invisible; we'll animate opacity in (not scale)
     streak.opacity(0);
 
-    // small parallax scale on group for feel (reverted on reset)
     const duration = 0.55 + Math.random() * 0.5;
     const easing = Konva.Easings.EaseInOut;
 
@@ -187,7 +190,6 @@ export default function BackgroundStar({
       scaleY: 0.96,
     });
 
-    // fade the streak in quickly so the trail is visible immediately
     streakFadeInRef.current = new Konva.Tween({
       node: streak,
       duration: Math.max(0.28, duration * 0.5),
@@ -196,7 +198,6 @@ export default function BackgroundStar({
       delay: Math.random() * 0.06,
     });
 
-    // then fade it out near the end so it doesn't persist on-screen
     streakFadeOutRef.current = new Konva.Tween({
       node: streak,
       duration: 0.36,
@@ -205,7 +206,6 @@ export default function BackgroundStar({
       delay: duration - 0.24 > 0 ? duration - 0.24 : duration * 0.65,
     });
 
-    // fade star slightly while the streak is dominant
     const starFade = new Konva.Tween({
       node: star,
       duration: Math.min(0.32, duration * 0.5),
@@ -213,11 +213,10 @@ export default function BackgroundStar({
       opacity: 0.8,
     });
 
-    // play
-    streakFadeInRef.current.play();
     vanishTweenRef.current.play();
-    starFade.play();
+    streakFadeInRef.current.play();
     streakFadeOutRef.current.play();
+    starFade.play();
 
     return () => {
       vanishTweenRef.current?.finish();
@@ -225,7 +224,7 @@ export default function BackgroundStar({
       streakFadeOutRef.current?.finish();
       starFade?.finish();
     };
-  }, [focusedConstellationPos]);
+  }, [focusedConstellationPos, focusedConstellationRotation]);
 
   // cleanup on unmount
   useEffect(() => {

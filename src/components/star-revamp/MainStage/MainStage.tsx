@@ -14,6 +14,7 @@ import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ConstellationData } from "@/interfaces/StarInterfaces";
 
 const panelStyle: React.CSSProperties = {
   position: "absolute",
@@ -34,6 +35,7 @@ export default function MainStage({ children }: { children: React.ReactNode }) {
   const [focusedConstellationPos, setFocusedConstellationPos] = useState<{
     x: number;
     y: number;
+    constellation: ConstellationData;
   } | null>(null);
 
   return (
