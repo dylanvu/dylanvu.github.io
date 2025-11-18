@@ -1,4 +1,5 @@
 import { Group } from "react-konva";
+import { useMemo } from "react";
 import BackgroundStar from "./BackgroundStar";
 
 export default function StarField({
@@ -10,11 +11,15 @@ export default function StarField({
   height: number;
   starCount?: number;
 }) {
-  const stars = Array.from({ length: starCount }, () => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    radius: Math.random() * 1.5 + 0.5, // subtle variation in size
-  }));
+  const stars = useMemo(
+    () =>
+      Array.from({ length: starCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.5 + 0.5,
+      })),
+    [width, height, starCount]
+  );
 
   return (
     <Group>
@@ -24,7 +29,7 @@ export default function StarField({
           x={star.x}
           y={star.y}
           radius={star.radius}
-          delay={i * 0.05} // sequential fade-in
+          delay={i * 0.05}
         />
       ))}
     </Group>
