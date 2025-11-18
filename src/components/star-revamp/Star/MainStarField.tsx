@@ -2,7 +2,7 @@
 import Constellation from "@/components/star-revamp/Star/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
-import { use, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Group, Rect } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
@@ -20,7 +20,13 @@ const DESIGN = { width: 2560, height: 1271 }; // design reference
 /** Pre-computed offsets from design center */
 const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
-export default function MainStarField() {
+export default function MainStarField({
+  setFocusedConstellationPosAction,
+}: {
+  setFocusedConstellationPosAction: React.Dispatch<
+    React.SetStateAction<{ x: number; y: number } | null>
+  >;
+}) {
   const { width, height } = useWindowSizeContext();
   const {
     setOverlayTextContents: setCenterOverlayTextContents,
@@ -39,6 +45,10 @@ export default function MainStarField() {
 
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
+  const [focusedScreenPos, setFocusedScreenPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   // helper to compute the constellation center in its local coordinates
   const computeCenter = (stars: { x: number; y: number }[]) => {
@@ -55,26 +65,30 @@ export default function MainStarField() {
     return { minX, minY, widthLocal, heightLocal, centerX, centerY };
   };
 
-  // compute focused constellation screen center (if any)
-  let focusedScreenPos: { x: number; y: number } | null = null;
-  if (selectedConstellation) {
-    const c = selectedConstellation;
-    const { centerX, centerY } = computeCenter(c.stars);
-    const offsetX = (c.designX - designCenter.x) * scale;
-    const offsetY = (c.designY - designCenter.y) * scale;
-    const transformDataForSelected = {
-      x: windowCenter.x + offsetX,
-      y: windowCenter.y + offsetY,
-      rotation: c.rotation ?? 0,
-      scaleX: c.scale ?? 1,
-      scaleY: c.scale ?? 1,
-    } as TransformData;
+  useMemo(() => {
+    // compute focused constellation screen center (if any)
+    let focusedScreenPos: { x: number; y: number } | null = null;
+    if (selectedConstellation) {
+      const c = selectedConstellation;
+      const { centerX, centerY } = computeCenter(c.stars);
+      const offsetX = (c.designX - designCenter.x) * scale;
+      const offsetY = (c.designY - designCenter.y) * scale;
+      const transformDataForSelected = {
+        x: windowCenter.x + offsetX,
+        y: windowCenter.y + offsetY,
+        rotation: c.rotation ?? 0,
+        scaleX: c.scale ?? 1,
+        scaleY: c.scale ?? 1,
+      } as TransformData;
 
-    focusedScreenPos = {
-      x: transformDataForSelected.x + centerX,
-      y: transformDataForSelected.y + centerY,
-    };
-  }
+      focusedScreenPos = {
+        x: transformDataForSelected.x + centerX,
+        y: transformDataForSelected.y + centerY,
+      };
+      setFocusedConstellationPosAction(focusedScreenPos);
+      setFocusedScreenPos(focusedScreenPos);
+    }
+  }, [selectedConstellation]);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -90,6 +104,7 @@ export default function MainStarField() {
         onClick={() => {
           if (selectedConstellation) {
             setSelectedConstellation(null);
+            setFocusedConstellationPosAction(null);
             resetCenterOverlayTextContents();
             setCenterOverlayVisibility(true);
             setTopOverlayVisibility(false);

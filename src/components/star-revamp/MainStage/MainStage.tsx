@@ -31,6 +31,10 @@ const panelStyle: React.CSSProperties = {
 export default function MainStage({ children }: { children: React.ReactNode }) {
   const { width, height, ready } = useWindowSizeContext();
   const pathname = usePathname();
+  const [focusedConstellationPos, setFocusedConstellationPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   return (
     <div
@@ -72,8 +76,11 @@ export default function MainStage({ children }: { children: React.ReactNode }) {
               width={width}
               height={height}
               starCount={200}
+              focusedConstellationPos={focusedConstellationPos}
             />
-            <MainStarField />
+            <MainStarField
+              setFocusedConstellationPosAction={setFocusedConstellationPos}
+            />
           </Layer>
         </Stage>
       )}

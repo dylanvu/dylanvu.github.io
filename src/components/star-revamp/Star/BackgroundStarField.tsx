@@ -6,10 +6,12 @@ export default function StarField({
   width,
   height,
   starCount = 100,
+  focusedConstellationPos,
 }: {
   width: number;
   height: number;
   starCount?: number;
+  focusedConstellationPos: { x: number; y: number } | null;
 }) {
   const stars = useMemo(
     () =>
@@ -30,6 +32,7 @@ export default function StarField({
           y={star.y}
           radius={star.radius}
           delay={i * 0.05}
+          focusedConstellationPos={focusedConstellationPos}
         />
       ))}
     </Group>
