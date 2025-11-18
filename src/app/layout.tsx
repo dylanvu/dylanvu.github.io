@@ -14,6 +14,7 @@ import Head from "next/head";
 import Script from "next/script";
 import { CenterOverlayProvider } from "@/hooks/useCenterOverlay";
 import { TopOverlayProvider } from "@/hooks/useTopOverlay";
+import NightSky from "@/components/star-revamp/NightSky";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -51,7 +52,10 @@ export default function RootLayout({
         <main className="main">
           <WindowSizeProvider>
             <CenterOverlayProvider>
-              <TopOverlayProvider>{children}</TopOverlayProvider>
+              <TopOverlayProvider>
+                {/* children here really just refers to the side panels that appear when you go to a specific link */}
+                <NightSky>{children}</NightSky>
+              </TopOverlayProvider>
             </CenterOverlayProvider>
           </WindowSizeProvider>
         </main>

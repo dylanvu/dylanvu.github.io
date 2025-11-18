@@ -8,7 +8,7 @@ import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay";
 import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 
-export default function MainStage() {
+export default function MainStage({ children }: { children: React.ReactNode }) {
   // use the hook. ready becomes true after the first synchronous measurement.
   const { width, height, ready } = useWindowSizeContext();
   return (
@@ -23,6 +23,8 @@ export default function MainStage() {
     >
       <CenterOverlay />
       <TopOverlay />
+      {/* children here should be the side panels that appear when you go to a specific link */}
+      {children}
       {ready && width > 0 && height > 0 && (
         <Stage
           width={width}
