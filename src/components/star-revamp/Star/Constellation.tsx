@@ -331,10 +331,8 @@ export default function Constellation({
     resetOverlayTextContents: resetTopOverlayTextContents,
   } = useTopOverlayContext();
 
-  const {
-    setOverlayTextContents: setCenterOverlayTextContents,
-    resetOverlayTextContents: resetCenterOverlayTextContents,
-  } = useCenterOverlayContext();
+  const { setOverlayTextContents: setCenterOverlayTextContents } =
+    useCenterOverlayContext();
 
   /**
    * STAR BOUNDING BOX LOGIC
