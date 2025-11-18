@@ -4,11 +4,12 @@ import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { ConstellationData, TransformData, FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 import { use, useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
-import { Group, Rect } from "react-konva";
+import { Circle, Group, Rect, Text } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { usePathname, useRouter } from "next/navigation";
+import { useMobile } from "@/hooks/useMobile";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -16,9 +17,6 @@ import { usePathname, useRouter } from "next/navigation";
  */
 
 const DESIGN = { width: 2560, height: 1271 }; // design reference
-
-/** Pre-computed offsets from design center */
-const designCenter = { x: DESIGN.width / 2, y: DESIGN.height / 2 };
 
 export default function MainStarField({
   setFocusedConstellationPosAction,
@@ -40,7 +38,6 @@ export default function MainStarField({
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
 
-  const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
 
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
@@ -70,11 +67,12 @@ export default function MainStarField({
     if (selectedConstellation) {
       const c = selectedConstellation;
       const { centerX, centerY } = computeCenter(c.stars);
-      const offsetX = (c.designX - designCenter.x) * scale;
-      const offsetY = (c.designY - designCenter.y) * scale;
+      // Use viewport percentage positioning
+      const percentX = c.designX / DESIGN.width;
+      const percentY = c.designY / DESIGN.height;
       const transformDataForSelected = {
-        x: windowCenter.x + offsetX,
-        y: windowCenter.y + offsetY,
+        x: percentX * width,
+        y: percentY * height,
         rotation: c.rotation ?? 0,
         scaleX: c.scale ?? 1,
         scaleY: c.scale ?? 1,
@@ -103,9 +101,72 @@ export default function MainStarField({
 
   const router = useRouter();
   const pathname = usePathname();
+  const { isMobileLandscape } = useMobile();
+
+  // DEBUG MODE - set to false to hide debug markers
+  const DEBUG_MODE = false;
 
   return (
     <Group>
+      {/* DEBUG: Screen center marker */}
+      {DEBUG_MODE && (
+        <>
+          <Circle
+            x={windowCenter.x}
+            y={windowCenter.y}
+            radius={10}
+            fill="red"
+            opacity={0.8}
+          />
+          <Text
+            x={windowCenter.x + 15}
+            y={windowCenter.y - 5}
+            text={`CENTER ${isMobileLandscape ? '(Mobile)' : '(Desktop)'}`}
+            fontSize={14}
+            fill="red"
+            fontStyle="bold"
+          />
+          {/* Crosshair lines */}
+          <Rect
+            x={windowCenter.x - 1}
+            y={0}
+            width={2}
+            height={height}
+            fill="red"
+            opacity={0.3}
+          />
+          <Rect
+            x={0}
+            y={windowCenter.y - 1}
+            width={width}
+            height={2}
+            fill="red"
+            opacity={0.3}
+          />
+          
+          {/* Quadrant center markers - only in mobile landscape */}
+          {isMobileLandscape && (
+            <>
+              {/* Top-left quadrant */}
+              <Circle x={width / 4} y={height / 4} radius={6} fill="lime" opacity={0.9} />
+              <Text x={width / 4 + 10} y={height / 4 - 5} text="TL" fontSize={10} fill="lime" />
+              
+              {/* Top-right quadrant */}
+              <Circle x={(3 * width) / 4} y={height / 4} radius={6} fill="lime" opacity={0.9} />
+              <Text x={(3 * width) / 4 + 10} y={height / 4 - 5} text="TR" fontSize={10} fill="lime" />
+              
+              {/* Bottom-left quadrant */}
+              <Circle x={width / 4} y={(3 * height) / 4} radius={6} fill="lime" opacity={0.9} />
+              <Text x={width / 4 + 10} y={(3 * height) / 4 - 5} text="BL" fontSize={10} fill="lime" />
+              
+              {/* Bottom-right quadrant */}
+              <Circle x={(3 * width) / 4} y={(3 * height) / 4} radius={6} fill="lime" opacity={0.9} />
+              <Text x={(3 * width) / 4 + 10} y={(3 * height) / 4 - 5} text="BR" fontSize={10} fill="lime" />
+            </>
+          )}
+        </>
+      )}
+
       <Rect
         x={0}
         y={0}
@@ -127,19 +188,86 @@ export default function MainStarField({
         }}
       />
       {CONSTELLATIONS.map((c, i) => {
-        // compute offset from design center and scale it (same as you already have)
-        const offsetX = (c.designX - designCenter.x) * scale;
-        const offsetY = (c.designY - designCenter.y) * scale;
+        // Calculate constellation's local center offset
+        const { centerX, centerY } = computeCenter(c.stars);
+        
+        let targetX, targetY;
+
+        if (isMobileLandscape) {
+          // Mobile landscape: Position visual center at quadrant centers
+          // Viae: top-left, Iter: top-right, Arete: bottom-left, Elevare: bottom-right
+          switch (c.name) {
+            case "Viae":
+              targetX = width / 4 - centerX;
+              targetY = height / 4 - centerY;
+              break;
+            case "Iter":
+              targetX = (3 * width) / 4 - centerX;
+              targetY = height / 4 - centerY;
+              break;
+            case "Arete":
+              targetX = width / 4 - centerX;
+              targetY = (3 * height) / 4 - centerY;
+              break;
+            case "Elevare":
+              targetX = (3 * width) / 4 - centerX;
+              targetY = (3 * height) / 4 - centerY;
+              break;
+            default:
+              // Fallback for any other constellations
+              targetX = (c.designX / DESIGN.width) * width;
+              targetY = (c.designY / DESIGN.height) * height;
+          }
+        } else {
+          // Desktop/other viewports: Use percentage positioning
+          targetX = (c.designX / DESIGN.width) * width;
+          targetY = (c.designY / DESIGN.height) * height;
+        }
+
         const transformData: TransformData = {
-          x: windowCenter.x + offsetX,
-          y: windowCenter.y + offsetY,
+          x: targetX,
+          y: targetY,
           rotation: c.rotation ?? 0,
           scaleX: c.scale ?? 1,
           scaleY: c.scale ?? 1,
         };
 
+        // Calculate where constellation actually appears (visual center)
+        const actualX = transformData.x + centerX;
+        const actualY = transformData.y + centerY;
+
         return (
-          <Constellation
+          <>
+            {/* DEBUG: Constellation markers */}
+            {DEBUG_MODE && (
+              <>
+                {/* Blue dot = transformData position (input) */}
+                <Circle
+                  x={transformData.x}
+                  y={transformData.y}
+                  radius={6}
+                  fill="blue"
+                  opacity={0.5}
+                />
+                {/* Magenta dot = actual visual center (where it appears after offset) */}
+                <Circle
+                  x={actualX}
+                  y={actualY}
+                  radius={8}
+                  fill="magenta"
+                  opacity={0.8}
+                />
+                <Text
+                  x={actualX + 12}
+                  y={actualY - 5}
+                  text={c.name}
+                  fontSize={12}
+                  fill="magenta"
+                  fontStyle="bold"
+                />
+              </>
+            )}
+            <Constellation
             data={c}
             windowCenter={windowCenter}
             transformData={transformData}
@@ -174,18 +302,40 @@ export default function MainStarField({
               }
             }}
           />
+          </>
         );
       })}
       {/* Polaris, the guiding chatbot star */}
       {(() => {
-        const polarisDesignX = designCenter.x + 2;
-        const polarisDesignY = 200; // biiger number moves it down
-        const polarisOffsetX = (polarisDesignX - designCenter.x) * scale;
-        const polarisOffsetY = (polarisDesignY - designCenter.y) * scale;
-        const polarisScreenX = windowCenter.x + polarisOffsetX;
-        const polarisScreenY = windowCenter.y + polarisOffsetY;
+        const polarisDesignX = DESIGN.width / 2 + 2;
+        const polarisDesignY = 200; // bigger number moves it down
+        const polarisPercentX = polarisDesignX / DESIGN.width;
+        const polarisPercentY = polarisDesignY / DESIGN.height;
+        const polarisScreenX = polarisPercentX * width;
+        const polarisScreenY = polarisPercentY * height;
         return (
-          <MainStar
+          <>
+            {/* DEBUG: Polaris position marker */}
+            {DEBUG_MODE && (
+              <>
+                <Circle
+                  x={polarisScreenX}
+                  y={polarisScreenY}
+                  radius={8}
+                  fill="yellow"
+                  opacity={0.7}
+                />
+                <Text
+                  x={polarisScreenX + 12}
+                  y={polarisScreenY - 5}
+                  text="Polaris"
+                  fontSize={12}
+                  fill="yellow"
+                  fontStyle="bold"
+                />
+              </>
+            )}
+            <MainStar
             x={polarisScreenX}
             y={polarisScreenY}
             size={5}
@@ -209,6 +359,7 @@ export default function MainStarField({
             }}
             // label="Polaris"
           />
+          </>
         );
       })()}
     </Group>
