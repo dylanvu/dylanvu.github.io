@@ -30,6 +30,7 @@ type Props = {
   focusedScreenPos?: { x: number; y: number } | null;
   windowCenter: { x: number; y: number };
   showHitBox?: boolean; // new prop for debugging
+  cancelBubble?: boolean;
 };
 
 export default function MainStar({
@@ -54,6 +55,7 @@ export default function MainStar({
   focusedScreenPos,
   windowCenter,
   showHitBox = false,
+  cancelBubble = false,
 }: Props) {
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
@@ -207,8 +209,9 @@ export default function MainStar({
         onHoverLeaveCallback?.();
         playHoverTween(1, 1);
       }}
-      onClick={() => {
+      onClick={(e) => {
         if (enableOnClick) {
+          e.cancelBubble = cancelBubble;
           if (onClickCallback) onClickCallback();
         }
       }}

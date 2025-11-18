@@ -1,4 +1,6 @@
-# UCSB AIChE Careers Bot
+# AIChE Careers Bot
+
+This is a Discord Bot made for the UCSB AIChE Student Chapter.
 
 ![GIF of the AIChE Careers Bot in action](/projects/web-development/aiche-careers/aiche-careers.gif)
 

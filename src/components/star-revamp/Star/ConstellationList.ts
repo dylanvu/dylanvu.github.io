@@ -184,12 +184,12 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 88,
         y: 110,
-        size: 5,
+        size: 6,
         data: {
           label: "Epicdle",
           origin: "Web Development",
           about: "A fandom's favorite guessing game",
-          intro: "Giant",
+          intro: "Supergiant",
           internalLink: `${STAR_BASE_URL}/epicdle`,
         },
       },

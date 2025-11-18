@@ -1,4 +1,7 @@
-import StarMarkdownRenderer from "../StarMarkdownRenderer";
+"use client";
+import { SPACE_TEXT_COLOR } from "@/app/theme";
+import StarMarkdownRenderer from "@/components/star-revamp/StarMarkdownRenderer";
+import { motion } from "motion/react";
 
 export default function StarPanel({
   markdown,
@@ -7,9 +10,5 @@ export default function StarPanel({
   markdown: string;
   slug: string;
 }) {
-  return (
-    <div>
-      <StarMarkdownRenderer markdown={markdown} />
-    </div>
-  );
+  return <StarMarkdownRenderer markdown={markdown} />;
 }

@@ -96,7 +96,7 @@ export default function MainStarField() {
           }
           // if we are not in the root path, navigate to the root
           if (pathname !== "/") {
-            router.back();
+            router.push("/");
           }
         }}
       />

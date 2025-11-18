@@ -1,4 +1,6 @@
-# GRIP - Grasp Responsive Inflatable Pouch Controller
+# GRIP Controller
+
+GRIP stands for "Grasp Responsive Inflatable Pouch Controller".
 
 ![Picture of GRIP](/projects/games/grip/grip.png)
 

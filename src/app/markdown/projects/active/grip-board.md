@@ -1,4 +1,6 @@
-# GRIP Board - Grasp Responsive Interactive Projector Board
+# GRIP Board
+
+Here, GRIP stands for "Grasp Responsive Interactive Projector Board".
 
 ![Picture of GRIP Board](/projects/embedded/grip-board/grip-board.png)
 

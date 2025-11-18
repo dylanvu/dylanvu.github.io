@@ -571,7 +571,9 @@ export default function Constellation({
                 document.body.style.cursor = "default";
               }
             }}
+            cancelBubble={true}
             onClickCallback={() => {
+              // prevent the click from bubbling up to the parent
               const data = star.data;
               if (data) {
                 if (data.externalLink) {

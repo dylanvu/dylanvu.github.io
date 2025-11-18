@@ -1,8 +1,8 @@
 // this file produces indexable pages for all for all of the md files in this directory for SEO
 import fs from "fs";
 import path from "path";
-import StarMarkdownRenderer from "@/components/star-revamp/StarMarkdownRenderer";
 import StarPanel from "@/components/star-revamp/ScreenOverlay/StarPanel";
+import ReactMarkdown from "react-markdown";
 
 const activeProjectsBasePath = "src/app/markdown/projects/active";
 
@@ -22,7 +22,7 @@ export default async function MarkdownPage({
 }: {
   params: { slug: string };
 }) {
-  const slug = params.slug;
+  const slug = (await params).slug;
   const filePath = path.join(
     process.cwd(),
     activeProjectsBasePath,
@@ -35,7 +35,7 @@ export default async function MarkdownPage({
       {/* Full-page for SEO and crawlers: keep it accessible by wrapping with an ID. */}
       <article id="doc-fullpage" style={{ display: "none" }}>
         <h1>{slug}</h1>
-        <StarMarkdownRenderer markdown={markdown} />
+        <ReactMarkdown>{markdown}</ReactMarkdown>
       </article>
       {/* The side panels that the user sees */}
       <StarPanel markdown={markdown} slug={slug} />
