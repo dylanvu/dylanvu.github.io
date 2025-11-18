@@ -6,6 +6,7 @@ import AnimatedLine from "./AnimatedLine";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
+import { useRouter } from "next/navigation";
 
 export default function Constellation({
   data,
@@ -368,6 +369,8 @@ export default function Constellation({
     edgeDelays[2] + edgeDurations[2],
   ];
 
+  const router = useRouter();
+
   return (
     <Group
       ref={groupRef}
@@ -569,13 +572,22 @@ export default function Constellation({
               }
             }}
             onClickCallback={() => {
-              if (star.data) {
-                // TODO: Need to open up the side panels and such instead
+              const data = star.data;
+              if (data) {
+                if (data.externalLink) {
+                  window.open(
+                    data.externalLink,
+                    "_blank",
+                    "noopener,noreferrer"
+                  );
+                } else if (data.internalLink) {
+                  router.push(data.internalLink);
+                }
                 setTopOverlayTextContents({
-                  intro: star.data.intro,
-                  title: star.data.label,
-                  origin: star.data.origin,
-                  about: star.data.about,
+                  intro: data.intro,
+                  title: data.label,
+                  origin: data.origin,
+                  about: data.about,
                 });
               }
             }}

@@ -45,8 +45,8 @@ type BaseStarData = {
 /**
  * This star will render the markdown in the site
  */
-type StarDataWithFilePath = BaseStarData & {
-  filePath: string;
+type StarDataWithInternalLink = BaseStarData & {
+  internalLink: string;
   externalLink?: never;
 };
 
@@ -54,7 +54,7 @@ type StarDataWithFilePath = BaseStarData & {
  * This star will open a new tab with the link
  */
 type StarDataWithExternalLink = BaseStarData & {
-  filePath?: never;
+  internalLink?: never;
   externalLink: string;
 };
 
@@ -62,12 +62,12 @@ type StarDataWithExternalLink = BaseStarData & {
  * This star has nothing
  */
 type StarDataWithoutLink = BaseStarData & {
-  filePath?: never;
+  internalLink?: never;
   externalLink?: never;
 };
 
 // The star data is a union of valid star data types
 export type StarData =
-  | StarDataWithFilePath
+  | StarDataWithInternalLink
   | StarDataWithExternalLink
   | StarDataWithoutLink;

@@ -2,12 +2,13 @@
 import Constellation from "@/components/star-revamp/Star/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Group, Rect } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
+import { usePathname, useRouter } from "next/navigation";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -75,7 +76,8 @@ export default function MainStarField() {
     };
   }
 
-  const iterIntro = "The Major & Minor";
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <Group>
@@ -91,6 +93,10 @@ export default function MainStarField() {
             resetCenterOverlayTextContents();
             setCenterOverlayVisibility(true);
             setTopOverlayVisibility(false);
+          }
+          // if we are not in the root path, navigate to the root
+          if (pathname !== "/") {
+            router.back();
           }
         }}
       />

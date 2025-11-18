@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Group, Shape, Text } from "react-konva";
 import Konva from "konva";
-import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
+import {
+  FONT_FAMILY,
+  SPACE_BACKGROUND_COLOR,
+  SPACE_TEXT_COLOR,
+} from "@/app/theme";
 import { StarData } from "@/interfaces/StarInterfaces";
 
 type Props = {
@@ -205,13 +209,6 @@ export default function MainStar({
       }}
       onClick={() => {
         if (enableOnClick) {
-          if (data) {
-            if (data.externalLink) {
-              window.open(data.externalLink, "_blank", "noopener,noreferrer");
-            } else {
-              console.log("File");
-            }
-          }
           if (onClickCallback) onClickCallback();
         }
       }}
@@ -270,6 +267,9 @@ export default function MainStar({
           text={labelOverride || data?.label}
           fontSize={labelSize}
           fill={SPACE_TEXT_COLOR}
+          stroke={SPACE_BACKGROUND_COLOR}
+          strokeWidth={0.8}
+          fillAfterStrokeEnabled={true}
           fontFamily={FONT_FAMILY.style.fontFamily}
           align="center"
           offsetX={textRef.current ? textRef.current.width() / 2 : 0}

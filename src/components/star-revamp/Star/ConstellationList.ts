@@ -2,6 +2,8 @@ import { ConstellationData } from "@/interfaces/StarInterfaces";
 import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
 
+const STAR_BASE_URL = "/star";
+
 export const CONSTELLATIONS: ConstellationData[] = [
   {
     // my contact me links
@@ -188,6 +190,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Web Development",
           about: "A fandom's favorite guessing game",
           intro: "Giant",
+          internalLink: `${STAR_BASE_URL}/epicdle`,
         },
       },
       {
@@ -199,6 +202,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Embedded Systems",
           about: "Google Gemini becomes a robotic tour guide",
           intro: "Giant",
+          internalLink: `${STAR_BASE_URL}/amelia`,
         },
       },
       {
@@ -210,6 +214,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "A cute cake stacking game that was hard to code",
           intro: "Giant",
+          internalLink: `${STAR_BASE_URL}/sweetstack`,
         },
       },
       {
@@ -221,6 +226,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Embedded Systems",
           about: "Bluetooth haptic and thermal feedback gloves and suit",
           intro: "Giant",
+          internalLink: `${STAR_BASE_URL}/haptic-definition`,
         },
       },
       {
@@ -232,6 +238,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Web Development",
           about: "Talk to your fish",
           intro: "Star",
+          internalLink: `${STAR_BASE_URL}/fishgpt`,
         },
       },
       {
@@ -243,6 +250,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "A fast-paced manic shooter for Wordle",
           intro: "Star",
+          internalLink: `${STAR_BASE_URL}/wordship`,
         },
       },
       {
@@ -254,6 +262,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Embedded Systems",
           about: "Turn any whiteboard into a smartboard",
           intro: "Dwarf",
+          internalLink: `${STAR_BASE_URL}/grip-board`,
         },
       },
       {
@@ -265,6 +274,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "A custom tactile feedback VR controller",
           intro: "Star",
+          internalLink: `${STAR_BASE_URL}/grip`,
         },
       },
       {
@@ -276,6 +286,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "Shoot in a game with your hands",
           intro: "Dwarf",
+          internalLink: `${STAR_BASE_URL}/trigger-finger-tango`,
         },
       },
       {
@@ -287,6 +298,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Web Development",
           about: "A Discord bot to solve a club's career crisis",
           intro: "Dwarf",
+          internalLink: `${STAR_BASE_URL}/aiche-careers`,
         },
       },
     ],
