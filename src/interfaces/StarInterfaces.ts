@@ -17,6 +17,7 @@ export type ConstellationData = {
   rotation?: number;
   scale?: number;
   totalDuration?: number;
+  focusScale: number; // this gets multiplied by scale to get the Konva tween scale when focused
 };
 
 export type TransformData = {

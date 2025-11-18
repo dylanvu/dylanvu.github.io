@@ -31,7 +31,7 @@ export default function MainStarField({
     } | null>
   >;
 }) {
-  const { width, height } = useWindowSizeContext();
+  const { width, height, windowCenter } = useWindowSizeContext();
   const {
     setOverlayTextContents: setCenterOverlayTextContents,
     resetOverlayTextContents: resetCenterOverlayTextContents,
@@ -44,7 +44,6 @@ export default function MainStarField({
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
 
-  const windowCenter = { x: width / 2, y: height / 2 };
   const scale = Math.min(width / DESIGN.width, height / DESIGN.height); // uniform scale
 
   const [selectedConstellation, setSelectedConstellation] =

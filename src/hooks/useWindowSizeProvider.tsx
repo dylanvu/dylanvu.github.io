@@ -8,7 +8,13 @@ import React, {
   useState,
 } from "react";
 
-type Size = { width: number; height: number; ready: boolean };
+type WindowCenter = { x: number; y: number };
+type Size = {
+  width: number;
+  height: number;
+  windowCenter: WindowCenter;
+  ready: boolean;
+};
 
 const WindowSizeContext = createContext<Size | undefined>(undefined);
 
@@ -20,20 +26,32 @@ export function WindowSizeProvider({
   const [size, setSize] = useState<Size>(() => {
     // SSR-friendly initial (will be replaced on mount)
     if (typeof window === "undefined")
-      return { width: 0, height: 0, ready: false };
+      return {
+        width: 0,
+        height: 0,
+        windowCenter: { x: 0, y: 0 },
+        ready: false,
+      };
+
     return {
       width: Math.round(window.innerWidth),
       height: Math.round(window.innerHeight),
+      windowCenter: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
       ready: true,
     };
   });
 
   useLayoutEffect(() => {
     let raf = 0;
+
     const measure = () => {
+      const width = Math.max(0, Math.round(window.innerWidth));
+      const height = Math.max(0, Math.round(window.innerHeight));
+
       setSize({
-        width: Math.max(0, Math.round(window.innerWidth)),
-        height: Math.max(0, Math.round(window.innerHeight)),
+        width,
+        height,
+        windowCenter: { x: width / 2, y: height / 2 },
         ready: true,
       });
     };
@@ -54,7 +72,7 @@ export function WindowSizeProvider({
   }, []);
 
   // memo to keep stable reference unless values change
-  const value = useMemo(() => size, [size, size.width, size.height, size.ready]);
+  const value = useMemo(() => size, [size.width, size.height, size.ready]);
 
   return (
     <WindowSizeContext.Provider value={value}>

@@ -70,6 +70,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designY: 400,
     rotation: 32,
     scale: 1.5,
+    focusScale: 2.4,
   },
   {
     // the career constellation
@@ -171,6 +172,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designY: 400,
     scale: 1.8,
     rotation: 30,
+    focusScale: 2.4,
   },
   {
     // the projects constellation
@@ -306,6 +308,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designY: 700,
     rotation: 200,
     scale: 1.5,
+    focusScale: 2.4,
   },
   {
     // hackathon map constellation
@@ -320,5 +323,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
     rotation: 10,
     scale: 1.5,
     totalDuration: 6,
+    focusScale: 2,
   },
 ];

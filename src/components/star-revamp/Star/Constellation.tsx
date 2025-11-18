@@ -59,13 +59,7 @@ export default function Constellation({
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
 
-  const constellationFocusScale: Record<string, number> = {
-    Viae: 2.4,
-    Iter: 2.4,
-    Arete: 2.4,
-    Elevare: 2,
-  };
-  const focusScale: number = constellationFocusScale[data.name];
+  const focusScale: number = data.focusScale;
 
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);

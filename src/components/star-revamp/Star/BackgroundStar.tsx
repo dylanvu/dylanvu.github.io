@@ -2,6 +2,7 @@ import { Group, Rect, Shape } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { ConstellationData } from "@/interfaces/StarInterfaces";
+import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 
 const BG_STAR_COLORS = ["#888888", "#AAAAAA", "#CCCCCC", "#EEEEEE"];
 
@@ -66,6 +67,8 @@ export default function BackgroundStar({
     };
   }, [delay]);
 
+  const { windowCenter } = useWindowSizeContext();
+
   useEffect(() => {
     if (!enableFocusMovement) return;
     const group = groupRef.current;
@@ -73,13 +76,13 @@ export default function BackgroundStar({
     const star = starRef.current;
     if (!group || !streak || !star) return;
 
-    // finish currently-running tweens
+    // Finish any running tweens
     vanishTweenRef.current?.finish();
     streakFadeInRef.current?.finish();
     streakFadeOutRef.current?.finish();
     resetTweenRef.current?.finish();
 
-    // If no constellation is focused -> reset position & scale
+    // If no constellation is focused -> reset
     if (!focusedConstellationPos) {
       resetTweenRef.current = new Konva.Tween({
         node: group,
@@ -115,41 +118,41 @@ export default function BackgroundStar({
       };
     }
 
-    // --- FOCUSED CONSTELLATION PARALLAX ---
-    const currentX = group.x();
-    const currentY = group.y();
+    // --- FOCUSED CONSTELLATION PARALLAX + ZOOM + ROTATION ---
+    const cPos = focusedConstellationPos;
+    const constellation = cPos.constellation;
 
-    // compute relative offset to constellation center
-    let dx = initialX.current - focusedConstellationPos.x;
-    let dy = initialY.current - focusedConstellationPos.y;
+    // Relative vector from constellation center to star
+    let dx = initialX.current - cPos.x;
+    let dy = initialY.current - cPos.y;
 
-    // depth factor based on star size (smaller = farther)
-    const depth = 1 - Math.min(radius / 4, 0.8); // adjust MAX_RADIUS if needed
+    // Apply parallax depth based on star size
+    const depth = 1 - Math.min(radius / 4, 0.8);
     dx *= depth;
     dy *= depth;
 
-    // rotation of the focused constellation
-    const rotationRad = (focusedConstellationRotation ?? 0) * (Math.PI / 180); // convert deg -> rad
+    // Apply scale (zoom of focused constellation)
+    const scaleFactor =
+      (constellation.scale ?? 1) * (constellation.focusScale ?? 1);
+    dx *= scaleFactor;
+    dy *= scaleFactor;
+
+    // Apply rotation around canvas center
+    const rotationRad = (constellation.rotation ?? 0) * (Math.PI / 180);
     const cosTheta = Math.cos(rotationRad);
     const sinTheta = Math.sin(rotationRad);
 
+    const canvasCenter = windowCenter; // center of rotation/zoom
     const rotatedX = dx * cosTheta - dy * sinTheta;
     const rotatedY = dx * sinTheta + dy * cosTheta;
 
-    // optional: small scale factor for parallax effect
-    const scaleFactor = 1; // could tweak 0.95–1.05 if desired
-    const finalX = focusedConstellationPos.x + rotatedX * scaleFactor;
-    const finalY = focusedConstellationPos.y + rotatedY * scaleFactor;
+    const finalX = canvasCenter.x + rotatedX;
+    const finalY = canvasCenter.y + rotatedY;
 
-    // compute streak direction / magnitude as before
-    let vx = currentX - focusedConstellationPos.x;
-    let vy = currentY - focusedConstellationPos.y;
-    let vlen = Math.hypot(vx, vy);
-    if (vlen < 1e-5) {
-      vx = 0;
-      vy = -1;
-      vlen = 1;
-    }
+    // --- STREAK CALCULATION (unchanged) ---
+    const vx = group.x() - canvasCenter.x;
+    const vy = group.y() - canvasCenter.y;
+    let vlen = Math.hypot(vx, vy) || 1;
     const nx = vx / vlen;
     const ny = vy / vlen;
     const nudgeFactor = Math.min(Math.max(vlen / 300, 0), 1);
@@ -167,7 +170,6 @@ export default function BackgroundStar({
     streak.offsetY(streakHeight / 2);
     streak.x(0);
     streak.y(0);
-    // @ts-ignore
     streak.fillLinearGradientEndPoint({ x: streakLength, y: 0 });
     const angleDeg = (Math.atan2(ny, nx) * 180) / Math.PI;
     streak.rotation(angleDeg);
