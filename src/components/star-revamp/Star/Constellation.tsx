@@ -364,41 +364,53 @@ export default function Constellation({
 
   const router = useRouter();
 
+  // Handler for constellation clicks/taps
+  const handleConstellationClick = (e: any) => {
+    e.cancelBubble = true;
+    playFocusTween();
+    if (!isFocused) {
+      groupRef.current?.moveToTop();
+    }
+    document.body.style.cursor = "default";
+    if (onClickCallback) onClickCallback();
+  };
+
+  // Handler for constellation interaction start (hover enter / touch start)
+  const handleInteractionStart = () => {
+    if (!isFocused) {
+      setBrightness(brightnessHover);
+      playHoverTween(
+        (transformData.scaleX ?? 1) * HOVER_SCALE,
+        (transformData.scaleY ?? 1) * HOVER_SCALE
+      );
+      document.body.style.cursor = "pointer";
+    }
+    setIsHovered(true);
+
+    if (onHoverEnterCallback) onHoverEnterCallback();
+  };
+
+  // Handler for constellation interaction end (hover leave / touch end)
+  const handleInteractionEnd = () => {
+    if (!isFocused) {
+      setBrightness(1);
+      playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
+    }
+    document.body.style.cursor = "default";
+
+    if (onHoverLeaveCallback) onHoverLeaveCallback();
+    setIsHovered(false);
+  };
+
   return (
     <Group
       ref={groupRef}
-      onClick={(e) => {
-        e.cancelBubble = true;
-        playFocusTween();
-        if (!isFocused) {
-          groupRef.current?.moveToTop();
-        }
-        document.body.style.cursor = "default";
-        if (onClickCallback) onClickCallback();
-      }}
-      onMouseEnter={() => {
-        if (!isFocused) {
-          setBrightness(brightnessHover);
-          playHoverTween(
-            (transformData.scaleX ?? 1) * HOVER_SCALE,
-            (transformData.scaleY ?? 1) * HOVER_SCALE
-          );
-          document.body.style.cursor = "pointer";
-        }
-        setIsHovered(true);
-
-        if (onHoverEnterCallback) onHoverEnterCallback();
-      }}
-      onMouseLeave={() => {
-        if (!isFocused) {
-          setBrightness(1);
-          playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
-        }
-        document.body.style.cursor = "default";
-
-        if (onHoverLeaveCallback) onHoverLeaveCallback();
-        setIsHovered(false);
-      }}
+      onClick={handleConstellationClick}
+      onTap={handleConstellationClick}
+      onMouseEnter={handleInteractionStart}
+      onMouseLeave={handleInteractionEnd}
+      onTouchStart={handleInteractionStart}
+      onTouchEnd={handleInteractionEnd}
       x={unfocusedConstellationX}
       y={unfocusedConstellationY}
       offsetX={centerX}
@@ -586,6 +598,7 @@ export default function Constellation({
                 });
               }
             }}
+            
           />
         );
       })}

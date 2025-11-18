@@ -148,26 +148,38 @@ export default function MainStar({
     hoverTweenRef.current.play();
   };
 
+  // Handler for star clicks/taps
+  const handleStarClick = (e: any) => {
+    if (enableOnClick) {
+      e.cancelBubble = cancelBubble;
+      if (onClickCallback) onClickCallback();
+    }
+  };
+
+  // Handler for star interaction start (hover enter / touch start)
+  const handleInteractionStart = () => {
+    onHoverEnterCallback?.();
+    document.body.style.cursor = "pointer";
+    playHoverTween(1.1, 1.1);
+  };
+
+  // Handler for star interaction end (hover leave / touch end)
+  const handleInteractionEnd = () => {
+    onHoverLeaveCallback?.();
+    playHoverTween(1, 1);
+  };
+
   return (
     <Group
       ref={groupRef}
       x={x}
       y={y}
-      onMouseEnter={() => {
-        onHoverEnterCallback?.();
-        document.body.style.cursor = "pointer";
-        playHoverTween(1.1, 1.1);
-      }}
-      onMouseLeave={() => {
-        onHoverLeaveCallback?.();
-        playHoverTween(1, 1);
-      }}
-      onClick={(e) => {
-        if (enableOnClick) {
-          e.cancelBubble = cancelBubble;
-          if (onClickCallback) onClickCallback();
-        }
-      }}
+      onMouseEnter={handleInteractionStart}
+      onMouseLeave={handleInteractionEnd}
+      onTouchStart={handleInteractionStart}
+      onTouchEnd={handleInteractionEnd}
+      onClick={handleStarClick}
+      onTap={handleStarClick}
     >
       <Shape
         ref={shapeRef}

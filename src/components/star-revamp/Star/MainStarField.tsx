@@ -105,6 +105,22 @@ export default function MainStarField({
   const pathname = usePathname();
   const { isMobileLandscape } = useMobile();
 
+  // Handler for background clicks/taps
+  const handleBackgroundInteraction = () => {
+    if (selectedConstellation) {
+      setSelectedConstellation(null);
+      setFocusedConstellationPosAction(null);
+      setFocusedScreenPos(null);
+      resetCenterOverlayTextContents();
+      setCenterOverlayVisibility(true);
+      setTopOverlayVisibility(false);
+    }
+    // if we are not in the root path, navigate to the root
+    if (pathname !== "/") {
+      router.push("/");
+    }
+  };
+
   // DEBUG MODE - set to false to hide debug markers
   const DEBUG_MODE = false;
 
@@ -175,20 +191,8 @@ export default function MainStarField({
         width={width}
         height={height}
         fill="rgba(0,0,0,0.001)"
-        onClick={() => {
-          if (selectedConstellation) {
-            setSelectedConstellation(null);
-            setFocusedConstellationPosAction(null);
-            setFocusedScreenPos(null);
-            resetCenterOverlayTextContents();
-            setCenterOverlayVisibility(true);
-            setTopOverlayVisibility(false);
-          }
-          // if we are not in the root path, navigate to the root
-          if (pathname !== "/") {
-            router.push("/");
-          }
-        }}
+        onClick={handleBackgroundInteraction}
+        onTap={handleBackgroundInteraction}
       />
       {CONSTELLATIONS.map((c, i) => {
         // Calculate constellation's local center offset
