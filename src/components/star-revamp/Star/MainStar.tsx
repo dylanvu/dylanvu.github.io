@@ -27,7 +27,6 @@ type Props = {
   labelOverride?: string;
   showLabel?: boolean;
   labelSize?: number;
-  focusedScreenPos?: { x: number; y: number } | null;
   windowCenter: { x: number; y: number };
   showHitBox?: boolean; // new prop for debugging
   cancelBubble?: boolean;
@@ -52,7 +51,6 @@ export default function MainStar({
   labelOverride,
   showLabel,
   labelSize = 12,
-  focusedScreenPos,
   windowCenter,
   showHitBox = false,
   cancelBubble = false,
@@ -70,7 +68,6 @@ export default function MainStar({
   const SCALE_ANIMATION_DURATION = 0.25;
   const EASING = Konva.Easings.EaseInOut;
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
-  const focusTweenRef = useRef<Konva.Tween | null>(null);
 
   // Fade-in
   useEffect(() => {
@@ -150,50 +147,6 @@ export default function MainStar({
     });
     hoverTweenRef.current.play();
   };
-
-  // Move / vanish tween
-  useEffect(() => {
-    const node = groupRef.current;
-    if (!node) return;
-    focusTweenRef.current?.finish();
-
-    const startPos = node.getAbsolutePosition();
-    const startX = startPos?.x ?? x;
-    const startY = startPos?.y ?? y;
-
-    if (focusedScreenPos) {
-      const focal = focusedScreenPos ?? windowCenter;
-      let vx = startX - focal.x;
-      let vy = startY - focal.y;
-      let vlen = Math.hypot(vx, vy);
-      if (vlen < 0.00001) {
-        vx = 0;
-        vy = -1;
-        vlen = 1;
-      }
-      const nx = vx / vlen;
-      const ny = vy / vlen;
-
-      const vw = typeof window !== "undefined" ? window.innerWidth : 1920;
-      const vh = typeof window !== "undefined" ? window.innerHeight : 1080;
-      const viewportDiagonal = Math.hypot(vw, vh);
-      const offscreenDist = viewportDiagonal * 1.4;
-
-      node.to({
-        x: startX + nx * offscreenDist,
-        y: startY + ny * offscreenDist,
-        duration: 0.5,
-        easing: Konva.Easings.EaseInOut,
-      });
-    } else {
-      node.to({
-        x,
-        y,
-        duration: 0.5,
-        easing: Konva.Easings.EaseInOut,
-      });
-    }
-  }, [focusedScreenPos, x, y, windowCenter]);
 
   return (
     <Group

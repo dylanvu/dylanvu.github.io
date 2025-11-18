@@ -21,7 +21,7 @@ export default function Constellation({
   bboxLabelFontFamily = "sans-serif",
   windowCenter,
   focusedConstellation,
-  focusedScreenPos,
+  focusedUnfocusedPos,
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
@@ -37,7 +37,7 @@ export default function Constellation({
   bboxLabelFontFamily?: string;
   windowCenter: { x: number; y: number };
   focusedConstellation: ConstellationData | null;
-  focusedScreenPos?: { x: number; y: number } | null;
+  focusedUnfocusedPos?: { x: number; y: number } | null;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
@@ -278,7 +278,8 @@ export default function Constellation({
     const currentX = unfocusedConstellationX;
     const currentY = unfocusedConstellationY;
 
-    const focal = focusedScreenPos ?? windowCenter;
+    // Use the unfocused position of the focused constellation as the focal point
+    const focal = focusedUnfocusedPos ?? windowCenter;
 
     let vx = currentX - focal.x;
     let vy = currentY - focal.y;

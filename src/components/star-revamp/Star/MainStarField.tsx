@@ -6,10 +6,12 @@ import { use, useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
+import Polaris from "@/components/star-revamp/Star/Polaris";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
+import React from "react";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -177,6 +179,7 @@ export default function MainStarField({
           if (selectedConstellation) {
             setSelectedConstellation(null);
             setFocusedConstellationPosAction(null);
+            setFocusedScreenPos(null);
             resetCenterOverlayTextContents();
             setCenterOverlayVisibility(true);
             setTopOverlayVisibility(false);
@@ -237,7 +240,7 @@ export default function MainStarField({
         const actualY = transformData.y + centerY;
 
         return (
-          <>
+          <React.Fragment key={c.name}>
             {/* DEBUG: Constellation markers */}
             {DEBUG_MODE && (
               <>
@@ -284,8 +287,15 @@ export default function MainStarField({
               setTopOverlayVisibility(true);
             }}
             focusedConstellation={selectedConstellation}
-            // pass the focused constellation screen position (same for all constellations)
-            focusedScreenPos={focusedScreenPos}
+            // pass the unfocused position of the focused constellation (for parallax effect)
+            focusedUnfocusedPos={
+              selectedConstellation
+                ? {
+                    x: (selectedConstellation.designX / DESIGN.width) * width + computeCenter(selectedConstellation.stars).centerX,
+                    y: (selectedConstellation.designY / DESIGN.height) * height + computeCenter(selectedConstellation.stars).centerY,
+                  }
+                : null
+            }
             onHoverEnterCallback={() => {
               if (!selectedConstellation) {
                 setCenterOverlayTextContents({
@@ -302,7 +312,7 @@ export default function MainStarField({
               }
             }}
           />
-          </>
+          </React.Fragment>
         );
       })}
       {/* Polaris, the guiding chatbot star */}
@@ -335,15 +345,23 @@ export default function MainStarField({
                 />
               </>
             )}
-            <MainStar
+            <Polaris
             x={polarisScreenX}
             y={polarisScreenY}
             size={5}
             brightness={5}
             twinkleMin={4.9}
             twinkleMax={5.1}
-            windowCenter={windowCenter} // fallback
-            focusedScreenPos={focusedScreenPos} // pass in the focused constellation's screen center
+            windowCenter={windowCenter}
+            focusedScreenPos={focusedScreenPos}
+            focusedUnfocusedPos={
+              selectedConstellation
+                ? {
+                    x: (selectedConstellation.designX / DESIGN.width) * width + computeCenter(selectedConstellation.stars).centerX,
+                    y: (selectedConstellation.designY / DESIGN.height) * height + computeCenter(selectedConstellation.stars).centerY,
+                  }
+                : null
+            }
             onHoverEnterCallback={() => {
               setCenterOverlayTextContents({
                 intro: "The North Star",
