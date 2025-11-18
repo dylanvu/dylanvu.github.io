@@ -1,7 +1,7 @@
 "use client";
 import Constellation from "@/components/star-revamp/Star/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
+import { ConstellationData, TransformData, FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 import { use, useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Group, Rect } from "react-konva";
@@ -24,11 +24,7 @@ export default function MainStarField({
   setFocusedConstellationPosAction,
 }: {
   setFocusedConstellationPosAction: React.Dispatch<
-    React.SetStateAction<{
-      x: number;
-      y: number;
-      constellation: ConstellationData;
-    } | null>
+    React.SetStateAction<FocusedConstellationPos | null>
   >;
 }) {
   const { width, height, windowCenter } = useWindowSizeContext();
@@ -84,12 +80,21 @@ export default function MainStarField({
         scaleY: c.scale ?? 1,
       } as TransformData;
 
+      // Calculate unfocused position (where the constellation starts)
+      const unfocusedX = transformDataForSelected.x + centerX;
+      const unfocusedY = transformDataForSelected.y + centerY;
+
+      // Focused position is at windowCenter
       focusedScreenPos = {
-        x: transformDataForSelected.x + centerX,
-        y: transformDataForSelected.y + centerY,
+        x: windowCenter.x,
+        y: windowCenter.y,
       };
+      
       setFocusedConstellationPosAction({
-        ...focusedScreenPos,
+        x: focusedScreenPos.x,
+        y: focusedScreenPos.y,
+        unfocusedX,
+        unfocusedY,
         constellation: c,
       });
       setFocusedScreenPos(focusedScreenPos);

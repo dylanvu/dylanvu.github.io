@@ -28,6 +28,14 @@ export type TransformData = {
   scaleY?: number;
 };
 
+export type FocusedConstellationPos = {
+  x: number; // focused position (typically windowCenter)
+  y: number; // focused position (typically windowCenter)
+  unfocusedX: number; // constellation center before focusing
+  unfocusedY: number; // constellation center before focusing
+  constellation: ConstellationData;
+};
+
 type BaseStarData = {
   label: string;
   origin: string;

@@ -1,7 +1,7 @@
 import { Group, Rect, Shape } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
-import { ConstellationData } from "@/interfaces/StarInterfaces";
+import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 
 const BG_STAR_COLORS = ["#888888", "#AAAAAA", "#CCCCCC", "#EEEEEE"];
@@ -11,22 +11,16 @@ export default function BackgroundStar({
   y,
   radius = 1,
   delay = 0,
-  focusedConstellationPos, // screen-space { x, y } or null
+  focusedConstellationPos,
   enableFocusMovement = false,
 }: {
   x: number;
   y: number;
   radius?: number;
   delay?: number;
-  focusedConstellationPos: {
-    x: number;
-    y: number;
-    constellation: ConstellationData;
-  } | null;
+  focusedConstellationPos: FocusedConstellationPos | null;
   enableFocusMovement?: boolean;
 }) {
-  const focusedConstellationRotation =
-    focusedConstellationPos?.constellation?.rotation ?? 0;
   // node refs
   const groupRef = useRef<Konva.Group | null>(null);
   const starRef = useRef<Konva.Shape | null>(null);
@@ -122,36 +116,37 @@ export default function BackgroundStar({
     const cPos = focusedConstellationPos;
     const constellation = cPos.constellation;
 
-    // Relative vector from constellation center to star
-    let dx = initialX.current - cPos.x;
-    let dy = initialY.current - cPos.y;
+    // 1. Calculate offset from constellation's UNFOCUSED position
+    let dx = initialX.current - cPos.unfocusedX;
+    let dy = initialY.current - cPos.unfocusedY;
 
-    // Apply parallax depth based on star size
+    // 2. Apply parallax depth based on star size (smaller stars = more depth/distance)
     const depth = 1 - Math.min(radius / 4, 0.8);
     dx *= depth;
     dy *= depth;
 
-    // Apply scale (zoom of focused constellation)
+    // 3. Apply the constellation's scale transformation
     const scaleFactor =
       (constellation.scale ?? 1) * (constellation.focusScale ?? 1);
     dx *= scaleFactor;
     dy *= scaleFactor;
 
-    // Apply rotation around canvas center
-    const rotationRad = (constellation.rotation ?? 0) * (Math.PI / 180);
+    // 4. Apply rotation around windowCenter (constellation goes from its rotation to 0°)
+    // We need to unwind the original rotation, so we rotate in the opposite direction
+    const originalRotation = constellation.rotation ?? 0;
+    const rotationRad = -originalRotation * (Math.PI / 180);
     const cosTheta = Math.cos(rotationRad);
     const sinTheta = Math.sin(rotationRad);
+    const rotatedDx = dx * cosTheta - dy * sinTheta;
+    const rotatedDy = dx * sinTheta + dy * cosTheta;
 
-    const canvasCenter = windowCenter; // center of rotation/zoom
-    const rotatedX = dx * cosTheta - dy * sinTheta;
-    const rotatedY = dx * sinTheta + dy * cosTheta;
-
-    const finalX = canvasCenter.x + rotatedX;
-    const finalY = canvasCenter.y + rotatedY;
+    // 5. Final position: windowCenter + scaled/rotated offset
+    const finalX = windowCenter.x + rotatedDx;
+    const finalY = windowCenter.y + rotatedDy;
 
     // --- STREAK CALCULATION (unchanged) ---
-    const vx = group.x() - canvasCenter.x;
-    const vy = group.y() - canvasCenter.y;
+    const vx = group.x() - windowCenter.x;
+    const vy = group.y() - windowCenter.y;
     let vlen = Math.hypot(vx, vy) || 1;
     const nx = vx / vlen;
     const ny = vy / vlen;
@@ -226,7 +221,7 @@ export default function BackgroundStar({
       streakFadeOutRef.current?.finish();
       starFade?.finish();
     };
-  }, [focusedConstellationPos, focusedConstellationRotation]);
+  }, [focusedConstellationPos, radius, windowCenter]);
 
   // cleanup on unmount
   useEffect(() => {
