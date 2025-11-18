@@ -52,6 +52,7 @@ export default function Constellation({
   const DEFAULT_TOTAL_DURATION = 2; // seconds
   const [brightness, setBrightness] = useState(1);
   const brightnessHover = 1.2;
+  const [isHovered, setIsHovered] = useState(false);
 
   const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
@@ -338,7 +339,7 @@ export default function Constellation({
    * STAR BOUNDING BOX LOGIC
    * showStarBoundingBox: when true, render four MainStar at the corners and AnimatedLine that outline the box
    */
-  const showBox = isFocused || showStarBoundingBox;
+  const showBox = isFocused || showStarBoundingBox || isHovered;
   // corner positions (local group coordinates)
   const tl = { x: minX, y: minY };
   const tr = { x: maxX, y: minY };
@@ -388,6 +389,7 @@ export default function Constellation({
           );
           document.body.style.cursor = "pointer";
         }
+        setIsHovered(true);
 
         if (onHoverEnterCallback) onHoverEnterCallback();
       }}
@@ -399,6 +401,7 @@ export default function Constellation({
         document.body.style.cursor = "default";
 
         if (onHoverLeaveCallback) onHoverLeaveCallback();
+        setIsHovered(false);
       }}
       x={unfocusedConstellationX}
       y={unfocusedConstellationY}
