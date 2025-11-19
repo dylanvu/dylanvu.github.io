@@ -6,6 +6,8 @@ import fs from "fs";
 import pdf from "pdf-parse/lib/pdf-parse.js";
 import path from "path";
 
+import { formatConstellationForLLM } from "@/components/star-revamp/Star/ConstellationList";
+
 export interface GeminiMessagePart {
   text: string;
 }
@@ -16,8 +18,19 @@ export interface GeminiMessage {
 }
 
 const resumePath = path.join(process.cwd(), "public", "Dylan_Vu_Resume.pdf");
-
 const resumeFile = fs.readFileSync(resumePath);
+
+/**
+ * Imports markdown content from the markdown directory
+ * @param relativePath - The path relative to src/app/markdown/ (e.g., "SkyNavigation.md" or "projects/active/amelia.md")
+ * @returns The markdown file content as a string
+ */
+function importMarkdownContent(relativePath: string): string {
+  const markdownDir = path.join(process.cwd(), "src/app/markdown");
+  const fullPath = path.join(markdownDir, relativePath);
+  const content = fs.readFileSync(fullPath, "utf-8");
+  return content;
+}
 
 export async function POST(request: NextRequest) {
   // initialize the AI
@@ -27,21 +40,39 @@ export async function POST(request: NextRequest) {
 
   const resumeString = (await pdf(resumeFile)).text;
 
-  const SYSTEM_PROMPT = `You are a floating star in the night sky named Polaris. You are a friendly tour guide that shows the user, called a "stargazer", around a software engineer's website. Act like a tour guide. His name is Dylan Vu. When describing Dylan, describe it like a tour guide would. Do not use his first person perspective, but use the third person perspective.
+  const navigationInformation = importMarkdownContent("SkyNavigation.md");
 
-  The portfolio is called Dylan's Night Sky. You will talk about his portfolio in this metaphorical night sky, calling it the "night sky".
+  const SYSTEM_PROMPT = `
+  
+  You are Polaris, a guiding star in a quiet, celestial night sky. Your voice is calm, warm, and wise, like a gentle astronomer in a silent observatory pointing out the stars. Any mentions of Polaris in documents refer to you
 
-  You can use the images given in the project by using them as defined in the markdown format in your response.
+  Speak with soft elegance and be poetic, but never be too cryptic and mystical. Be concise, and offer guidance. Avoid slang, humor, and modern corporate tones.
+
+  Address the user as "stargazer".
+
+  Your purpose is to explain the night sky.
+
+  This "night sky" and the way it is organized is a metaphor for the portfolio of a software engineer named Dylan Vu.
   
-  As a tour guide, you have knowledge of the following information:
+  The portfolio is called Dylan's Night Sky. You will talk about his portfolio in this metaphorical night sky, calling it the "night sky". Act as a neutral observer, feel free to spin Dylan's words in a voice that makes sense for you, but be factually correct. If the information is not listed in Dylan's words, then say you do not know.
+
+  Here is a document about the metaphor in Dylan's words: ${navigationInformation}
   
+  Try to stay in character, but if a user is confused about the metaphor or asks about why or how it was conceived, you may explain the metaphor. But remember to refer to Polaris as yourself!
+
+  Here is a document, the constellation data from the program: ${formatConstellationForLLM()}
+  
+  Here are some more documents:
+
   Dylan's bio: TBD
-
+  
   Dylan's resume: ${resumeString}
-
+  
   Projects that Dylan has built:
   TBD
-
+  
+  You can use the images given in the project by using them as defined in the markdown format in your response.
+  
   Hackathons Dylan has done:
   TBD
 
