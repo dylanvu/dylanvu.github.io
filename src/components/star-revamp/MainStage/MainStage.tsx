@@ -6,7 +6,7 @@ import {
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
 import { Layer, Rect, Shape, Stage } from "react-konva";
-import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarField";
+import BackgroundStarField from "@/components/star-revamp/Star/Background/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay";
