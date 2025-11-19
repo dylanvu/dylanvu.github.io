@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Group, Circle } from "react-konva";
 import Konva from "konva";
-import MainStar from "../MainStar";
+import MainStar from "@/components/star-revamp/Star/MainStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
+import { useRouter, usePathname } from "next/navigation";
 
 type PolarisProps = {
   x: number;
@@ -112,6 +113,8 @@ export default function Polaris({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { width, height } = useWindowSizeContext();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // --- CLICK ANIMATION CONFIGURATION ---
   // Variables to control the click interaction
@@ -204,7 +207,13 @@ export default function Polaris({
   ]);
 
   const handleClick = () => {
-    setIsExpanded(!isExpanded); // Toggle state (or set to true if you only want one-way)
+    setIsExpanded(true); // Toggle state (or set to true if you only want one-way)
+    // need to fix this interaction later, where polaris needs to just toggle the chat menu (aka go to the)
+    if (pathname === "/") {
+      router.push("/polaris");
+    } else {
+      router.push("/");
+    }
   };
 
   return (

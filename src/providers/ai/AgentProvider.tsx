@@ -8,7 +8,7 @@ import {
 } from "@/contexts/ai/AgentContext";
 
 import { Project } from "@/app/api/util";
-import { GeminiMessage } from "@/app/api/tour-guide/route";
+import { GeminiMessage } from "@/app/api/polaris/route";
 
 export default function AgentProvider({
   children,

@@ -5,7 +5,6 @@
 
 import {
   ConstellationData,
-  StarData,
   StarDataWithInternalLink,
 } from "@/interfaces/StarInterfaces";
 import {
