@@ -1,15 +1,14 @@
 "use client";
-import Constellation from "@/components/star-revamp/Star/Constellation";
+import Constellation from "@/components/star-revamp/Star/Constellation/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import {
   ConstellationData,
   TransformData,
   FocusedConstellationPos,
 } from "@/interfaces/StarInterfaces";
-import { use, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
-import MainStar from "@/components/star-revamp/Star/MainStar";
 import Polaris from "@/components/star-revamp/Star/Polaris";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";

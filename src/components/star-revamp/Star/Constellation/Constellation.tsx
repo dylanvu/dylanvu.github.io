@@ -3,6 +3,7 @@ import { Group, Rect } from "react-konva";
 import { useState, useRef, useEffect } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
+import ConstellationBoundingBox from "./ConstellationBoundingBox"; // Import new component
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
@@ -58,17 +59,12 @@ export default function Constellation({
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
 
-  // --- REFS FOR BOUNDING BOX FADE ---
-  const bboxGroupRef = useRef<Konva.Group>(null);
-  const bboxTweenRef = useRef<Konva.Tween | null>(null);
-
-  const [boxKey, setBoxKey] = useState(0);
-
   const focusScale: number = data.focusScale;
 
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
 
+  // --- BOUNDING BOX MEASUREMENTS ---
   const hasLabels = stars.some((s) => !!s.data?.label);
   const SHOULD_MEASURE_LABELS = useExactLabelFit && hasLabels;
 
@@ -146,6 +142,7 @@ export default function Constellation({
   const width = maxX - minX;
   const height = maxY - minY;
 
+  // center in local group coordinates
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
 
@@ -307,72 +304,6 @@ export default function Constellation({
   const { setOverlayTextContents: setCenterOverlayTextContents } =
     useCenterOverlayContext();
 
-  const showBox = isFocused || showStarBoundingBox || isHovered;
-
-  // --- BOUNDING BOX FADE LOGIC ---
-
-  // 1. Initialize invisible
-  useEffect(() => {
-    if (bboxGroupRef.current) {
-      bboxGroupRef.current.opacity(0);
-    }
-  }, []);
-
-  // 2. Handle transitions
-  useEffect(() => {
-    const node = bboxGroupRef.current;
-    if (!node) return;
-
-    // EXPLICIT SAFE CLEANUP
-    if (bboxTweenRef.current) {
-      bboxTweenRef.current.destroy();
-      bboxTweenRef.current = null;
-    }
-
-    if (showBox) {
-      // ENTER:
-      // 1. Force Re-mount of children to trigger line drawing (setBoxKey)
-      // 2. Set Opacity to 1 immediately
-      setBoxKey((k) => k + 1);
-      node.opacity(1);
-    } else {
-      // EXIT:
-      // Create new tween for fade out
-      const tween = new Konva.Tween({
-        node,
-        duration: 0.35,
-        opacity: 0,
-        easing: Konva.Easings.EaseInOut,
-      });
-      tween.play();
-      bboxTweenRef.current = tween;
-    }
-  }, [showBox]);
-
-  const tl = { x: minX, y: minY };
-  const tr = { x: maxX, y: minY };
-  const br = { x: maxX, y: maxY };
-  const bl = { x: minX, y: maxY };
-
-  const bboxDuration = (totalDuration ?? DEFAULT_TOTAL_DURATION) / 2;
-  const edgeLengths = [width, height, width, height];
-  const bboxPerimeter = edgeLengths.reduce((s, l) => s + l, 0) || 1;
-  const edgeDurations = edgeLengths.map(
-    (l) => (l / bboxPerimeter) * bboxDuration
-  );
-  const edgeDelays = edgeDurations.reduce<number[]>((acc, dur, idx) => {
-    if (idx === 0) acc.push(0);
-    else acc.push(acc[idx - 1] + edgeDurations[idx - 1]);
-    return acc;
-  }, []);
-
-  const cornerStarDelays = [
-    0,
-    edgeDelays[0] + edgeDurations[0],
-    edgeDelays[1] + edgeDurations[1],
-    edgeDelays[2] + edgeDurations[2],
-  ];
-
   const router = useRouter();
 
   const handleConstellationClick = (e: any) => {
@@ -447,74 +378,17 @@ export default function Constellation({
         />
       ))}
 
-      {/* 
-        BOUNDING BOX GROUP 
-      */}
-      <Group ref={bboxGroupRef} listening={showBox}>
-        <Group key={boxKey}>
-          <AnimatedLine
-            key="bbox-edge-0"
-            p1={tl}
-            p2={tr}
-            duration={edgeDurations[0]}
-            delay={edgeDelays[0]}
-          />
-          <AnimatedLine
-            key="bbox-edge-1"
-            p1={tr}
-            p2={br}
-            duration={edgeDurations[1]}
-            delay={edgeDelays[1]}
-          />
-          <AnimatedLine
-            key="bbox-edge-2"
-            p1={br}
-            p2={bl}
-            duration={edgeDurations[2]}
-            delay={edgeDelays[2]}
-          />
-          <AnimatedLine
-            key="bbox-edge-3"
-            p1={bl}
-            p2={tl}
-            duration={edgeDurations[3]}
-            delay={edgeDelays[3]}
-          />
-
-          <MainStar
-            key="bbox-tl"
-            x={tl.x}
-            y={tl.y}
-            size={2}
-            brightness={brightness}
-            delay={cornerStarDelays[0]}
-          />
-          <MainStar
-            key="bbox-tr"
-            x={tr.x}
-            y={tr.y}
-            size={3}
-            brightness={brightness}
-            delay={cornerStarDelays[1]}
-          />
-          <MainStar
-            key="bbox-br"
-            x={br.x}
-            y={br.y}
-            size={4}
-            brightness={brightness}
-            delay={cornerStarDelays[2]}
-          />
-          <MainStar
-            key="bbox-bl"
-            x={bl.x}
-            y={bl.y}
-            size={2}
-            brightness={brightness}
-            delay={cornerStarDelays[3]}
-          />
-        </Group>
-      </Group>
+      <ConstellationBoundingBox
+        isVisible={isFocused || showStarBoundingBox || isHovered}
+        tl={{ x: minX, y: minY }}
+        tr={{ x: maxX, y: minY }}
+        br={{ x: maxX, y: maxY }}
+        bl={{ x: minX, y: maxY }}
+        width={width}
+        height={height}
+        brightness={brightness}
+        totalDuration={totalDuration}
+      />
 
       {/* original stars */}
       {stars.map((star, i) => {
