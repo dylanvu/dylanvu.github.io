@@ -9,7 +9,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
-import Polaris from "@/components/star-revamp/Star/Polaris";
+import Polaris from "@/components/star-revamp/Star/Polaris/Polaris";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { usePathname, useRouter } from "next/navigation";
