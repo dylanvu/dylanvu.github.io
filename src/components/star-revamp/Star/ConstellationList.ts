@@ -1,4 +1,9 @@
-import { ConstellationData } from "@/interfaces/StarInterfaces";
+import {
+  ConstellationData,
+  Star,
+  StarData,
+  StarDataWithInternalLink,
+} from "@/interfaces/StarInterfaces";
 import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
 
@@ -193,6 +198,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "A fandom's favorite guessing game",
           intro: "Supergiant",
           internalLink: `${STAR_BASE_URL}/epicdle`,
+          slug: "epicdle",
         },
       },
       {
@@ -205,6 +211,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "Google Gemini becomes a robotic tour guide",
           intro: "Giant",
           internalLink: `${STAR_BASE_URL}/amelia`,
+          slug: "amelia",
         },
       },
       {
@@ -217,6 +224,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "A cute cake stacking game that was hard to code",
           intro: "Giant",
           internalLink: `${STAR_BASE_URL}/sweetstack`,
+          slug: "sweetstack",
         },
       },
       {
@@ -229,6 +237,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "Bluetooth haptic and thermal feedback gloves and suit",
           intro: "Giant",
           internalLink: `${STAR_BASE_URL}/haptic-definition`,
+          slug: "haptic-definition",
         },
       },
       {
@@ -241,6 +250,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "Talk to your fish",
           intro: "Star",
           internalLink: `${STAR_BASE_URL}/fishgpt`,
+          slug: "fishgpt",
         },
       },
       {
@@ -253,6 +263,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "A fast-paced manic shooter for Wordle",
           intro: "Star",
           internalLink: `${STAR_BASE_URL}/wordship`,
+          slug: "wordship",
         },
       },
       {
@@ -265,6 +276,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "Turn any whiteboard into a smartboard",
           intro: "Dwarf",
           internalLink: `${STAR_BASE_URL}/grip-board`,
+          slug: "grip-board",
         },
       },
       {
@@ -277,6 +289,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "A custom tactile feedback VR controller",
           intro: "Star",
           internalLink: `${STAR_BASE_URL}/grip`,
+          slug: "grip",
         },
       },
       {
@@ -289,6 +302,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "Shoot in a game with your hands",
           intro: "Dwarf",
           internalLink: `${STAR_BASE_URL}/trigger-finger-tango`,
+          slug: "trigger-finger-tango",
         },
       },
       {
@@ -301,6 +315,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           about: "A Discord bot to solve a club's career crisis",
           intro: "Dwarf",
           internalLink: `${STAR_BASE_URL}/aiche-careers`,
+          slug: "aiche-careers",
         },
       },
     ],
@@ -326,3 +341,91 @@ export const CONSTELLATIONS: ConstellationData[] = [
     focusScale: 2,
   },
 ];
+
+/**
+ * Finds the name of the constellation that contains a star with the specific slug.
+ * Returns null if no matching star is found.
+ */
+export function getConstellationNameByStarSlug(slug: string): string | null {
+  // 1. Loop through each constellation
+  for (const constellation of CONSTELLATIONS) {
+    // 2. Check if this constellation contains the specific star
+    const hasMatchingStar = constellation.stars.some((star) => {
+      // If star has no data, it's not a match
+      if (!star.data) return false;
+
+      // Check if 'slug' exists in data (Type Guard for StarDataWithInternalLink)
+      // and if it matches the input slug
+      if ("slug" in star.data && star.data.slug === slug) {
+        return true;
+      }
+
+      return false;
+    });
+
+    // 3. If found, return the name immediately
+    if (hasMatchingStar) {
+      return constellation.name;
+    }
+  }
+
+  // 4. Return null if not found in any constellation
+  return null;
+}
+
+/**
+ * 1. Retrieves the full constellation object matching the specific name.
+ */
+export function getConstellationDataByName(
+  name: string
+): ConstellationData | null {
+  const result = CONSTELLATIONS.find((c) => c.name === name);
+  if (result) return result;
+  return null;
+}
+
+/**
+ * Retrieves the specific StarData for a given slug.
+ *
+ * @param slug - The unique slug of the star
+ * @param constellationName - (Optional) Optimization: if you know the constellation,
+ *                            look only there instead of scanning everything.
+ */
+export function getStarDataBySlug(
+  slug: string,
+  constellationName?: string
+): StarDataWithInternalLink | null {
+  // Helper: Checks a specific list of stars for the slug
+  const findStarInList = (stars: Star[]): StarDataWithInternalLink | null => {
+    for (const star of stars) {
+      if (star.data && "slug" in star.data && star.data.slug === slug) {
+        return star.data;
+      }
+    }
+    return null;
+  };
+
+  // OPTION 1: Constellation name provided (Shortcut)
+  if (constellationName) {
+    const constellation = CONSTELLATIONS.find(
+      (c) => c.name === constellationName
+    );
+
+    // If constellation exists, search only its stars
+    if (constellation) {
+      return findStarInList(constellation.stars);
+    }
+
+    // If constellation name was invalid, return undefined
+    // (or remove this return to fallback to searching all constellations)
+    return null;
+  }
+
+  // OPTION 2: No constellation name provided (Search All)
+  for (const constellation of CONSTELLATIONS) {
+    const match = findStarInList(constellation.stars);
+    if (match) return match;
+  }
+
+  return null;
+}

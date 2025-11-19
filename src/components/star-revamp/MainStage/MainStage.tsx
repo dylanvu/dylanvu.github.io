@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 
 const panelStyle: React.CSSProperties = {
   position: "absolute",

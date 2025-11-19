@@ -54,7 +54,7 @@ type BaseStarData = {
 /**
  * This star will render the markdown in the site
  */
-type StarDataWithInternalLink = BaseStarData & {
+export type StarDataWithInternalLink = BaseStarData & {
   internalLink: string;
   slug: string;
   externalLink?: never;
@@ -63,7 +63,7 @@ type StarDataWithInternalLink = BaseStarData & {
 /**
  * This star will open a new tab with the link
  */
-type StarDataWithExternalLink = BaseStarData & {
+export type StarDataWithExternalLink = BaseStarData & {
   internalLink?: never;
   slug?: never;
   externalLink: string;
@@ -72,7 +72,7 @@ type StarDataWithExternalLink = BaseStarData & {
 /**
  * This star has nothing
  */
-type StarDataWithoutLink = BaseStarData & {
+export type StarDataWithoutLink = BaseStarData & {
   internalLink?: never;
   slug?: never;
   externalLink?: never;

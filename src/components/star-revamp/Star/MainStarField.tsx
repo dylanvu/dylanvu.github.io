@@ -6,7 +6,7 @@ import {
   TransformData,
   FocusedConstellationPos,
 } from "@/interfaces/StarInterfaces";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
 import Polaris from "@/components/star-revamp/Star/Polaris";
@@ -15,6 +15,7 @@ import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
 import React from "react";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -40,6 +41,7 @@ export default function MainStarField({
   const {
     setOverlayTextContents: setTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility,
+    setHorizontalPosition: setTopOverlayHorizontalPosition,
   } = useTopOverlayContext();
 
   const [selectedConstellation, setSelectedConstellation] =
@@ -124,6 +126,31 @@ export default function MainStarField({
 
   // DEBUG MODE - set to false to hide debug markers
   const DEBUG_MODE = false;
+
+  const { focusedObject } = useFocusContext();
+  // I believe we are only hitting this if we are on a star page
+  useEffect(() => {
+    setSelectedConstellation(focusedObject.constellation);
+    if (focusedObject.constellation) {
+      setCenterOverlayVisibility(false);
+      if (focusedObject.star) {
+        setTopOverlayTextContents({
+          intro: focusedObject.star.intro,
+          title: focusedObject.star.label,
+          origin: focusedObject.star.origin,
+          about: focusedObject.star.about,
+        });
+      } else {
+        setTopOverlayTextContents({
+          intro: focusedObject.constellation.intro,
+          title: focusedObject.constellation.name,
+          origin: focusedObject.constellation.about,
+          about: "",
+        });
+      }
+      setTopOverlayHorizontalPosition("left");
+    }
+  }, [focusedObject]);
 
   return (
     <Group>

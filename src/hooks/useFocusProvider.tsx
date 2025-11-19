@@ -3,7 +3,11 @@
 // this provider contains information about what the last focused "thing" was
 // it may be a constellation or a star
 
-import { ConstellationData, StarData } from "@/interfaces/StarInterfaces";
+import {
+  ConstellationData,
+  StarData,
+  StarDataWithInternalLink,
+} from "@/interfaces/StarInterfaces";
 import {
   createContext,
   useContext,
@@ -13,19 +17,23 @@ import {
   SetStateAction,
 } from "react";
 
+interface FocusedObject {
+  constellation: ConstellationData | null;
+  star: StarDataWithInternalLink | null;
+}
+
 export interface FocusState {
-  focusedObject: ConstellationData | StarData | null;
-  setFocusedObject: Dispatch<
-    SetStateAction<ConstellationData | StarData | null>
-  >;
+  focusedObject: FocusedObject;
+  setFocusedObject: Dispatch<SetStateAction<FocusedObject>>;
 }
 
 const FocusContext = createContext<FocusState | undefined>(undefined);
 
 export function FocusProvider({ children }: { children: ReactNode }) {
-  const [focusedObject, setFocusedObject] = useState<
-    ConstellationData | StarData | null
-  >(null);
+  const [focusedObject, setFocusedObject] = useState<FocusedObject>({
+    constellation: null,
+    star: null,
+  });
 
   return (
     <FocusContext.Provider
