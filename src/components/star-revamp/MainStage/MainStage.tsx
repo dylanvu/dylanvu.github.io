@@ -5,7 +5,7 @@ import {
   SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
-import { Layer, Stage } from "react-konva";
+import { Layer, Rect, Shape, Stage } from "react-konva";
 import BackgroundStarField from "@/components/star-revamp/Star/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
@@ -29,10 +29,17 @@ const panelStyle: React.CSSProperties = {
   cursor: "auto",
 };
 
-export default function MainStage({ children }: { children: React.ReactNode }) {
+export default function MainStage({
+  children,
+  showMainStars,
+}: {
+  children: React.ReactNode;
+  showMainStars?: boolean;
+}) {
   const { width, height, ready } = useWindowSizeContext();
   const pathname = usePathname();
-  const [focusedConstellationPos, setFocusedConstellationPos] = useState<FocusedConstellationPos | null>(null);
+  const [focusedConstellationPos, setFocusedConstellationPos] =
+    useState<FocusedConstellationPos | null>(null);
 
   return (
     <div
@@ -42,27 +49,30 @@ export default function MainStage({ children }: { children: React.ReactNode }) {
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
+        background: SPACE_BACKGROUND_COLOR,
       }}
     >
-      <CenterOverlay />
-      <TopOverlay />
-
-      <AnimatePresence mode="wait">
-        {pathname !== "/" && (
-          <motion.div
-            key="children"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 100 }}
-            transition={{ duration: 0.2 }}
-            style={panelStyle}
-            className={FONT_FAMILY.style.fontFamily}
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      {showMainStars && (
+        <>
+          <CenterOverlay />
+          <TopOverlay />
+          <AnimatePresence mode="wait">
+            {pathname !== "/" && (
+              <motion.div
+                key="children"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 100 }}
+                transition={{ duration: 0.2 }}
+                style={panelStyle}
+                className={FONT_FAMILY.style.fontFamily}
+              >
+                {children}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
       {ready && width > 0 && height > 0 && (
         <Stage
           width={width}
@@ -76,9 +86,20 @@ export default function MainStage({ children }: { children: React.ReactNode }) {
               starCount={200}
               focusedConstellationPos={focusedConstellationPos}
             />
-            <MainStarField
-              setFocusedConstellationPosAction={setFocusedConstellationPos}
-            />
+            {/* debug square, make it hot pink and large */}
+            {/* <Rect
+              x={0}
+              y={0}
+              width={width}
+              height={height}
+              fill="pink"
+              listening={false}
+            ></Rect> */}
+            {showMainStars && (
+              <MainStarField
+                setFocusedConstellationPosAction={setFocusedConstellationPos}
+              />
+            )}
           </Layer>
         </Stage>
       )}

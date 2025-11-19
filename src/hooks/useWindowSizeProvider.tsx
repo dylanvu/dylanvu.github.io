@@ -23,22 +23,13 @@ export function WindowSizeProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [size, setSize] = useState<Size>(() => {
-    // SSR-friendly initial (will be replaced on mount)
-    if (typeof window === "undefined")
-      return {
-        width: 0,
-        height: 0,
-        windowCenter: { x: 0, y: 0 },
-        ready: false,
-      };
-
-    return {
-      width: Math.round(window.innerWidth),
-      height: Math.round(window.innerHeight),
-      windowCenter: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-      ready: true,
-    };
+  // FIX: Always initialize to "not ready" (zeros).
+  // This ensures Server and First Client Render match exactly.
+  const [size, setSize] = useState<Size>({
+    width: 0,
+    height: 0,
+    windowCenter: { x: 0, y: 0 },
+    ready: false,
   });
 
   useLayoutEffect(() => {
@@ -56,7 +47,8 @@ export function WindowSizeProvider({
       });
     };
 
-    // measure before paint
+    // This runs immediately after mount, populating the size
+    // and triggering the second render (which shows the Stage)
     measure();
 
     const onResize = () => {
@@ -71,7 +63,6 @@ export function WindowSizeProvider({
     };
   }, []);
 
-  // memo to keep stable reference unless values change
   const value = useMemo(() => size, [size.width, size.height, size.ready]);
 
   return (

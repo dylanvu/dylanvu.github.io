@@ -32,7 +32,7 @@ export default function StarField({
           x={star.x}
           y={star.y}
           radius={star.radius}
-          delay={i * 0.05}
+          delay={i * 50}
           focusedConstellationPos={focusedConstellationPos}
           enableFocusMovement={true}
         />

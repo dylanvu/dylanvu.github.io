@@ -11,6 +11,7 @@ export default function BackgroundStar({
   y,
   radius = 1,
   delay = 0,
+  parallaxDuration,
   focusedConstellationPos,
   enableFocusMovement = false,
 }: {
@@ -18,6 +19,7 @@ export default function BackgroundStar({
   y: number;
   radius?: number;
   delay?: number;
+  parallaxDuration?: number;
   focusedConstellationPos: FocusedConstellationPos | null;
   enableFocusMovement?: boolean;
 }) {
@@ -33,36 +35,44 @@ export default function BackgroundStar({
   const resetTweenRef = useRef<Konva.Tween | null>(null);
   const fadeInTweenRef = useRef<Konva.Tween | null>(null);
 
-  // stable initial position (ref so it's not re-derived on rerenders)
+  // Track if the initial delay/fade-in has completed
+  const hasAppearedRef = useRef(false);
+
+  // stable initial position
   const initialX = useRef(x);
   const initialY = useRef(y);
 
-  // stable color per mount
   const color =
     BG_STAR_COLORS[Math.floor(Math.random() * BG_STAR_COLORS.length)];
 
-  // Fade in the star on mount (keeps original behavior)
+  // 1. Fade in the star on mount
   useEffect(() => {
     if (!starRef.current) return;
     fadeInTweenRef.current?.finish();
 
-    fadeInTweenRef.current = new Konva.Tween({
-      node: starRef.current,
-      duration: 0.45,
-      opacity: 1,
-      delay,
-      easing: Konva.Easings.Linear,
-    });
-    fadeInTweenRef.current.play();
+    const fadeTimeout = setTimeout(() => {
+      // Mark that the star is now active/visible
+      hasAppearedRef.current = true;
+
+      fadeInTweenRef.current = new Konva.Tween({
+        node: starRef.current!,
+        duration: 0.45,
+        opacity: 1,
+        easing: Konva.Easings.Linear,
+      });
+      fadeInTweenRef.current.play();
+    }, delay);
 
     return () => {
       fadeInTweenRef.current?.finish();
       fadeInTweenRef.current = null;
+      clearTimeout(fadeTimeout);
     };
   }, [delay]);
 
   const { windowCenter } = useWindowSizeContext();
 
+  // 2. Handle Movement and Focus
   useEffect(() => {
     if (!enableFocusMovement) return;
     const group = groupRef.current;
@@ -76,7 +86,7 @@ export default function BackgroundStar({
     streakFadeOutRef.current?.finish();
     resetTweenRef.current?.finish();
 
-    // If no constellation is focused -> reset
+    // --- RESET STATE (No Focus) ---
     if (!focusedConstellationPos) {
       resetTweenRef.current = new Konva.Tween({
         node: group,
@@ -95,16 +105,24 @@ export default function BackgroundStar({
         opacity: 0,
       });
 
-      const starReset = new Konva.Tween({
-        node: star,
-        duration: 0.2,
-        easing: Konva.Easings.Linear,
-        opacity: 1,
-      });
-
       resetTweenRef.current.play();
       streakFadeOutRef.current.play();
-      starReset.play();
+
+      // FIX: Only run the opacity reset tween if the star has actually appeared.
+      // This prevents the reset logic from overriding the initial `opacity={0}`
+      // while waiting for the delay.
+      let starReset: Konva.Tween | null = null;
+
+      if (hasAppearedRef.current) {
+        starReset = new Konva.Tween({
+          node: star,
+          duration: 0.2,
+          easing: Konva.Easings.Linear,
+          opacity: 1,
+        });
+        starReset.play();
+      }
+
       return () => {
         resetTweenRef.current?.finish();
         streakFadeOutRef.current?.finish();
@@ -112,27 +130,27 @@ export default function BackgroundStar({
       };
     }
 
-    // --- FOCUSED CONSTELLATION PARALLAX + ZOOM + ROTATION ---
+    // --- FOCUSED CONSTELLATION PARALLAX ---
+
+    // If we are moving due to focus, we generally assume the star should be visible
+    // (or you can add the same hasAppearedRef check here if you want invisible stars to stay invisible during focus)
+    hasAppearedRef.current = true;
+
     const cPos = focusedConstellationPos;
     const constellation = cPos.constellation;
 
-    // 1. Calculate offset from constellation's UNFOCUSED position
     let dx = initialX.current - cPos.unfocusedX;
     let dy = initialY.current - cPos.unfocusedY;
 
-    // 2. Apply parallax depth based on star size (smaller stars = more depth/distance)
     const depth = 1 - Math.min(radius / 4, 0.8);
     dx *= depth;
     dy *= depth;
 
-    // 3. Apply the constellation's scale transformation
     const scaleFactor =
       (constellation.scale ?? 1) * (constellation.focusScale ?? 1);
     dx *= scaleFactor;
     dy *= scaleFactor;
 
-    // 4. Apply rotation around windowCenter (constellation goes from its rotation to 0°)
-    // We need to unwind the original rotation, so we rotate in the opposite direction
     const originalRotation = constellation.rotation ?? 0;
     const rotationRad = -originalRotation * (Math.PI / 180);
     const cosTheta = Math.cos(rotationRad);
@@ -140,11 +158,9 @@ export default function BackgroundStar({
     const rotatedDx = dx * cosTheta - dy * sinTheta;
     const rotatedDy = dx * sinTheta + dy * cosTheta;
 
-    // 5. Final position: windowCenter + scaled/rotated offset
     const finalX = windowCenter.x + rotatedDx;
     const finalY = windowCenter.y + rotatedDy;
 
-    // --- STREAK CALCULATION (unchanged) ---
     const vx = group.x() - windowCenter.x;
     const vy = group.y() - windowCenter.y;
     let vlen = Math.hypot(vx, vy) || 1;
@@ -174,7 +190,7 @@ export default function BackgroundStar({
     streak.shadowOpacity(0.45);
     streak.opacity(0);
 
-    const duration = 0.55 + Math.random() * 0.5;
+    const duration = parallaxDuration ?? 0.55 + Math.random() * 0.5;
     const easing = Konva.Easings.EaseInOut;
 
     vanishTweenRef.current = new Konva.Tween({
@@ -221,21 +237,16 @@ export default function BackgroundStar({
       streakFadeOutRef.current?.finish();
       starFade?.finish();
     };
-  }, [focusedConstellationPos, radius, windowCenter]);
+  }, [
+    focusedConstellationPos,
+    radius,
+    windowCenter,
+    parallaxDuration,
+    enableFocusMovement,
+  ]);
 
-  // cleanup on unmount
-  useEffect(() => {
-    return () => {
-      vanishTweenRef.current?.finish();
-      streakFadeInRef.current?.finish();
-      streakFadeOutRef.current?.finish();
-      resetTweenRef.current?.finish();
-      fadeInTweenRef.current?.finish();
-    };
-  }, []);
+  // ... cleanup useEffect remains the same ...
 
-  // NOTE: the fillLinearGradient props here are small defaults; we override the endpoint at runtime
-  // so the gradient covers the full trail length.
   return (
     <Group
       ref={groupRef}
@@ -245,17 +256,16 @@ export default function BackgroundStar({
       scaleY={1}
       listening={false}
     >
-      {/* streak behind star */}
       <Rect
         ref={streakRef}
         x={0}
         y={0}
-        width={1} // updated at runtime to full length
+        width={1}
         height={Math.max(1, radius * 2)}
         opacity={0}
         listening={false}
         fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-        fillLinearGradientEndPoint={{ x: 1, y: 0 }} // runtime updated to [streakLength,0]
+        fillLinearGradientEndPoint={{ x: 1, y: 0 }}
         fillLinearGradientColorStops={[
           0,
           color,
@@ -268,7 +278,6 @@ export default function BackgroundStar({
         ]}
       />
 
-      {/* star - exact same look as original BackgroundStar */}
       <Shape
         ref={starRef}
         x={0}

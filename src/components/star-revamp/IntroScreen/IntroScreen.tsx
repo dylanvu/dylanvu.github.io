@@ -57,7 +57,6 @@ export default function IntroScreen({
             justifyContent: "center",
             alignItems: "center",
             height: "100%",
-            background: SPACE_BACKGROUND_COLOR,
             color: SPACE_TEXT_COLOR,
             textAlign: "center",
           }}
