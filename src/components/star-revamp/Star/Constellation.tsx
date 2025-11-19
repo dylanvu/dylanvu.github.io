@@ -12,8 +12,7 @@ export default function Constellation({
   data,
   transformData,
   showBoundingBox,
-  showStarBoundingBox, // existing toggle
-  // new props for padding + exact-fit
+  showStarBoundingBox,
   boundingBoxPaddingX = 3,
   boundingBoxPaddingY = 3,
   useExactLabelFit = true,
@@ -50,7 +49,7 @@ export default function Constellation({
   }
 
   const { stars, connections, totalDuration } = data;
-  const DEFAULT_TOTAL_DURATION = 2; // seconds
+  const DEFAULT_TOTAL_DURATION = 2;
   const [brightness, setBrightness] = useState(1);
   const brightnessHover = 1.2;
   const [isHovered, setIsHovered] = useState(false);
@@ -59,19 +58,21 @@ export default function Constellation({
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
 
+  // --- REFS FOR BOUNDING BOX FADE ---
+  const bboxGroupRef = useRef<Konva.Group>(null);
+  const bboxTweenRef = useRef<Konva.Tween | null>(null);
+
+  const [boxKey, setBoxKey] = useState(0);
+
   const focusScale: number = data.focusScale;
 
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
 
-  // Determine if we should calculate the box based on labels.
-  // We do this if labels EXIST, regardless of whether we are focused or hovering.
-  // This keeps the box size stable so the animation doesn't reset on click.
   const hasLabels = stars.some((s) => !!s.data?.label);
   const SHOULD_MEASURE_LABELS = useExactLabelFit && hasLabels;
 
   const measuredExtents = (() => {
-    // default extents computed from stars themselves (star radius only)
     const defaultMinX = Math.min(...xs);
     const defaultMaxX = Math.max(...xs);
     const defaultMinY = Math.min(...ys);
@@ -85,7 +86,6 @@ export default function Constellation({
       return { minX, maxX, minY, maxY };
     }
 
-    // Exact-fit mode: measure each label and include its rect into extents
     let minX = Infinity;
     let maxX = -Infinity;
     let minY = Infinity;
@@ -96,14 +96,12 @@ export default function Constellation({
       const sy = s.y;
       const starRadius = s.size ?? 5;
 
-      // include star circle extents
       minX = Math.min(minX, sx - starRadius);
       maxX = Math.max(maxX, sx + starRadius);
       minY = Math.min(minY, sy - starRadius);
       maxY = Math.max(maxY, sy + starRadius);
 
       if (s.data?.label) {
-        // measure label using Konva.Text
         const temp = new Konva.Text({
           text: String(s.data.label),
           fontSize: bboxLabelSize,
@@ -111,11 +109,9 @@ export default function Constellation({
         });
         const labelW = temp.width();
         const labelH = temp.height();
-        // MainStar places label at y = size + labelSize (relative)
-        const labelTop = sy + starRadius + bboxLabelSize; // top edge of label
+        const labelTop = sy + starRadius + bboxLabelSize;
         const labelBottom = labelTop + labelH;
 
-        // horizontally label is centered on sx
         const labelLeft = sx - labelW / 2;
         const labelRight = sx + labelW / 2;
 
@@ -126,13 +122,11 @@ export default function Constellation({
       }
     }
 
-    // finally apply the small explicit padding props as a buffer
     minX -= boundingBoxPaddingX;
     maxX += boundingBoxPaddingX;
     minY -= boundingBoxPaddingY;
     maxY += boundingBoxPaddingY;
 
-    // sanity fallback (if no stars)
     if (!isFinite(minX) || !isFinite(minY)) {
       return {
         minX: (Math.min(...xs) || 0) - boundingBoxPaddingX,
@@ -152,7 +146,6 @@ export default function Constellation({
   const width = maxX - minX;
   const height = maxY - minY;
 
-  // center in local group coordinates
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
 
@@ -192,8 +185,8 @@ export default function Constellation({
   }, [isFocused, focusedConstellation]);
 
   const HOVER_SCALE = 1.1;
-  const SCALE_ANIMATION_DURATION = 0.75; // seconds
-  const FOCUS_ANIMATION_DURATION = 0.5; // seconds
+  const SCALE_ANIMATION_DURATION = 0.75;
+  const FOCUS_ANIMATION_DURATION = 0.5;
   const EASING = Konva.Easings.EaseInOut;
 
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
@@ -219,8 +212,6 @@ export default function Constellation({
 
     focusTweenRef.current?.finish();
 
-    const rotationAngle = 0;
-
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
@@ -229,7 +220,7 @@ export default function Constellation({
       y: windowCenter.y,
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
-      rotation: rotationAngle,
+      rotation: 0,
     });
 
     focusTweenRef.current.play();
@@ -266,8 +257,6 @@ export default function Constellation({
 
     const currentX = unfocusedConstellationX;
     const currentY = unfocusedConstellationY;
-
-    // Use the unfocused position of the focused constellation as the focal point
     const focal = focusedUnfocusedPos ?? windowCenter;
 
     let vx = currentX - focal.x;
@@ -318,18 +307,53 @@ export default function Constellation({
   const { setOverlayTextContents: setCenterOverlayTextContents } =
     useCenterOverlayContext();
 
-  /**
-   * STAR BOUNDING BOX LOGIC
-   * showStarBoundingBox: when true, render four MainStar at the corners and AnimatedLine that outline the box
-   */
   const showBox = isFocused || showStarBoundingBox || isHovered;
-  // corner positions (local group coordinates)
+
+  // --- BOUNDING BOX FADE LOGIC ---
+
+  // 1. Initialize invisible
+  useEffect(() => {
+    if (bboxGroupRef.current) {
+      bboxGroupRef.current.opacity(0);
+    }
+  }, []);
+
+  // 2. Handle transitions
+  useEffect(() => {
+    const node = bboxGroupRef.current;
+    if (!node) return;
+
+    // EXPLICIT SAFE CLEANUP
+    if (bboxTweenRef.current) {
+      bboxTweenRef.current.destroy();
+      bboxTweenRef.current = null;
+    }
+
+    if (showBox) {
+      // ENTER:
+      // 1. Force Re-mount of children to trigger line drawing (setBoxKey)
+      // 2. Set Opacity to 1 immediately
+      setBoxKey((k) => k + 1);
+      node.opacity(1);
+    } else {
+      // EXIT:
+      // Create new tween for fade out
+      const tween = new Konva.Tween({
+        node,
+        duration: 0.35,
+        opacity: 0,
+        easing: Konva.Easings.EaseInOut,
+      });
+      tween.play();
+      bboxTweenRef.current = tween;
+    }
+  }, [showBox]);
+
   const tl = { x: minX, y: minY };
   const tr = { x: maxX, y: minY };
   const br = { x: maxX, y: maxY };
   const bl = { x: minX, y: maxY };
 
-  // perimeter-based durations
   const bboxDuration = (totalDuration ?? DEFAULT_TOTAL_DURATION) / 2;
   const edgeLengths = [width, height, width, height];
   const bboxPerimeter = edgeLengths.reduce((s, l) => s + l, 0) || 1;
@@ -342,8 +366,6 @@ export default function Constellation({
     return acc;
   }, []);
 
-  // star delays — appear when the line that reaches them completes:
-  // TL: 0 (start), TR: end of top edge, BR: end of right edge, BL: end of bottom edge
   const cornerStarDelays = [
     0,
     edgeDelays[0] + edgeDurations[0],
@@ -353,7 +375,6 @@ export default function Constellation({
 
   const router = useRouter();
 
-  // Handler for constellation clicks/taps
   const handleConstellationClick = (e: any) => {
     e.cancelBubble = true;
     playFocusTween();
@@ -364,7 +385,6 @@ export default function Constellation({
     if (onClickCallback) onClickCallback();
   };
 
-  // Handler for constellation interaction start (hover enter / touch start)
   const handleInteractionStart = () => {
     if (!isFocused) {
       setBrightness(brightnessHover);
@@ -379,7 +399,6 @@ export default function Constellation({
     if (onHoverEnterCallback) onHoverEnterCallback();
   };
 
-  // Handler for constellation interaction end (hover leave / touch end)
   const handleInteractionEnd = () => {
     if (!isFocused) {
       setBrightness(1);
@@ -428,10 +447,11 @@ export default function Constellation({
         />
       ))}
 
-      {/* Corner bounding-box outline (optional) */}
-      {showBox && (
-        <>
-          {/* edges in order TL -> TR -> BR -> BL -> TL */}
+      {/* 
+        BOUNDING BOX GROUP 
+      */}
+      <Group ref={bboxGroupRef} listening={showBox}>
+        <Group key={boxKey}>
           <AnimatedLine
             key="bbox-edge-0"
             p1={tl}
@@ -461,7 +481,6 @@ export default function Constellation({
             delay={edgeDelays[3]}
           />
 
-          {/* corner stars (slightly bigger) */}
           <MainStar
             key="bbox-tl"
             x={tl.x}
@@ -494,8 +513,8 @@ export default function Constellation({
             brightness={brightness}
             delay={cornerStarDelays[3]}
           />
-        </>
-      )}
+        </Group>
+      </Group>
 
       {/* original stars */}
       {stars.map((star, i) => {
