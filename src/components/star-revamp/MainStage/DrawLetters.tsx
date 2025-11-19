@@ -40,7 +40,7 @@ export default function DrawLetters({
   text = "",
   fontUrl = "/fonts/Allura-Regular.ttf",
   fontSize = 100,
-  duration = 3000,
+  duration = 1000,
   stagger = 50,
   color = SPACE_TEXT_COLOR,
   width = "100%",
@@ -123,21 +123,17 @@ export default function DrawLetters({
     const boxWidth = cursorX + padX * 2;
     const boxHeight = ascender - descender + padY * 2;
 
-    // --- FIXED TIMING LOGIC ---
+    // --- TIMING LOGIC ---
     const count = glyphData.length;
-    // The delay of the very last letter
     const lastLetterDelay = Math.max(0, (count - 1) * stagger);
 
-    // To finish exactly at 'duration', the individual letter must take:
-    // Total Duration - Start Time of Last Letter
+    // Calculate how long each letter should take to fill the remaining time
     let calculatedLetterDuration = duration - lastLetterDelay;
 
-    // Safety clamp: If stagger is huge, duration might become negative.
-    // We enforce a minimum of 300ms per letter to avoid glitches.
-    // Note: This means if stagger is too high, the Total Time will exceed the requested 'duration'.
-    calculatedLetterDuration = Math.max(300, calculatedLetterDuration);
+    // Safety: If duration is very short or stagger is very high,
+    // prevent the letter from drawing instantly (or negative time).
+    calculatedLetterDuration = Math.max(400, calculatedLetterDuration);
 
-    // The actual final duration (used for the onComplete timer)
     const realTotalDuration = lastLetterDelay + calculatedLetterDuration;
 
     return {
@@ -157,9 +153,11 @@ export default function DrawLetters({
     const frame = requestAnimationFrame(() => {
       setIsAnimating(true);
     });
+
+    // We match the JS timer exactly to the calculated CSS duration
     const timer = setTimeout(() => {
       onComplete?.();
-    }, totalDuration + 100);
+    }, totalDuration);
 
     return () => {
       cancelAnimationFrame(frame);
@@ -214,8 +212,14 @@ export default function DrawLetters({
                 style={{
                   strokeDasharray: "1",
                   strokeDashoffset: isAnimating ? "0" : "1",
-                  // Use the calculated uniform duration
-                  transition: `stroke-dashoffset ${perLetterDuration}ms cubic-bezier(0.25, 1, 0.5, 1)`,
+
+                  /* 
+                     KEY FIX: Switched to a balanced ease-in-out. 
+                     The previous bezier (0.25, 1, 0.5, 1) rushed to the end too fast.
+                     This one ensures the visual movement lasts the full duration.
+                  */
+                  transition: `stroke-dashoffset ${perLetterDuration}ms cubic-bezier(0.45, 0, 0.55, 1)`,
+
                   transitionDelay: `${g.index * stagger}ms`,
                 }}
               />
