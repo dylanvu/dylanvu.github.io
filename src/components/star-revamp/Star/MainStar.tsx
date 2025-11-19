@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Group, Shape, Text } from "react-konva";
 import Konva from "konva";
 import {
@@ -14,7 +14,7 @@ type Props = {
   y?: number;
   size?: number;
   brightness?: number;
-  delay?: number;
+  delay?: number; // delay in seconds
   twinkleEnabled?: boolean;
   twinkleMin?: number;
   twinkleMax?: number;
@@ -28,7 +28,7 @@ type Props = {
   showLabel?: boolean;
   labelSize?: number;
   windowCenter: { x: number; y: number };
-  showHitBox?: boolean; // new prop for debugging
+  showHitBox?: boolean;
   cancelBubble?: boolean;
 };
 
@@ -58,8 +58,9 @@ export default function MainStar({
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
   const textRef = useRef<Konva.Text>(null);
-  const [opacity, setOpacity] = useState(0);
   const brightnessRef = useRef(brightness);
+
+  const fadeTweenRef = useRef<Konva.Tween | null>(null);
 
   const starColor = useRef(
     ["#FFFFFF", "#E0F7FF", "#FFFACD", "#FFDDEE"][Math.floor(Math.random() * 4)]
@@ -69,17 +70,42 @@ export default function MainStar({
   const EASING = Konva.Easings.EaseInOut;
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
 
-  // Fade-in
+  // 1. Handle Fade-In Animation SAFELY
   useEffect(() => {
-    const t = window.setTimeout(() => {
-      setOpacity(1);
-      shapeRef.current?.getLayer()?.batchDraw();
-      textRef.current?.getLayer()?.batchDraw();
-    }, delay * 1000);
-    return () => window.clearTimeout(t);
+    const group = groupRef.current;
+    if (!group) return;
+
+    // Reset opacity to 0 initially if this is a fresh mount/remount
+    // We use .opacity() directly to avoid React state causing re-renders
+    group.opacity(0);
+
+    // SAFELY clean up previous tween
+    if (fadeTweenRef.current) {
+      fadeTweenRef.current.destroy();
+      fadeTweenRef.current = null;
+    }
+
+    // Create new tween
+    fadeTweenRef.current = new Konva.Tween({
+      node: group,
+      duration: 1,
+      delay: delay, // Konva handles the delay natively here
+      opacity: 1,
+      easing: Konva.Easings.EaseInOut,
+    });
+
+    fadeTweenRef.current.play();
+
+    // Cleanup function
+    return () => {
+      if (fadeTweenRef.current) {
+        fadeTweenRef.current.destroy();
+        fadeTweenRef.current = null; // <--- THIS IS THE CRITICAL FIX
+      }
+    };
   }, [delay]);
 
-  // Twinkle logic (same as before)
+  // 2. Twinkle logic
   useEffect(() => {
     if (!twinkleEnabled) return;
     let rafId: number | null = null;
@@ -133,11 +159,18 @@ export default function MainStar({
     twinkleMaxDuration,
   ]);
 
-  // Hover scale
+  // 3. Hover scale
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
     if (!node) return;
-    hoverTweenRef.current?.finish();
+
+    // Safety check for hover tween as well
+    if (hoverTweenRef.current) {
+      hoverTweenRef.current.finish();
+      // We use finish() here instead of destroy() usually for hover
+      // so it snaps to end state, but destroy is fine too if we remake it immediately
+    }
+
     hoverTweenRef.current = new Konva.Tween({
       node,
       duration: SCALE_ANIMATION_DURATION,
@@ -148,7 +181,16 @@ export default function MainStar({
     hoverTweenRef.current.play();
   };
 
-  // Handler for star clicks/taps
+  // Cleanup hover tween on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTweenRef.current) {
+        hoverTweenRef.current.destroy();
+        hoverTweenRef.current = null;
+      }
+    };
+  }, []);
+
   const handleStarClick = (e: any) => {
     if (enableOnClick) {
       e.cancelBubble = cancelBubble;
@@ -156,14 +198,12 @@ export default function MainStar({
     }
   };
 
-  // Handler for star interaction start (hover enter / touch start)
   const handleInteractionStart = () => {
     onHoverEnterCallback?.();
     document.body.style.cursor = "pointer";
     playHoverTween(1.1, 1.1);
   };
 
-  // Handler for star interaction end (hover leave / touch end)
   const handleInteractionEnd = () => {
     onHoverLeaveCallback?.();
     playHoverTween(1, 1);
@@ -174,6 +214,7 @@ export default function MainStar({
       ref={groupRef}
       x={x}
       y={y}
+      opacity={0} // Ensure it starts invisible for the tween to pick up
       onMouseEnter={handleInteractionStart}
       onMouseLeave={handleInteractionEnd}
       onTouchStart={handleInteractionStart}
@@ -185,18 +226,11 @@ export default function MainStar({
         ref={shapeRef}
         sceneFunc={(ctx) => {
           const starRadius = size * brightnessRef.current;
-          const labelWidth = textRef.current?.width() || 0;
-          const labelHeight = textRef.current?.height() || 0;
-          const labelY = size + labelSize; // Text.y offset
-
-          // Single hitbox calculation
-          const hitRadiusX = Math.max(starRadius, labelWidth / 2);
-          const hitRadiusY = starRadius + labelHeight + labelY;
 
           // Draw the star
           const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, starRadius);
           gradient.addColorStop(0, starColor);
-          gradient.addColorStop(0.5, `rgba(255,255,255,${0.5 * opacity})`);
+          gradient.addColorStop(0.5, `rgba(255,255,255,0.5)`);
           gradient.addColorStop(1, "transparent");
 
           ctx.fillStyle = gradient;
@@ -206,6 +240,11 @@ export default function MainStar({
 
           // DEBUG hitbox
           if (showHitBox) {
+            const labelWidth = textRef.current?.width() || 0;
+            const labelHeight = textRef.current?.height() || 0;
+            const labelY = size + labelSize;
+            const hitRadiusX = Math.max(starRadius, labelWidth / 2);
+            const hitRadiusY = starRadius + labelHeight + labelY;
             ctx.fillStyle = "rgba(255,0,0,0.2)";
             ctx.fillRect(-hitRadiusX, -starRadius, hitRadiusX * 2, hitRadiusY);
           }
@@ -214,9 +253,8 @@ export default function MainStar({
           const starRadius = size * brightnessRef.current;
           const labelWidth = textRef.current?.width() || 0;
           const labelHeight = textRef.current?.height() || 0;
-          const labelY = size + labelSize; // same Text.y offset
+          const labelY = size + labelSize;
 
-          // Reuse exact same hitbox
           const hitRadiusX = Math.max(starRadius, labelWidth / 2);
           const hitRadiusY = starRadius + labelHeight + labelY;
 
@@ -230,7 +268,7 @@ export default function MainStar({
       {showLabel && (data?.label || labelOverride) && (
         <Text
           ref={textRef}
-          x={0} // relative to group
+          x={0}
           y={size + labelSize}
           text={labelOverride || data?.label}
           fontSize={labelSize}

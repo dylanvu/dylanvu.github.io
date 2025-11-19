@@ -1,7 +1,11 @@
 "use client";
 import Constellation from "@/components/star-revamp/Star/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import { ConstellationData, TransformData, FocusedConstellationPos } from "@/interfaces/StarInterfaces";
+import {
+  ConstellationData,
+  TransformData,
+  FocusedConstellationPos,
+} from "@/interfaces/StarInterfaces";
 import { use, useEffect, useMemo, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
@@ -39,7 +43,6 @@ export default function MainStarField({
     resetOverlayTextContents: resetTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
-
 
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
@@ -89,7 +92,7 @@ export default function MainStarField({
         x: windowCenter.x,
         y: windowCenter.y,
       };
-      
+
       setFocusedConstellationPosAction({
         x: focusedScreenPos.x,
         y: focusedScreenPos.y,
@@ -139,7 +142,7 @@ export default function MainStarField({
           <Text
             x={windowCenter.x + 15}
             y={windowCenter.y - 5}
-            text={`CENTER ${isMobileLandscape ? '(Mobile)' : '(Desktop)'}`}
+            text={`CENTER ${isMobileLandscape ? "(Mobile)" : "(Desktop)"}`}
             fontSize={14}
             fill="red"
             fontStyle="bold"
@@ -161,25 +164,73 @@ export default function MainStarField({
             fill="red"
             opacity={0.3}
           />
-          
+
           {/* Quadrant center markers - only in mobile landscape */}
           {isMobileLandscape && (
             <>
               {/* Top-left quadrant */}
-              <Circle x={width / 4} y={height / 4} radius={6} fill="lime" opacity={0.9} />
-              <Text x={width / 4 + 10} y={height / 4 - 5} text="TL" fontSize={10} fill="lime" />
-              
+              <Circle
+                x={width / 4}
+                y={height / 4}
+                radius={6}
+                fill="lime"
+                opacity={0.9}
+              />
+              <Text
+                x={width / 4 + 10}
+                y={height / 4 - 5}
+                text="TL"
+                fontSize={10}
+                fill="lime"
+              />
+
               {/* Top-right quadrant */}
-              <Circle x={(3 * width) / 4} y={height / 4} radius={6} fill="lime" opacity={0.9} />
-              <Text x={(3 * width) / 4 + 10} y={height / 4 - 5} text="TR" fontSize={10} fill="lime" />
-              
+              <Circle
+                x={(3 * width) / 4}
+                y={height / 4}
+                radius={6}
+                fill="lime"
+                opacity={0.9}
+              />
+              <Text
+                x={(3 * width) / 4 + 10}
+                y={height / 4 - 5}
+                text="TR"
+                fontSize={10}
+                fill="lime"
+              />
+
               {/* Bottom-left quadrant */}
-              <Circle x={width / 4} y={(3 * height) / 4} radius={6} fill="lime" opacity={0.9} />
-              <Text x={width / 4 + 10} y={(3 * height) / 4 - 5} text="BL" fontSize={10} fill="lime" />
-              
+              <Circle
+                x={width / 4}
+                y={(3 * height) / 4}
+                radius={6}
+                fill="lime"
+                opacity={0.9}
+              />
+              <Text
+                x={width / 4 + 10}
+                y={(3 * height) / 4 - 5}
+                text="BL"
+                fontSize={10}
+                fill="lime"
+              />
+
               {/* Bottom-right quadrant */}
-              <Circle x={(3 * width) / 4} y={(3 * height) / 4} radius={6} fill="lime" opacity={0.9} />
-              <Text x={(3 * width) / 4 + 10} y={(3 * height) / 4 - 5} text="BR" fontSize={10} fill="lime" />
+              <Circle
+                x={(3 * width) / 4}
+                y={(3 * height) / 4}
+                radius={6}
+                fill="lime"
+                opacity={0.9}
+              />
+              <Text
+                x={(3 * width) / 4 + 10}
+                y={(3 * height) / 4 - 5}
+                text="BR"
+                fontSize={10}
+                fill="lime"
+              />
             </>
           )}
         </>
@@ -197,7 +248,7 @@ export default function MainStarField({
       {CONSTELLATIONS.map((c, i) => {
         // Calculate constellation's local center offset
         const { centerX, centerY } = computeCenter(c.stars);
-        
+
         let targetX, targetY;
 
         if (isMobileLandscape) {
@@ -275,47 +326,52 @@ export default function MainStarField({
               </>
             )}
             <Constellation
-            data={c}
-            windowCenter={windowCenter}
-            transformData={transformData}
-            key={i}
-            onClickCallback={() => {
-              setSelectedConstellation(c);
-              setTopOverlayTextContents({
-                intro: c.intro,
-                title: c.name,
-                origin: c.about,
-                about: "",
-              });
-              setCenterOverlayVisibility(false);
-              setTopOverlayVisibility(true);
-            }}
-            focusedConstellation={selectedConstellation}
-            // pass the unfocused position of the focused constellation (for parallax effect)
-            focusedUnfocusedPos={
-              selectedConstellation
-                ? {
-                    x: (selectedConstellation.designX / DESIGN.width) * width + computeCenter(selectedConstellation.stars).centerX,
-                    y: (selectedConstellation.designY / DESIGN.height) * height + computeCenter(selectedConstellation.stars).centerY,
-                  }
-                : null
-            }
-            onHoverEnterCallback={() => {
-              if (!selectedConstellation) {
-                setCenterOverlayTextContents({
+              data={c}
+              windowCenter={windowCenter}
+              transformData={transformData}
+              key={i}
+              onClickCallback={() => {
+                setSelectedConstellation(c);
+                setTopOverlayTextContents({
                   intro: c.intro,
                   title: c.name,
-                  origin: c.origin,
-                  about: c.about,
+                  origin: c.about,
+                  about: "",
                 });
+                setCenterOverlayVisibility(false);
+                setTopOverlayVisibility(true);
+              }}
+              focusedConstellation={selectedConstellation}
+              // pass the unfocused position of the focused constellation (for parallax effect)
+              focusedUnfocusedPos={
+                selectedConstellation
+                  ? {
+                      x:
+                        (selectedConstellation.designX / DESIGN.width) * width +
+                        computeCenter(selectedConstellation.stars).centerX,
+                      y:
+                        (selectedConstellation.designY / DESIGN.height) *
+                          height +
+                        computeCenter(selectedConstellation.stars).centerY,
+                    }
+                  : null
               }
-            }}
-            onHoverLeaveCallback={() => {
-              if (selectedConstellation !== c) {
-                resetCenterOverlayTextContents();
-              }
-            }}
-          />
+              onHoverEnterCallback={() => {
+                if (!selectedConstellation) {
+                  setCenterOverlayTextContents({
+                    intro: c.intro,
+                    title: c.name,
+                    origin: c.origin,
+                    about: c.about,
+                  });
+                }
+              }}
+              onHoverLeaveCallback={() => {
+                if (selectedConstellation !== c) {
+                  resetCenterOverlayTextContents();
+                }
+              }}
+            />
           </React.Fragment>
         );
       })}
@@ -350,37 +406,42 @@ export default function MainStarField({
               </>
             )}
             <Polaris
-            x={polarisScreenX}
-            y={polarisScreenY}
-            size={5}
-            brightness={5}
-            twinkleMin={4.9}
-            twinkleMax={5.1}
-            windowCenter={windowCenter}
-            focusedScreenPos={focusedScreenPos}
-            focusedUnfocusedPos={
-              selectedConstellation
-                ? {
-                    x: (selectedConstellation.designX / DESIGN.width) * width + computeCenter(selectedConstellation.stars).centerX,
-                    y: (selectedConstellation.designY / DESIGN.height) * height + computeCenter(selectedConstellation.stars).centerY,
-                  }
-                : null
-            }
-            onHoverEnterCallback={() => {
-              setCenterOverlayTextContents({
-                intro: "The North Star",
-                title: "Polaris",
-                origin: 'Latin: "pole star". A celestial guide.',
-                about: "A beacon to help you navigate the stars",
-              });
-            }}
-            onHoverLeaveCallback={() => {
-              resetCenterOverlayTextContents();
-              // polaris is outside of any constellation, so leaving the star should bring the cursor back to normal, whereas other constellations still have the pointer style
-              document.body.style.cursor = "default";
-            }}
-            // label="Polaris"
-          />
+              x={polarisScreenX}
+              y={polarisScreenY}
+              size={5}
+              brightness={5}
+              twinkleMin={4.9}
+              twinkleMax={5.1}
+              windowCenter={windowCenter}
+              focusedScreenPos={focusedScreenPos}
+              focusedUnfocusedPos={
+                selectedConstellation
+                  ? {
+                      x:
+                        (selectedConstellation.designX / DESIGN.width) * width +
+                        computeCenter(selectedConstellation.stars).centerX,
+                      y:
+                        (selectedConstellation.designY / DESIGN.height) *
+                          height +
+                        computeCenter(selectedConstellation.stars).centerY,
+                    }
+                  : null
+              }
+              onHoverEnterCallback={() => {
+                setCenterOverlayTextContents({
+                  intro: "The North Star",
+                  title: "Polaris",
+                  origin: 'Latin: "pole star". A celestial guide.',
+                  about: "A beacon to help you navigate the stars",
+                });
+              }}
+              onHoverLeaveCallback={() => {
+                resetCenterOverlayTextContents();
+                // polaris is outside of any constellation, so leaving the star should bring the cursor back to normal, whereas other constellations still have the pointer style
+                document.body.style.cursor = "default";
+              }}
+              // label="Polaris"
+            />
           </>
         );
       })()}
