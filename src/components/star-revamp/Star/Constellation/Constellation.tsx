@@ -49,6 +49,13 @@ export default function Constellation({
     }
   }
 
+  // REF FIX 1: Keep track of focus state
+  const isFocusedRef = useRef(isFocused);
+  isFocusedRef.current = isFocused;
+
+  // REF FIX 2: Keep track if we are currently animating back to home
+  const isReturningRef = useRef(false);
+
   const pathname = usePathname();
 
   const { stars, connections, totalDuration } = data;
@@ -180,8 +187,23 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
+    // Do not play hover animations if focused
+    if (isFocusedRef.current) return;
+
+    // FIX: Do not play hover animations if we are currently flying back
+    if (isReturningRef.current) return;
+
     if (hoverTweenRef.current) {
-      hoverTweenRef.current.finish();
+      hoverTweenRef.current.destroy();
+      hoverTweenRef.current = null;
+    }
+
+    // If we are just hovering, we destroy the focus tween so we don't fight over scale.
+    // BUT thanks to the isReturningRef check above, this line will no longer execute
+    // if the focusTween is actively moving the star back home.
+    if (focusTweenRef.current) {
+      focusTweenRef.current.destroy();
+      focusTweenRef.current = null;
     }
 
     hoverTweenRef.current = new Konva.Tween({
@@ -199,18 +221,22 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
+    // If we are focusing, we are definitely not "returning" anymore
+    isReturningRef.current = false;
+
+    if (hoverTweenRef.current) {
+      hoverTweenRef.current.destroy();
+      hoverTweenRef.current = null;
+    }
+
     if (focusTweenRef.current) {
       focusTweenRef.current.destroy();
     }
 
-    // Determine Target Position based on Pathname
-
     const targetX = pathname !== "/" ? windowCenter.x / 2 : windowCenter.x;
-    // also bring the top overlay along with the focus
     if (pathname !== "/") {
       setTopOverlayHorizontalPosition("left");
     }
-
     const targetY = windowCenter.y;
 
     focusTweenRef.current = new Konva.Tween({
@@ -234,6 +260,14 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
+    // FIX: Mark as returning. This blocks the hover logic.
+    isReturningRef.current = true;
+
+    if (hoverTweenRef.current) {
+      hoverTweenRef.current.destroy();
+      hoverTweenRef.current = null;
+    }
+
     if (focusTweenRef.current) {
       focusTweenRef.current.destroy();
     }
@@ -247,10 +281,13 @@ export default function Constellation({
       scaleX: transformData.scaleX ?? 1,
       scaleY: transformData.scaleY ?? 1,
       rotation: transformData.rotation ?? 0,
+      // FIX: When the tween finishes, we are no longer returning.
+      onFinish: () => {
+        isReturningRef.current = false;
+      },
     });
 
     focusTweenRef.current.play();
-    // reset the top overlay position
     if (pathname === "/") {
       setTopOverlayHorizontalPosition("center");
     }
@@ -260,8 +297,16 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
+    // If it vanishes, we aren't "returning" to a clickable spot, but we are moving.
+    // Let's block hover anyway.
+    isReturningRef.current = true;
+
     if (focusTweenRef.current) {
       focusTweenRef.current.destroy();
+    }
+    if (hoverTweenRef.current) {
+      hoverTweenRef.current.destroy();
+      hoverTweenRef.current = null;
     }
 
     const currentX = unfocusedConstellationX;
@@ -303,6 +348,9 @@ export default function Constellation({
       scaleX: targetScaleX,
       scaleY: targetScaleY,
       rotation: transformData.rotation ?? 0,
+      onFinish: () => {
+        isReturningRef.current = false;
+      },
     });
 
     focusTweenRef.current.play();
@@ -336,7 +384,7 @@ export default function Constellation({
 
   const handleConstellationClick = (e: any) => {
     e.cancelBubble = true;
-    if (!isFocused) {
+    if (!isFocusedRef.current) {
       groupRef.current?.moveToTop();
     }
     document.body.style.cursor = "default";
@@ -344,7 +392,10 @@ export default function Constellation({
   };
 
   const handleInteractionStart = () => {
-    if (!isFocused) {
+    // Check if returning. If so, ignore the hover so we don't interrupt the tween.
+    if (isReturningRef.current) return;
+
+    if (!isFocusedRef.current) {
       setBrightness(brightnessHover);
       playHoverTween(
         (transformData.scaleX ?? 1) * HOVER_SCALE,
@@ -358,7 +409,10 @@ export default function Constellation({
   };
 
   const handleInteractionEnd = () => {
-    if (!isFocused) {
+    // If returning, ignore.
+    if (isReturningRef.current) return;
+
+    if (!isFocusedRef.current) {
       setBrightness(1);
       playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
     }
@@ -440,8 +494,11 @@ export default function Constellation({
             labelSize={4}
             isConstellationFocused={isFocused}
             onHoverEnterCallback={() => {
+              // Guard clause for stars too
+              if (isReturningRef.current) return;
+
               if (star.data) {
-                if (isFocused) {
+                if (isFocusedRef.current) {
                   setTopOverlayTextContents({
                     intro: star.data.intro,
                     title: star.data.label,
@@ -459,8 +516,11 @@ export default function Constellation({
               }
             }}
             onHoverLeaveCallback={() => {
+              // Guard clause
+              if (isReturningRef.current) return;
+
               if (star.data?.label) {
-                if (isFocused) {
+                if (isFocusedRef.current) {
                   // go back to the constellation information
                   if (pathname === "/") {
                     setTopOverlayTextContents({
@@ -480,7 +540,7 @@ export default function Constellation({
                   });
                 }
               }
-              if (isFocused) {
+              if (isFocusedRef.current) {
                 document.body.style.cursor = "default";
               }
             }}
