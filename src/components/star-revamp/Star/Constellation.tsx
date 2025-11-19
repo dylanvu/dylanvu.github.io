@@ -64,29 +64,20 @@ export default function Constellation({
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
 
-  const LABEL_VISIBLE = isFocused && stars.some((s) => !!s.data?.label);
+  // Determine if we should calculate the box based on labels.
+  // We do this if labels EXIST, regardless of whether we are focused or hovering.
+  // This keeps the box size stable so the animation doesn't reset on click.
+  const hasLabels = stars.some((s) => !!s.data?.label);
+  const SHOULD_MEASURE_LABELS = useExactLabelFit && hasLabels;
 
-  //
-  // ====== BOUNDING BOX: exact-fit OR padded ======
-  //
-  // We measure existing labels when useExactLabelFit && LABEL_VISIBLE.
-  // Otherwise we use simple padding props.
-  //
-  // Per-star label layout in MainStar:
-  //  - label is centered at star.x
-  //  - label Y offset relative to star center is `size + labelSize`
-  //  - we measure label width/height using Konva.Text
-  //
   const measuredExtents = (() => {
     // default extents computed from stars themselves (star radius only)
-    // we'll expand these by padding / label extents below
     const defaultMinX = Math.min(...xs);
     const defaultMaxX = Math.max(...xs);
     const defaultMinY = Math.min(...ys);
     const defaultMaxY = Math.max(...ys);
 
-    if (!useExactLabelFit || !LABEL_VISIBLE) {
-      // simple padding fallback — same behaviour as before but exposed via props
+    if (!SHOULD_MEASURE_LABELS) {
       const minX = defaultMinX - boundingBoxPaddingX;
       const maxX = defaultMaxX + boundingBoxPaddingX;
       const minY = defaultMinY - boundingBoxPaddingY;
@@ -95,7 +86,6 @@ export default function Constellation({
     }
 
     // Exact-fit mode: measure each label and include its rect into extents
-    // We'll use Konva.Text purely for measurement (not added to stage)
     let minX = Infinity;
     let maxX = -Infinity;
     let minY = Infinity;
@@ -114,7 +104,6 @@ export default function Constellation({
 
       if (s.data?.label) {
         // measure label using Konva.Text
-        // Note: creating a Konva.Text instance is cheap for measurement purposes
         const temp = new Konva.Text({
           text: String(s.data.label),
           fontSize: bboxLabelSize,
@@ -156,7 +145,7 @@ export default function Constellation({
     return { minX, maxX, minY, maxY };
   })();
 
-  const minX = measuredExtents.minX - 10; // keep a conservative -10 like you had earlier
+  const minX = measuredExtents.minX - 10;
   const maxX = measuredExtents.maxX + 10;
   const minY = measuredExtents.minY - 10;
   const maxY = measuredExtents.maxY + 10;
@@ -444,24 +433,28 @@ export default function Constellation({
         <>
           {/* edges in order TL -> TR -> BR -> BL -> TL */}
           <AnimatedLine
+            key="bbox-edge-0"
             p1={tl}
             p2={tr}
             duration={edgeDurations[0]}
             delay={edgeDelays[0]}
           />
           <AnimatedLine
+            key="bbox-edge-1"
             p1={tr}
             p2={br}
             duration={edgeDurations[1]}
             delay={edgeDelays[1]}
           />
           <AnimatedLine
+            key="bbox-edge-2"
             p1={br}
             p2={bl}
             duration={edgeDurations[2]}
             delay={edgeDelays[2]}
           />
           <AnimatedLine
+            key="bbox-edge-3"
             p1={bl}
             p2={tl}
             duration={edgeDurations[3]}
@@ -548,12 +541,9 @@ export default function Constellation({
             onHoverLeaveCallback={() => {
               if (star.data?.label) {
                 if (isFocused) {
-                  // set it back to the constellation information from coming in
                   setTopOverlayTextContents({
                     intro: data.intro,
                     title: data.name,
-                    // this mismatch between origin and about is intentional
-                    // It is weird because I want less information in the focus view
                     origin: data.about,
                     about: "",
                   });
@@ -573,7 +563,6 @@ export default function Constellation({
             }}
             cancelBubble={true}
             onClickCallback={() => {
-              // prevent the click from bubbling up to the parent
               const data = star.data;
               if (data) {
                 if (data.externalLink) {
