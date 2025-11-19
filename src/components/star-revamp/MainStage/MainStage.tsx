@@ -83,7 +83,6 @@ export default function MainStage({
             <BackgroundStarField
               width={width}
               height={height}
-              starCount={200}
               focusedConstellationPos={focusedConstellationPos}
             />
             {/* debug square, make it hot pink and large */}
