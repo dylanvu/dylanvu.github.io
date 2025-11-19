@@ -2,8 +2,14 @@ import GenericOverlay from "@/components/star-revamp/ScreenOverlay/GenericOverla
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 
 export default function CenterOverlay() {
-  const { titleText, originText, aboutText, introText, overlayVisibility } =
-    useCenterOverlayContext();
+  const {
+    titleText,
+    originText,
+    aboutText,
+    introText,
+    overlayVisibility,
+    horizontalPosition,
+  } = useCenterOverlayContext();
   return (
     <GenericOverlay
       overlayName="Center"
@@ -13,6 +19,7 @@ export default function CenterOverlay() {
       introText={introText}
       overlayVisibility={overlayVisibility}
       titlePosition={"center"}
+      horizontalPosition={horizontalPosition}
     />
   );
 }

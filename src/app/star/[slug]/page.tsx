@@ -38,7 +38,7 @@ export default async function MarkdownPage({
         <ReactMarkdown>{markdown}</ReactMarkdown>
       </article>
       {/* The side panels that the user sees */}
-      <StarPanel markdown={markdown} />
+      <StarPanel markdown={markdown} slug={slug} />
     </>
   );
 }

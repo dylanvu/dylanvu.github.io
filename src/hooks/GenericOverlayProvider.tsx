@@ -23,6 +23,8 @@ export interface GenericOverlayState {
     origin: string;
     about: string;
   }) => void;
+  horizontalPosition: "left" | "center" | "right";
+  setHorizontalPosition: Dispatch<SetStateAction<"left" | "center" | "right">>;
 }
 
 export function createOverlayContext(defaults: {
@@ -46,6 +48,9 @@ export function createOverlayContext(defaults: {
     const [aboutText, setAboutText] = useState(DEFAULT_ABOUT_TEXT);
     const [introText, setIntroText] = useState(DEFAULT_INTRO_TEXT);
     const [overlayVisibility, setOverlayVisibility] = useState(true);
+    const [horizontalPosition, setHorizontalPosition] = useState<
+      "left" | "center" | "right"
+    >("center");
 
     const resetOverlayTextContents = () => {
       setTitleText(DEFAULT_TITLE_TEXT);
@@ -78,6 +83,8 @@ export function createOverlayContext(defaults: {
           setOverlayVisibility,
           resetOverlayTextContents,
           setOverlayTextContents,
+          horizontalPosition,
+          setHorizontalPosition,
         }}
       >
         {children}

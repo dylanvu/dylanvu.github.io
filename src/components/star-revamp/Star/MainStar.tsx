@@ -24,7 +24,7 @@ type Props = {
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
-  enableOnClick?: boolean;
+  isConstellationFocused?: boolean;
   labelOverride?: string;
   showLabel?: boolean;
   labelSize?: number;
@@ -49,7 +49,7 @@ export default function MainStar({
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
-  enableOnClick = false,
+  isConstellationFocused = false,
   labelOverride,
   showLabel,
   labelSize = 12,
@@ -224,7 +224,7 @@ export default function MainStar({
   }, []);
 
   const handleStarClick = (e: any) => {
-    if (enableOnClick) {
+    if (isConstellationFocused) {
       e.cancelBubble = cancelBubble;
       if (onClickCallback) onClickCallback();
     }

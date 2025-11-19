@@ -56,6 +56,7 @@ type BaseStarData = {
  */
 type StarDataWithInternalLink = BaseStarData & {
   internalLink: string;
+  slug: string;
   externalLink?: never;
 };
 
@@ -64,6 +65,7 @@ type StarDataWithInternalLink = BaseStarData & {
  */
 type StarDataWithExternalLink = BaseStarData & {
   internalLink?: never;
+  slug?: never;
   externalLink: string;
 };
 
@@ -72,6 +74,7 @@ type StarDataWithExternalLink = BaseStarData & {
  */
 type StarDataWithoutLink = BaseStarData & {
   internalLink?: never;
+  slug?: never;
   externalLink?: never;
 };
 

@@ -39,7 +39,6 @@ export default function MainStarField({
 
   const {
     setOverlayTextContents: setTopOverlayTextContents,
-    resetOverlayTextContents: resetTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
 

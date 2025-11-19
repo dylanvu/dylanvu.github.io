@@ -3,16 +3,18 @@ import { AnimatePresence, motion } from "motion/react";
 import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
 import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
+import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 
 export default function GenericOverlay({
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  overlayName, // used for debugging purposes if I need it
+  overlayName,
   titleText,
   originText,
   aboutText,
   introText,
   overlayVisibility,
   titlePosition,
+  horizontalPosition = "center",
 }: {
   overlayName: string;
   titleText: string;
@@ -21,9 +23,20 @@ export default function GenericOverlay({
   introText: string;
   overlayVisibility: boolean;
   titlePosition: "center" | "bottom" | "top";
+  horizontalPosition?: "left" | "center" | "right";
 }) {
-  // create an enum for the title position to position
-  // note that 0 y is the center of the screen
+  const { width } = useWindowSizeContext();
+
+  // Calculate X offset based on window width
+  // Center = 0
+  // Left Half Center = -width / 4 (Shift left by 25% of screen)
+  // Right Half Center = width / 4  (Shift right by 25% of screen)
+  const xOffset = useMemo(() => {
+    if (horizontalPosition === "left") return -width / 4;
+    if (horizontalPosition === "right") return width / 4;
+    return 0;
+  }, [width, horizontalPosition]);
+
   const OverlayPositionToCSS = {
     center: 0,
     bottom: "40vh",
@@ -43,18 +56,13 @@ export default function GenericOverlay({
     (l) => l.text !== undefined && l.text !== null
   );
 
-  // Build a content key from line texts — changing this triggers exit -> enter (mode="wait")
   const contentKey = visibleLines.map((l) => l.text ?? "").join("|");
 
-  // find the title index if present
   const titleIndex = visibleLines.findIndex((l) => l.key === "title");
   const hasDrawnTitle = titleIndex !== -1;
 
-  // showOtherLines controls whether non-title lines mount (they should wait for draw)
   const [showOtherLines, setShowOtherLines] = useState(!hasDrawnTitle);
 
-  // When overlay opens or content key changes (after exit), reset showOtherLines to hide other lines
-  // until DrawLetters calls onComplete. Using contentKey in effect ensures we reset for new content.
   useEffect(() => {
     if (overlayVisibility) {
       setShowOtherLines(!hasDrawnTitle);
@@ -63,8 +71,6 @@ export default function GenericOverlay({
   }, [overlayVisibility, contentKey]);
 
   const staggerDelay = 0.16;
-
-  // this section is kinda nasty lol
   const gap = 0.8;
   const gapUnit = "rem";
   const gapValue = gap + gapUnit;
@@ -74,8 +80,6 @@ export default function GenericOverlay({
     <AnimatePresence
       mode="wait"
       onExitComplete={() => {
-        // The old content has fully exited; the new container will mount now.
-        // Reset showOtherLines for the incoming content (if it has a drawn title).
         setShowOtherLines(!hasDrawnTitle);
       }}
     >
@@ -96,41 +100,40 @@ export default function GenericOverlay({
             gap: gapValue,
             zIndex: 10,
             pointerEvents: "none",
+            // Vertical positioning (Y)
             y: OverlayPositionToCSS[titlePosition],
+            // Horizontal positioning (X)
+            x: xOffset,
           }}
           initial={{
             opacity: 0,
           }}
           animate={{
             opacity: 1,
+            // Ensure we animate to the calculated X if it changes while mounted
+            x: xOffset,
+            y: OverlayPositionToCSS[titlePosition],
           }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.16, ease: "easeInOut" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }} // Increased duration slightly for smoother movement
         >
           {visibleLines.map((line, idx) => {
             if (idx === titleIndex) {
-              // Title: DrawLetters. Start drawing as soon as it mounts.
               return (
                 <div
                   key={`${line.key}-${line.text}`}
                   style={{
                     display: "inline-block",
-                    // override the gap for this title only
                     marginBottom: gapTitleOverride,
                     marginTop: gapTitleOverride,
                   }}
                 >
                   <DrawLetters
-                    key={`${line.key}-${line.text}`} // force rerender when text changes
+                    key={`${line.key}-${line.text}`}
                     text={line.text}
-                    // when the draw completes, reveal the other lines immediately
                     onComplete={() => {
-                      // slight microtask yield to allow DOM update, but this is immediate
                       setShowOtherLines(true);
                     }}
-                    // tune duration & stagger if you want even snappier or slower draws:
-                    // duration={1500}
-                    // stagger={30}
                     fontSize={
                       typeof line.size === "number" ? line.size : undefined
                     }
@@ -139,7 +142,6 @@ export default function GenericOverlay({
               );
             }
 
-            // Non-title lines: show placeholder while waiting, then mount FadeLine which animates.
             return (
               <div
                 key={`${line.key}-${line.text ?? ""}`}
@@ -158,7 +160,6 @@ export default function GenericOverlay({
                     delay={idx * staggerDelay}
                   />
                 ) : (
-                  // placeholder to reserve layout space while waiting for draw to finish:
                   <div
                     aria-hidden
                     style={{

@@ -3,11 +3,11 @@ import { Group, Rect } from "react-konva";
 import { useState, useRef, useEffect } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
-import ConstellationBoundingBox from "./ConstellationBoundingBox"; // Import new component
+import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Constellation({
   data,
@@ -48,6 +48,8 @@ export default function Constellation({
       isFocused = true;
     }
   }
+
+  const pathname = usePathname();
 
   const { stars, connections, totalDuration } = data;
   const DEFAULT_TOTAL_DURATION = 2;
@@ -169,18 +171,6 @@ export default function Constellation({
     return acc;
   }, []);
 
-  useEffect(() => {
-    if (!isFocused) {
-      playUnfocusTween();
-    }
-    if (focusedConstellation) {
-      if (!isFocused) {
-        playVanishTween();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, focusedConstellation]);
-
   const HOVER_SCALE = 1.1;
   const SCALE_ANIMATION_DURATION = 0.75;
   const FOCUS_ANIMATION_DURATION = 0.5;
@@ -190,7 +180,9 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    hoverTweenRef.current?.finish();
+    if (hoverTweenRef.current) {
+      hoverTweenRef.current.finish();
+    }
 
     hoverTweenRef.current = new Konva.Tween({
       node,
@@ -207,14 +199,26 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    focusTweenRef.current?.finish();
+    if (focusTweenRef.current) {
+      focusTweenRef.current.destroy();
+    }
+
+    // Determine Target Position based on Pathname
+
+    const targetX = pathname !== "/" ? windowCenter.x / 2 : windowCenter.x;
+    // also bring the top overlay along with the focus
+    if (pathname !== "/") {
+      setTopOverlayHorizontalPosition("left");
+    }
+
+    const targetY = windowCenter.y;
 
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
       easing: EASING,
-      x: windowCenter.x,
-      y: windowCenter.y,
+      x: targetX,
+      y: targetY,
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
       rotation: 0,
@@ -230,7 +234,9 @@ export default function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    focusTweenRef.current?.finish();
+    if (focusTweenRef.current) {
+      focusTweenRef.current.destroy();
+    }
 
     focusTweenRef.current = new Konva.Tween({
       node,
@@ -244,13 +250,19 @@ export default function Constellation({
     });
 
     focusTweenRef.current.play();
+    // reset the top overlay position
+    if (pathname === "/") {
+      setTopOverlayHorizontalPosition("center");
+    }
   };
 
   const playVanishTween = () => {
     const node = groupRef.current;
     if (!node) return;
 
-    focusTweenRef.current?.finish();
+    if (focusTweenRef.current) {
+      focusTweenRef.current.destroy();
+    }
 
     const currentX = unfocusedConstellationX;
     const currentY = unfocusedConstellationY;
@@ -296,9 +308,25 @@ export default function Constellation({
     focusTweenRef.current.play();
   };
 
+  useEffect(() => {
+    if (isFocused) {
+      groupRef.current?.moveToTop();
+      playFocusTween();
+    } else {
+      playUnfocusTween();
+    }
+    if (focusedConstellation) {
+      if (!isFocused) {
+        playVanishTween();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused, focusedConstellation, pathname]);
+
   const {
     setOverlayTextContents: setTopOverlayTextContents,
     resetOverlayTextContents: resetTopOverlayTextContents,
+    setHorizontalPosition: setTopOverlayHorizontalPosition,
   } = useTopOverlayContext();
 
   const { setOverlayTextContents: setCenterOverlayTextContents } =
@@ -308,7 +336,6 @@ export default function Constellation({
 
   const handleConstellationClick = (e: any) => {
     e.cancelBubble = true;
-    playFocusTween();
     if (!isFocused) {
       groupRef.current?.moveToTop();
     }
@@ -411,7 +438,7 @@ export default function Constellation({
             data={star.data}
             showLabel={isFocused}
             labelSize={4}
-            enableOnClick={isFocused}
+            isConstellationFocused={isFocused}
             onHoverEnterCallback={() => {
               if (star.data) {
                 if (isFocused) {
@@ -434,12 +461,15 @@ export default function Constellation({
             onHoverLeaveCallback={() => {
               if (star.data?.label) {
                 if (isFocused) {
-                  setTopOverlayTextContents({
-                    intro: data.intro,
-                    title: data.name,
-                    origin: data.about,
-                    about: "",
-                  });
+                  // go back to the constellation information
+                  if (pathname === "/") {
+                    setTopOverlayTextContents({
+                      intro: data.intro,
+                      title: data.name,
+                      origin: data.about,
+                      about: "",
+                    });
+                  }
                 } else {
                   resetTopOverlayTextContents();
                   setCenterOverlayTextContents({
