@@ -189,6 +189,7 @@ export default function Polaris({
         twinkleMax={twinkleMax}
         onHoverEnterCallback={onHoverEnterCallback}
         onHoverLeaveCallback={onHoverLeaveCallback}
+        onHoverPointerOverride={true}
       />
     </Group>
   );

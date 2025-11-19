@@ -30,6 +30,7 @@ type Props = {
   labelSize?: number;
   showHitBox?: boolean;
   cancelBubble?: boolean;
+  onHoverPointerOverride?: boolean;
 };
 
 export default function MainStar({
@@ -54,6 +55,7 @@ export default function MainStar({
   labelSize = 12,
   showHitBox = false,
   cancelBubble = false,
+  onHoverPointerOverride = false,
 }: Props) {
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
@@ -230,7 +232,7 @@ export default function MainStar({
 
   const handleInteractionStart = () => {
     onHoverEnterCallback?.();
-    if (data && !isStarDataWithoutLink(data)) {
+    if (onHoverPointerOverride || (data && !isStarDataWithoutLink(data))) {
       document.body.style.cursor = "pointer";
     }
     playHoverTween(1.1, 1.1);
