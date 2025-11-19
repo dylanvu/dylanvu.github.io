@@ -23,7 +23,6 @@ interface DrawLettersProps {
   fontUrl?: string;
   fontSize?: number;
   duration?: number;
-  stagger?: number;
   color?: string;
   width?: number | string;
   className?: string;
@@ -40,8 +39,7 @@ export default function DrawLetters({
   text = "",
   fontUrl = "/fonts/Allura-Regular.ttf",
   fontSize = 100,
-  duration = 1000,
-  stagger = 50,
+  duration = 1200,
   color = SPACE_TEXT_COLOR,
   width = "100%",
   className = "",
@@ -75,6 +73,7 @@ export default function DrawLetters({
     viewBox,
     totalDuration,
     perLetterDuration,
+    staggerDelay,
   } = useMemo(() => {
     if (!font || !textStr) {
       return {
@@ -84,6 +83,7 @@ export default function DrawLetters({
         viewBox: "0 0 0 0",
         totalDuration: 0,
         perLetterDuration: 0,
+        staggerDelay: 0,
       };
     }
 
@@ -103,10 +103,13 @@ export default function DrawLetters({
       const path = glyph.getPath(cursorX + padX, baseline + padY, fontSize);
       const d = path.toPathData(2);
 
+      // Only process glyphs that actually have drawing commands (skips spaces)
       if (d) {
         glyphData.push({
           d,
-          index: i,
+          // FIX: Use glyphData.length (0, 1, 2...) instead of 'i' (0, 1, 5...)
+          // This ensures the animation timing is continuous and ignores spaces.
+          index: glyphData.length,
           maskId: `${uid}-m-${i}`,
         });
       }
@@ -123,18 +126,15 @@ export default function DrawLetters({
     const boxWidth = cursorX + padX * 2;
     const boxHeight = ascender - descender + padY * 2;
 
-    // --- TIMING LOGIC ---
+    // --- SEQUENTIAL TIMING LOGIC ---
     const count = glyphData.length;
-    const lastLetterDelay = Math.max(0, (count - 1) * stagger);
 
-    // Calculate how long each letter should take to fill the remaining time
-    let calculatedLetterDuration = duration - lastLetterDelay;
+    const timeSlot = duration / Math.max(1, count);
+    const calculatedStagger = timeSlot;
+    const calculatedLetterDuration = timeSlot * 1.2;
 
-    // Safety: If duration is very short or stagger is very high,
-    // prevent the letter from drawing instantly (or negative time).
-    calculatedLetterDuration = Math.max(400, calculatedLetterDuration);
-
-    const realTotalDuration = lastLetterDelay + calculatedLetterDuration;
+    const realTotalDuration =
+      (count - 1) * calculatedStagger + calculatedLetterDuration;
 
     return {
       glyphs: glyphData,
@@ -143,8 +143,9 @@ export default function DrawLetters({
       viewBox: `0 0 ${boxWidth} ${boxHeight}`,
       totalDuration: realTotalDuration,
       perLetterDuration: calculatedLetterDuration,
+      staggerDelay: calculatedStagger,
     };
-  }, [font, textStr, fontSize, uid, duration, stagger]);
+  }, [font, textStr, fontSize, uid, duration]);
 
   // 3. Animation Trigger
   useEffect(() => {
@@ -154,7 +155,6 @@ export default function DrawLetters({
       setIsAnimating(true);
     });
 
-    // We match the JS timer exactly to the calculated CSS duration
     const timer = setTimeout(() => {
       onComplete?.();
     }, totalDuration);
@@ -212,15 +212,8 @@ export default function DrawLetters({
                 style={{
                   strokeDasharray: "1",
                   strokeDashoffset: isAnimating ? "0" : "1",
-
-                  /* 
-                     KEY FIX: Switched to a balanced ease-in-out. 
-                     The previous bezier (0.25, 1, 0.5, 1) rushed to the end too fast.
-                     This one ensures the visual movement lasts the full duration.
-                  */
                   transition: `stroke-dashoffset ${perLetterDuration}ms cubic-bezier(0.45, 0, 0.55, 1)`,
-
-                  transitionDelay: `${g.index * stagger}ms`,
+                  transitionDelay: `${g.index * staggerDelay}ms`,
                 }}
               />
             </mask>
@@ -235,7 +228,7 @@ export default function DrawLetters({
               mask={`url(#${g.maskId})`}
               style={{
                 opacity: isAnimating ? 1 : 0,
-                transition: `opacity 50ms linear ${g.index * stagger}ms`,
+                transition: `opacity 50ms linear ${g.index * staggerDelay}ms`,
               }}
             />
           ))}
