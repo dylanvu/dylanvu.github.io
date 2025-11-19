@@ -6,7 +6,7 @@ import {
   SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
-import { StarData } from "@/interfaces/StarInterfaces";
+import { isStarDataWithoutLink, StarData } from "@/interfaces/StarInterfaces";
 
 type Props = {
   data?: StarData;
@@ -230,7 +230,9 @@ export default function MainStar({
 
   const handleInteractionStart = () => {
     onHoverEnterCallback?.();
-    document.body.style.cursor = "pointer";
+    if (data && !isStarDataWithoutLink(data)) {
+      document.body.style.cursor = "pointer";
+    }
     playHoverTween(1.1, 1.1);
   };
 

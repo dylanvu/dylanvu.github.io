@@ -75,6 +75,13 @@ type StarDataWithoutLink = BaseStarData & {
   externalLink?: never;
 };
 
+// typeguard for star without link
+export function isStarDataWithoutLink(
+  data: StarData
+): data is StarDataWithoutLink {
+  return !data.internalLink && !data.externalLink;
+}
+
 // The star data is a union of valid star data types
 export type StarData =
   | StarDataWithInternalLink
