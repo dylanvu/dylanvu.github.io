@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  FONT_FAMILY,
-  SECONDARY_SPACE_COLOR,
-  SPACE_BACKGROUND_COLOR,
-  SPACE_TEXT_COLOR,
-  hexToRgba,
-} from "@/app/theme";
+import { FONT_FAMILY, SPACE_BACKGROUND_COLOR } from "@/app/theme";
 import { Layer, Stage } from "react-konva";
 import BackgroundStarField from "@/components/star-revamp/Star/Background/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
@@ -17,20 +11,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
-import { useFocusContext } from "@/hooks/useFocusProvider";
-
-const panelStyle: React.CSSProperties = {
-  position: "absolute",
-  color: SPACE_TEXT_COLOR,
-  overflowY: "auto",
-  width: "50%",
-  height: "100%",
-  zIndex: 11,
-  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.7),
-  right: 0,
-  padding: "1rem",
-  cursor: "auto",
-};
+import { StarPanelStyle } from "@/components/star-revamp/ScreenOverlay/StarPanelStyle";
 
 export default function MainStage({
   children,
@@ -67,7 +48,7 @@ export default function MainStage({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 100 }}
                 transition={{ duration: 0.2 }}
-                style={panelStyle}
+                style={StarPanelStyle}
                 className={FONT_FAMILY.style.fontFamily}
               >
                 {children}
@@ -88,15 +69,6 @@ export default function MainStage({
               height={height}
               focusedConstellationPos={focusedConstellationPos}
             />
-            {/* debug square, make it hot pink and large */}
-            {/* <Rect
-              x={0}
-              y={0}
-              width={width}
-              height={height}
-              fill="pink"
-              listening={false}
-            ></Rect> */}
             {showMainStars && (
               <MainStarField
                 setFocusedConstellationPosAction={setFocusedConstellationPos}
