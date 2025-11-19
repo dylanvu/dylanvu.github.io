@@ -408,8 +408,8 @@ export default function MainStarField({
             <Polaris
               x={polarisScreenX}
               y={polarisScreenY}
-              size={5}
-              brightness={5}
+              size={4}
+              brightness={2}
               twinkleMin={4.9}
               twinkleMax={5.1}
               windowCenter={windowCenter}

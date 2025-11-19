@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Group } from "react-konva";
+import { Group, Circle } from "react-konva";
 import Konva from "konva";
 import MainStar from "./MainStar";
 
@@ -15,6 +15,82 @@ type PolarisProps = {
   windowCenter: { x: number; y: number };
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
+};
+
+// --- Sub-component for a single expanding ring ---
+const PulseRing = ({
+  radius,
+  delay,
+  duration = 3,
+  maxOpacity = 0.4,
+  debug = false,
+  strokeWidth = 2,
+}: {
+  radius: number;
+  delay: number; // in seconds
+  duration?: number;
+  maxOpacity?: number;
+  debug?: boolean;
+  strokeWidth?: number;
+}) => {
+  const circleRef = useRef<Konva.Circle>(null);
+  const tweenRef = useRef<Konva.Tween | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const node = circleRef.current;
+    if (!node) return;
+
+    // 1. Initialize state
+    node.scaleX(1);
+    node.scaleY(1);
+    node.opacity(0); // Start invisible
+    node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
+
+    const playPulse = () => {
+      // Reset state for the new loop
+      node.scaleX(1);
+      node.scaleY(1);
+      node.opacity(maxOpacity); // Jump to max opacity
+      node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
+
+      tweenRef.current = new Konva.Tween({
+        node,
+        duration: duration,
+        scaleX: 2.5,
+        scaleY: 2.5,
+        opacity: 0, // Fade out completely
+        strokeWidth: 0, // Thin out stroke
+        easing: Konva.Easings.EaseOut,
+        onFinish: () => {
+          playPulse(); // Loop immediately without gap
+        },
+      });
+
+      tweenRef.current.play();
+    };
+
+    // Initial delay before the first loop starts
+    timerRef.current = setTimeout(() => {
+      playPulse();
+    }, delay * 1000);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      tweenRef.current?.destroy();
+    };
+  }, [delay, duration, maxOpacity, debug]);
+
+  return (
+    <Circle
+      ref={circleRef}
+      x={0}
+      y={0}
+      radius={radius}
+      stroke={debug ? "red" : "rgba(200, 230, 255, 0.6)"}
+      listening={false}
+    />
+  );
 };
 
 export default function Polaris({
@@ -33,6 +109,19 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
 
+  // --- CONFIGURATION ---
+  const DEBUG_RIPPLES = false; // Set to true to see Red Rings
+  const RIPPLE_MAX_OPACITY = 0.5;
+
+  // FREQUENCY CONTROL:
+  // This controls how long it takes for one ring to finish.
+  // Lower number = Faster pulses (Higher frequency)
+  // Higher number = Slower pulses (Lower frequency)
+  const RIPPLE_CYCLE_DURATION = 5;
+
+  const effectiveRadius =
+    size * Math.max(brightness, twinkleMax ?? brightness) * 0.8;
+
   // Handle parallax movement
   useEffect(() => {
     const node = groupRef.current;
@@ -41,30 +130,25 @@ export default function Polaris({
     focusTweenRef.current?.finish();
 
     if (focusedScreenPos) {
-      // A constellation is focused - move Polaris away from the focal point
       const focal = focusedUnfocusedPos ?? windowCenter;
-      
-      // Calculate direction vector from focal point to Polaris's original position
       let vx = x - focal.x;
       let vy = y - focal.y;
       let vlen = Math.hypot(vx, vy);
-      
+
       if (vlen < 0.00001) {
         vx = 0;
         vy = -1;
         vlen = 1;
       }
-      
+
       const nx = vx / vlen;
       const ny = vy / vlen;
 
-      // Calculate offscreen distance
       const vw = typeof window !== "undefined" ? window.innerWidth : 1920;
       const vh = typeof window !== "undefined" ? window.innerHeight : 1080;
       const viewportDiagonal = Math.hypot(vw, vh);
       const offscreenDist = viewportDiagonal * 1.4;
 
-      // Animate to offscreen position
       focusTweenRef.current = new Konva.Tween({
         node,
         duration: 0.5,
@@ -73,7 +157,6 @@ export default function Polaris({
         y: y + ny * offscreenDist,
       });
     } else {
-      // No constellation focused - return to original position
       focusTweenRef.current = new Konva.Tween({
         node,
         duration: 0.5,
@@ -88,6 +171,15 @@ export default function Polaris({
 
   return (
     <Group ref={groupRef} x={x} y={y}>
+      {/* Rendered first so they appear BEHIND the star */}
+      <PulseRing
+        radius={effectiveRadius}
+        delay={2}
+        duration={RIPPLE_CYCLE_DURATION}
+        maxOpacity={RIPPLE_MAX_OPACITY}
+        debug={DEBUG_RIPPLES}
+      />
+
       <MainStar
         x={0}
         y={0}
@@ -95,7 +187,6 @@ export default function Polaris({
         brightness={brightness}
         twinkleMin={twinkleMin}
         twinkleMax={twinkleMax}
-        windowCenter={windowCenter}
         onHoverEnterCallback={onHoverEnterCallback}
         onHoverLeaveCallback={onHoverLeaveCallback}
       />
