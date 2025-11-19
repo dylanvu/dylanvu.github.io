@@ -429,3 +429,57 @@ export function getStarDataBySlug(
 
   return null;
 }
+
+/**
+ * Formats constellation data for LLM consumption by removing all transformation
+ * and position data, keeping only semantic information about the constellations
+ * and stars.
+ *
+ * This function removes:
+ * - Star positioning (x, y, size)
+ * - Constellation transformations (designX, designY, rotation, scale, focusScale, totalDuration)
+ * - Visual connections between stars
+ *
+ * It preserves:
+ * - Constellation metadata (name, origin, about, intro)
+ * - Star data (label, origin, about, intro, color, links)
+ *
+ * @returns A formatted string representing all constellations and their stars
+ */
+export function formatConstellationForLLM(): string {
+  const formattedData = CONSTELLATIONS.map((constellation) => {
+    // Extract only semantic constellation data
+    const constellationInfo = {
+      name: constellation.name,
+      origin: constellation.origin,
+      about: constellation.about,
+      intro: constellation.intro,
+      stars: constellation.stars
+        .filter((star) => star.data) // Only include stars with data
+        .map((star) => {
+          const starData = star.data!;
+          return {
+            label: starData.label,
+            origin: starData.origin,
+            about: starData.about,
+            intro: starData.intro,
+            ...(starData.color && { color: starData.color }),
+            ...("internalLink" in starData &&
+              starData.internalLink && {
+                internalLink: starData.internalLink,
+              }),
+            ...("slug" in starData && starData.slug && { slug: starData.slug }),
+            ...("externalLink" in starData &&
+              starData.externalLink && {
+                externalLink: starData.externalLink,
+              }),
+          };
+        }),
+    };
+
+    return constellationInfo;
+  });
+
+  // Convert to JSON string for easy LLM consumption
+  return JSON.stringify(formattedData, null, 2);
+}
