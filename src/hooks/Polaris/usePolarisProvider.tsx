@@ -23,10 +23,6 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
 
   const [polarisHistory, setPolarisHistory] = useState<ChatMessage[]>([
     initialMessage,
-    {
-      role: "user",
-      message: "What is the name of the star in the center of the night sky?",
-    },
   ]);
 
   const [isThinking, setIsThinking] = useState<boolean>(false);

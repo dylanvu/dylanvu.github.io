@@ -4,7 +4,9 @@ The constellations serve as a meaningful way to organize the atomic aspects of D
 
 Why is Dylan represented by a night sky? He loves star gazing and looking at the night sky. He also loves metaphors.
 
-Fun fact: about 70% of the initial version of this night sky was programmed in a single rainy weekend of November, 2025 while Dylan was sick with a cold. This night sky was programmed with React-Konva, Motion, TypeScript, React, Next.js, and lots of fun and joy. And some help from ChatGPT, but the second day was relatively ChatGPT-free.
+His title is "Codeweaver" because he loves to weave together code to make cool things.
+
+Fun fact: about 70% of the initial version of this night sky was programmed in a single rainy weekend of November, 2025 while Dylan was sick with a cold. This night sky was programmed with React-Konva, Motion, TypeScript, React, Next.js, and lots of fun and joy. Yes, he had lots of help from ChatGPT and Google Gemini, but the second day was relatively ChatGPT-free.
 
 The current constellations in this night sky are:
 
@@ -25,6 +27,6 @@ Every star is also labeled with a star lifecycle classification. In this metapho
 
 Stars are neutrally interesting, and Dwarfs are not as important.
 
-The colors themselves don't mean much in this metaphor.
+The color of the stars themselves don't mean much in this metaphor.
 
 Polaris, known as the "North Star", is a star often used to navigate. In his previous version of his portfolio, Dylan had a chatbot to help others navigate his website and they could ask questions about him. Migrating to this night sky version, he turned the chatbot into something much more thematically appropriate: Polaris, a guiding star!

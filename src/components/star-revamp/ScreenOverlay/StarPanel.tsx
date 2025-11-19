@@ -11,7 +11,6 @@ import {
   StarDataWithInternalLink,
 } from "@/interfaces/StarInterfaces";
 import { useEffect } from "react";
-import { StarPanelMotionDiv } from "@/components/star-revamp/ScreenOverlay/StarPanelMotionDiv";
 
 export default function StarPanel({
   markdown,
@@ -35,9 +34,5 @@ export default function StarPanel({
       star: starData,
     });
   }, []);
-  return (
-    <StarPanelMotionDiv>
-      <StarMarkdownRenderer markdown={markdown} />;
-    </StarPanelMotionDiv>
-  );
+  return <StarMarkdownRenderer markdown={markdown} />;
 }

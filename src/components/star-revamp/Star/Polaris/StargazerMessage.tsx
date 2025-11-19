@@ -1,12 +1,49 @@
+import { motion } from "motion/react";
+import { FONT_FAMILY } from "@/app/theme"; // Assuming this exists based on your snippet
+import React from "react";
+import ReactMarkdown from "react-markdown";
+
 export default function StargazerMessage({ message }: { message: string }) {
   return (
-    <div
+    <motion.div
+      // FIX: Removed 'x: 10' to prevent right-side overflow/expansion
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       style={{
-        textAlign: "right",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        alignSelf: "flex-end",
+        maxWidth: "85%",
+        // Ensure the container itself doesn't stretch nicely
+        transformOrigin: "bottom right",
       }}
+      className={FONT_FAMILY.className}
     >
-      <h1>You</h1>
-      <div>{message}</div>
-    </div>
+      <span
+        style={{
+          fontSize: "0.7rem",
+          opacity: 0.6,
+          marginBottom: "0.2rem",
+          marginRight: "0.8rem",
+        }}
+      >
+        You
+      </span>
+      <div
+        style={{
+          background: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          padding: "0.8rem 1.2rem",
+          borderRadius: "18px 18px 2px 18px",
+          lineHeight: "1.5",
+          wordWrap: "break-word", // Ensure long words don't overflow
+        }}
+      >
+        <ReactMarkdown>{message}</ReactMarkdown>
+      </div>
+    </motion.div>
   );
 }

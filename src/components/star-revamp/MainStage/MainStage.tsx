@@ -11,7 +11,17 @@ import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
-import { StarPanelStyle } from "@/components/star-revamp/ScreenOverlay/StarPanelStyle";
+import {
+  StarPanelMotionAnimate,
+  StarPanelMotionExit,
+  StarPanelMotionInitial,
+  StarPanelMotionTransition,
+  StarPanelStyle,
+} from "@/components/star-revamp/ScreenOverlay/StarPanelStyle";
+
+const PolarisStyleOverride: React.CSSProperties = {
+  height: "70%",
+};
 
 export default function MainStage({
   children,
@@ -24,6 +34,11 @@ export default function MainStage({
   const pathname = usePathname();
   const [focusedConstellationPos, setFocusedConstellationPos] =
     useState<FocusedConstellationPos | null>(null);
+
+  let panelStyle = { ...StarPanelStyle };
+  if (pathname === "/polaris") {
+    panelStyle = { ...StarPanelStyle, ...PolarisStyleOverride };
+  }
 
   return (
     <div
@@ -41,7 +56,19 @@ export default function MainStage({
           <CenterOverlay />
           <TopOverlay />
           <AnimatePresence mode="wait">
-            {pathname !== "/" && children}
+            {pathname !== "/" && (
+              <motion.div
+                key="children"
+                initial={StarPanelMotionInitial}
+                animate={StarPanelMotionAnimate}
+                exit={StarPanelMotionExit}
+                transition={StarPanelMotionTransition}
+                style={panelStyle}
+                className={FONT_FAMILY.style.fontFamily}
+              >
+                {children}
+              </motion.div>
+            )}
           </AnimatePresence>
         </>
       )}

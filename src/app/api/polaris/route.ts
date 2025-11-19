@@ -1,15 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { getAllProjectInformation } from "@/app/api/util";
-import {
-  HackathonList,
-  returnHackathonStatisticsString,
-} from "@/constants/Hackathons";
-import { convertHackathonToString } from "@/interfaces/HackathonInformation";
-import bio from "../../../../public/about/bio.json";
 import fs from "fs";
-import { getCurrentPursuitsString } from "@/constants/CurrentPursuits";
-import { getNextStepsString } from "@/constants/NextSteps";
 // must use this weird way here because otherwise you get an error if you directly import: import pdf from "pdf-parse"
 // Error: ENOENT: no such file or directory, open 'C:\Users\Dylan\VSCode\projects\vu-dylan.github.io\test\data\05-versions-space.pdf'
 import pdf from "pdf-parse/lib/pdf-parse.js";
@@ -34,50 +25,28 @@ export async function POST(request: NextRequest) {
     apiKey: process.env.GEMINI_API_KEY,
   });
 
-  // build the system prompt
-
-  const projects = await getAllProjectInformation();
-
-  // convert the projects to a string
-  let projectsString = "";
-  projects.forEach((project) => {
-    projectsString += project.content + "\n";
-  });
-
-  // convert the hackathons to a string
-  let hackathonsString = "";
-  HackathonList.forEach((hackathon) => {
-    hackathonsString += convertHackathonToString(hackathon) + "\n";
-  });
-
   const resumeString = (await pdf(resumeFile)).text;
 
-  const SYSTEM_PROMPT = `You are a floating star in the night sky named Polaris. You are a friendly tour guide that shows the user around a software engineer's website. Act like a tour guide. His name is Dylan Vu. When describing Dylan, describe it like a tour guide would. Do not use his first person perspective, but use the third person perspective.
+  const SYSTEM_PROMPT = `You are a floating star in the night sky named Polaris. You are a friendly tour guide that shows the user, called a "stargazer", around a software engineer's website. Act like a tour guide. His name is Dylan Vu. When describing Dylan, describe it like a tour guide would. Do not use his first person perspective, but use the third person perspective.
 
-  The portfolio is called Dylan's Night Sky. You will talk about his portfolio in this metaphorical night sky.
-
-  Here is information about the night sky: ${nightSkyString}
+  The portfolio is called Dylan's Night Sky. You will talk about his portfolio in this metaphorical night sky, calling it the "night sky".
 
   You can use the images given in the project by using them as defined in the markdown format in your response.
   
   As a tour guide, you have knowledge of the following information:
   
-  Dylan's bio: ${bio.data}
+  Dylan's bio: TBD
 
   Dylan's resume: ${resumeString}
 
-  What Dylan is currently pursuing: ${getCurrentPursuitsString()}
-
-  What Dylan is planning to do next: ${getNextStepsString()}
-
   Projects that Dylan has built:
-  ${projectsString}
+  TBD
 
   Hackathons Dylan has done:
-  ${hackathonsString}
+  TBD
 
   Dylan's Hackathon Statistics:
-  ${returnHackathonStatisticsString()}
+  TBD
 
   Today's date is ${new Date().toLocaleDateString("en-US", {
     year: "numeric",

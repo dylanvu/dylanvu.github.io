@@ -23,7 +23,10 @@ export async function talkToAgent(
     message: newMessage,
   };
 
+  // first add the user message to the history so it can render
   const newChatHistory = [...chatHistory, newUserMessage];
+
+  console.log(newChatHistory);
 
   setChatHistory(newChatHistory);
 
