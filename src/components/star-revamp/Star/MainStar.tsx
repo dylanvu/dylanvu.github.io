@@ -15,6 +15,7 @@ type Props = {
   size?: number;
   brightness?: number;
   delay?: number; // delay in seconds
+  initialOpacity?: number; // dim level (0 to 1)
   twinkleEnabled?: boolean;
   twinkleMin?: number;
   twinkleMax?: number;
@@ -27,7 +28,6 @@ type Props = {
   labelOverride?: string;
   showLabel?: boolean;
   labelSize?: number;
-  windowCenter: { x: number; y: number };
   showHitBox?: boolean;
   cancelBubble?: boolean;
 };
@@ -39,6 +39,7 @@ export default function MainStar({
   size = 5,
   brightness = 1,
   delay = 0,
+  initialOpacity = 0.1,
   twinkleEnabled = true,
   twinkleMin = 0.9,
   twinkleMax = 1.1,
@@ -51,7 +52,6 @@ export default function MainStar({
   labelOverride,
   showLabel,
   labelSize = 12,
-  windowCenter,
   showHitBox = false,
   cancelBubble = false,
 }: Props) {
@@ -60,7 +60,11 @@ export default function MainStar({
   const textRef = useRef<Konva.Text>(null);
   const brightnessRef = useRef(brightness);
 
-  const fadeTweenRef = useRef<Konva.Tween | null>(null);
+  // Refs for tweens and timers
+  const dimTweenRef = useRef<Konva.Tween | null>(null);
+  const fullTweenRef = useRef<Konva.Tween | null>(null);
+  const delayTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverTweenRef = useRef<Konva.Tween | null>(null);
 
   const starColor = useRef(
     ["#FFFFFF", "#E0F7FF", "#FFFACD", "#FFDDEE"][Math.floor(Math.random() * 4)]
@@ -68,44 +72,73 @@ export default function MainStar({
 
   const SCALE_ANIMATION_DURATION = 0.25;
   const EASING = Konva.Easings.EaseInOut;
-  const hoverTweenRef = useRef<Konva.Tween | null>(null);
 
-  // 1. Handle Fade-In Animation SAFELY
+  // 1. Handle Fade Logic (Dim -> Wait -> Bright)
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
 
-    // Reset opacity to 0 initially if this is a fresh mount/remount
-    // We use .opacity() directly to avoid React state causing re-renders
+    // Start invisible
     group.opacity(0);
 
-    // SAFELY clean up previous tween
-    if (fadeTweenRef.current) {
-      fadeTweenRef.current.destroy();
-      fadeTweenRef.current = null;
+    // Clean up previous state
+    if (dimTweenRef.current) {
+      dimTweenRef.current.destroy();
+      dimTweenRef.current = null;
+    }
+    if (fullTweenRef.current) {
+      fullTweenRef.current.destroy();
+      fullTweenRef.current = null;
+    }
+    if (delayTimerRef.current) {
+      clearTimeout(delayTimerRef.current);
+      delayTimerRef.current = null;
     }
 
-    // Create new tween
-    fadeTweenRef.current = new Konva.Tween({
+    // --- STAGE 1: Fade into DIM state immediately ---
+    dimTweenRef.current = new Konva.Tween({
       node: group,
-      duration: 1,
-      delay: delay, // Konva handles the delay natively here
-      opacity: 1,
+      duration: 1.5,
+      opacity: initialOpacity,
       easing: Konva.Easings.EaseInOut,
     });
+    dimTweenRef.current.play();
 
-    fadeTweenRef.current.play();
+    // --- STAGE 2: Schedule fade to FULL state ---
+    // We use setTimeout because Konva.Tween doesn't support 'delay'
+    delayTimerRef.current = setTimeout(() => {
+      // Stop the dim tween if it's still running so they don't fight
+      if (dimTweenRef.current) {
+        dimTweenRef.current.finish();
+      }
 
-    // Cleanup function
+      fullTweenRef.current = new Konva.Tween({
+        node: group,
+        duration: 0.4,
+        opacity: 1,
+        easing: Konva.Easings.EaseOut,
+      });
+      fullTweenRef.current.play();
+    }, delay * 1000); // Convert seconds to ms
+
+    // Cleanup on unmount or prop change
     return () => {
-      if (fadeTweenRef.current) {
-        fadeTweenRef.current.destroy();
-        fadeTweenRef.current = null; // <--- THIS IS THE CRITICAL FIX
+      if (dimTweenRef.current) {
+        dimTweenRef.current.destroy();
+        dimTweenRef.current = null;
+      }
+      if (fullTweenRef.current) {
+        fullTweenRef.current.destroy();
+        fullTweenRef.current = null;
+      }
+      if (delayTimerRef.current) {
+        clearTimeout(delayTimerRef.current);
+        delayTimerRef.current = null;
       }
     };
-  }, [delay]);
+  }, [delay, initialOpacity]);
 
-  // 2. Twinkle logic
+  // 2. Twinkle logic (Unchanged)
   useEffect(() => {
     if (!twinkleEnabled) return;
     let rafId: number | null = null;
@@ -164,11 +197,8 @@ export default function MainStar({
     const node = groupRef.current;
     if (!node) return;
 
-    // Safety check for hover tween as well
     if (hoverTweenRef.current) {
       hoverTweenRef.current.finish();
-      // We use finish() here instead of destroy() usually for hover
-      // so it snaps to end state, but destroy is fine too if we remake it immediately
     }
 
     hoverTweenRef.current = new Konva.Tween({
@@ -181,7 +211,7 @@ export default function MainStar({
     hoverTweenRef.current.play();
   };
 
-  // Cleanup hover tween on unmount
+  // Cleanup hover tween
   useEffect(() => {
     return () => {
       if (hoverTweenRef.current) {
@@ -214,7 +244,7 @@ export default function MainStar({
       ref={groupRef}
       x={x}
       y={y}
-      opacity={0} // Ensure it starts invisible for the tween to pick up
+      opacity={0}
       onMouseEnter={handleInteractionStart}
       onMouseLeave={handleInteractionEnd}
       onTouchStart={handleInteractionStart}

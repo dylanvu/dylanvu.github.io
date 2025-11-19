@@ -476,7 +476,6 @@ export default function Constellation({
             size={2}
             brightness={brightness}
             delay={cornerStarDelays[0]}
-            windowCenter={windowCenter}
           />
           <MainStar
             key="bbox-tr"
@@ -485,7 +484,6 @@ export default function Constellation({
             size={3}
             brightness={brightness}
             delay={cornerStarDelays[1]}
-            windowCenter={windowCenter}
           />
           <MainStar
             key="bbox-br"
@@ -494,7 +492,6 @@ export default function Constellation({
             size={4}
             brightness={brightness}
             delay={cornerStarDelays[2]}
-            windowCenter={windowCenter}
           />
           <MainStar
             key="bbox-bl"
@@ -503,7 +500,6 @@ export default function Constellation({
             size={2}
             brightness={brightness}
             delay={cornerStarDelays[3]}
-            windowCenter={windowCenter}
           />
         </>
       )}
@@ -529,7 +525,6 @@ export default function Constellation({
             data={star.data}
             showLabel={isFocused}
             labelSize={4}
-            windowCenter={windowCenter}
             enableOnClick={isFocused}
             onHoverEnterCallback={() => {
               if (star.data) {
@@ -598,7 +593,6 @@ export default function Constellation({
                 });
               }
             }}
-            
           />
         );
       })}
