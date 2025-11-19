@@ -2,10 +2,12 @@
 
 import {
   FONT_FAMILY,
+  SECONDARY_SPACE_COLOR,
   SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
+  hexToRgba,
 } from "@/app/theme";
-import { Layer, Rect, Shape, Stage } from "react-konva";
+import { Layer, Stage } from "react-konva";
 import BackgroundStarField from "@/components/star-revamp/Star/Background/BackgroundStarField";
 import MainStarField from "@/components/star-revamp/Star/MainStarField";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
@@ -13,17 +15,17 @@ import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay"
 import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 
 const panelStyle: React.CSSProperties = {
   position: "absolute",
   color: SPACE_TEXT_COLOR,
   overflowY: "auto",
-  width: "30%",
+  width: "50%",
   height: "100%",
   zIndex: 11,
-  background: "rgba(256,0,0,0.3)",
+  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.7),
   right: 0,
   padding: "1rem",
   cursor: "auto",
