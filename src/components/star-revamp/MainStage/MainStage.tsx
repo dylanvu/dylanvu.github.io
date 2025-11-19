@@ -41,19 +41,7 @@ export default function MainStage({
           <CenterOverlay />
           <TopOverlay />
           <AnimatePresence mode="wait">
-            {pathname !== "/" && (
-              <motion.div
-                key="children"
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 100 }}
-                transition={{ duration: 0.2 }}
-                style={StarPanelStyle}
-                className={FONT_FAMILY.style.fontFamily}
-              >
-                {children}
-              </motion.div>
-            )}
+            {pathname !== "/" && children}
           </AnimatePresence>
         </>
       )}
