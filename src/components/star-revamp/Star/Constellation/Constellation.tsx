@@ -233,10 +233,11 @@ export default function Constellation({
       focusTweenRef.current.destroy();
     }
 
-    const targetX = pathname !== "/" ? windowCenter.x / 2 : windowCenter.x;
-    if (pathname !== "/") {
-      setTopOverlayHorizontalPosition("left");
-    }
+    const targetX =
+      pathname !== "/" && pathname !== "/polaris"
+        ? windowCenter.x / 2
+        : windowCenter.x;
+
     const targetY = windowCenter.y;
 
     focusTweenRef.current = new Konva.Tween({
@@ -288,9 +289,6 @@ export default function Constellation({
     });
 
     focusTweenRef.current.play();
-    if (pathname === "/") {
-      setTopOverlayHorizontalPosition("center");
-    }
   };
 
   const playVanishTween = () => {
@@ -374,7 +372,6 @@ export default function Constellation({
   const {
     setOverlayTextContents: setTopOverlayTextContents,
     resetOverlayTextContents: resetTopOverlayTextContents,
-    setHorizontalPosition: setTopOverlayHorizontalPosition,
   } = useTopOverlayContext();
 
   const { setOverlayTextContents: setCenterOverlayTextContents } =

@@ -86,6 +86,8 @@ export default function PolarisChat() {
           marginBottom: "1rem",
           paddingRight: "0.5rem",
           scrollbarGutter: "stable",
+          marginRight: "4rem",
+          marginLeft: "4rem",
         }}
       >
         <AnimatePresence initial={false}>
@@ -103,91 +105,102 @@ export default function PolarisChat() {
       </div>
 
       {/* Suggestion Chips */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        style={{
-          display: "flex",
-          gap: "0.5rem",
-          flexWrap: "wrap",
-          justifyContent: "flex-end",
-          marginBottom: "1rem",
-        }}
-      >
-        {suggestions.map((suggestion, i) => (
-          <button
-            key={i}
-            onClick={() => handleSubmit(suggestion)}
-            disabled={isThinking}
-            style={{
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
-              color: "inherit",
-              padding: "0.4rem 0.8rem",
-              borderRadius: "20px",
-              fontSize: "0.75rem",
-              cursor: isThinking ? "not-allowed" : "pointer",
-              backdropFilter: "blur(4px)",
-              transition: "background 0.2s",
-            }}
-            className={FONT_FAMILY.className}
-          >
-            {suggestion}
-          </button>
-        ))}
-      </motion.div>
-
-      {/* Input Bar */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          background: "rgba(255, 255, 255, 0.08)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "99px",
-          padding: "0.4rem 0.4rem 0.4rem 1.2rem",
-          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+          width: "30%",
+          margin: "auto",
+          marginBottom: "4rem",
+          pointerEvents: "none",
         }}
       >
-        <input
-          type="text"
-          placeholder={
-            isThinking ? "Polaris is thinking..." : "Consult Polaris..."
-          }
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isThinking}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           style={{
-            flex: 1,
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            color: "inherit",
-            fontSize: "0.95rem",
-          }}
-          className={FONT_FAMILY.className}
-        />
-        <button
-          onClick={() => handleSubmit()}
-          disabled={isThinking}
-          style={{
-            width: "2.2rem",
-            height: "2.2rem",
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(255, 255, 255, 0.2)",
-            color: "white",
-            cursor: isThinking ? "wait" : "pointer",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginLeft: "0.5rem",
+            gap: "0.5rem",
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+            marginBottom: "1rem",
+            pointerEvents: "all",
           }}
         >
-          ➤
-        </button>
+          {suggestions.map((suggestion, i) => (
+            <button
+              key={i}
+              onClick={() => handleSubmit(suggestion)}
+              disabled={isThinking}
+              style={{
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                color: "inherit",
+                padding: "0.4rem 0.8rem",
+                borderRadius: "20px",
+                fontSize: "0.75rem",
+                cursor: isThinking ? "not-allowed" : "pointer",
+                backdropFilter: "blur(4px)",
+                transition: "background 0.2s",
+              }}
+              className={FONT_FAMILY.className}
+            >
+              {suggestion}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Input Bar */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            background: "rgba(255, 255, 255, 0.08)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "99px",
+            padding: "0.4rem 0.4rem 0.4rem 1.2rem",
+            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            pointerEvents: "all",
+          }}
+        >
+          <input
+            type="text"
+            placeholder={
+              isThinking ? "Polaris is thinking..." : "Consult Polaris..."
+            }
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isThinking}
+            style={{
+              flex: 1,
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              color: "inherit",
+              fontSize: "0.95rem",
+            }}
+            className={FONT_FAMILY.className}
+          />
+          <button
+            onClick={() => handleSubmit()}
+            disabled={isThinking}
+            style={{
+              width: "2.2rem",
+              height: "2.2rem",
+              borderRadius: "50%",
+              border: "none",
+              background: "rgba(255, 255, 255, 0.2)",
+              color: "white",
+              cursor: isThinking ? "wait" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginLeft: "0.5rem",
+            }}
+          >
+            ➤
+          </button>
+        </div>
       </div>
     </div>
   );

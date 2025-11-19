@@ -41,7 +41,6 @@ export default function MainStarField({
   const {
     setOverlayTextContents: setTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility,
-    setHorizontalPosition: setTopOverlayHorizontalPosition,
   } = useTopOverlayContext();
 
   const [selectedConstellation, setSelectedConstellation] =
@@ -148,7 +147,6 @@ export default function MainStarField({
           about: "",
         });
       }
-      setTopOverlayHorizontalPosition("left");
     }
   }, [focusedObject]);
 

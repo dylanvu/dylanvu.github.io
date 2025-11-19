@@ -123,7 +123,7 @@ export default function Polaris({
 
   // Calculate Bottom Right position (with some padding from edge)
 
-  const CLICK_TARGET_X = width - 150; // 150px from right edge
+  const CLICK_TARGET_X = 150; // 150px from left edge
   const CLICK_TARGET_Y = height - 150; // 150px from bottom edge
 
   // --- RIPPLE CONFIGURATION ---
@@ -209,7 +209,7 @@ export default function Polaris({
   const handleClick = () => {
     setIsExpanded(true); // Toggle state (or set to true if you only want one-way)
     // need to fix this interaction later, where polaris needs to just toggle the chat menu (aka go to the)
-    if (pathname === "/") {
+    if (pathname !== "/polaris") {
       router.push("/polaris");
     } else {
       router.push("/");

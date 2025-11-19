@@ -15,7 +15,7 @@ export default function StargazerMessage({ message }: { message: string }) {
         flexDirection: "column",
         alignItems: "flex-end",
         alignSelf: "flex-end",
-        maxWidth: "85%",
+        maxWidth: "30%",
         // Ensure the container itself doesn't stretch nicely
         transformOrigin: "bottom right",
       }}

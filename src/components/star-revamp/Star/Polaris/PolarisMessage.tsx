@@ -13,24 +13,11 @@ export default function PolarisMessage({ message }: { message: string }) {
         display: "flex",
         gap: "12px",
         alignSelf: "flex-start",
-        maxWidth: "90%",
+        maxWidth: "30%",
         transformOrigin: "bottom left",
       }}
       className={FONT_FAMILY.className}
     >
-      {/* Glowing Star Avatar */}
-      <div
-        style={{
-          flexShrink: 0,
-          width: "32px",
-          height: "32px",
-          marginTop: "1.4rem",
-          borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.9)",
-          boxShadow: "0 0 15px 2px rgba(255, 255, 255, 0.5)",
-        }}
-      />
-
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span
           style={{

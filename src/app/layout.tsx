@@ -54,14 +54,14 @@ export default function RootLayout({
         <main className="main">
           <WindowSizeProvider>
             <PolarisProvider>
-              <FocusProvider>
-                <CenterOverlayProvider>
-                  <TopOverlayProvider>
+              <CenterOverlayProvider>
+                <TopOverlayProvider>
+                  <FocusProvider>
                     {/* children here really just refers to the side panels that appear when you go to a specific link */}
                     <NightSky>{children}</NightSky>
-                  </TopOverlayProvider>
-                </CenterOverlayProvider>
-              </FocusProvider>
+                  </FocusProvider>
+                </TopOverlayProvider>
+              </CenterOverlayProvider>
             </PolarisProvider>
           </WindowSizeProvider>
         </main>

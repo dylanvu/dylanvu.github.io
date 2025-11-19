@@ -1,7 +1,6 @@
 "use client";
 import IntroScreen from "@/components/star-revamp/IntroScreen/IntroScreen";
 import { useState } from "react";
-import { SPACE_BACKGROUND_COLOR } from "@/app/theme";
 import MainStage from "@/components/star-revamp/MainStage/MainStage";
 
 export default function NightSky({ children }: { children: React.ReactNode }) {

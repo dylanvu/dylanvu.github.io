@@ -20,7 +20,10 @@ import {
 } from "@/components/star-revamp/ScreenOverlay/StarPanelStyle";
 
 const PolarisStyleOverride: React.CSSProperties = {
-  height: "70%",
+  height: "100%",
+  width: "100%",
+  pointerEvents: "none",
+  background: "none",
 };
 
 export default function MainStage({
