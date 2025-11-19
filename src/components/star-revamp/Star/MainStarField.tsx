@@ -12,10 +12,11 @@ import { Circle, Group, Rect, Text } from "react-konva";
 import Polaris from "@/components/star-revamp/Star/Polaris/Polaris";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
 import React from "react";
 import { useFocusContext } from "@/hooks/useFocusProvider";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -42,6 +43,8 @@ export default function MainStarField({
     setOverlayTextContents: setTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
+
+  const { isReady, polarisActivated } = usePolarisContext();
 
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
@@ -104,7 +107,6 @@ export default function MainStarField({
   }, [selectedConstellation]);
 
   const router = useRouter();
-  const pathname = usePathname();
   const { isMobileLandscape } = useMobile();
 
   // Handler for background clicks/taps
@@ -117,9 +119,21 @@ export default function MainStarField({
       setCenterOverlayVisibility(true);
       setTopOverlayVisibility(false);
     }
-    // if we are not in the root path, navigate to the root
-    if (pathname !== "/") {
+
+    // if polaris is not ready, go to the root
+    if (!isReady) {
       router.push("/");
+    } else {
+      // TODO: refactor /polaris
+      // Goal: /polaris sets the state to activate polaris, kind of like how I handled focus
+      // then, the HUD -> star animation will be restored, and closing the HUD animation will be fixed too
+
+      // did the user just have polaris open?
+      if (polarisActivated) {
+        router.push("/polaris");
+      } else {
+        router.push("/");
+      }
     }
   };
 

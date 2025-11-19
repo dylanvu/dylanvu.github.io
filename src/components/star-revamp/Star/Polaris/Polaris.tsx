@@ -4,6 +4,7 @@ import Konva from "konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { useRouter, usePathname } from "next/navigation";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 type PolarisProps = {
   x: number;
@@ -110,8 +111,8 @@ export default function Polaris({
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
+  const { isReady, setIsReady, setPolarisActivated } = usePolarisContext();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [reachedHome, setReachedHome] = useState(false);
 
   const { width, height } = useWindowSizeContext();
   const router = useRouter();
@@ -155,9 +156,10 @@ export default function Polaris({
         scaleY: CLICK_TARGET_SCALE,
         onFinish: () => {
           // need to fix this interaction later, where polaris needs to just toggle the chat menu (aka go to the)
-          if (!reachedHome) {
+          if (!isReady) {
             router.push("/polaris");
-            setReachedHome(true);
+            setPolarisActivated(true);
+            setIsReady(true);
           }
         },
       });
@@ -215,12 +217,17 @@ export default function Polaris({
   ]);
 
   const handleClick = () => {
-    setIsExpanded(true); // Toggle state (or set to true if you only want one-way)
-    if (pathname !== "/") {
-      router.push("/");
-    }
-    if (pathname !== "polaris" && reachedHome) {
-      router.push("/polaris");
+    setIsExpanded(true);
+
+    // clicking on polaris should always go back to the base path
+    if (isReady) {
+      if (pathname === "/polaris") {
+        setPolarisActivated(false);
+        router.push("/");
+      } else {
+        setPolarisActivated(true);
+        router.push("/polaris");
+      }
     }
   };
 

@@ -8,6 +8,10 @@ interface PolarisContextInterface {
   setPolarisHistory: (newHistory: ChatMessage[]) => void;
   talkToPolaris: (newMessage: string) => void;
   isThinking: boolean;
+  isReady: boolean;
+  setIsReady: (newState: boolean) => void;
+  polarisActivated: boolean;
+  setPolarisActivated: (newState: boolean) => void;
 }
 
 const PolarisContext = createContext<PolarisContextInterface | undefined>(
@@ -26,6 +30,15 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   const [isThinking, setIsThinking] = useState<boolean>(false);
+  /**
+   * This state shows whether the polaris HUD is activated or not
+   */
+  const [polarisActivated, setPolarisActivated] = useState<boolean>(false);
+
+  /**
+   * This state shows whether polaris is on the bottom left or not
+   */
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   async function talkToPolaris(newMessage: string) {
     await talkToAgent(
@@ -38,7 +51,16 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PolarisContext.Provider
-      value={{ isThinking, polarisHistory, setPolarisHistory, talkToPolaris }}
+      value={{
+        isThinking,
+        polarisHistory,
+        setPolarisHistory,
+        talkToPolaris,
+        isReady,
+        setIsReady,
+        polarisActivated,
+        setPolarisActivated,
+      }}
     >
       {children}
     </PolarisContext.Provider>
