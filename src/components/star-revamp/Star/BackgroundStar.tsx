@@ -19,7 +19,7 @@ export default function BackgroundStar({
   y: number;
   radius?: number;
   delay?: number;
-  parallaxDuration?: number; // Should roughly match constellation duration (0.5s)
+  parallaxDuration?: number;
   focusedConstellationPos: FocusedConstellationPos | null;
   enableFocusMovement?: boolean;
 }) {
@@ -27,21 +27,20 @@ export default function BackgroundStar({
   const groupRef = useRef<Konva.Group | null>(null);
   const starRef = useRef<Konva.Shape | null>(null);
 
-  // tween refs for cleanup
-  const moveTweenRef = useRef<Konva.Tween | null>(null);
+  // tween refs
+  const tweenRef = useRef<Konva.Tween | null>(null);
   const fadeInTweenRef = useRef<Konva.Tween | null>(null);
 
-  // stable initial position
+  // stable initial data
   const initialX = useRef(x);
   const initialY = useRef(y);
-
   const color = useRef(
     BG_STAR_COLORS[Math.floor(Math.random() * BG_STAR_COLORS.length)]
   ).current;
 
   const { windowCenter } = useWindowSizeContext();
 
-  // 1. Fade in the star on mount
+  // 1. Fade in on mount
   useEffect(() => {
     if (!starRef.current) return;
     fadeInTweenRef.current?.finish();
@@ -62,83 +61,121 @@ export default function BackgroundStar({
     };
   }, [delay]);
 
-  // 2. Handle Movement and Focus (Parallax)
+  // 2. Handle "World Rotation" and Parallax
   useEffect(() => {
     if (!enableFocusMovement) return;
     const group = groupRef.current;
-    if (!group) return;
+    const star = starRef.current;
+    if (!group || !star) return;
 
-    moveTweenRef.current?.finish();
+    tweenRef.current?.finish();
 
-    // --- RESET STATE (No Focus) ---
+    // Calculate relative position from the Window Center to the Star's original position
+    const relX = initialX.current - windowCenter.x;
+    const relY = initialY.current - windowCenter.y;
+
+    // --- KEY FIX: Anchor Group to Center ---
+    // We move the Group to the center of the screen.
+    // We move the Star Shape to the relative offset.
+    // This allows us to rotate the *Group* to create a perfect arc/orbit.
+    group.x(windowCenter.x);
+    group.y(windowCenter.y);
+
+    // NOTE: We don't want the star to jump when this runs.
+    // Since we only run this effect when focus changes, we set the initial state
+    // of the star relative to the group here, then tween to the new state.
+
+    // --- NO FOCUS (RESET) ---
     if (!focusedConstellationPos) {
-      moveTweenRef.current = new Konva.Tween({
+      // We want to return to: Rotation 0, Scale 1, Original Offset
+
+      // Note: If we were previously rotated, the star is currently visually somewhere else.
+      // We rely on Konva to tween from "Current visual state" to "Target state".
+
+      tweenRef.current = new Konva.Tween({
         node: group,
-        duration: 0.6,
+        duration: 0.8,
         easing: Konva.Easings.EaseInOut,
-        x: initialX.current,
-        y: initialY.current,
+        rotation: 0, // Rotate back to upright
         scaleX: 1,
         scaleY: 1,
       });
-      moveTweenRef.current.play();
+
+      // We also ensure the star shape is at the correct relative offset
+      // (It might have drifted if we added translation parallax, so we reset it here)
+      new Konva.Tween({
+        node: star,
+        duration: 0.8,
+        easing: Konva.Easings.EaseInOut,
+        x: relX,
+        y: relY,
+      }).play();
+
+      tweenRef.current.play();
       return;
     }
 
-    // --- FOCUSED CONSTELLATION PARALLAX ---
+    // --- FOCUSED STATE ---
     const cPos = focusedConstellationPos;
     const constellation = cPos.constellation;
 
-    // 1. Calculate vector from the Constellation Center to this Background Star
-    // This represents the star's position in the "Unfocused" screen space.
-    const vx = initialX.current - cPos.unfocusedX;
-    const vy = initialY.current - cPos.unfocusedY;
+    // 1. Rotation
+    // If the constellation rotates +200deg, the "world" (background)
+    // needs to rotate -200deg to mimic the camera spinning.
+    const targetRotation = -(constellation.rotation ?? 0);
 
-    // 2. Rotation Math
-    // The Constellation rotates from `transformData.rotation` to `0` when focused.
-    // To mimic the camera rotating with it, the background stars must orbit
-    // the center by the negative of that angle.
-    const originalRotation = constellation.rotation ?? 0;
-    const rotationRad = -originalRotation * (Math.PI / 180);
-    const cos = Math.cos(rotationRad);
-    const sin = Math.sin(rotationRad);
+    // 2. Zoom & Depth
+    // Calculate depth: 0.8 = closer/bigger, 0.2 = further/smaller
+    const depth = Math.min((radius / 4) * 0.6 + 0.1, 0.8);
+    const focusScale = constellation.focusScale;
 
-    // Rotate the vector
-    const rx = vx * cos - vy * sin;
-    const ry = vx * sin + vy * cos;
+    // The world scales up, but based on depth
+    const effectiveScale = 1 + (focusScale - 1) * depth;
 
-    // 3. Scale (Zoom) Math with Depth
-    // `proximity`: 0.0 = Infinite distance (doesn't move), 1.0 = Same plane as constellation
-    // Smaller stars (radius 1) are further away -> lower proximity.
-    // Larger stars (radius 3+) are closer -> higher proximity.
-    const proximity = Math.min((radius / 4) * 0.6 + 0.1, 0.8);
+    // 3. Parallax Translation (The "Slide")
+    // The constellation moved from `cPos.unfocusedX` to `windowCenter`.
+    // The background should slide slightly in that direction to create depth.
+    const slideX = (windowCenter.x - cPos.unfocusedX) * depth;
+    const slideY = (windowCenter.y - cPos.unfocusedY) * depth;
 
-    // The constellation is zooming by `focusScale`.
-    // The background zooms by a fraction of that based on proximity.
-    // If proximity is low, effectiveScale stays close to 1 (no move).
-    // If proximity is high, effectiveScale approaches focusScale.
-    const targetZoom = constellation.focusScale;
-    const effectiveScale = 1 + (targetZoom - 1) * proximity;
+    // Important: Because the Group is rotating, if we translate the star's X/Y
+    // inside the group, that translation will rotate with it.
+    // To keep the "Slide" aligned with the screen (and not the rotation),
+    // we have to counter-rotate the translation vector?
+    // Actually, simpler visual trick: Just add the slide to the "radius" offset
+    // before rotation logic takes over in the viewer's brain.
+    // It feels more natural if the star simply spirals out to a new position.
 
-    // 4. Final Position
-    // Place relative to the NEW center (Window Center)
-    const finalX = windowCenter.x + rx * effectiveScale;
-    const finalY = windowCenter.y + ry * effectiveScale;
+    const targetStarX = relX + slideX;
+    const targetStarY = relY + slideY;
 
-    // 5. Execute Tween
-    const duration = parallaxDuration ?? 0.5; // Match the 0.5s in Constellation.tsx
+    const duration = parallaxDuration ?? 0.6;
 
-    moveTweenRef.current = new Konva.Tween({
+    // Tween the GROUP for Rotation and Scale (The "Camera" Move)
+    tweenRef.current = new Konva.Tween({
       node: group,
       duration: duration,
       easing: Konva.Easings.EaseInOut,
-      x: finalX,
-      y: finalY,
+      rotation: targetRotation,
+      scaleX: effectiveScale,
+      scaleY: effectiveScale,
     });
-    moveTweenRef.current.play();
+    tweenRef.current.play();
+
+    // Tween the STAR SHAPE for position (The "Slide" + initial offset)
+    // This handles placing the star correctly within the rotating frame.
+    const starTween = new Konva.Tween({
+      node: star,
+      duration: duration,
+      easing: Konva.Easings.EaseInOut,
+      x: targetStarX,
+      y: targetStarY,
+    });
+    starTween.play();
 
     return () => {
-      moveTweenRef.current?.finish();
+      tweenRef.current?.finish();
+      starTween.finish();
     };
   }, [
     focusedConstellationPos,
@@ -148,25 +185,29 @@ export default function BackgroundStar({
     enableFocusMovement,
   ]);
 
-  // Cleanup on unmount
+  // Cleanup
   useEffect(() => {
     return () => {
-      moveTweenRef.current?.finish();
+      tweenRef.current?.finish();
       fadeInTweenRef.current?.finish();
     };
   }, []);
 
+  // Initial Render State:
+  // Group at Center. Star at Offset.
+  // This ensures that before any tweening happens, the star appears at (x,y).
   return (
     <Group
       ref={groupRef}
-      x={initialX.current}
-      y={initialY.current}
+      x={windowCenter.x}
+      y={windowCenter.y}
       listening={false}
     >
       <Shape
         ref={starRef}
-        x={0}
-        y={0}
+        // We position the shape relative to the center immediately
+        x={initialX.current - windowCenter.x}
+        y={initialY.current - windowCenter.y}
         opacity={0}
         listening={false}
         sceneFunc={(ctx) => {
