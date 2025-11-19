@@ -41,6 +41,32 @@ export default function PolarisChat() {
     if (e.key === "Enter") handleSubmit();
   };
 
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      // 1. Get visual boundaries of the chat container
+      const rect = container.getBoundingClientRect();
+
+      // 2. Check if mouse is visually inside the chat area
+      const isOverContainer =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+
+      if (isOverContainer) {
+        // 3. Manually scroll the container
+        container.scrollTop += e.deltaY;
+      }
+    };
+
+    // Add listener to window (non-passive to ensure we catch it)
+    window.addEventListener("wheel", handleWheel);
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, []);
+
   return (
     <div
       style={{

@@ -11,13 +11,66 @@ import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
+
 import {
-  StarPanelMotionAnimate,
-  StarPanelMotionExit,
-  StarPanelMotionInitial,
-  StarPanelMotionTransition,
-  StarPanelStyle,
-} from "@/components/star-revamp/ScreenOverlay/StarPanelStyle";
+  hexToRgba,
+  SECONDARY_SPACE_COLOR,
+  SPACE_TEXT_COLOR,
+} from "@/app/theme";
+import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
+
+export const StarPanelStyle: React.CSSProperties = {
+  position: "absolute",
+  color: SPACE_TEXT_COLOR,
+  overflowY: "auto",
+  width: "50%",
+  height: "100%",
+  zIndex: 11,
+  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.7),
+  right: 0,
+  padding: "1rem",
+  cursor: "auto",
+};
+
+type MotionInputs = boolean | TargetAndTransition | VariantLabels | undefined;
+
+export const StarPanelMotionInitial: MotionInputs = {
+  opacity: 0,
+  x: 100,
+};
+
+export const PolarisPanelMotionInitial: MotionInputs = {
+  opacity: 0,
+};
+
+export const StarPanelMotionAnimate: MotionInputs = {
+  opacity: 1,
+  x: 0,
+};
+
+export const PolarisPanelMotionAnimate: MotionInputs = {
+  opacity: 1,
+};
+
+export const StarPanelMotionExit:
+  | TargetAndTransition
+  | VariantLabels
+  | undefined = {
+  opacity: 0,
+  x: 100,
+};
+
+export const PolarisPanelMotionExit:
+  | TargetAndTransition
+  | VariantLabels
+  | undefined = {
+  opacity: 0,
+};
+
+export const StarPanelMotionTransition: Transition = {
+  duration: 0.4,
+  ease: "easeInOut",
+};
 
 const PolarisStyleOverride: React.CSSProperties = {
   height: "100%",
@@ -39,7 +92,9 @@ export default function MainStage({
     useState<FocusedConstellationPos | null>(null);
 
   let panelStyle = { ...StarPanelStyle };
-  if (pathname === "/polaris") {
+
+  const isPolarisPage = pathname === "/polaris";
+  if (isPolarisPage) {
     panelStyle = { ...StarPanelStyle, ...PolarisStyleOverride };
   }
 
@@ -62,9 +117,19 @@ export default function MainStage({
             {pathname !== "/" && (
               <motion.div
                 key="children"
-                initial={StarPanelMotionInitial}
-                animate={StarPanelMotionAnimate}
-                exit={StarPanelMotionExit}
+                initial={
+                  isPolarisPage
+                    ? PolarisPanelMotionInitial
+                    : StarPanelMotionInitial
+                }
+                animate={
+                  isPolarisPage
+                    ? PolarisPanelMotionAnimate
+                    : StarPanelMotionAnimate
+                }
+                exit={
+                  isPolarisPage ? PolarisPanelMotionExit : StarPanelMotionExit
+                }
                 transition={StarPanelMotionTransition}
                 style={panelStyle}
                 className={FONT_FAMILY.style.fontFamily}

@@ -15,6 +15,7 @@ export default function PolarisMessage({ message }: { message: string }) {
         alignSelf: "flex-start",
         maxWidth: "30%",
         transformOrigin: "bottom left",
+        pointerEvents: "auto",
       }}
       className={FONT_FAMILY.className}
     >

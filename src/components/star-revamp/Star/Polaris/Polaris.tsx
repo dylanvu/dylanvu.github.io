@@ -111,6 +111,7 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [reachedHome, setReachedHome] = useState(false);
 
   const { width, height } = useWindowSizeContext();
   const router = useRouter();
@@ -152,6 +153,13 @@ export default function Polaris({
         y: CLICK_TARGET_Y,
         scaleX: CLICK_TARGET_SCALE,
         scaleY: CLICK_TARGET_SCALE,
+        onFinish: () => {
+          // need to fix this interaction later, where polaris needs to just toggle the chat menu (aka go to the)
+          if (!reachedHome) {
+            router.push("/polaris");
+            setReachedHome(true);
+          }
+        },
       });
     } else if (focusedScreenPos) {
       // 2. STATE: Parallax/Focus active (fly away from center)
@@ -208,11 +216,11 @@ export default function Polaris({
 
   const handleClick = () => {
     setIsExpanded(true); // Toggle state (or set to true if you only want one-way)
-    // need to fix this interaction later, where polaris needs to just toggle the chat menu (aka go to the)
-    if (pathname !== "/polaris") {
-      router.push("/polaris");
-    } else {
+    if (pathname !== "/") {
       router.push("/");
+    }
+    if (pathname !== "polaris" && reachedHome) {
+      router.push("/polaris");
     }
   };
 

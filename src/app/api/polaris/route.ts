@@ -52,7 +52,9 @@ export async function POST(request: NextRequest) {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })}.`;
+  })}.
+  
+  Your response needs to be formatted as valid markdown.`;
 
   const config = {
     responseMimeType: "text/plain",

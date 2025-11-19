@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { FONT_FAMILY } from "@/app/theme"; // Assuming this exists based on your snippet
+import { FONT_FAMILY, hexToRgba, SPACE_TEXT_COLOR } from "@/app/theme"; // Assuming this exists based on your snippet
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -18,6 +18,7 @@ export default function StargazerMessage({ message }: { message: string }) {
         maxWidth: "30%",
         // Ensure the container itself doesn't stretch nicely
         transformOrigin: "bottom right",
+        pointerEvents: "auto",
       }}
       className={FONT_FAMILY.className}
     >
@@ -33,7 +34,9 @@ export default function StargazerMessage({ message }: { message: string }) {
       </span>
       <div
         style={{
-          background: "rgba(255, 255, 255, 0.1)",
+          // background: "rgba(255, 255, 255, 0.1)",
+          background: hexToRgba(SPACE_TEXT_COLOR, 0.15),
+          color: SPACE_TEXT_COLOR,
           backdropFilter: "blur(8px)",
           border: "1px solid rgba(255, 255, 255, 0.2)",
           padding: "0.8rem 1.2rem",
