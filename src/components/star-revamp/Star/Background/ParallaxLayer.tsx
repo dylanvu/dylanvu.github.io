@@ -1,16 +1,19 @@
 import { Group } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
-import StaticStar from "@/components/star-revamp/Star/Background/StaticStar";
+import StaticStar from "./StaticStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 
 interface ParallaxLayerProps {
   stars: Array<{ x: number; y: number; radius: number }>;
-  depth: number; // 0.1 (Far/Static) to 1.0 (Near/Moves with Constellation)
+  depth: number;
   focusedConstellationPos: FocusedConstellationPos | null;
   starDelayOffset?: number;
 }
+
+// Must match FOCUS_ANIMATION_DURATION in Constellation.tsx
+const ANIMATION_DURATION = 0.5;
 
 export default function ParallaxLayer({
   stars,
@@ -26,6 +29,7 @@ export default function ParallaxLayer({
     const group = groupRef.current;
     if (!group) return;
 
+    // Immediate cleanup of previous motion to prevent "fighting"
     tweenRef.current?.finish();
 
     // --- CALCULATE TARGETS ---
@@ -41,12 +45,10 @@ export default function ParallaxLayer({
       targetRotation = -(constellation.rotation ?? 0);
 
       // 2. Scale: Zoom based on depth
-      // If depth is high, we zoom almost as much as the constellation
       const focusScale = constellation.focusScale ?? 1;
       targetScale = 1 + (focusScale - 1) * depth;
 
       // 3. Slide: Parallax translation
-      // Moves the layer slightly to simulate the camera panning to the target
       const dx = (windowCenter.x - unfocusedX) * depth;
       const dy = (windowCenter.y - unfocusedY) * depth;
 
@@ -57,14 +59,13 @@ export default function ParallaxLayer({
     // --- EXECUTE TWEEN ---
     tweenRef.current = new Konva.Tween({
       node: group,
-      duration: 0.8, // Syncs with Constellation focus speed
-      easing: Konva.Easings.EaseInOut,
+      duration: ANIMATION_DURATION,
+      easing: Konva.Easings.EaseInOut, // Matches Constellation.tsx
       x: targetX,
       y: targetY,
       rotation: targetRotation,
       scaleX: targetScale,
       scaleY: targetScale,
-      // CRITICAL: We pivot around the window center to create the "Wheel" effect
       offsetX: windowCenter.x,
       offsetY: windowCenter.y,
     });
@@ -72,7 +73,12 @@ export default function ParallaxLayer({
     tweenRef.current.play();
 
     return () => {
-      tweenRef.current?.finish();
+      // Do not finish() here, or it snaps to end on unmount/re-render.
+      // Just let the next useEffect call .finish() if needed.
+      // However, strictly speaking, we should reference the tween to stop it if the component dies.
+      if (tweenRef.current) {
+        // We generally want to let it finish naturally unless interrupted by a new move
+      }
     };
   }, [focusedConstellationPos, depth, windowCenter]);
 
