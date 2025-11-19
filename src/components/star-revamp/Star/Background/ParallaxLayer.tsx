@@ -9,30 +9,64 @@ interface ParallaxLayerProps {
   stars: Array<{ x: number; y: number; radius: number }>;
   depth: number;
   focusedConstellationPos: FocusedConstellationPos | null;
-  starDelayOffset?: number;
+  fadeDuration: number; // in seconds
+  fadeDelay: number; // in seconds
 }
 
-// Must match FOCUS_ANIMATION_DURATION in Constellation.tsx
-const ANIMATION_DURATION = 0.5;
+const MOVEMENT_ANIMATION_DURATION = 0.5;
 
 export default function ParallaxLayer({
   stars,
   depth,
   focusedConstellationPos,
-  starDelayOffset = 0,
+  fadeDuration,
+  fadeDelay,
 }: ParallaxLayerProps) {
   const groupRef = useRef<Konva.Group>(null);
-  const tweenRef = useRef<Konva.Tween | null>(null);
+
+  // Animation Refs
+  const moveTweenRef = useRef<Konva.Tween | null>(null);
+  const fadeTweenRef = useRef<Konva.Tween | null>(null);
+  const fadeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const { windowCenter } = useWindowSizeContext();
 
+  // 1. ENTRANCE FADE EFFECT (Timer based)
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
 
-    // Immediate cleanup of previous motion to prevent "fighting"
-    tweenRef.current?.finish();
+    // Cleanup previous attempts to avoid race conditions
+    if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    fadeTweenRef.current?.finish();
 
-    // --- CALCULATE TARGETS ---
+    // Start invisible
+    group.opacity(0);
+
+    // Start the timer
+    fadeTimerRef.current = setTimeout(() => {
+      fadeTweenRef.current = new Konva.Tween({
+        node: group,
+        duration: fadeDuration,
+        opacity: 1,
+        easing: Konva.Easings.Linear,
+      });
+      fadeTweenRef.current.play();
+    }, fadeDelay * 1000); // Convert seconds to milliseconds
+
+    return () => {
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+      fadeTweenRef.current?.finish();
+    };
+  }, [fadeDuration, fadeDelay]);
+
+  // 2. MOVEMENT & PARALLAX EFFECT
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    moveTweenRef.current?.finish();
+
     let targetRotation = 0;
     let targetScale = 1;
     let targetX = windowCenter.x;
@@ -40,27 +74,19 @@ export default function ParallaxLayer({
 
     if (focusedConstellationPos) {
       const { constellation, unfocusedX, unfocusedY } = focusedConstellationPos;
-
-      // 1. Rotation: Counter-rotate against the constellation
       targetRotation = -(constellation.rotation ?? 0);
-
-      // 2. Scale: Zoom based on depth
       const focusScale = constellation.focusScale ?? 1;
       targetScale = 1 + (focusScale - 1) * depth;
-
-      // 3. Slide: Parallax translation
       const dx = (windowCenter.x - unfocusedX) * depth;
       const dy = (windowCenter.y - unfocusedY) * depth;
-
       targetX += dx;
       targetY += dy;
     }
 
-    // --- EXECUTE TWEEN ---
-    tweenRef.current = new Konva.Tween({
+    moveTweenRef.current = new Konva.Tween({
       node: group,
-      duration: ANIMATION_DURATION,
-      easing: Konva.Easings.EaseInOut, // Matches Constellation.tsx
+      duration: MOVEMENT_ANIMATION_DURATION,
+      easing: Konva.Easings.EaseInOut,
       x: targetX,
       y: targetY,
       rotation: targetRotation,
@@ -68,17 +94,14 @@ export default function ParallaxLayer({
       scaleY: targetScale,
       offsetX: windowCenter.x,
       offsetY: windowCenter.y,
+      // Note: We do NOT touch opacity here, preserving the fade-in
     });
 
-    tweenRef.current.play();
+    moveTweenRef.current.play();
 
     return () => {
-      // Do not finish() here, or it snaps to end on unmount/re-render.
-      // Just let the next useEffect call .finish() if needed.
-      // However, strictly speaking, we should reference the tween to stop it if the component dies.
-      if (tweenRef.current) {
-        // We generally want to let it finish naturally unless interrupted by a new move
-      }
+      // We usually don't force finish moveTween on unmount/re-render
+      // to allow smooth transitions if inputs change rapidly
     };
   }, [focusedConstellationPos, depth, windowCenter]);
 
@@ -89,15 +112,10 @@ export default function ParallaxLayer({
       y={windowCenter.y}
       offsetX={windowCenter.x}
       offsetY={windowCenter.y}
+      opacity={0} // Explicitly start at 0 for the fade effect
     >
       {stars.map((star, i) => (
-        <StaticStar
-          key={i}
-          x={star.x}
-          y={star.y}
-          radius={star.radius}
-          delay={i * 50 + starDelayOffset}
-        />
+        <StaticStar key={i} x={star.x} y={star.y} radius={star.radius} />
       ))}
     </Group>
   );

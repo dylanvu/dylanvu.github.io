@@ -1,12 +1,12 @@
 import { Group } from "react-konva";
 import { useMemo } from "react";
-import ParallaxLayer from "@/components/star-revamp/Star/Background/ParallaxLayer"; // The new layer component
+import ParallaxLayer from "@/components/star-revamp/Star/Background/ParallaxLayer";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 
 export default function StarField({
   width,
   height,
-  starCount = 200, // Bumped up default since it's performant now
+  starCount = 200,
   focusedConstellationPos,
 }: {
   width: number;
@@ -14,13 +14,16 @@ export default function StarField({
   starCount?: number;
   focusedConstellationPos: FocusedConstellationPos | null;
 }) {
+  // --- CONFIGURATION ---
+  const FADE_DURATION = 1; // Time for a single layer to go 0 -> 1 opacity
+  const STAGGER_DURATION = 2; // Wait time before the next layer starts appearing
+
   // 1. Generate Stars
   const allStars = useMemo(
     () =>
       Array.from({ length: starCount }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
-        // Variance in size determines which layer they go into
         radius: Math.random() * 2 + 0.5,
       })),
     [width, height, starCount]
@@ -43,38 +46,31 @@ export default function StarField({
 
   return (
     <Group>
-      {/* 
-        LAYER 1: BACKGROUND (Small Stars) 
-        Moves very little (depth 0.15). 
-      */}
+      {/* LAYER 1: BACKGROUND (Far) */}
       <ParallaxLayer
         stars={farStars}
         depth={0.15}
         focusedConstellationPos={focusedConstellationPos}
-        starDelayOffset={0}
+        fadeDuration={FADE_DURATION}
+        fadeDelay={0} // Starts immediately
       />
 
-      {/* 
-        LAYER 2: MIDGROUND (Medium Stars)
-        Moves moderately (depth 0.4).
-      */}
+      {/* LAYER 2: MIDGROUND */}
       <ParallaxLayer
         stars={midStars}
         depth={0.4}
         focusedConstellationPos={focusedConstellationPos}
-        starDelayOffset={farStars.length * 10}
+        fadeDuration={FADE_DURATION}
+        fadeDelay={STAGGER_DURATION} // Starts after stagger
       />
 
-      {/* 
-        LAYER 3: FOREGROUND (Large Stars)
-        Moves significantly (depth 0.8).
-        This creates the strongest 3D parallax feel.
-      */}
+      {/* LAYER 3: FOREGROUND (Near) */}
       <ParallaxLayer
         stars={nearStars}
         depth={0.8}
         focusedConstellationPos={focusedConstellationPos}
-        starDelayOffset={(farStars.length + midStars.length) * 10}
+        fadeDuration={FADE_DURATION}
+        fadeDelay={STAGGER_DURATION * 2} // Starts after 2x stagger
       />
     </Group>
   );
