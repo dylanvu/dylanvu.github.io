@@ -25,6 +25,7 @@ export interface GenericOverlayState {
   }) => void;
   horizontalPosition: "left" | "center" | "right";
   setHorizontalPosition: Dispatch<SetStateAction<"left" | "center" | "right">>;
+  setDEFAULT_ABOUT_TEXT: Dispatch<SetStateAction<string>>;
 }
 
 export function createOverlayContext(defaults: {
@@ -41,8 +42,10 @@ export function createOverlayContext(defaults: {
     const DEFAULT_INTRO_TEXT = defaults.introText ?? "";
     const DEFAULT_TITLE_TEXT = defaults.titleText ?? "";
     const DEFAULT_ORIGIN_TEXT = defaults.originText ?? "";
-    const DEFAULT_ABOUT_TEXT = defaults.aboutText ?? "";
 
+    const [DEFAULT_ABOUT_TEXT, setDEFAULT_ABOUT_TEXT] = useState(
+      defaults.aboutText ?? ""
+    );
     const [titleText, setTitleText] = useState(DEFAULT_TITLE_TEXT);
     const [originText, setOriginText] = useState(DEFAULT_ORIGIN_TEXT);
     const [aboutText, setAboutText] = useState(DEFAULT_ABOUT_TEXT);
@@ -85,6 +88,7 @@ export function createOverlayContext(defaults: {
           setOverlayTextContents,
           horizontalPosition,
           setHorizontalPosition,
+          setDEFAULT_ABOUT_TEXT,
         }}
       >
         {children}

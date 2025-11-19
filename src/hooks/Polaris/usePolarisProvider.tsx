@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { ChatMessage, talkToAgent } from "@/hooks/Polaris/tools/talk";
+import { useCenterOverlayContext } from "../useCenterOverlay";
+import { title } from "process";
 
 interface PolarisContextInterface {
   polarisHistory: ChatMessage[];
@@ -25,6 +27,15 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
       "Good evening, stargazer. What would you like to know about Dylan's night sky?",
   };
 
+  const {
+    setDEFAULT_ABOUT_TEXT,
+    setOverlayTextContents,
+    introText,
+    titleText,
+    aboutText,
+    originText,
+  } = useCenterOverlayContext();
+
   const [polarisHistory, setPolarisHistory] = useState<ChatMessage[]>([
     initialMessage,
   ]);
@@ -39,6 +50,21 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
    * This state shows whether polaris is on the bottom left or not
    */
   const [isReady, setIsReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isReady) {
+      const newDefaultAbout = "or consult Polaris below to find your way";
+      setDEFAULT_ABOUT_TEXT(newDefaultAbout);
+      if (titleText === "Dylan Vu" && aboutText !== newDefaultAbout) {
+        setOverlayTextContents({
+          intro: introText,
+          title: titleText,
+          origin: originText,
+          about: newDefaultAbout,
+        });
+      }
+    }
+  }, [isReady]);
 
   async function talkToPolaris(newMessage: string) {
     await talkToAgent(

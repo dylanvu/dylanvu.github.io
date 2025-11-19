@@ -53,16 +53,16 @@ export default function RootLayout({
       <body className={inter.className}>
         <main className="main">
           <WindowSizeProvider>
-            <PolarisProvider>
-              <CenterOverlayProvider>
+            <CenterOverlayProvider>
+              <PolarisProvider>
                 <TopOverlayProvider>
                   <FocusProvider>
                     {/* children here really just refers to the side panels that appear when you go to a specific link */}
                     <NightSky>{children}</NightSky>
                   </FocusProvider>
                 </TopOverlayProvider>
-              </CenterOverlayProvider>
-            </PolarisProvider>
+              </PolarisProvider>
+            </CenterOverlayProvider>
           </WindowSizeProvider>
         </main>
       </body>

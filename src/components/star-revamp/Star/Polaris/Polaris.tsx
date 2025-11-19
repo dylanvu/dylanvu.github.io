@@ -28,33 +28,51 @@ const PulseRing = ({
   maxOpacity = 0.4,
   debug = false,
   strokeWidth = 2,
+  active = true,
 }: {
   radius: number;
-  delay: number; // in seconds
+  delay: number;
   duration?: number;
   maxOpacity?: number;
   debug?: boolean;
   strokeWidth?: number;
+  active?: boolean;
 }) => {
   const circleRef = useRef<Konva.Circle>(null);
   const tweenRef = useRef<Konva.Tween | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ref to track if the tween is currently running
+  const isAnimatingRef = useRef(false);
+
+  const isActiveRef = useRef(active);
+  const playPulseRef = useRef<() => void>(() => {});
+
+  // Sync prop to ref
+  useEffect(() => {
+    isActiveRef.current = active;
+
+    if (active && tweenRef.current && !isAnimatingRef.current) {
+      playPulseRef.current();
+    }
+  }, [active]);
+
   useEffect(() => {
     const node = circleRef.current;
     if (!node) return;
 
-    // 1. Initialize state
     node.scaleX(1);
     node.scaleY(1);
-    node.opacity(0); // Start invisible
+    node.opacity(0);
     node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
 
     const playPulse = () => {
-      // Reset state for the new loop
+      // Mark animation as running
+      isAnimatingRef.current = true;
+
       node.scaleX(1);
       node.scaleY(1);
-      node.opacity(maxOpacity); // Jump to max opacity
+      node.opacity(maxOpacity);
       node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
 
       tweenRef.current = new Konva.Tween({
@@ -62,25 +80,35 @@ const PulseRing = ({
         duration: duration,
         scaleX: 2.5,
         scaleY: 2.5,
-        opacity: 0, // Fade out completely
-        strokeWidth: 0, // Thin out stroke
+        opacity: 0,
+        strokeWidth: 0,
         easing: Konva.Easings.EaseOut,
         onFinish: () => {
-          playPulse(); // Loop immediately without gap
+          // Mark animation as finished
+          isAnimatingRef.current = false;
+
+          if (isActiveRef.current) {
+            playPulse();
+          }
         },
       });
 
       tweenRef.current.play();
     };
 
-    // Initial delay before the first loop starts
+    playPulseRef.current = playPulse;
+
     timerRef.current = setTimeout(() => {
-      playPulse();
+      if (isActiveRef.current) {
+        playPulse();
+      }
     }, delay * 1000);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       tweenRef.current?.destroy();
+      // Reset running state on unmount/cleanup
+      isAnimatingRef.current = false;
     };
   }, [delay, duration, maxOpacity, debug, strokeWidth]);
 
@@ -111,7 +139,8 @@ export default function Polaris({
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-  const { isReady, setIsReady, setPolarisActivated } = usePolarisContext();
+  const { isReady, setIsReady, polarisActivated, setPolarisActivated } =
+    usePolarisContext();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { width, height } = useWindowSizeContext();
@@ -119,14 +148,10 @@ export default function Polaris({
   const pathname = usePathname();
 
   // --- CLICK ANIMATION CONFIGURATION ---
-  // Variables to control the click interaction
-  const CLICK_ANIMATION_DURATION = 1.5; // Time in seconds to move/scale
-  const CLICK_TARGET_SCALE = 6; // How big it grows (e.g., 6x original size)
-
-  // Calculate Bottom Right position (with some padding from edge)
-
-  const CLICK_TARGET_X = 150; // 150px from left edge
-  const CLICK_TARGET_Y = height - 150; // 150px from bottom edge
+  const CLICK_ANIMATION_DURATION = 1.5;
+  const CLICK_TARGET_SCALE = 6;
+  const CLICK_TARGET_X = 150;
+  const CLICK_TARGET_Y = height - 150;
 
   // --- RIPPLE CONFIGURATION ---
   const DEBUG_RIPPLES = false;
@@ -141,11 +166,9 @@ export default function Polaris({
     const node = groupRef.current;
     if (!node) return;
 
-    // Stop any previous tween to prevent conflicts
     focusTweenRef.current?.finish();
 
     if (isExpanded) {
-      // 1. STATE: User Clicked - Grow and Move to Bottom Right
       focusTweenRef.current = new Konva.Tween({
         node,
         duration: CLICK_ANIMATION_DURATION,
@@ -155,7 +178,6 @@ export default function Polaris({
         scaleX: CLICK_TARGET_SCALE,
         scaleY: CLICK_TARGET_SCALE,
         onFinish: () => {
-          // need to fix this interaction later, where polaris needs to just toggle the chat menu (aka go to the)
           if (!isReady) {
             router.push("/polaris");
             setPolarisActivated(true);
@@ -164,7 +186,6 @@ export default function Polaris({
         },
       });
     } else if (focusedScreenPos) {
-      // 2. STATE: Parallax/Focus active (fly away from center)
       const focal = focusedUnfocusedPos ?? windowCenter;
       let vx = x - focal.x;
       let vy = y - focal.y;
@@ -188,25 +209,24 @@ export default function Polaris({
         easing: Konva.Easings.EaseInOut,
         x: x + nx * offscreenDist,
         y: y + ny * offscreenDist,
-        scaleX: 1, // Ensure scale is reset if coming back from click
+        scaleX: 1,
         scaleY: 1,
       });
     } else {
-      // 3. STATE: Idle / Default Position
       focusTweenRef.current = new Konva.Tween({
         node,
         duration: 0.5,
         easing: Konva.Easings.EaseInOut,
         x,
         y,
-        scaleX: 1, // Ensure scale is reset
+        scaleX: 1,
         scaleY: 1,
       });
     }
 
     focusTweenRef.current.play();
   }, [
-    isExpanded, // Dependency added here
+    isExpanded,
     focusedScreenPos,
     focusedUnfocusedPos,
     x,
@@ -219,7 +239,6 @@ export default function Polaris({
   const handleClick = () => {
     setIsExpanded(true);
 
-    // clicking on polaris should always go back to the base path
     if (isReady) {
       if (pathname === "/polaris") {
         setPolarisActivated(false);
@@ -237,8 +256,7 @@ export default function Polaris({
       x={x}
       y={y}
       onClick={handleClick}
-      onTap={handleClick} // For touch devices
-      // Change cursor to indicate interactivity
+      onTap={handleClick}
       onMouseEnter={(e) => {
         const container = e.target.getStage()?.container();
         if (container) container.style.cursor = "pointer";
@@ -250,13 +268,13 @@ export default function Polaris({
         onHoverLeaveCallback?.();
       }}
     >
-      {/* Rendered first so they appear BEHIND the star */}
       <PulseRing
         radius={effectiveRadius}
         delay={2}
         duration={RIPPLE_CYCLE_DURATION}
         maxOpacity={RIPPLE_MAX_OPACITY}
         debug={DEBUG_RIPPLES}
+        active={!polarisActivated}
       />
 
       <MainStar
@@ -266,8 +284,6 @@ export default function Polaris({
         brightness={brightness}
         twinkleMin={twinkleMin}
         twinkleMax={twinkleMax}
-        // Callbacks handled by Group now to include rings in hover area
-        // but kept here if specific logic is needed inside MainStar
         onHoverEnterCallback={onHoverEnterCallback}
         onHoverLeaveCallback={onHoverLeaveCallback}
         onHoverPointerOverride={true}
