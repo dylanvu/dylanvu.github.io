@@ -19,7 +19,7 @@ export default function BackgroundStar({
   y: number;
   radius?: number;
   delay?: number;
-  parallaxDuration?: number;
+  parallaxDuration?: number; // Should roughly match constellation duration (0.5s)
   focusedConstellationPos: FocusedConstellationPos | null;
   enableFocusMovement?: boolean;
 }) {
@@ -68,14 +68,13 @@ export default function BackgroundStar({
     const group = groupRef.current;
     if (!group) return;
 
-    // Stop any active movement
     moveTweenRef.current?.finish();
 
     // --- RESET STATE (No Focus) ---
     if (!focusedConstellationPos) {
       moveTweenRef.current = new Konva.Tween({
         node: group,
-        duration: 0.6, // Slightly slower return feels more "massive"
+        duration: 0.6,
         easing: Konva.Easings.EaseInOut,
         x: initialX.current,
         y: initialY.current,
@@ -90,48 +89,51 @@ export default function BackgroundStar({
     const cPos = focusedConstellationPos;
     const constellation = cPos.constellation;
 
-    // Calculate distance from the clicked item's *original* position
-    let dx = initialX.current - cPos.unfocusedX;
-    let dy = initialY.current - cPos.unfocusedY;
+    // 1. Calculate vector from the Constellation Center to this Background Star
+    // This represents the star's position in the "Unfocused" screen space.
+    const vx = initialX.current - cPos.unfocusedX;
+    const vy = initialY.current - cPos.unfocusedY;
 
-    // Apply Depth: Smaller stars move less (appear further away), larger stars move more.
-    // You can tweak '4' and '0.8' to change the intensity of the 3D effect.
-    const depth = 1 - Math.min(radius / 4, 0.8);
-    dx *= depth;
-    dy *= depth;
-
-    // Apply Scaling based on the Constellation's zoom level
-    const scaleFactor =
-      (constellation.scale ?? 1) * (constellation.focusScale ?? 1);
-    dx *= scaleFactor;
-    dy *= scaleFactor;
-
-    // Apply Rotation logic to match the constellation's rotation
+    // 2. Rotation Math
+    // The Constellation rotates from `transformData.rotation` to `0` when focused.
+    // To mimic the camera rotating with it, the background stars must orbit
+    // the center by the negative of that angle.
     const originalRotation = constellation.rotation ?? 0;
     const rotationRad = -originalRotation * (Math.PI / 180);
-    const cosTheta = Math.cos(rotationRad);
-    const sinTheta = Math.sin(rotationRad);
+    const cos = Math.cos(rotationRad);
+    const sin = Math.sin(rotationRad);
 
-    const rotatedDx = dx * cosTheta - dy * sinTheta;
-    const rotatedDy = dx * sinTheta + dy * cosTheta;
+    // Rotate the vector
+    const rx = vx * cos - vy * sin;
+    const ry = vx * sin + vy * cos;
 
-    // The star's final position is relative to the Window Center
-    // (because the focused constellation is moved to Window Center)
-    const finalX = windowCenter.x + rotatedDx;
-    const finalY = windowCenter.y + rotatedDy;
+    // 3. Scale (Zoom) Math with Depth
+    // `proximity`: 0.0 = Infinite distance (doesn't move), 1.0 = Same plane as constellation
+    // Smaller stars (radius 1) are further away -> lower proximity.
+    // Larger stars (radius 3+) are closer -> higher proximity.
+    const proximity = Math.min((radius / 4) * 0.6 + 0.1, 0.8);
 
-    const duration = parallaxDuration ?? 0.8;
+    // The constellation is zooming by `focusScale`.
+    // The background zooms by a fraction of that based on proximity.
+    // If proximity is low, effectiveScale stays close to 1 (no move).
+    // If proximity is high, effectiveScale approaches focusScale.
+    const targetZoom = constellation.focusScale;
+    const effectiveScale = 1 + (targetZoom - 1) * proximity;
 
-    // Move Star Group
+    // 4. Final Position
+    // Place relative to the NEW center (Window Center)
+    const finalX = windowCenter.x + rx * effectiveScale;
+    const finalY = windowCenter.y + ry * effectiveScale;
+
+    // 5. Execute Tween
+    const duration = parallaxDuration ?? 0.5; // Match the 0.5s in Constellation.tsx
+
     moveTweenRef.current = new Konva.Tween({
       node: group,
       duration: duration,
       easing: Konva.Easings.EaseInOut,
       x: finalX,
       y: finalY,
-      // Optional: Scale stars slightly up/down based on depth if you want a 'zoom' feel
-      // scaleX: 1,
-      // scaleY: 1,
     });
     moveTweenRef.current.play();
 
@@ -161,12 +163,11 @@ export default function BackgroundStar({
       y={initialY.current}
       listening={false}
     >
-      {/* Star Shape */}
       <Shape
         ref={starRef}
         x={0}
         y={0}
-        opacity={0} // Starts invisible, handled by fade-in effect
+        opacity={0}
         listening={false}
         sceneFunc={(ctx) => {
           const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
