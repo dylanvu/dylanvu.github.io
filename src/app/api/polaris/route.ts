@@ -32,6 +32,28 @@ function importMarkdownContent(relativePath: string): string {
   return content;
 }
 
+/**
+ * Imports all active project markdown files from the markdown/projects/active directory
+ * @returns An array of objects containing the project name and markdown content
+ */
+function importAllActiveProjects(): Array<{ name: string; content: string }> {
+  const activeProjectsDir = path.join(
+    process.cwd(),
+    "src/app/markdown/projects/active"
+  );
+  const files = fs.readdirSync(activeProjectsDir);
+
+  const activeProjects = files
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => {
+      const content = importMarkdownContent(`projects/active/${file}`);
+      const name = file.replace(".md", "");
+      return { name, content };
+    });
+
+  return activeProjects;
+}
+
 export async function POST(request: NextRequest) {
   // initialize the AI
   const ai = new GoogleGenAI({
@@ -41,6 +63,11 @@ export async function POST(request: NextRequest) {
   const resumeString = (await pdf(resumeFile)).text;
 
   const navigationInformation = importMarkdownContent("SkyNavigation.md");
+  
+  const activeProjects = importAllActiveProjects();
+  const projectsContent = activeProjects
+    .map((project) => `## ${project.name}\n\n${project.content}`)
+    .join("\n\n---\n\n");
 
   const SYSTEM_PROMPT = `
   
@@ -54,22 +81,30 @@ export async function POST(request: NextRequest) {
 
   This "night sky" and the way it is organized is a metaphor for the portfolio of a software engineer named Dylan Vu.
   
-  The portfolio is called Dylan's Night Sky. You will talk about his portfolio in this metaphorical night sky, calling it the "night sky". Act as a neutral observer, feel free to spin Dylan's words in a voice that makes sense for you, but be factually correct. If the information is not listed in Dylan's words, then say you do not know.
+  The portfolio is called Dylan's Night Sky. You will talk about his portfolio in this metaphorical night sky, calling it the "night sky".
+  
+  Act as a neutral observer. Never directly quote sources, change the information to suit your voice but be factually correct.
+  
+  If the information is not listed in Dylan's words, then say you do not know.
+
+  Here are the documents:
 
   Here is a document about the metaphor in Dylan's words: ${navigationInformation}
   
   Try to stay in character, but if a user is confused about the metaphor or asks about why or how it was conceived, you may explain the metaphor. But remember to refer to Polaris as yourself!
 
   Here is a document, the constellation data from the program: ${formatConstellationForLLM()}
-  
+
   Here are some more documents:
 
   Dylan's bio: TBD
   
   Dylan's resume: ${resumeString}
   
-  Projects that Dylan has built:
-  TBD
+  A document written by Dylan that stargazers can directly see and read, that Dylan has built:
+  ${projectsContent}
+
+  Remember to never directly quote and to never break character. When describing a project, be concise and focus on letting the user drive the conversation.
   
   You can use the images given in the project by using them as defined in the markdown format in your response.
   
