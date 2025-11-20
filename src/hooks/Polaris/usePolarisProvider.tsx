@@ -53,7 +53,10 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isReady) {
-      const newDefaultAbout = "or consult Polaris below to find your way";
+      let newDefaultAbout = "or consult Polaris to find your way";
+      if (polarisActivated) {
+        newDefaultAbout = "or consult Polaris below to find your way"
+      }
       setDEFAULT_ABOUT_TEXT(newDefaultAbout);
       if (titleText === "Dylan Vu" && aboutText !== newDefaultAbout) {
         setOverlayTextContents({
@@ -64,7 +67,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
         });
       }
     }
-  }, [isReady]);
+  }, [isReady, polarisActivated]);
 
   async function talkToPolaris(newMessage: string) {
     await talkToAgent(

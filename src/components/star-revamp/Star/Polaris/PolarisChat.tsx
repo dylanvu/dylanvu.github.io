@@ -127,13 +127,12 @@ export default function PolarisChat() {
           })}
         </AnimatePresence>
 
-        {/* 4. REMOVED the dummy div entirely */}
       </div>
 
-      {/* Suggestion Chips */}
+      {/* Chat + Suggestion Chips */}
       <div
         style={{
-          width: "30%",
+          width: "40%",
           margin: "auto",
           marginBottom: "4rem",
           pointerEvents: "none",
