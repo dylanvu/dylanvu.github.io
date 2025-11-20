@@ -1,0 +1,164 @@
+# Debug Renderer Test
+
+This is a comprehensive test file for the StarMarkdownRenderer component, showcasing all styled elements with the new glassmorphic design.
+
+## Headings Test
+
+### H3 Heading
+#### H4 Heading
+##### H5 Heading
+###### H6 Heading
+
+## Paragraph and Text Styling
+
+This is a regular paragraph with some **bold text** and some *italic text*. We can also combine them with ***bold and italic*** text together.
+
+Here's another paragraph with a [link to Dylan's GitHub](https://github.com/dylanvu) that opens in a new tab.
+
+## Lists
+
+### Unordered List
+- First item with some text
+- Second item with **bold text**
+- Third item with *italic text*
+- Fourth item with `inline code`
+  - Nested item 1
+  - Nested item 2
+
+### Ordered List
+1. First ordered item
+2. Second ordered item with **emphasis**
+3. Third ordered item
+   1. Nested ordered item
+   2. Another nested item
+
+## Code Blocks
+
+Here's a JavaScript code block with glassmorphic styling:
+
+```javascript
+function helloWorld() {
+  console.log("Testing the glassmorphic code block!");
+  const data = {
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(8px)",
+    borderRadius: "12px"
+  };
+  return data;
+}
+```
+
+Python code block:
+
+```python
+def test_renderer():
+    """Test the markdown renderer styling"""
+    styles = {
+        'background': 'glassmorphic',
+        'border': 'subtle',
+        'blur': '8px'
+    }
+    print(f"Testing with {styles}")
+    return True
+```
+
+TypeScript/React example:
+
+```typescript
+interface StarPanelProps {
+  markdown: string;
+  glassmorphic?: boolean;
+}
+
+export const StarPanel: React.FC<StarPanelProps> = ({ markdown }) => {
+  return (
+    <div className="star-panel">
+      <StarMarkdownRenderer markdown={markdown} />
+    </div>
+  );
+};
+```
+
+## Inline Code Test
+
+You can use `inline code` within paragraphs. For example: `const x = 42;` or `import React from 'react';` should have subtle background highlighting.
+
+Multiple inline code snippets: `useState`, `useEffect`, `useCallback`, `useMemo` all styled consistently.
+
+## Blockquotes
+
+> This is a blockquote with glassmorphic styling.
+> It should have a left border accent and semi-transparent background.
+> 
+> Multiple lines in a blockquote look elegant with proper styling.
+
+> **Note:** Blockquotes can also contain **bold** and *italic* text, as well as `inline code`.
+
+## Images
+
+Here's a test image (if the path exists):
+
+![Test Image](/projects/games/epicdle/epicdle.png)
+
+## Mixed Content
+
+Combining different elements:
+
+1. First, we have a list item with `inline code`
+2. Then a list item with **bold text** and a [link](https://dylanvu.github.io)
+3. Finally, some *italic text* for emphasis
+
+Code in context:
+
+The `StarMarkdownRenderer` component uses `ReactMarkdown` with custom styling. Here's how it renders different elements:
+
+```tsx
+<StarMarkdownRenderer markdown={content} />
+```
+
+## Tables (GitHub Flavored Markdown)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Code Blocks | ✅ Styled | Glassmorphic background |
+| Inline Code | ✅ Styled | Subtle highlighting |
+| Images | ✅ Styled | Rounded corners |
+| Blockquotes | ✅ Styled | Left border accent |
+| Links | ✅ Styled | SPACE_TEXT_COLOR |
+
+## Long Code Block Test
+
+Testing horizontal scroll for code blocks:
+
+```javascript
+const veryLongLine = "This is a very long line of code that should trigger horizontal scrolling in the code block if it exceeds the available width of the container";
+
+const anotherLongLine = { property1: "value1", property2: "value2", property3: "value3", property4: "value4", property5: "value5" };
+```
+
+## Edge Cases
+
+### Empty Code Block
+```
+
+```
+
+### Single Line Code
+```js
+console.log("Single line");
+```
+
+### Mixed Nesting
+
+> A blockquote with a list:
+> - Item 1 with `code`
+> - Item 2 with **bold**
+> 
+> And a code block:
+> ```
+> nested code
+> ```
+
+## Final Test
+
+This comprehensive test file should showcase all the glassmorphic styling applied to the StarMarkdownRenderer! 🌟

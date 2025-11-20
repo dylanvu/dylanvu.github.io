@@ -21,17 +21,23 @@ import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import PolarisPanel from "@/components/star-revamp/Star/Polaris/PolarisPanel";
 
-export const StarPanelStyle: React.CSSProperties = {
+const BasePanelStyle: React.CSSProperties = {
   position: "absolute",
   color: SPACE_TEXT_COLOR,
   overflowY: "auto",
   width: "50%",
   height: "100%",
   zIndex: 11,
-  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.7),
+  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.05),
   right: 0,
   padding: "1rem",
   cursor: "auto",
+}
+
+const StarPanelStyle: React.CSSProperties = {
+  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.05),
+  backdropFilter: "blur(12px)",
+  borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
 };
 
 type MotionInputs = boolean | TargetAndTransition | VariantLabels | undefined;
@@ -94,11 +100,13 @@ export default function MainStage({
   const [focusedConstellationPos, setFocusedConstellationPos] =
     useState<FocusedConstellationPos | null>(null);
 
-  let panelStyle = { ...StarPanelStyle };
+  let panelStyle = { ...BasePanelStyle };
 
   const isPolarisPage = polarisActivated;
   if (isPolarisPage) {
-    panelStyle = { ...StarPanelStyle, ...PolarisStyleOverride };
+    panelStyle = { ...panelStyle, ...PolarisStyleOverride };
+  } else {
+    panelStyle = {...panelStyle, ...StarPanelStyle}
   }
 
   return (

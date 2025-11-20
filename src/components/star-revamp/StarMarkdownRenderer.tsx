@@ -72,14 +72,75 @@ export default function StarMarkdownRenderer({
           <em className={FONT_FAMILY.className}>{children}</em>
         ),
 
-        code: ({ children }) => <code> {children} </code>,
+        code: ({ children, className }) => {
+          // Check if this is inline code (no className) or block code (has className from pre)
+          const isInline = !className;
+          
+          if (isInline) {
+            return (
+              <code
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  padding: "0.2rem 0.4rem",
+                  borderRadius: "4px",
+                  fontSize: "0.9em",
+                }}
+              >
+                {children}
+              </code>
+            );
+          }
+          
+          return <code className={className}>{children}</code>;
+        },
 
         pre: ({ children }) => (
-          <pre className={FONT_FAMILY.className}>{children}</pre>
+          <pre
+            className={FONT_FAMILY.className}
+            style={{
+              background: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(8px)",
+              borderRadius: "12px",
+              padding: "1rem",
+              overflowX: "auto",
+              marginTop: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            {children}
+          </pre>
         ),
 
         img: ({ src, alt }) => (
-          <img src={src} alt={alt} style={{ maxWidth: "100%" }} />
+          <img
+            src={src}
+            alt={alt}
+            style={{
+              maxWidth: "70%",
+              maxHeight: "50vh",
+              borderRadius: "8px",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              margin: "auto",
+              marginTop: "0.5rem",
+              marginBottom: "0.5rem",
+            }}
+          />
+        ),
+
+        blockquote: ({ children }) => (
+          <blockquote
+            className={FONT_FAMILY.className}
+            style={{
+              background: "rgba(255, 255, 255, 0.03)",
+              borderLeft: "4px solid rgba(255, 255, 255, 0.3)",
+              padding: "0.5rem 1rem",
+              margin: "1rem 0",
+              fontStyle: "italic",
+            }}
+          >
+            {children}
+          </blockquote>
         ),
       }}
     >

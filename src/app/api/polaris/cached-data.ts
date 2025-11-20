@@ -60,6 +60,7 @@ export const importAllActiveProjects = unstable_cache(
     const activeProjects = await Promise.all(
       files
         .filter((file) => file.endsWith(".md"))
+        .filter((file) => !file.includes("debug")) // Guard: exclude debug/test files
         .map(async (file) => {
           const content = await importMarkdownContent(`projects/active/${file}`);
           const name = file.replace(".md", "");
