@@ -344,13 +344,11 @@ export default function Polaris({
       onClick={handleClick}
       onTap={handleClick}
       onMouseEnter={(e) => {
-        const container = e.target.getStage()?.container();
-        if (container) container.style.cursor = "pointer";
+        document.body.style.cursor = "pointer";
         onHoverEnterCallback?.();
       }}
       onMouseLeave={(e) => {
-        const container = e.target.getStage()?.container();
-        if (container) container.style.cursor = "default";
+        document.body.style.cursor = "default";
         onHoverLeaveCallback?.();
       }}
     >
