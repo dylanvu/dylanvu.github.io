@@ -18,7 +18,8 @@ export async function talkToAgent(
   chatHistory: ChatMessage[],
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setIsThinking: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsTalking: React.Dispatch<React.SetStateAction<boolean>>
+  setIsTalking: React.Dispatch<React.SetStateAction<boolean>>,
+  onStreamChunk?: () => void
 ) {
   const newUserMessage: ChatMessage = {
     role: "user",
@@ -27,8 +28,6 @@ export async function talkToAgent(
 
   // first add the user message to the history so it can render
   const newChatHistory = [...chatHistory, newUserMessage];
-
-  console.log(newChatHistory);
 
   setChatHistory(newChatHistory);
 
@@ -87,6 +86,8 @@ export async function talkToAgent(
       const chunk = decoder.decode(value, { stream: true });
       accumulatedText += chunk;
 
+      onStreamChunk?.();
+
       // Update the last message in chat history (the streaming response)
       setChatHistory((prev) => {
         const updated = [...prev];
@@ -98,7 +99,6 @@ export async function talkToAgent(
       });
     }
     setIsTalking(false);
-    console.log("Final response:", accumulatedText);
   } catch (error) {
     console.error("Error talking to LLM:", error);
     

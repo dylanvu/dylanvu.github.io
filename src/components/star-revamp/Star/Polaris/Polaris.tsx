@@ -25,11 +25,13 @@ type PolarisProps = {
 const PulseRing = ({
   radius,
   delay,
-  duration = 3,
+  duration = 5,
   maxOpacity = 0.4,
   debug = false,
   strokeWidth = 2,
   active = true,
+  triggerMode = false,
+  onMount,
 }: {
   radius: number;
   delay: number;
@@ -38,6 +40,8 @@ const PulseRing = ({
   debug?: boolean;
   strokeWidth?: number;
   active?: boolean;
+  triggerMode?: boolean;
+  onMount?: (triggerPulse: () => void) => void;
 }) => {
   const circleRef = useRef<Konva.Circle>(null);
   const tweenRef = useRef<Konva.Tween | null>(null);
@@ -47,28 +51,29 @@ const PulseRing = ({
   const isAnimatingRef = useRef(false);
 
   const isActiveRef = useRef(active);
+  const triggerModeRef = useRef(triggerMode);
+  const durationRef = useRef(duration);
   const playPulseRef = useRef<() => void>(() => {});
 
-  // Sync prop to ref
+  // Sync props to refs
   useEffect(() => {
+    const wasTriggerMode = triggerModeRef.current;
     isActiveRef.current = active;
+    triggerModeRef.current = triggerMode;
 
-    if (active && tweenRef.current && !isAnimatingRef.current) {
+    // When switching from trigger mode to passive mode, only start passive if not animating
+    if (active && !triggerMode && wasTriggerMode && !isAnimatingRef.current) {
+      // Let any in-progress animation finish, then start passive loop
+      playPulseRef.current();
+    } else if (active && !triggerMode && !wasTriggerMode && !isAnimatingRef.current) {
+      // Normal passive mode activation
       playPulseRef.current();
     }
-  }, [active]);
+  }, [active, triggerMode]);
 
-  // Handle duration changes dynamically
-  const durationRef = useRef(duration);
+  // Update duration ref without triggering re-render
   useEffect(() => {
-    const prevDuration = durationRef.current;
     durationRef.current = duration;
-    
-    // If duration changed significantly and we're actively animating, restart the cycle
-    if (Math.abs(prevDuration - duration) > 0.5 && isAnimatingRef.current && tweenRef.current) {
-      // Finish current animation immediately and restart with new duration
-      tweenRef.current.finish();
-    }
   }, [duration]);
 
   useEffect(() => {
@@ -81,6 +86,11 @@ const PulseRing = ({
     node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
 
     const playPulse = () => {
+      // Don't auto-start if we're in trigger mode and already animating
+      if (triggerModeRef.current && isAnimatingRef.current) {
+        return;
+      }
+
       // Mark animation as running
       isAnimatingRef.current = true;
 
@@ -101,7 +111,8 @@ const PulseRing = ({
           // Mark animation as finished
           isAnimatingRef.current = false;
 
-          if (isActiveRef.current) {
+          // Only auto-repeat if not in trigger mode and still active
+          if (isActiveRef.current && !triggerModeRef.current) {
             playPulse();
           }
         },
@@ -112,11 +123,20 @@ const PulseRing = ({
 
     playPulseRef.current = playPulse;
 
-    timerRef.current = setTimeout(() => {
+    // Start animation based on mode
+    if (triggerMode) {
+      // In trigger mode, start immediately
       if (isActiveRef.current) {
         playPulse();
       }
-    }, delay * 1000);
+    } else {
+      // In passive mode, start after delay
+      timerRef.current = setTimeout(() => {
+        if (isActiveRef.current) {
+          playPulse();
+        }
+      }, delay * 1000);
+    }
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -128,6 +148,22 @@ const PulseRing = ({
       isAnimatingRef.current = false;
     };
   }, [delay, maxOpacity, debug, strokeWidth]);
+
+  // Separate effect to expose trigger function to parent
+  useEffect(() => {
+    if (!onMount) return;
+
+    const triggerPulse = () => {
+      console.log('[PulseRing] Trigger called, isAnimating:', isAnimatingRef.current);
+      // Just start the pulse if not already running
+      if (!isAnimatingRef.current && playPulseRef.current) {
+        playPulseRef.current();
+      }
+    };
+
+    console.log('[PulseRing] Registering trigger function');
+    onMount(triggerPulse);
+  }, [onMount]);
 
   return (
     <Circle
@@ -156,10 +192,30 @@ export default function Polaris({
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-  const { isReady, setIsReady, setPolarisActivated, polarisActivated, isTalking } = usePolarisContext();
+  const { isReady, setIsReady, setPolarisActivated, polarisActivated, isTalking, registerStreamChunkCallback } = usePolarisContext();
   
   // Track if the initial animation to bottom-left has completed
   const hasCompletedInitialAnimation = useRef(false);
+
+  // Track multiple pulse rings for triggered mode
+  const [pulseRings, setPulseRings] = useState<number[]>([]);
+  const pulseIdCounter = useRef(0);
+
+  // Register trigger that spawns new rings
+  useEffect(() => {
+    const triggerNewPulse = () => {
+      console.log('[Polaris] Spawning new pulse ring');
+      const newId = pulseIdCounter.current++;
+      setPulseRings(prev => [...prev, newId]);
+    };
+
+    registerStreamChunkCallback(triggerNewPulse);
+  }, [registerStreamChunkCallback]);
+
+  // Remove completed pulse rings
+  const removePulseRing = (id: number) => {
+    setPulseRings(prev => prev.filter(ringId => ringId !== id));
+  };
 
   const { width, height } = useWindowSizeContext();
   const router = useRouter();
@@ -178,7 +234,9 @@ export default function Polaris({
   // --- RIPPLE CONFIGURATION ---
   const DEBUG_RIPPLES = false;
   const RIPPLE_MAX_OPACITY = 0.5;
-  const RIPPLE_CYCLE_DURATION = isTalking ? 1 : 5;
+  // Use longer duration for passive pulsing, shorter for triggered
+  const PASSIVE_RIPPLE_CYCLE_DURATION = 5;
+  const TALKING_RIPPLE_CYCLE_DURATION = 1;
 
   const effectiveRadius =
     size * Math.max(brightness, twinkleMax ?? brightness) * 0.8;
@@ -296,14 +354,37 @@ export default function Polaris({
         onHoverLeaveCallback?.();
       }}
     >
-      <PulseRing
-        radius={effectiveRadius}
-        delay={2}
-        duration={RIPPLE_CYCLE_DURATION}
-        maxOpacity={RIPPLE_MAX_OPACITY}
-        debug={DEBUG_RIPPLES}
-        active={!isReady || isTalking}
-      />
+      {/* Passive single ring when not talking and no active pulse rings */}
+      {!isTalking && pulseRings.length === 0 && (
+        <PulseRing
+          radius={effectiveRadius}
+          delay={2}
+          duration={PASSIVE_RIPPLE_CYCLE_DURATION}
+          maxOpacity={RIPPLE_MAX_OPACITY}
+          debug={DEBUG_RIPPLES}
+          active={!isReady}
+          triggerMode={false}
+          onMount={() => {}}
+        />
+      )}
+
+      {/* Multiple triggered rings - keep rendering until they finish */}
+      {pulseRings.map(id => (
+        <PulseRing
+          key={id}
+          radius={effectiveRadius}
+          delay={0}
+          duration={TALKING_RIPPLE_CYCLE_DURATION}
+          maxOpacity={RIPPLE_MAX_OPACITY}
+          debug={DEBUG_RIPPLES}
+          active={true}
+          triggerMode={true}
+          onMount={() => {
+            // Remove when animation completes
+            setTimeout(() => removePulseRing(id), TALKING_RIPPLE_CYCLE_DURATION * 1000);
+          }}
+        />
+      ))}
 
       <MainStar
         x={0}

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ChatMessage, talkToAgent } from "@/hooks/Polaris/tools/talk";
 import { useCenterOverlayContext } from "../useCenterOverlay";
 
@@ -14,6 +14,7 @@ interface PolarisContextInterface {
   setIsReady: (newState: boolean) => void;
   polarisActivated: boolean;
   setPolarisActivated: (newState: boolean) => void;
+  registerStreamChunkCallback: (callback: () => void) => void;
 }
 
 const PolarisContext = createContext<PolarisContextInterface | undefined>(
@@ -60,6 +61,27 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
    */
   const [isReady, setIsReady] = useState<boolean>(false);
 
+  /**
+   * Ref to store the stream chunk callback for triggering pulses
+   */
+  const streamChunkCallbackRef = useRef<(() => void) | null>(null);
+
+  /**
+   * Function to register the stream chunk callback from the Polaris component
+   */
+  const registerStreamChunkCallback = (callback: () => void) => {
+    streamChunkCallbackRef.current = callback;
+  };
+
+  /**
+   * Internal function to trigger the registered callback
+   */
+  const onStreamChunk = () => {
+    if (streamChunkCallbackRef.current) {
+      streamChunkCallbackRef.current();
+    }
+  };
+
   useEffect(() => {
     if (isReady) {
       let newDefaultAbout = "or consult Polaris to find your way";
@@ -84,7 +106,8 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
       polarisHistory,
       setPolarisHistory,
       setIsThinking,
-      setIsTalking
+      setIsTalking,
+      onStreamChunk
     );
   }
 
@@ -99,7 +122,8 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
         setIsReady,
         polarisActivated,
         setPolarisActivated,
-        isTalking
+        isTalking,
+        registerStreamChunkCallback
       }}
     >
       {children}
