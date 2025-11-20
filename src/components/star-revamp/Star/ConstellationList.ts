@@ -3,11 +3,11 @@ import {
   Star,
   StarData,
   StarDataWithInternalLink,
+  isStarDataWithInternalLink,
 } from "@/interfaces/StarInterfaces";
 import { US_MAP_SIMPLE as US_MAP } from "./us_map";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
-
-const STAR_BASE_URL = "/star";
+import { STAR_BASE_URL } from "@/constants/Routes";
 
 export const CONSTELLATIONS: ConstellationData[] = [
   {
@@ -105,6 +105,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Jul. 2024 - Present",
           about: "Software Dev Engineer I",
           intro: "Giant",
+          slug: "amazon"
         },
       },
       {
@@ -116,6 +117,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "May 2023 - Aug. 2023",
           about: "Software Engineer Intern",
           intro: "Star",
+          slug: "one-medical"
         },
       },
 
@@ -128,6 +130,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Dec. 2021 - Sept. 2022",
           about: "Software Developer I / Intern",
           intro: "Giant",
+          slug: "ansync-labs"
         },
       },
 
@@ -141,6 +144,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Aug. 2024 - Present",
           about: "Computer Science, M.S.",
           intro: "Star",
+          slug: "gatech"
         },
       },
       {
@@ -152,6 +156,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Sept. 2022 - Jun. 2024",
           about: "Computer Science, B.S.",
           intro: "Supergiant",
+          slug: "uci"
         },
       },
       {
@@ -163,6 +168,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Aug. 2019 - June 2021",
           about: "Mechanical Engineering / Chemical Engineering",
           intro: "Dwarf",
+          slug: "ucsb"
         },
       },
     ],
@@ -197,7 +203,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Web Development",
           about: "A fandom's favorite guessing game",
           intro: "Supergiant",
-          internalLink: `${STAR_BASE_URL}/epicdle`,
           slug: "epicdle",
         },
       },
@@ -210,7 +215,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Embedded Systems",
           about: "Google Gemini becomes a robotic tour guide",
           intro: "Giant",
-          internalLink: `${STAR_BASE_URL}/amelia`,
           slug: "amelia",
         },
       },
@@ -223,7 +227,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "A cute cake stacking game that was hard to code",
           intro: "Giant",
-          internalLink: `${STAR_BASE_URL}/sweetstack`,
           slug: "sweetstack",
         },
       },
@@ -236,7 +239,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Embedded Systems",
           about: "Bluetooth haptic and thermal feedback gloves and suit",
           intro: "Giant",
-          internalLink: `${STAR_BASE_URL}/haptic-definition`,
           slug: "haptic-definition",
         },
       },
@@ -249,7 +251,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Web Development",
           about: "Talk to your fish",
           intro: "Star",
-          internalLink: `${STAR_BASE_URL}/fishgpt`,
           slug: "fishgpt",
         },
       },
@@ -262,7 +263,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "A fast-paced manic shooter for Wordle",
           intro: "Star",
-          internalLink: `${STAR_BASE_URL}/wordship`,
           slug: "wordship",
         },
       },
@@ -275,7 +275,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Embedded Systems",
           about: "Turn any whiteboard into a smartboard",
           intro: "Dwarf",
-          internalLink: `${STAR_BASE_URL}/grip-board`,
           slug: "grip-board",
         },
       },
@@ -288,7 +287,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "A custom tactile feedback VR controller",
           intro: "Star",
-          internalLink: `${STAR_BASE_URL}/grip`,
           slug: "grip",
         },
       },
@@ -301,7 +299,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Game Development",
           about: "Shoot in a game with your hands",
           intro: "Dwarf",
-          internalLink: `${STAR_BASE_URL}/trigger-finger-tango`,
           slug: "trigger-finger-tango",
         },
       },
@@ -314,7 +311,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
           origin: "Web Development",
           about: "A Discord bot to solve a club's career crisis",
           intro: "Dwarf",
-          internalLink: `${STAR_BASE_URL}/aiche-careers`,
           slug: "aiche-careers",
         },
       },
@@ -354,13 +350,8 @@ export function getConstellationNameByStarSlug(slug: string): string | null {
       // If star has no data, it's not a match
       if (!star.data) return false;
 
-      // Check if 'slug' exists in data (Type Guard for StarDataWithInternalLink)
-      // and if it matches the input slug
-      if ("slug" in star.data && star.data.slug === slug) {
-        return true;
-      }
-
-      return false;
+      // Use typeguard to check if star has internal link and matches slug
+      return isStarDataWithInternalLink(star.data) && star.data.slug === slug;
     });
 
     // 3. If found, return the name immediately
@@ -398,7 +389,7 @@ export function getStarDataBySlug(
   // Helper: Checks a specific list of stars for the slug
   const findStarInList = (stars: Star[]): StarDataWithInternalLink | null => {
     for (const star of stars) {
-      if (star.data && "slug" in star.data && star.data.slug === slug) {
+      if (star.data && isStarDataWithInternalLink(star.data) && star.data.slug === slug) {
         return star.data;
       }
     }
@@ -464,11 +455,10 @@ export function formatConstellationForLLM(): string {
             about: starData.about,
             intro: starData.intro,
             ...(starData.color && { color: starData.color }),
-            ...("internalLink" in starData &&
-              starData.internalLink && {
-                internalLink: starData.internalLink,
-              }),
-            ...("slug" in starData && starData.slug && { slug: starData.slug }),
+            ...(isStarDataWithInternalLink(starData) && { 
+              slug: starData.slug,
+              internalLink: `${STAR_BASE_URL}/${starData.slug}`
+            }),
             ...("externalLink" in starData &&
               starData.externalLink && {
                 externalLink: starData.externalLink,

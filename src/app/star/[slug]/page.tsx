@@ -4,17 +4,27 @@ import path from "path";
 import StarPanel from "@/components/star-revamp/ScreenOverlay/StarPanel";
 import ReactMarkdown from "react-markdown";
 
-const activeProjectsBasePath = "src/app/markdown/projects/active";
+const directories = [
+  "src/app/markdown/projects/active",
+  "src/app/markdown/iter"
+]
 
 export async function generateStaticParams() {
-  // read all the files in the active directory
-  const projectsDir = path.join(process.cwd(), activeProjectsBasePath);
-  const projectFiles = fs
-    .readdirSync(projectsDir)
-    .filter((file) => file.endsWith(".md"));
-  return projectFiles.map((file) => ({
-    slug: file.replace(".md", ""),
-  }));
+  // read all the files in the active 
+  let paths = []
+  for (const directory of directories) {
+    const currentDirectory = path.join(process.cwd(), directory);
+    const files = fs
+      .readdirSync(currentDirectory)
+      .filter((file) => file.endsWith(".md"));
+    for (const file of files) {
+      paths.push({
+        slug: file.replace(".md", ""),
+      })
+    }
+  }
+
+  return paths;
 }
 
 export default async function MarkdownPage({
@@ -23,12 +33,29 @@ export default async function MarkdownPage({
   params: { slug: string };
 }) {
   const slug = (await params).slug;
-  const filePath = path.join(
-    process.cwd(),
-    activeProjectsBasePath,
-    `${slug}.md`
-  );
-  const markdown = fs.readFileSync(filePath, "utf8");
+  
+  // Search through all directories to find the markdown file
+  let markdown = "";
+  let filePath = "";
+  
+  for (const directory of directories) {
+    const currentFilePath = path.join(
+      process.cwd(),
+      directory,
+      `${slug}.md`
+    );
+    
+    if (fs.existsSync(currentFilePath)) {
+      filePath = currentFilePath;
+      markdown = fs.readFileSync(filePath, "utf8");
+      break;
+    }
+  }
+  
+  // If no file was found, throw an error
+  if (!markdown) {
+    throw new Error(`Markdown file not found for slug: ${slug}`);
+  }
 
   return (
     <>

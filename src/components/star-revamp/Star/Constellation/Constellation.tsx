@@ -4,11 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
-import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
+import { ConstellationData, TransformData, isStarDataWithInternalLink } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { STAR_BASE_URL } from "@/constants/Routes";
 
 export default function Constellation({
   data,
@@ -566,11 +567,11 @@ export default function Constellation({
                     "_blank",
                     "noopener,noreferrer"
                   );
-                } else if (data.internalLink) {
+                } else if (isStarDataWithInternalLink(data)) {
                   if (polarisActivated) {
                     setPolarisActivated(false);
                   }
-                  router.push(data.internalLink);
+                  router.push(`${STAR_BASE_URL}/${data.slug}`);
                 }
                 setTopOverlayTextContents({
                   intro: data.intro,

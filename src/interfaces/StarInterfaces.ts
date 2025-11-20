@@ -55,7 +55,6 @@ type BaseStarData = {
  * This star will render the markdown in the site
  */
 export type StarDataWithInternalLink = BaseStarData & {
-  internalLink: string;
   slug: string;
   externalLink?: never;
 };
@@ -78,11 +77,18 @@ export type StarDataWithoutLink = BaseStarData & {
   externalLink?: never;
 };
 
+// typeguard for star with internal link
+export function isStarDataWithInternalLink(
+  data: StarData
+): data is StarDataWithInternalLink {
+  return "slug" in data && !!data.slug;
+}
+
 // typeguard for star without link
 export function isStarDataWithoutLink(
   data: StarData
 ): data is StarDataWithoutLink {
-  return !data.internalLink && !data.externalLink;
+  return !("slug" in data) && !("externalLink" in data);
 }
 
 // The star data is a union of valid star data types
