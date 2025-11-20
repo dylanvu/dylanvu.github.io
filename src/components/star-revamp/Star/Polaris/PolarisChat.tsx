@@ -15,7 +15,7 @@ export default function PolarisChat() {
 
   const suggestions = [
     "Why is this called a night sky?",
-    "How did Dylan build this?",
+    "How did Dylan build this night sky?",
     "Show me Dylan's projects",
     "Show me Dylan's resume",
   ];

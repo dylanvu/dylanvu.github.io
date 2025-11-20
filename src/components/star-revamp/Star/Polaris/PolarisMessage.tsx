@@ -2,13 +2,54 @@ import { motion } from "motion/react";
 import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
-import { useState } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/hooks/Polaris/tools/talk";
 
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
   // Handle both string and ChatMessage object
   const messageText = typeof message === "string" ? message : message.message;
   const isPlaceholder = typeof message === "object" && message.isPlaceholder;
+  
+  // Memoize components to prevent recreating them on every render
+  const markdownComponents = useMemo(() => ({
+    p: ({ children }: any) => (
+      <p className={FONT_FAMILY.className}>{children}</p>
+    ),
+    a: ({ children, href }: any) => (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={FONT_FAMILY.className}
+        style={{
+          color: SPACE_TEXT_COLOR,
+        }}
+      >
+        {children}
+      </a>
+    ),
+    ul: ({ children }: any) => (
+      <ul className={FONT_FAMILY.className}>{children}</ul>
+    ),
+    ol: ({ children }: any) => (
+      <ol className={FONT_FAMILY.className}>{children}</ol>
+    ),
+    li: ({ children }: any) => (
+      <li className={FONT_FAMILY.className}>{children}</li>
+    ),
+    strong: ({ children }: any) => (
+      <strong className={FONT_FAMILY.className}>{children}</strong>
+    ),
+    em: ({ children }: any) => (
+      <em className={FONT_FAMILY.className}>{children}</em>
+    ),
+    code: ({ children }: any) => <code>{children}</code>,
+    pre: ({ children }: any) => (
+      <pre className={FONT_FAMILY.className}>{children}</pre>
+    ),
+    img: ({ src, alt }: any) => <StreamingImage src={src} alt={alt} />,
+  }), []);
+  
   return (
     <motion.div
       // FIX: Switched to vertical only to match user bubble
@@ -69,44 +110,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
         >
           <ReactMarkdown
             remarkPlugins={[gfm]}
-            components={{
-              p: ({ children }) => (
-                <p className={FONT_FAMILY.className}>{children}</p>
-              ),
-              a: ({ children, href }) => (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={FONT_FAMILY.className}
-                  style={{
-                    color: SPACE_TEXT_COLOR,
-                  }}
-                >
-                  {children}
-                </a>
-              ),
-              ul: ({ children }) => (
-                <ul className={FONT_FAMILY.className}>{children}</ul>
-              ),
-              ol: ({ children }) => (
-                <ol className={FONT_FAMILY.className}>{children}</ol>
-              ),
-              li: ({ children }) => (
-                <li className={FONT_FAMILY.className}>{children}</li>
-              ),
-              strong: ({ children }) => (
-                <strong className={FONT_FAMILY.className}>{children}</strong>
-              ),
-              em: ({ children }) => (
-                <em className={FONT_FAMILY.className}>{children}</em>
-              ),
-              code: ({ children }) => <code>{children}</code>,
-              pre: ({ children }) => (
-                <pre className={FONT_FAMILY.className}>{children}</pre>
-              ),
-              img: ({ src, alt }) => <StreamingImage src={src} alt={alt} />,
-            }}
+            components={markdownComponents}
           >
             {messageText}
           </ReactMarkdown>
@@ -118,6 +122,9 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
 
 // Component to handle images during streaming with loading and error states
 function StreamingImage({ src, alt }: { src?: string | Blob; alt?: string }) {
+  // Use refs to persist state across re-renders (prevents flickering on hover)
+  const hasLoadedRef = useRef(false);
+  const hasErrorRef = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -126,8 +133,18 @@ function StreamingImage({ src, alt }: { src?: string | Blob; alt?: string }) {
     return null;
   }
 
+  // Initialize state from refs on mount
+  useEffect(() => {
+    if (hasLoadedRef.current) {
+      setIsLoading(false);
+    }
+    if (hasErrorRef.current) {
+      setHasError(true);
+    }
+  }, []);
+
   return (
-    <span style={{ display: "block", margin: "0.5rem 0" }}>
+    <span key={src} style={{ display: "block", margin: "0.5rem 0" }}>
       {isLoading && !hasError && (
         <span
           style={{
@@ -163,8 +180,12 @@ function StreamingImage({ src, alt }: { src?: string | Blob; alt?: string }) {
         <img
           src={src}
           alt={alt}
-          onLoad={() => setIsLoading(false)}
+          onLoad={() => {
+            hasLoadedRef.current = true;
+            setIsLoading(false);
+          }}
           onError={() => {
+            hasErrorRef.current = true;
             setIsLoading(false);
             setHasError(true);
           }}
