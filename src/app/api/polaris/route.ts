@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 
 import { formatConstellationForLLM } from "@/components/star-revamp/Star/ConstellationList";
