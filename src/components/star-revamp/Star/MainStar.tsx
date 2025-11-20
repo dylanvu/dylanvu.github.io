@@ -7,6 +7,7 @@ import {
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
 import { isStarDataWithoutLink, StarData } from "@/interfaces/StarInterfaces";
+import { KonvaEventListener, KonvaEventObject } from "konva/lib/Node";
 
 type Props = {
   data?: StarData;
@@ -223,7 +224,7 @@ export default function MainStar({
     };
   }, []);
 
-  const handleStarClick = (e: any) => {
+  const handleStarClick = (e: KonvaEventObject<MouseEvent>) => {
     if (isConstellationFocused) {
       e.cancelBubble = cancelBubble;
       if (onClickCallback) onClickCallback();
