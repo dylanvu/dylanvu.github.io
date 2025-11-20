@@ -860,6 +860,10 @@ export function calculateHackathonStatistics() {
   };
 }
 
+/**
+ * this function is for the LLM
+ * @returns 
+ */
 export function returnHackathonStatisticsString() {
   const {
     competedHackathons,
@@ -873,4 +877,94 @@ export function returnHackathonStatisticsString() {
   return `Hackathons Participated (Mentored and Competed): ${competedHackathons.length} hackathons, ~ ${totalHours.toLocaleString()} hours
   Competed: ${competedHackathons.length} hackathons, ~ ${hoursCompeted.toLocaleString()} hours, ${filteredHackathonWinners.length} awards
   Mentored: ${filteredHackathonMentorship.length} hackathons, ~ ${hoursMentored.toLocaleString()} hours`;
+}
+
+/**
+ * Formats the hackathon array as a comprehensive document for LLM ingestion
+ * @returns A formatted string containing all hackathon details
+ */
+export function returnHackathonListAsDocument(): string {
+  const sections: string[] = [];
+  
+  // Group hackathons by role
+  const participated = HackathonList.filter(
+    (h) => !h.role.toLowerCase().includes("mentor")
+  ).sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort by date ascending
+  
+  const mentored = HackathonList.filter((h) =>
+    h.role.toLowerCase().includes("mentor")
+  ).sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort by date ascending
+
+  // Add quick reference summary at the top
+  sections.push("# QUICK REFERENCE - Most Recent Hackathons\n");
+  
+  if (participated.length > 0) {
+    const mostRecentParticipated = participated[participated.length - 1];
+    sections.push(
+      `MOST RECENT HACKATHON WHERE DYLAN PARTICIPATED (as hacker/competitor): ${mostRecentParticipated.name} on ${mostRecentParticipated.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}\n`
+    );
+  }
+  
+  if (mentored.length > 0) {
+    const mostRecentMentored = mentored[mentored.length - 1];
+    sections.push(
+      `MOST RECENT HACKATHON WHERE DYLAN MENTORED: ${mostRecentMentored.name} on ${mostRecentMentored.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}\n`
+    );
+  }
+  
+  sections.push("\n---\n");
+
+  // Format participated hackathons
+  if (participated.length > 0) {
+    sections.push("# Hackathons Where Dylan Participated As A Hacker\n");
+    sections.push("Dylan's role in these hackathons: Participant/Hacker (competed in building projects)\n");
+    sections.push("Listed in chronological order (oldest to newest). THE LAST ENTRY IS THE MOST RECENT.\n");
+    participated.forEach((hackathon) => {
+      const awards =
+        hackathon.awards.length > 0
+          ? `\n- Awards: ${hackathon.awards.join(", ")}`
+          : "";
+      const github =
+        hackathon.github && hackathon.github.length > 0
+          ? `\n- GitHub: ${hackathon.github.join(", ")}`
+          : "";
+      const devpost = hackathon.devpost
+        ? `\n- Devpost: ${hackathon.devpost}`
+        : "";
+      const projectName = hackathon.projectName
+        ? `\n- Project: ${hackathon.projectName}`
+        : "";
+
+      sections.push(
+        `## ${hackathon.name} (${hackathon.date.getFullYear()})
+- Role: ${hackathon.role}
+- Location: ${hackathon.place}, ${hackathon.city}, ${hackathon.state}
+- Type: ${hackathon.type}
+- Duration: ${hackathon.duration} hours${projectName}${awards}${devpost}${github}\n`
+      );
+    });
+  }
+
+  // Format mentored hackathons
+  if (mentored.length > 0) {
+    sections.push("\n# Hackathons Where Dylan Served As A Mentor\n");
+    sections.push("Dylan's role in these hackathons: Mentor (helped other participants, did not compete)\n");
+    sections.push("Listed in chronological order (oldest to newest). THE LAST ENTRY IS THE MOST RECENT.\n");
+    mentored.forEach((hackathon) => {
+      const devpost = hackathon.devpost
+        ? `\n- Devpost: ${hackathon.devpost}`
+        : "";
+
+      sections.push(
+        `## ${hackathon.name} (${hackathon.date.getFullYear()})
+- Date: ${hackathon.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+- Role: ${hackathon.role}
+- Location: ${hackathon.place}, ${hackathon.city}, ${hackathon.state}
+- Type: ${hackathon.type}
+- Duration: ${hackathon.duration} hours${devpost}\n`
+      );
+    });
+  }
+
+  return sections.join("\n");
 }

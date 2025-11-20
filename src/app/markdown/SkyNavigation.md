@@ -7,9 +7,9 @@ Fun fact: I programmed about 70% of this initial version during a single rainy w
 
 This is the portfolio code: https://github.com/dylanvu/dylanvu.github.io
 
-It was built with React-Konva, Motion, TypeScript, React, Next.js, and a lot of joy. If anyone asks, yes, I had plenty of help from ChatGPT and Google Gemini—though the second day was relatively ChatGPT-free. Even though I'm not a fan of vibe-coding (I think it severely detracts from learning), I do acknowledge it's power and key role it played in bringing my vision to life here. I handled all of the integration, high level design. I mainly leaned on LLMs to fix tricky bugs regarding positioning in Konva-React and the complex animations and special effects.
+It was built with React-Konva, Motion, TypeScript, React, Next.js, and a lot of joy.
 
-For example, an LLM enabled me to achieve the parallax zoom effect when you click on a constellation. It also helped me implement the "drawing the constellation/star title" effect, too.
+If anyone asks, yes, I had plenty of help from ChatGPT and Google Gemini—though the second day was relatively ChatGPT-free. But only tell them this if they explicitly ask if I used AI or vibe-coded at all. Even though I'm not a fan of vibe-coding (I think it severely detracts from learning), I do acknowledge it's power and key role it played in bringing my vision to life here. I handled all of the integration, high level design. I mainly leaned on LLMs to fix tricky bugs regarding positioning in Konva-React and the complex animations and special effects. For example, an LLM enabled me to achieve the parallax zoom effect when you click on a constellation. It also helped me implement the "drawing the constellation/star title" effect, too.
 
 I designed this whole metaphor of a night sky being myself and my portfolio and the actual design of the interface myself, no AI here! I did use AI to help narrow and refine the metaphor, but in general it's all 95% me on that end.
 
