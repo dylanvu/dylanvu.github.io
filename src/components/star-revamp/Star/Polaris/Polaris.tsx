@@ -58,6 +58,19 @@ const PulseRing = ({
     }
   }, [active]);
 
+  // Handle duration changes dynamically
+  const durationRef = useRef(duration);
+  useEffect(() => {
+    const prevDuration = durationRef.current;
+    durationRef.current = duration;
+    
+    // If duration changed significantly and we're actively animating, restart the cycle
+    if (Math.abs(prevDuration - duration) > 0.5 && isAnimatingRef.current && tweenRef.current) {
+      // Finish current animation immediately and restart with new duration
+      tweenRef.current.finish();
+    }
+  }, [duration]);
+
   useEffect(() => {
     const node = circleRef.current;
     if (!node) return;
@@ -78,7 +91,7 @@ const PulseRing = ({
 
       tweenRef.current = new Konva.Tween({
         node,
-        duration: duration,
+        duration: durationRef.current,
         scaleX: 2.5,
         scaleY: 2.5,
         opacity: 0,
@@ -107,11 +120,14 @@ const PulseRing = ({
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      tweenRef.current?.destroy();
+      if (tweenRef.current) {
+        tweenRef.current.destroy();
+        tweenRef.current = null;
+      }
       // Reset running state on unmount/cleanup
       isAnimatingRef.current = false;
     };
-  }, [delay, duration, maxOpacity, debug, strokeWidth]);
+  }, [delay, maxOpacity, debug, strokeWidth]);
 
   return (
     <Circle
@@ -140,7 +156,7 @@ export default function Polaris({
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-  const { isReady, setIsReady, setPolarisActivated, polarisActivated } = usePolarisContext();
+  const { isReady, setIsReady, setPolarisActivated, polarisActivated, isTalking } = usePolarisContext();
   
   // Track if the initial animation to bottom-left has completed
   const hasCompletedInitialAnimation = useRef(false);
@@ -162,7 +178,7 @@ export default function Polaris({
   // --- RIPPLE CONFIGURATION ---
   const DEBUG_RIPPLES = false;
   const RIPPLE_MAX_OPACITY = 0.5;
-  const RIPPLE_CYCLE_DURATION = 5;
+  const RIPPLE_CYCLE_DURATION = isTalking ? 1 : 5;
 
   const effectiveRadius =
     size * Math.max(brightness, twinkleMax ?? brightness) * 0.8;
@@ -286,7 +302,7 @@ export default function Polaris({
         duration={RIPPLE_CYCLE_DURATION}
         maxOpacity={RIPPLE_MAX_OPACITY}
         debug={DEBUG_RIPPLES}
-        active={!isReady}
+        active={!isReady || isTalking}
       />
 
       <MainStar
