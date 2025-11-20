@@ -392,8 +392,17 @@ export default function Constellation({
   };
 
   const handleInteractionStart = () => {
-    // Check if returning. If so, ignore the hover so we don't interrupt the tween.
-    if (isReturningRef.current) return;
+    // Always set cursor to pointer when hovering, even if returning
+    if (!isFocusedRef.current) {
+      document.body.style.cursor = "pointer";
+    }
+    setIsHovered(true);
+
+    // Check if returning. If so, skip animations but allow cursor change.
+    if (isReturningRef.current) {
+      if (onHoverEnterCallback) onHoverEnterCallback();
+      return;
+    }
 
     if (!isFocusedRef.current) {
       setBrightness(brightnessHover);
@@ -401,25 +410,28 @@ export default function Constellation({
         (transformData.scaleX ?? 1) * HOVER_SCALE,
         (transformData.scaleY ?? 1) * HOVER_SCALE
       );
-      document.body.style.cursor = "pointer";
     }
-    setIsHovered(true);
 
     if (onHoverEnterCallback) onHoverEnterCallback();
   };
 
   const handleInteractionEnd = () => {
-    // If returning, ignore.
-    if (isReturningRef.current) return;
+    // Always reset cursor when leaving, even if returning
+    document.body.style.cursor = "default";
+    setIsHovered(false);
+
+    // If returning, skip animations but allow cursor change.
+    if (isReturningRef.current) {
+      if (onHoverLeaveCallback) onHoverLeaveCallback();
+      return;
+    }
 
     if (!isFocusedRef.current) {
       setBrightness(1);
       playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
     }
-    document.body.style.cursor = "default";
 
     if (onHoverLeaveCallback) onHoverLeaveCallback();
-    setIsHovered(false);
   };
 
   return (

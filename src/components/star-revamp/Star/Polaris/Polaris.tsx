@@ -248,6 +248,7 @@ export default function Polaris({
 
   const handleClick = () => {
     if (!isReady) {
+      document.body.style.cursor = "default";
       // First click: move to bottom-left position
       // polarisActivated will be set in the animation's onFinish
       setIsReady(true);
