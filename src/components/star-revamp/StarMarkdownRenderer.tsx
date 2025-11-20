@@ -144,6 +144,7 @@ export default function StarMarkdownRenderer({
             src={src}
             alt={alt}
             style={{
+              display: "block",
               maxWidth: "70%",
               maxHeight: "50vh",
               borderRadius: "8px",
