@@ -5,6 +5,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { TweenConfig } from "konva/lib/Tween";
 
 type PolarisProps = {
   x: number;
@@ -140,6 +141,9 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const { isReady, setIsReady, setPolarisActivated, polarisActivated } = usePolarisContext();
+  
+  // Track if the initial animation to bottom-left has completed
+  const hasCompletedInitialAnimation = useRef(false);
 
   const { width, height } = useWindowSizeContext();
   const router = useRouter();
@@ -172,7 +176,7 @@ export default function Polaris({
 
     if (isReady) {
       // Polaris is in bottom-left position, stays there
-      focusTweenRef.current = new Konva.Tween({
+      const tweenConfig: TweenConfig = {
         node,
         duration: CLICK_ANIMATION_DURATION,
         easing: Konva.Easings.EaseInOut,
@@ -180,13 +184,17 @@ export default function Polaris({
         y: CLICK_TARGET_Y,
         scaleX: CLICK_TARGET_SCALE,
         scaleY: CLICK_TARGET_SCALE,
-        onFinish: () => {
-          // Ensure polarisActivated is set after animation completes on first click
-          if (!polarisActivated) {
-            setPolarisActivated(true);
-          }
-        },
-      });
+      };
+      
+      // Add onFinish callback with guard to only activate once
+      tweenConfig.onFinish = () => {
+        if (!hasCompletedInitialAnimation.current) {
+          hasCompletedInitialAnimation.current = true;
+          setPolarisActivated(true);
+        }
+      };
+      
+      focusTweenRef.current = new Konva.Tween(tweenConfig);
     } else if (focusedScreenPos) {
       const focal = focusedUnfocusedPos ?? windowCenter;
       let vx = x - focal.x;
