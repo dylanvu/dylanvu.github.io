@@ -100,6 +100,9 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isReady, polarisActivated]);
 
+  const PLACEHOLDER_MSG = "Polaris is navigating the night sky..."
+  const ERROR_MSG = "I apologize, stargazer. Something went wrong while reading the stars. Please try again."
+
   async function talkToPolaris(newMessage: string) {
     await talkToAgent(
       newMessage,
@@ -107,6 +110,8 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
       setPolarisHistory,
       setIsThinking,
       setIsTalking,
+      PLACEHOLDER_MSG,
+      ERROR_MSG,
       onStreamChunk
     );
   }

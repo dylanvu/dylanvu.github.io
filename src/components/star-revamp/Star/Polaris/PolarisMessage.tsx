@@ -3,8 +3,12 @@ import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { useState } from "react";
+import { ChatMessage } from "@/hooks/Polaris/tools/talk";
 
-export default function PolarisMessage({ message }: { message: string }) {
+export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
+  // Handle both string and ChatMessage object
+  const messageText = typeof message === "string" ? message : message.message;
+  const isPlaceholder = typeof message === "object" && message.isPlaceholder;
   return (
     <motion.div
       // FIX: Switched to vertical only to match user bubble
@@ -32,7 +36,27 @@ export default function PolarisMessage({ message }: { message: string }) {
         >
           Polaris
         </span>
-        <div
+        <motion.div
+          animate={
+            isPlaceholder
+              ? {
+                  opacity: [0.4, 0.7, 0.4],
+                }
+              : {
+                  opacity: 1,
+                }
+          }
+          transition={
+            isPlaceholder
+              ? {
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+              : {
+                  duration: 0,
+                }
+          }
           style={{
             background: "rgba(255, 255, 255, 0.05)",
             backdropFilter: "blur(8px)",
@@ -84,9 +108,9 @@ export default function PolarisMessage({ message }: { message: string }) {
               img: ({ src, alt }) => <StreamingImage src={src} alt={alt} />,
             }}
           >
-            {message}
+            {messageText}
           </ReactMarkdown>
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   );

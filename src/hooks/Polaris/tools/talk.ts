@@ -2,6 +2,7 @@ export interface ChatMessage {
   role: "user" | "model";
   message: string;
   isError?: boolean;
+  isPlaceholder?: boolean;
 }
 
 export interface GeminiMessagePart {
@@ -19,6 +20,8 @@ export async function talkToAgent(
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setIsThinking: React.Dispatch<React.SetStateAction<boolean>>,
   setIsTalking: React.Dispatch<React.SetStateAction<boolean>>,
+  placeholderMessage: string,
+  errorMessage: string,
   onStreamChunk?: () => void
 ) {
   const newUserMessage: ChatMessage = {
@@ -26,10 +29,17 @@ export async function talkToAgent(
     message: newMessage,
   };
 
-  // first add the user message to the history so it can render
+  // First add the user message to the history so it can render
   const newChatHistory = [...chatHistory, newUserMessage];
 
-  setChatHistory(newChatHistory);
+  // Add a placeholder message while thinking
+  const placeholder: ChatMessage = {
+    role: "model",
+    message: placeholderMessage,
+    isPlaceholder: true,
+  };
+
+  setChatHistory([...newChatHistory, placeholder]);
 
   const history: GeminiMessage[] = newChatHistory.map((message) => {
     return {
@@ -59,16 +69,20 @@ export async function talkToAgent(
       throw new Error("Failed to get response from Polaris");
     }
 
-    // Create an initial empty model message that we'll update as chunks arrive
-    const newModelMessage: ChatMessage = {
-      role: "model",
-      message: "",
-    };
-    
-    // Add the empty message to chat history so it appears immediately
-    setChatHistory((prev) => [...prev, newModelMessage]);
+    // Replace the placeholder message with an empty message that will be streamed into
     setIsThinking(false);
     setIsTalking(true);
+    
+    // Replace the placeholder with an empty message ready for streaming
+    setChatHistory((prev) => {
+      const updated = [...prev];
+      updated[updated.length - 1] = {
+        role: "model",
+        message: "",
+        isPlaceholder: false,
+      };
+      return updated;
+    });
 
     // Read the stream
     const reader = res.body.getReader();
@@ -94,6 +108,7 @@ export async function talkToAgent(
         updated[updated.length - 1] = {
           role: "model",
           message: accumulatedText,
+          isPlaceholder: false,
         };
         return updated;
       });
@@ -102,14 +117,18 @@ export async function talkToAgent(
   } catch (error) {
     console.error("Error talking to LLM:", error);
     
-    // Add an error message to the chat using functional update
-    const errorMessage: ChatMessage = {
+    // Replace the placeholder with an error message
+    const errorMsg: ChatMessage = {
       role: "model",
-      message: "I apologize, stargazer. Something went wrong while consulting the stars. Please try again.",
+      message: errorMessage,
       isError: true,
     };
     
-    setChatHistory((prev) => [...prev, errorMessage]);
+    setChatHistory((prev) => {
+      const updated = [...prev];
+      updated[updated.length - 1] = errorMsg;
+      return updated;
+    });
     setIsThinking(false);
     setIsTalking(false);
   }

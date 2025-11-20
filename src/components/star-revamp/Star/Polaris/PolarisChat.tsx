@@ -139,7 +139,7 @@ export default function PolarisChat() {
             return message.role === "user" ? (
               <StargazerMessage key={key} message={message.message} />
             ) : (
-              <PolarisMessage key={key} message={message.message} />
+              <PolarisMessage key={key} message={message} />
             );
           })}
         </AnimatePresence>
