@@ -18,6 +18,8 @@ import {
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
 import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import PolarisPanel from "@/components/star-revamp/Star/Polaris/PolarisPanel";
 
 export const StarPanelStyle: React.CSSProperties = {
   position: "absolute",
@@ -87,13 +89,14 @@ export default function MainStage({
   showMainStars?: boolean;
 }) {
   const { width, height, ready } = useWindowSizeContext();
+  const { polarisActivated } = usePolarisContext();
   const pathname = usePathname();
   const [focusedConstellationPos, setFocusedConstellationPos] =
     useState<FocusedConstellationPos | null>(null);
 
   let panelStyle = { ...StarPanelStyle };
 
-  const isPolarisPage = pathname === "/polaris";
+  const isPolarisPage = polarisActivated;
   if (isPolarisPage) {
     panelStyle = { ...StarPanelStyle, ...PolarisStyleOverride };
   }
@@ -114,9 +117,9 @@ export default function MainStage({
           <CenterOverlay />
           <TopOverlay />
           <AnimatePresence mode="wait">
-            {pathname !== "/" && (
+            {(pathname !== "/" || polarisActivated) && (
               <motion.div
-                key="children"
+                key={polarisActivated ? "polaris" : "star"}
                 initial={
                   isPolarisPage
                     ? PolarisPanelMotionInitial
@@ -134,7 +137,9 @@ export default function MainStage({
                 style={panelStyle}
                 className={FONT_FAMILY.style.fontFamily}
               >
-                {children}
+                {
+                  polarisActivated ? <PolarisPanel /> : children
+                }
               </motion.div>
             )}
           </AnimatePresence>

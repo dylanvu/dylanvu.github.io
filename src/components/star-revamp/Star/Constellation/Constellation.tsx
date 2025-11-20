@@ -8,6 +8,7 @@ import { ConstellationData, TransformData } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 export default function Constellation({
   data,
@@ -234,7 +235,7 @@ export default function Constellation({
     }
 
     const targetX =
-      pathname !== "/" && pathname !== "/polaris"
+      pathname !== "/" && !polarisActivated
         ? windowCenter.x / 2
         : windowCenter.x;
 
@@ -376,6 +377,8 @@ export default function Constellation({
 
   const { setOverlayTextContents: setCenterOverlayTextContents } =
     useCenterOverlayContext();
+
+  const {polarisActivated, setPolarisActivated } = usePolarisContext();
 
   const router = useRouter();
 
@@ -552,6 +555,9 @@ export default function Constellation({
                     "noopener,noreferrer"
                   );
                 } else if (data.internalLink) {
+                  if (polarisActivated) {
+                    setPolarisActivated(false);
+                  }
                   router.push(data.internalLink);
                 }
                 setTopOverlayTextContents({

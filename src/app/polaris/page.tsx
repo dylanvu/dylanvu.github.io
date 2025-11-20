@@ -1,5 +1,5 @@
-import PolarisPanel from "@/components/star-revamp/Star/Polaris/PolarisPanel";
+import PolarisPageInitializer from "./PolarisPageInitializer";
 
-export default async function PolarisPage() {
-  return <PolarisPanel />;
+export default function PolarisPage() {
+  return <PolarisPageInitializer/>;
 }

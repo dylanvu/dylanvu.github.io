@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
 import React from "react";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -43,8 +42,6 @@ export default function MainStarField({
     setOverlayTextContents: setTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
-
-  const { isReady, polarisActivated } = usePolarisContext();
 
   const [selectedConstellation, setSelectedConstellation] =
     useState<ConstellationData | null>(null);
@@ -120,21 +117,7 @@ export default function MainStarField({
       setTopOverlayVisibility(false);
     }
 
-    // if polaris is not ready, go to the root
-    if (!isReady) {
       router.push("/");
-    } else {
-      // TODO: refactor /polaris
-      // Goal: /polaris sets the state to activate polaris, kind of like how I handled focus
-      // then, the HUD -> star animation will be restored, and closing the HUD animation will be fixed too
-
-      // did the user just have polaris open?
-      if (polarisActivated) {
-        router.push("/polaris");
-      } else {
-        router.push("/");
-      }
-    }
   };
 
   // DEBUG MODE - set to false to hide debug markers

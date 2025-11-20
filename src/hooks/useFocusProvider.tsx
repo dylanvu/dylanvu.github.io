@@ -19,6 +19,7 @@ import {
 
 import { useTopOverlayContext } from "./useTopOverlay";
 import { usePathname } from "next/navigation";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 interface FocusedObject {
   constellation: ConstellationData | null;
@@ -42,8 +43,10 @@ export function FocusProvider({ children }: { children: ReactNode }) {
 
   const { setHorizontalPosition } = useTopOverlayContext();
 
+  const {polarisActivated} = usePolarisContext();
+
   useEffect(() => {
-    if (pathname === "/polaris" || pathname === "/") {
+    if (polarisActivated || pathname === "/") {
       setHorizontalPosition("center");
     } else {
       setHorizontalPosition("left");

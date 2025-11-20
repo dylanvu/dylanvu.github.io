@@ -139,8 +139,7 @@ export default function Polaris({
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-  const { isReady, setIsReady, polarisActivated, setPolarisActivated } =
-    usePolarisContext();
+  const { isReady, setIsReady, setPolarisActivated, polarisActivated } = usePolarisContext();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { width, height } = useWindowSizeContext();
@@ -148,10 +147,14 @@ export default function Polaris({
   const pathname = usePathname();
 
   // --- CLICK ANIMATION CONFIGURATION ---
-  const CLICK_ANIMATION_DURATION = 1.5;
-  const CLICK_TARGET_SCALE = 6;
-  const CLICK_TARGET_X = 150;
-  const CLICK_TARGET_Y = height - 150;
+  // Variables to control the click interaction
+  const CLICK_ANIMATION_DURATION = 1; // Time in seconds to move/scale
+  const CLICK_TARGET_SCALE = 6; // How big it grows (e.g., 6x original size)
+
+  // Calculate Bottom Right position (with some padding from edge)
+
+  const CLICK_TARGET_X = 150; // 150px from left edge
+  const CLICK_TARGET_Y = height - 150; // 150px from bottom edge
 
   // --- RIPPLE CONFIGURATION ---
   const DEBUG_RIPPLES = false;
@@ -179,7 +182,6 @@ export default function Polaris({
         scaleY: CLICK_TARGET_SCALE,
         onFinish: () => {
           if (!isReady) {
-            router.push("/polaris");
             setPolarisActivated(true);
             setIsReady(true);
           }
@@ -240,12 +242,13 @@ export default function Polaris({
     setIsExpanded(true);
 
     if (isReady) {
-      if (pathname === "/polaris") {
+      if (polarisActivated) {
         setPolarisActivated(false);
-        router.push("/");
       } else {
         setPolarisActivated(true);
-        router.push("/polaris");
+      }
+      if (pathname !== "/") {
+        router.push("/");
       }
     }
   };
@@ -274,7 +277,7 @@ export default function Polaris({
         duration={RIPPLE_CYCLE_DURATION}
         maxOpacity={RIPPLE_MAX_OPACITY}
         debug={DEBUG_RIPPLES}
-        active={!polarisActivated}
+        active={!isReady}
       />
 
       <MainStar
