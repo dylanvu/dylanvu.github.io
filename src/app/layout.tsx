@@ -5,6 +5,7 @@ import "./globals.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { WindowSizeProvider } from "@/hooks/useWindowSizeProvider";
+import { SPACE_BACKGROUND_COLOR } from "./theme";
 
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
@@ -35,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
       <Head>
         {/* Configure leaflet for the hackathon map component */}
         <link
@@ -50,7 +51,7 @@ export default function RootLayout({
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossOrigin=""
       />
-      <body className={inter.className}>
+      <body className={inter.className} style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
         <main className="main">
           <WindowSizeProvider>
             <CenterOverlayProvider>

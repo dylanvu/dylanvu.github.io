@@ -57,13 +57,15 @@ export default function PolarisChat() {
         e.clientY <= rect.bottom;
 
       if (isOverContainer) {
+        // Prevent default browser scroll behavior (rubber band effect)
+        e.preventDefault();
         // 3. Manually scroll the container
         container.scrollTop += e.deltaY;
       }
     };
 
     // Add listener to window (non-passive to ensure we catch it)
-    window.addEventListener("wheel", handleWheel);
+    window.addEventListener("wheel", handleWheel, { passive: false });
     return () => window.removeEventListener("wheel", handleWheel);
   }, []);
 
@@ -78,6 +80,7 @@ export default function PolarisChat() {
         boxSizing: "border-box",
         position: "relative",
         overflowX: "hidden",
+        overscrollBehavior: "contain",
         paddingBottom: "4rem",
         paddingTop: "4rem"
       }}
@@ -108,6 +111,7 @@ export default function PolarisChat() {
         style={{
           flex: 1,
           overflowY: "auto",
+          overscrollBehavior: "contain",
           display: "flex",
           flexDirection: "column",
           gap: "1rem",
