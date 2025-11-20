@@ -78,6 +78,8 @@ export default function PolarisChat() {
         boxSizing: "border-box",
         position: "relative",
         overflowX: "hidden",
+        paddingBottom: "4rem",
+        paddingTop: "4rem"
       }}
       className={FONT_FAMILY.className}
     >
@@ -110,10 +112,9 @@ export default function PolarisChat() {
           flexDirection: "column",
           gap: "1rem",
           marginBottom: "1rem",
-          paddingRight: "0.5rem",
           scrollbarGutter: "stable",
-          marginRight: "4rem",
-          marginLeft: "4rem",
+          paddingRight: "4rem",
+          paddingLeft: "4rem",
         }}
       >
         <AnimatePresence initial={false}>
@@ -134,7 +135,6 @@ export default function PolarisChat() {
         style={{
           width: "40%",
           margin: "auto",
-          marginBottom: "4rem",
           pointerEvents: "none",
         }}
       >

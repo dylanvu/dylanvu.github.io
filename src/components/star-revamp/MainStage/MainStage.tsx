@@ -30,7 +30,6 @@ const BasePanelStyle: React.CSSProperties = {
   zIndex: 11,
   background: hexToRgba(SECONDARY_SPACE_COLOR, 0.05),
   right: 0,
-  padding: "1rem",
   cursor: "auto",
 }
 
@@ -38,6 +37,7 @@ const StarPanelStyle: React.CSSProperties = {
   background: hexToRgba(SECONDARY_SPACE_COLOR, 0.05),
   backdropFilter: "blur(12px)",
   borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
+  padding: "2rem",
 };
 
 type MotionInputs = boolean | TargetAndTransition | VariantLabels | undefined;
