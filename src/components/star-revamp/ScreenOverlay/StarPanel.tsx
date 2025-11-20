@@ -1,15 +1,6 @@
 "use client";
 import StarMarkdownRenderer from "@/components/star-revamp/StarMarkdownRenderer";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import {
-  getConstellationDataByName,
-  getConstellationNameByStarSlug,
-  getStarDataBySlug,
-} from "@/components/star-revamp/Star/ConstellationList";
-import {
-  ConstellationData,
-  StarDataWithInternalLink,
-} from "@/interfaces/StarInterfaces";
 import { useEffect } from "react";
 
 export default function StarPanel({
@@ -19,20 +10,12 @@ export default function StarPanel({
   markdown: string;
   slug: string;
 }) {
-  const { setFocusedObject } = useFocusContext();
-  const constellationName = getConstellationNameByStarSlug(slug);
-  let constellationData: ConstellationData | null = null;
-  let starData: StarDataWithInternalLink | null = null;
-  if (constellationName) {
-    constellationData = getConstellationDataByName(constellationName);
-    starData = getStarDataBySlug(slug, constellationName);
-  }
+  const { navigateToStar } = useFocusContext();
+  
   useEffect(() => {
-    // let's store where we are so that we can focus on it on render
-    setFocusedObject({
-      constellation: constellationData,
-      star: starData,
-    });
-  }, []);
+    // Navigate to the star on mount or when slug changes
+    navigateToStar(slug);
+  }, [slug, navigateToStar]);
+  
   return <StarMarkdownRenderer markdown={markdown} />;
 }

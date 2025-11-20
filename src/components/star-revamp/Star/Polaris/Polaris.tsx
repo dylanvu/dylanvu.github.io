@@ -204,7 +204,6 @@ export default function Polaris({
   // Register trigger that spawns new rings
   useEffect(() => {
     const triggerNewPulse = () => {
-      console.log('[Polaris] Spawning new pulse ring');
       const newId = pulseIdCounter.current++;
       setPulseRings(prev => [...prev, newId]);
     };

@@ -9,6 +9,7 @@ import {
   getHackathonStatistics,
   getHackathonListDocument,
 } from "./cached-data";
+import { STAR_BASE_URL } from "@/constants/Routes";
 
 export interface GeminiMessagePart {
   text: string;
@@ -110,7 +111,15 @@ Presentation Rules:
 - Explain Dylan's portfolio using the "night sky" metaphor
 - If information is missing from the data above, clearly state you do not know
 - Use markdown format for responses
-- Can reference images from projects using markdown syntax
+- **IMPORTANT**: When including URLs, always wrap them in markdown link syntax: [your chosen descriptive text](url)
+  - Never output raw URLs like /Dylan_Vu_Resume.pdf - always format as markdown links
+  - Choose link text that flows naturally with your response
+  - Examples: [Dylan's resume](/Dylan_Vu_Resume.pdf) or [here is his resume](/Dylan_Vu_Resume.pdf)
+- **When asked for links to projects or stars**: Use the internalLink field from the constellation data
+  - The constellation structure provides internalLink fields that already include the correct base path (${STAR_BASE_URL})
+  - Example: If internalLink is "${STAR_BASE_URL}/wordship", create link as [WordShip](${STAR_BASE_URL}/wordship)
+  - Don't just tell users to click on stars - give them the direct clickable link
+- Can reference images from projects using markdown syntax: ![alt text](image-url)
 
 Character Notes:
 - "Polaris" in documents refers to you

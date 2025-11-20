@@ -15,11 +15,17 @@ import {
   Dispatch,
   SetStateAction,
   useEffect,
+  useCallback,
 } from "react";
 
 import { useTopOverlayContext } from "./useTopOverlay";
 import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import {
+  getConstellationNameByStarSlug,
+  getConstellationDataByName,
+  getStarDataBySlug,
+} from "@/components/star-revamp/Star/ConstellationList";
 
 interface FocusedObject {
   constellation: ConstellationData | null;
@@ -29,6 +35,7 @@ interface FocusedObject {
 export interface FocusState {
   focusedObject: FocusedObject;
   setFocusedObject: Dispatch<SetStateAction<FocusedObject>>;
+  navigateToStar: (slug: string) => void;
 }
 
 const FocusContext = createContext<FocusState | undefined>(undefined);
@@ -53,11 +60,24 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname]);
 
+  const navigateToStar = useCallback((slug: string) => {
+    const constellationName = getConstellationNameByStarSlug(slug);
+    if (constellationName) {
+      const constellationData = getConstellationDataByName(constellationName);
+      const starData = getStarDataBySlug(slug, constellationName);
+      setFocusedObject({
+        constellation: constellationData,
+        star: starData,
+      });
+    }
+  }, []);
+
   return (
     <FocusContext.Provider
       value={{
         focusedObject,
         setFocusedObject,
+        navigateToStar,
       }}
     >
       {children}

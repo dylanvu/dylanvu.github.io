@@ -1,7 +1,7 @@
 import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
-import Link from "next/link";
+import { MarkdownLink } from "./MarkdownLink";
 
 export default function StarMarkdownRenderer({
   markdown,
@@ -42,45 +42,9 @@ export default function StarMarkdownRenderer({
           <p className={FONT_FAMILY.className}>{children}</p>
         ),
 
-        a: ({ children, href }) => {
-          // Handle missing href
-          if (!href) {
-            return <span className={FONT_FAMILY.className}>{children}</span>;
-          }
-          
-          // Check if the link is internal (starts with /) or external
-          const isInternal = href.startsWith('/');
-          
-          if (isInternal) {
-            // Use Next.js Link for internal navigation
-            return (
-              <Link
-                href={href}
-                className={FONT_FAMILY.className}
-                style={{
-                  color: SPACE_TEXT_COLOR,
-                }}
-              >
-                {children}
-              </Link>
-            );
-          }
-          
-          // External links: open in new tab
-          return (
-            <a
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              className={FONT_FAMILY.className}
-              style={{
-                color: SPACE_TEXT_COLOR,
-              }}
-            >
-              {children}
-            </a>
-          );
-        },
+        a: ({ children, href }) => (
+          <MarkdownLink href={href}>{children}</MarkdownLink>
+        ),
 
         ul: ({ children }) => (
           <ul className={FONT_FAMILY.className}>{children}</ul>

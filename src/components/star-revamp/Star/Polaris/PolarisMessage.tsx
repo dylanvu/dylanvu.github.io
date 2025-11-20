@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/hooks/Polaris/tools/talk";
+import { MarkdownLink } from "../../MarkdownLink";
 
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
   // Handle both string and ChatMessage object
@@ -16,17 +17,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
       <p className={FONT_FAMILY.className}>{children}</p>
     ),
     a: ({ children, href }: any) => (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className={FONT_FAMILY.className}
-        style={{
-          color: SPACE_TEXT_COLOR,
-        }}
-      >
-        {children}
-      </a>
+      <MarkdownLink href={href}>{children}</MarkdownLink>
     ),
     ul: ({ children }: any) => (
       <ul className={FONT_FAMILY.className}>{children}</ul>
