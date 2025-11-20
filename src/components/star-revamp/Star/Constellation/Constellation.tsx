@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { Group, Rect } from "react-konva";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
@@ -185,6 +185,15 @@ export default function Constellation({
   const FOCUS_ANIMATION_DURATION = 0.5;
   const EASING = Konva.Easings.EaseInOut;
 
+  const {polarisActivated, setPolarisActivated } = usePolarisContext();
+
+  // Memoized target position - automatically updates when pathname or polarisActivated changes
+  const focusedTargetX = useMemo(() => {
+    return pathname !== "/" && !polarisActivated
+      ? windowCenter.x / 2
+      : windowCenter.x;
+  }, [pathname, polarisActivated, windowCenter.x]);
+
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
     if (!node) return;
@@ -235,18 +244,14 @@ export default function Constellation({
       focusTweenRef.current.destroy();
     }
 
-    const targetX =
-      pathname !== "/" && !polarisActivated
-        ? windowCenter.x / 2
-        : windowCenter.x;
-
+    // Use memoized target position - automatically updates with pathname/polarisActivated
     const targetY = windowCenter.y;
 
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
       easing: EASING,
-      x: targetX,
+      x: focusedTargetX,
       y: targetY,
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
@@ -368,8 +373,7 @@ export default function Constellation({
         playVanishTween();
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, focusedConstellation, pathname]);
+  }, [isFocused, focusedConstellation, pathname, polarisActivated]);
 
   const {
     setOverlayTextContents: setTopOverlayTextContents,
@@ -379,7 +383,6 @@ export default function Constellation({
   const { setOverlayTextContents: setCenterOverlayTextContents } =
     useCenterOverlayContext();
 
-  const {polarisActivated, setPolarisActivated } = usePolarisContext();
 
   const router = useRouter();
 
@@ -513,14 +516,14 @@ export default function Constellation({
               if (star.data) {
                 if (isFocusedRef.current) {
                   setTopOverlayTextContents({
-                    intro: star.data.intro,
+                    intro: star.data.classification,
                     title: star.data.label,
                     origin: star.data.origin,
                     about: star.data.about,
                   });
                 } else {
                   setCenterOverlayTextContents({
-                    intro: star.data.intro,
+                    intro: star.data.classification,
                     title: star.data.label,
                     origin: star.data.origin,
                     about: star.data.about,
@@ -574,7 +577,7 @@ export default function Constellation({
                   router.push(`${STAR_BASE_URL}/${data.slug}`);
                 }
                 setTopOverlayTextContents({
-                  intro: data.intro,
+                  intro: data.classification,
                   title: data.label,
                   origin: data.origin,
                   about: data.about,

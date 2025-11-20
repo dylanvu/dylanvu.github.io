@@ -326,12 +326,9 @@ export default function Polaris({
       // polarisActivated will be set in the animation's onFinish
       setIsReady(true);
     } else {
-      // Subsequent clicks: only toggle the interface
+      // Polaris is on the bottom left - just toggle the interface
+      // No need to navigate - MainStage condition handles showing panel on any page
       setPolarisActivated(!polarisActivated);
-    }
-    
-    if (pathname !== "/") {
-      router.push("/");
     }
   };
 

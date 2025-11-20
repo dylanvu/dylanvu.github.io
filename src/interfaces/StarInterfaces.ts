@@ -40,7 +40,7 @@ type BaseStarData = {
   label: string;
   origin: string;
   about: string;
-  intro: "Star" | "Supergiant" | "Giant" | "Dwarf";
+  classification: "Star" | "Supergiant" | "Giant" | "Dwarf";
   color?:
     | "Blue"
     | "Blue-White"

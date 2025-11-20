@@ -10,6 +10,9 @@ interface PolarisContextInterface {
   talkToPolaris: (newMessage: string) => void;
   isThinking: boolean;
   isTalking: boolean;
+  /**
+   * This state shows whether polaris is on the bottom left or not
+   */
   isReady: boolean;
   setIsReady: (newState: boolean) => void;
   polarisActivated: boolean;

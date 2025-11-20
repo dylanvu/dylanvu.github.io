@@ -1,4 +1,4 @@
-# UUniversity of California, Santa Barbara
+# University of California, Santa Barbara
 
 ## Freshman Year
 I entered UC Santa Barbara (UCSB) in 2019 in the Freshman Summer Start Program originally as a mechanical engineering student aiming to go into astronautical engineering with dreams of working for NASA.

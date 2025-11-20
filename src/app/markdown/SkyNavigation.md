@@ -38,3 +38,5 @@ In Arete, if a project is a Giant or Supergiant, it means it was technologically
 
 Polaris (The North Star)
 Finally, meet Polaris. In my previous portfolio, I had a chatbot to help visitors navigate. Moving to this version, I evolved that chatbot into Polaris as a guiding star! It’s a thematic way to keep a feature I love building while helping you find your way. Polaris runs on Google Gemini.
+
+I think Polaris is the coolest part of the portfolio. It can guide you and I love the implementation of the FocusProvider to navigate the user around with a fancy animation and everything.

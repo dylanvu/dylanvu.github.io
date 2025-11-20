@@ -131,7 +131,7 @@ export default function MainStarField({
       setCenterOverlayVisibility(false);
       if (focusedObject.star) {
         setTopOverlayTextContents({
-          intro: focusedObject.star.intro,
+          intro: focusedObject.star.classification,
           title: focusedObject.star.label,
           origin: focusedObject.star.origin,
           about: focusedObject.star.about,
