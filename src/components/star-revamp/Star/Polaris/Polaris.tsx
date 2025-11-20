@@ -140,7 +140,6 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const { isReady, setIsReady, setPolarisActivated, polarisActivated } = usePolarisContext();
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const { width, height } = useWindowSizeContext();
   const router = useRouter();
@@ -171,7 +170,8 @@ export default function Polaris({
 
     focusTweenRef.current?.finish();
 
-    if (isExpanded) {
+    if (isReady) {
+      // Polaris is in bottom-left position, stays there
       focusTweenRef.current = new Konva.Tween({
         node,
         duration: CLICK_ANIMATION_DURATION,
@@ -181,9 +181,9 @@ export default function Polaris({
         scaleX: CLICK_TARGET_SCALE,
         scaleY: CLICK_TARGET_SCALE,
         onFinish: () => {
-          if (!isReady && !polarisActivated) {
+          // Ensure polarisActivated is set after animation completes on first click
+          if (!polarisActivated) {
             setPolarisActivated(true);
-            setIsReady(true);
           }
         },
       });
@@ -228,7 +228,7 @@ export default function Polaris({
 
     focusTweenRef.current.play();
   }, [
-    isExpanded,
+    isReady,
     focusedScreenPos,
     focusedUnfocusedPos,
     x,
@@ -239,17 +239,17 @@ export default function Polaris({
   ]);
 
   const handleClick = () => {
-    setIsExpanded(true);
-
-    if (isReady) {
-      if (polarisActivated) {
-        setPolarisActivated(false);
-      } else {
-        setPolarisActivated(true);
-      }
-      if (pathname !== "/") {
-        router.push("/");
-      }
+    if (!isReady) {
+      // First click: move to bottom-left position
+      // polarisActivated will be set in the animation's onFinish
+      setIsReady(true);
+    } else {
+      // Subsequent clicks: only toggle the interface
+      setPolarisActivated(!polarisActivated);
+    }
+    
+    if (pathname !== "/") {
+      router.push("/");
     }
   };
 
