@@ -134,42 +134,38 @@ Character Notes:
 
   console.log(JSON.stringify(contents));
 
-  // const response = await ai.models.generateContentStream({
-  //   model,
-  //   config,
-  //   contents,
-  // });
-  // for await (const chunk of response) {
-  //   console.log(chunk.text);
-  // }
+  // Create a streaming response
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const response = await ai.models.generateContentStream({
+          model,
+          config,
+          contents,
+        });
 
-  const generatedContent = await ai.models.generateContent({
-    model,
-    config,
-    contents,
+        for await (const chunk of response) {
+          const text = chunk.text;
+          if (text) {
+            // Send each chunk as it arrives
+            controller.enqueue(new TextEncoder().encode(text));
+          }
+        }
+        
+        controller.close();
+      } catch (error) {
+        console.error("Error during streaming:", error);
+        controller.error(error);
+      }
+    },
   });
 
-  const candidates = generatedContent.candidates;
-  if (candidates) {
-    const llmContent = candidates[0].content;
-    const llmResponse = llmContent?.parts?.[0]?.text;
-    console.log("llm response", llmResponse);
-    if (!llmResponse) {
-      console.error("No response from llm due to missing parts", llmContent);
-      return NextResponse.json({
-        response: "No response due to missing parts",
-      });
-    }
-    return NextResponse.json({ response: llmResponse });
-  } else {
-    console.error(
-      "Unable to get llm response",
-      JSON.stringify(generatedContent)
-    );
-    return NextResponse.json({
-      response: "No response due to missing candidates",
-    });
-  }
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Transfer-Encoding": "chunked",
+    },
+  });
 
   // TODO: handle rate limiting, inappropriate content warnings, missing api key, and rotate API keys
 }

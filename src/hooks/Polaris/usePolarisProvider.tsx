@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { ChatMessage, talkToAgent } from "@/hooks/Polaris/tools/talk";
 import { useCenterOverlayContext } from "../useCenterOverlay";
-import { title } from "process";
 
 interface PolarisContextInterface {
   polarisHistory: ChatMessage[];

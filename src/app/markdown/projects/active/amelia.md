@@ -1,12 +1,12 @@
 # Amelia
 
-![Logo of Amelia](/projects/embedded/amelia/amelia.png)
+![Picture of Amelia's avatar](/projects/embedded/amelia/amelia.png)
 
 Despite the... "interesting" appearance...
 
-![Picture of Amelia](/projects/embedded/amelia/amelia_1.jpg)
+![Picture of Amelia in real life, which is a cardboard tower](/projects/embedded/amelia/amelia_1.jpg)
 
-![Another picture of Amelia](/projects/embedded/amelia/amelia_2.jpg)
+![Another picture of Amelia in real life](/projects/embedded/amelia/amelia_2.jpg)
 
 Amelia is actually one of the most interesting projects I've ever worked on.
 

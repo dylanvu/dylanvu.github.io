@@ -1,6 +1,6 @@
 # Epicdle
 
-![Epicdle](/projects/games/epicdle/epicdle.gif)
+![Epicdle game trailer](/projects/games/epicdle/epicdle.gif)
 
 Play it here: https://epicdle.com
 
@@ -10,7 +10,7 @@ Epicdle is a daily song guessing game, inspired by Wordle, Heardle, and my-shot 
 
 Upon launch, I saw 600 daily active users. I take user feedback and iterate on the game to make it better and independently market it on the Epic the Musical subreddit.
 
-![Epicdle](/projects/games/epicdle/epicdle.png)
+![Epicdle interface](/projects/games/epicdle/epicdle.png)
 
 Here are the technologies I used:
 

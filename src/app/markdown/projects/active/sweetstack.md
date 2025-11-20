@@ -8,7 +8,7 @@ Featuring custom made Blender assets! Consistent and aesthetic design! Amazing q
 
 ![SweetStack Gameplay GIF](/projects/games/sweetstack/sweetstack.gif)
 
-![SweetStack Game Screenshot](/projects/games/sweetstack/sweetstack_game.png)
+![SweetStack Game Interface Screenshot](/projects/games/sweetstack/sweetstack_game.png)
 
 A super amazing looking game! It's cute, wholesome, and has sound effects. Super innocent... right?
 
