@@ -17,7 +17,8 @@ export async function talkToAgent(
   newMessage: string,
   chatHistory: ChatMessage[],
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  setIsThinking: React.Dispatch<React.SetStateAction<boolean>>
+  setIsThinking: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsTalking: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   const newUserMessage: ChatMessage = {
     role: "user",
@@ -68,6 +69,7 @@ export async function talkToAgent(
     // Add the empty message to chat history so it appears immediately
     setChatHistory((prev) => [...prev, newModelMessage]);
     setIsThinking(false);
+    setIsTalking(true);
 
     // Read the stream
     const reader = res.body.getReader();
@@ -95,7 +97,7 @@ export async function talkToAgent(
         return updated;
       });
     }
-
+    setIsTalking(false);
     console.log("Final response:", accumulatedText);
   } catch (error) {
     console.error("Error talking to LLM:", error);
@@ -109,5 +111,6 @@ export async function talkToAgent(
     
     setChatHistory((prev) => [...prev, errorMessage]);
     setIsThinking(false);
+    setIsTalking(false);
   }
 }

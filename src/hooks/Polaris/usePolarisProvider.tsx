@@ -9,6 +9,7 @@ interface PolarisContextInterface {
   setPolarisHistory: (newHistory: ChatMessage[]) => void;
   talkToPolaris: (newMessage: string) => void;
   isThinking: boolean;
+  isTalking: boolean;
   isReady: boolean;
   setIsReady: (newState: boolean) => void;
   polarisActivated: boolean;
@@ -39,7 +40,16 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
     initialMessage,
   ]);
 
+  /**
+   * This state shows whether Polaris LLM is thinking
+   */
   const [isThinking, setIsThinking] = useState<boolean>(false);
+
+  /**
+   * This state is true when the message is being streamed
+   */
+  const [isTalking, setIsTalking] = useState<boolean>(false);
+
   /**
    * This state shows whether the polaris HUD is activated or not
    */
@@ -73,7 +83,8 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
       newMessage,
       polarisHistory,
       setPolarisHistory,
-      setIsThinking
+      setIsThinking,
+      setIsTalking
     );
   }
 
@@ -88,6 +99,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
         setIsReady,
         polarisActivated,
         setPolarisActivated,
+        isTalking
       }}
     >
       {children}

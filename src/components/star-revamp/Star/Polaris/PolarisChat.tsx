@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { FONT_FAMILY } from "@/app/theme";
 
 export default function PolarisChat() {
-  const { polarisHistory, talkToPolaris, isThinking } = usePolarisContext();
+  const { polarisHistory, talkToPolaris, isThinking, isTalking } = usePolarisContext();
   const [inputText, setInputText] = useState("");
 
   // 1. Change ref to target the container instead of a dummy div
@@ -68,6 +68,18 @@ export default function PolarisChat() {
     window.addEventListener("wheel", handleWheel, { passive: false });
     return () => window.removeEventListener("wheel", handleWheel);
   }, []);
+
+  let polarisInputPlaceholder = "Consult Polaris..."
+
+  if (isThinking) {
+    polarisInputPlaceholder = "Polaris is thinking..."
+  } else if (isTalking) {
+    polarisInputPlaceholder = "Polaris is speaking..."
+  } else {
+
+  }
+
+  let disabledChatInput = isThinking || isTalking
 
   return (
     <div
@@ -158,7 +170,7 @@ export default function PolarisChat() {
             <button
               key={i}
               onClick={() => handleSubmit(suggestion)}
-              disabled={isThinking}
+              disabled={disabledChatInput}
               style={{
                 background: "rgba(255, 255, 255, 0.05)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -194,12 +206,12 @@ export default function PolarisChat() {
           <input
             type="text"
             placeholder={
-              isThinking ? "Polaris is thinking..." : "Consult Polaris..."
+              polarisInputPlaceholder
             }
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isThinking}
+            disabled={disabledChatInput}
             style={{
               flex: 1,
               background: "transparent",
@@ -212,7 +224,7 @@ export default function PolarisChat() {
           />
           <button
             onClick={() => handleSubmit()}
-            disabled={isThinking}
+            disabled={disabledChatInput}
             style={{
               width: "2.2rem",
               height: "2.2rem",
