@@ -127,10 +127,10 @@ export default function PolarisChat() {
           display: "flex",
           flexDirection: "column",
           gap: "1rem",
-          marginBottom: "1rem",
           scrollbarGutter: "stable",
           paddingRight: "4rem",
           paddingLeft: "4rem",
+          marginBottom: "4rem"
         }}
       >
         <AnimatePresence initial={false}>
