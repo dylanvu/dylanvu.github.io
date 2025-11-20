@@ -181,7 +181,7 @@ export default function Polaris({
         scaleX: CLICK_TARGET_SCALE,
         scaleY: CLICK_TARGET_SCALE,
         onFinish: () => {
-          if (!isReady) {
+          if (!isReady && !polarisActivated) {
             setPolarisActivated(true);
             setIsReady(true);
           }
