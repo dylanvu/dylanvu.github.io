@@ -7,7 +7,7 @@ import {
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
 import { isStarDataWithoutLink, StarData } from "@/interfaces/StarInterfaces";
-import { KonvaEventListener, KonvaEventObject } from "konva/lib/Node";
+import { KonvaEventObject } from "konva/lib/Node";
 
 type Props = {
   data?: StarData;
