@@ -1,7 +1,14 @@
+// Enum mapping star classifications to their visual sizes
+export enum StarClassificationSize {
+  Dwarf = 1.5,
+  Star = 2.5,
+  Giant = 3,
+  Supergiant = 4,
+}
+
 export type Star = {
   x: number;
   y: number;
-  size?: number;
   data?: StarData;
 };
 
@@ -37,9 +44,9 @@ export type FocusedConstellationPos = {
 };
 
 type BaseStarData = {
-  label: string;
-  origin: string;
-  about: string;
+  label?: string;
+  origin?: string;
+  about?: string;
   classification: "Star" | "Supergiant" | "Giant" | "Dwarf";
   color?:
     | "Blue"

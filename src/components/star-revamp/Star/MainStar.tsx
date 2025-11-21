@@ -6,9 +6,15 @@ import {
   SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
-import { isStarDataWithoutLink, StarData } from "@/interfaces/StarInterfaces";
+import { isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useFocusContext } from "@/hooks/useFocusProvider";
+
+// Helper function to get star size from classification
+const getStarSize = (data?: StarData): number => {
+  if (!data) return 5; // Default size for stars without data
+  return StarClassificationSize[data.classification];
+};
 
 type Props = {
   data?: StarData;
@@ -40,7 +46,7 @@ export default function MainStar({
   data,
   x = 0,
   y = 0,
-  size = 5,
+  size,
   brightness = 1,
   delay = 0,
   initialOpacity = 0.1,
@@ -61,6 +67,9 @@ export default function MainStar({
   onHoverPointerOverride = false,
   onHoverScale = 1.1,
 }: Props) {
+  // Derive size from classification, or use provided size, or default to 5
+  const actualSize = size ?? getStarSize(data);
+  
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
   const textRef = useRef<Konva.Text>(null);
@@ -298,7 +307,7 @@ export default function MainStar({
       <Shape
         ref={shapeRef}
         sceneFunc={(ctx) => {
-          const starRadius = size * brightnessRef.current;
+          const starRadius = actualSize * brightnessRef.current;
 
           // Draw the star
           const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, starRadius);
@@ -315,7 +324,7 @@ export default function MainStar({
           if (showHitBox) {
             const labelWidth = textRef.current?.width() || 0;
             const labelHeight = textRef.current?.height() || 0;
-            const labelY = size + labelSize;
+            const labelY = actualSize + labelSize;
             const hitRadiusX = Math.max(starRadius, labelWidth / 2);
             const hitRadiusY = starRadius + labelHeight + labelY;
             ctx.fillStyle = "rgba(255,0,0,0.2)";
@@ -323,10 +332,10 @@ export default function MainStar({
           }
         }}
         hitFunc={(ctx, shape) => {
-          const starRadius = size * brightnessRef.current;
+          const starRadius = actualSize * brightnessRef.current;
           const labelWidth = textRef.current?.width() || 0;
           const labelHeight = textRef.current?.height() || 0;
-          const labelY = size + labelSize;
+          const labelY = actualSize + labelSize;
 
           const hitRadiusX = Math.max(starRadius, labelWidth / 2);
           const hitRadiusY = starRadius + labelHeight + labelY;
@@ -342,7 +351,7 @@ export default function MainStar({
         <Text
           ref={textRef}
           x={0}
-          y={size + labelSize}
+          y={actualSize + labelSize}
           text={labelOverride || data?.label}
           fontSize={labelSize}
           fill={SPACE_TEXT_COLOR}

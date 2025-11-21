@@ -1,3 +1,5 @@
+import { Star } from "@/interfaces/StarInterfaces";
+
 export type Point = {
   x: number;
   y: number;
@@ -42,7 +44,7 @@ export function transformPoints(
 }
 
 export function createSequentialLoopingConnections(
-  stars: Point[]
+  stars: Star[]
 ): [number, number][] {
   const connections: [number, number][] = [];
   for (let i = 0; i < stars.length; i++) {

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
-import { ConstellationData, TransformData, isStarDataWithInternalLink } from "@/interfaces/StarInterfaces";
+import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
@@ -100,7 +100,8 @@ export default function Constellation({
     for (const s of stars) {
       const sx = s.x;
       const sy = s.y;
-      const starRadius = s.size ?? 5;
+      // Get star size from classification, defaulting to 5 if no data
+      const starRadius = s.data ? StarClassificationSize[s.data.classification] : 5;
 
       minX = Math.min(minX, sx - starRadius);
       maxX = Math.max(maxX, sx + starRadius);
@@ -503,7 +504,6 @@ export default function Constellation({
             key={i}
             x={star.x}
             y={star.y}
-            size={star.size}
             brightness={brightness}
             delay={delay}
             data={star.data}
@@ -518,16 +518,16 @@ export default function Constellation({
                 if (isFocusedRef.current) {
                   setTopOverlayTextContents({
                     intro: star.data.classification,
-                    title: star.data.label,
-                    origin: star.data.origin,
-                    about: star.data.about,
+                    title: star.data.label ?? "",
+                    origin: star.data.origin ?? "",
+                    about: star.data.about ?? "",
                   });
                 } else {
                   setCenterOverlayTextContents({
                     intro: star.data.classification,
-                    title: star.data.label,
-                    origin: star.data.origin,
-                    about: star.data.about,
+                    title: star.data.label ?? "",
+                    origin: star.data.origin ?? "",
+                    about: star.data.about ?? "",
                   });
                 }
               }
@@ -551,9 +551,9 @@ export default function Constellation({
                     // On star page: restore the focused star's info
                     setTopOverlayTextContents({
                       intro: focusedObject.star.classification,
-                      title: focusedObject.star.label,
-                      origin: focusedObject.star.origin,
-                      about: focusedObject.star.about,
+                      title: focusedObject.star.label ?? "",
+                      origin: focusedObject.star.origin ?? "",
+                      about: focusedObject.star.about ?? "",
                     });
                   }
                 } else {
@@ -588,9 +588,9 @@ export default function Constellation({
                 }
                 setTopOverlayTextContents({
                   intro: data.classification,
-                  title: data.label,
-                  origin: data.origin,
-                  about: data.about,
+                  title: data.label ?? "",
+                  origin: data.origin ?? "",
+                  about: data.about ?? "",
                 });
               }
             }}

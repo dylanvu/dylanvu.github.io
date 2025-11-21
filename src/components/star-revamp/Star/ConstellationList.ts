@@ -20,7 +20,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 80,
         y: 70,
-        size: 6,
         data: {
           label: "Email",
           origin: "dylanvu9@gmail.com",
@@ -32,7 +31,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 100,
         y: 40,
-        size: 5,
         data: {
           label: "GitHub",
           origin: "github.com/dylanvu",
@@ -44,7 +42,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 82,
         y: 26,
-        size: 4,
         data: {
           label: "Devpost",
           origin: "devpost.com/dylanvu",
@@ -56,7 +53,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 55,
         y: 90,
-        size: 4,
         data: {
           label: "LinkedIn",
           origin: "/in/dylanvu9",
@@ -68,7 +64,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 105,
         y: 100,
-        size: 3,
         data: {
           label: "Medium",
           origin: "@mentor-mementos",
@@ -100,7 +95,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 183,
         y: 50,
-        size: 6,
         data: {
           label: "Resume",
           origin: "Present",
@@ -112,7 +106,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 210,
         y: 55,
-        size: 5,
         data: {
           label: "Amazon",
           origin: "Jul. 2024 - Present",
@@ -124,7 +117,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 240,
         y: 48,
-        size: 4,
         data: {
           label: "One Medical",
           origin: "May 2023 - Aug. 2023",
@@ -137,7 +129,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 265,
         y: 60,
-        size: 5,
         data: {
           label: "Ansync Labs",
           origin: "Dec. 2021 - Sept. 2022",
@@ -151,7 +142,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 222,
         y: 80,
-        size: 4,
         data: {
           label: "Georgia Tech",
           origin: "Aug. 2024 - Present",
@@ -163,7 +153,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 245,
         y: 94,
-        size: 6,
         data: {
           label: "UC Irvine",
           origin: "Sept. 2022 - Jun. 2024",
@@ -175,7 +164,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 274,
         y: 82,
-        size: 3,
         data: {
           label: "UC Santa Barbara",
           origin: "Aug. 2019 - June 2021",
@@ -210,7 +198,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 88,
         y: 110,
-        size: 6,
         data: {
           label: "Epicdle",
           origin: "Web Development",
@@ -222,7 +209,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 75,
         y: 140,
-        size: 5,
         data: {
           label: "Amelia",
           origin: "Embedded Systems",
@@ -234,7 +220,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 80,
         y: 170,
-        size: 5,
         data: {
           label: "SweetStack",
           origin: "Game Development",
@@ -246,7 +231,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 90,
         y: 190,
-        size: 5,
         data: {
           label: "Haptic Definition",
           origin: "Embedded Systems",
@@ -258,7 +242,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 112,
         y: 210,
-        size: 4,
         data: {
           label: "FishGPT",
           origin: "Web Development",
@@ -270,7 +253,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 140,
         y: 202,
-        size: 4,
         data: {
           label: "WordShip",
           origin: "Game Development",
@@ -282,7 +264,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 160,
         y: 193,
-        size: 3,
         data: {
           label: "GRIP Board",
           origin: "Embedded Systems",
@@ -294,7 +275,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 173,
         y: 167,
-        size: 5,
         data: {
           label: "GRIP Controller",
           origin: "Game Development",
@@ -306,7 +286,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 180,
         y: 148,
-        size: 3,
         data: {
           label: "Trigger Finger Tango",
           origin: "Game Development",
@@ -318,7 +297,6 @@ export const CONSTELLATIONS: ConstellationData[] = [
       {
         x: 176,
         y: 123,
-        size: 3,
         data: {
           label: "AIChE Careers Bot",
           origin: "Web Development",
