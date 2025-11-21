@@ -8,6 +8,7 @@ import {
 } from "@/app/theme";
 import { isStarDataWithoutLink, StarData } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 
 type Props = {
   data?: StarData;
@@ -72,11 +73,13 @@ export default function MainStar({
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
 
   const starColor = useRef(
-    ["#FFFFFF", "#E0F7FF", "#FFFACD", "#FFDDEE"][Math.floor(Math.random() * 4)]
+    ["#FFFFFF", "#F5F8FF", "#FFFEF5", "#FFF5F8"][Math.floor(Math.random() * 4)]
   ).current;
 
   const SCALE_ANIMATION_DURATION = 0.25;
+  const focusScale = onHoverScale * 1.1;
   const EASING = Konva.Easings.EaseInOut;
+  const { focusedObject } = useFocusContext();
 
   // 1. Handle Fade Logic (Dim -> Wait -> Bright)
   useEffect(() => {
@@ -233,18 +236,51 @@ export default function MainStar({
     }
   };
 
+  // Determine the base scale (when not hovering)
+  const getBaseScale = () => {
+    // Star is focused
+    if (data?.slug && focusedObject.star?.slug === data?.slug) {
+      return focusScale;
+    }
+    // Constellation is focused (but star is not)
+    if (isConstellationFocused) {
+      return onHoverScale;
+    }
+    // Neither focused
+    return 1;
+  };
+
   const handleInteractionStart = () => {
     onHoverEnterCallback?.();
     if (onHoverPointerOverride || (data && !isStarDataWithoutLink(data))) {
       document.body.style.cursor = "pointer";
     }
-    playHoverTween(onHoverScale, onHoverScale);
+
+    // Determine hover scale based on current state
+    if (data?.slug && focusedObject.star?.slug === data?.slug) {
+      // Star is focused - stay at focusScale
+      playHoverTween(focusScale, focusScale);
+    } else if (isConstellationFocused) {
+      // Constellation is focused - scale up to focusScale (from base onHoverScale)
+      playHoverTween(focusScale, focusScale);
+    } else {
+      // Nothing focused - scale to onHoverScale
+      playHoverTween(onHoverScale, onHoverScale);
+    }
   };
 
   const handleInteractionEnd = () => {
     onHoverLeaveCallback?.();
-    playHoverTween(1, 1);
+    // Return to base scale
+    const baseScale = getBaseScale();
+    playHoverTween(baseScale, baseScale);
   };
+
+  // Update scale when focus state changes
+  useEffect(() => {
+    const baseScale = getBaseScale();
+    playHoverTween(baseScale, baseScale);
+  }, [focusedObject, isConstellationFocused]);
 
   return (
     <Group
@@ -267,7 +303,7 @@ export default function MainStar({
           // Draw the star
           const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, starRadius);
           gradient.addColorStop(0, starColor);
-          gradient.addColorStop(0.5, `rgba(255,255,255,0.5)`);
+          gradient.addColorStop(0.5, starColor);
           gradient.addColorStop(1, "transparent");
 
           ctx.fillStyle = gradient;

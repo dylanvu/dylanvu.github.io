@@ -503,7 +503,7 @@ export default function Constellation({
             key={i}
             x={star.x}
             y={star.y}
-            size={star.size || 5}
+            size={star.size}
             brightness={brightness}
             delay={delay}
             data={star.data}
@@ -594,7 +594,7 @@ export default function Constellation({
                 });
               }
             }}
-            onHoverScale={isFocused ? 1.3 : 2}
+            onHoverScale={isFocused ? 1.3 : 1.8}
           />
         );
       })}

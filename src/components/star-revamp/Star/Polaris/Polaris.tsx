@@ -154,14 +154,12 @@ const PulseRing = ({
     if (!onMount) return;
 
     const triggerPulse = () => {
-      console.log('[PulseRing] Trigger called, isAnimating:', isAnimatingRef.current);
       // Just start the pulse if not already running
       if (!isAnimatingRef.current && playPulseRef.current) {
         playPulseRef.current();
       }
     };
 
-    console.log('[PulseRing] Registering trigger function');
     onMount(triggerPulse);
   }, [onMount]);
 
