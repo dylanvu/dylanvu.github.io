@@ -22,7 +22,7 @@ Every star has a lifecycle classification that indicates its importance relative
 - **Stars**: Neutrally interesting.
 - **Dwarfs**: Less active or important.
 
-For example, in Viae, my Email is a Supergiant (best way to contact me), while my LinkedIn is a Star (I don't post often), and Medium is a Dwarf (I no longer write there).
+For example, in Viae, my Email is a Supergiant (best way to contact me), while my LinkedIn is a Star (I don't post often), and Medium is a Dwarf (I no longer write there). My devpost is considered a star because I no longer compete in hackatahons, I just mentor for them. My Github is a Giant because it is still active.
 
 In Iter Major, my Resume is a Supergiant, and Amazon is a Giant. Amazon is a giant because it is my current job. One Medical, for my internship, is a star because although I enjoyed it, it is not something I'd highlight if I am asked. Ansync Labs is a giant because I worked here for 10 months, it was my first internship, and I learned a lot.
 

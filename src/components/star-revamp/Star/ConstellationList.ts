@@ -42,6 +42,18 @@ export const CONSTELLATIONS: ConstellationData[] = [
         },
       },
       {
+        x: 82,
+        y: 26,
+        size: 4,
+        data: {
+          label: "Devpost",
+          origin: "devpost.com/dylanvu",
+          about: "My hackathons",
+          externalLink: "https://devpost.com/dylanvu",
+          classification: "Star"
+        }
+      },
+      {
         x: 55,
         y: 90,
         size: 4,
@@ -68,8 +80,9 @@ export const CONSTELLATIONS: ConstellationData[] = [
     ],
     connections: [
       [0, 1],
-      [0, 2],
+      [1, 2],
       [0, 3],
+      [0, 4],
     ],
     designX: 850,
     designY: 400,
