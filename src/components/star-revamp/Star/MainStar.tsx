@@ -32,6 +32,7 @@ type Props = {
   showHitBox?: boolean;
   cancelBubble?: boolean;
   onHoverPointerOverride?: boolean;
+  onHoverScale?: number
 };
 
 export default function MainStar({
@@ -57,6 +58,7 @@ export default function MainStar({
   showHitBox = false,
   cancelBubble = false,
   onHoverPointerOverride = false,
+  onHoverScale = 1.1,
 }: Props) {
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
@@ -236,7 +238,7 @@ export default function MainStar({
     if (onHoverPointerOverride || (data && !isStarDataWithoutLink(data))) {
       document.body.style.cursor = "pointer";
     }
-    playHoverTween(1.1, 1.1);
+    playHoverTween(onHoverScale, onHoverScale);
   };
 
   const handleInteractionEnd = () => {

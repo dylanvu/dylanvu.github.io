@@ -9,6 +9,7 @@ import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
 
 export default function Constellation({
@@ -51,11 +52,9 @@ export default function Constellation({
     }
   }
 
-  // REF FIX 1: Keep track of focus state
   const isFocusedRef = useRef(isFocused);
   isFocusedRef.current = isFocused;
 
-  // REF FIX 2: Keep track if we are currently animating back to home
   const isReturningRef = useRef(false);
 
   const pathname = usePathname();
@@ -186,6 +185,8 @@ export default function Constellation({
   const EASING = Konva.Easings.EaseInOut;
 
   const {polarisActivated, setPolarisActivated } = usePolarisContext();
+  
+  const { focusedObject } = useFocusContext();
 
   // Memoized target position - automatically updates when pathname or polarisActivated changes
   const focusedTargetX = useMemo(() => {
@@ -537,13 +538,22 @@ export default function Constellation({
 
               if (star.data?.label) {
                 if (isFocusedRef.current) {
-                  // go back to the constellation information
+                  // go back to the appropriate information
                   if (pathname === "/") {
+                    // On home page: restore constellation info
                     setTopOverlayTextContents({
                       intro: data.intro,
                       title: data.name,
                       origin: data.about,
                       about: "",
+                    });
+                  } else if (focusedObject.star) {
+                    // On star page: restore the focused star's info
+                    setTopOverlayTextContents({
+                      intro: focusedObject.star.classification,
+                      title: focusedObject.star.label,
+                      origin: focusedObject.star.origin,
+                      about: focusedObject.star.about,
                     });
                   }
                 } else {
@@ -584,6 +594,7 @@ export default function Constellation({
                 });
               }
             }}
+            onHoverScale={isFocused ? 1.3 : 2}
           />
         );
       })}
