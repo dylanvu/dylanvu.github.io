@@ -82,6 +82,7 @@ export default function MainStar({
   const delayTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const glowTweenRef = useRef<Konva.Tween | null>(null);
+  const dimOthersTweenRef = useRef<Konva.Tween | null>(null);
 
   const starColor = useRef(
     ["#FFFFFF", "#F5F8FF", "#FFFEF5", "#FFF5F8"][Math.floor(Math.random() * 4)]
@@ -270,6 +271,24 @@ export default function MainStar({
       document.body.style.cursor = "pointer";
     }
 
+    // If this star is dimmed, restore normal opacity on hover
+    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
+    if (shouldDim) {
+      const group = groupRef.current;
+      if (group && dimOthersTweenRef.current) {
+        dimOthersTweenRef.current.destroy();
+        dimOthersTweenRef.current = null;
+      }
+      
+      dimOthersTweenRef.current = new Konva.Tween({
+        node: group!,
+        duration: 0.2,
+        opacity: 1,
+        easing: EASING,
+      });
+      dimOthersTweenRef.current.play();
+    }
+
     // Determine hover scale based on current state
     if (data?.slug && focusedObject.star?.slug === data?.slug) {
       // Star is focused - stay at focusScale
@@ -285,6 +304,25 @@ export default function MainStar({
 
   const handleInteractionEnd = () => {
     onHoverLeaveCallback?.();
+    
+    // If this star should be dimmed, restore dim state
+    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
+    if (shouldDim) {
+      const group = groupRef.current;
+      if (group && dimOthersTweenRef.current) {
+        dimOthersTweenRef.current.destroy();
+        dimOthersTweenRef.current = null;
+      }
+      
+      dimOthersTweenRef.current = new Konva.Tween({
+        node: group!,
+        duration: 0.2,
+        opacity: 0.4,
+        easing: EASING,
+      });
+      dimOthersTweenRef.current.play();
+    }
+    
     // Return to base scale
     const baseScale = getBaseScale();
     playHoverTween(baseScale, baseScale);
@@ -325,6 +363,56 @@ export default function MainStar({
       }
     };
   }, [isFocused]);
+
+  // 5. Dim other stars when one is focused
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    // Only dim if:
+    // 1. Constellation is focused (we're on a star page)
+    // 2. There IS a focused star
+    // 3. This star is NOT the focused one
+    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
+
+    // Clean up ALL previous tweens that control group opacity
+    // This includes the initial fade-in tweens from Effect #1
+    if (dimTweenRef.current) {
+      dimTweenRef.current.destroy();
+      dimTweenRef.current = null;
+    }
+    if (fullTweenRef.current) {
+      fullTweenRef.current.destroy();
+      fullTweenRef.current = null;
+    }
+    if (delayTimerRef.current) {
+      clearTimeout(delayTimerRef.current);
+      delayTimerRef.current = null;
+    }
+    if (dimOthersTweenRef.current) {
+      dimOthersTweenRef.current.destroy();
+      dimOthersTweenRef.current = null;
+    }
+
+    // Target opacity: dimmed (0.4) if should dim, otherwise full (1)
+    const targetOpacity = shouldDim ? 0.4 : 1;
+    
+    dimOthersTweenRef.current = new Konva.Tween({
+      node: group,
+      duration: 0.3,
+      opacity: targetOpacity,
+      easing: EASING,
+    });
+    
+    dimOthersTweenRef.current.play();
+
+    return () => {
+      if (dimOthersTweenRef.current) {
+        dimOthersTweenRef.current.destroy();
+        dimOthersTweenRef.current = null;
+      }
+    };
+  }, [isConstellationFocused, focusedObject.star?.slug, isFocused]);
 
   return (
     <Group

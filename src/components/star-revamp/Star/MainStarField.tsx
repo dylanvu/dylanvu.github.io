@@ -43,12 +43,12 @@ export default function MainStarField({
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
 
-  const [selectedConstellation, setSelectedConstellation] =
-    useState<ConstellationData | null>(null);
   const [focusedScreenPos, setFocusedScreenPos] = useState<{
     x: number;
     y: number;
   } | null>(null);
+
+  const { focusedObject, setFocusedObject } = useFocusContext();
 
   // helper to compute the constellation center in its local coordinates
   const computeCenter = (stars: { x: number; y: number }[]) => {
@@ -68,8 +68,8 @@ export default function MainStarField({
   useMemo(() => {
     // compute focused constellation screen center (if any)
     let focusedScreenPos: { x: number; y: number } | null = null;
-    if (selectedConstellation) {
-      const c = selectedConstellation;
+    if (focusedObject.constellation) {
+      const c = focusedObject.constellation;
       const { centerX, centerY } = computeCenter(c.stars);
       // Use viewport percentage positioning
       const percentX = c.designX / DESIGN.width;
@@ -101,15 +101,15 @@ export default function MainStarField({
       });
       setFocusedScreenPos(focusedScreenPos);
     }
-  }, [selectedConstellation]);
+  }, [focusedObject.constellation]);
 
   const router = useRouter();
   const { isMobileLandscape } = useMobile();
 
   // Handler for background clicks/taps
   const handleBackgroundInteraction = () => {
-    if (selectedConstellation) {
-      setSelectedConstellation(null);
+    if (focusedObject.constellation) {
+      setFocusedObject({ constellation: null, star: null });
       setFocusedConstellationPosAction(null);
       setFocusedScreenPos(null);
       resetCenterOverlayTextContents();
@@ -123,10 +123,8 @@ export default function MainStarField({
   // DEBUG MODE - set to false to hide debug markers
   const DEBUG_MODE = false;
 
-  const { focusedObject } = useFocusContext();
-  // I believe we are only hitting this if we are on a star page
+  // Update overlays when focusedObject changes
   useEffect(() => {
-    setSelectedConstellation(focusedObject.constellation);
     if (focusedObject.constellation) {
       setCenterOverlayVisibility(false);
       if (focusedObject.star) {
@@ -351,7 +349,7 @@ export default function MainStarField({
               transformData={transformData}
               key={i}
               onClickCallback={() => {
-                setSelectedConstellation(c);
+                setFocusedObject({ constellation: c, star: null });
                 setTopOverlayTextContents({
                   intro: c.intro,
                   title: c.name,
@@ -361,23 +359,23 @@ export default function MainStarField({
                 setCenterOverlayVisibility(false);
                 setTopOverlayVisibility(true);
               }}
-              focusedConstellation={selectedConstellation}
+              focusedConstellation={focusedObject.constellation}
               // pass the unfocused position of the focused constellation (for parallax effect)
               focusedUnfocusedPos={
-                selectedConstellation
+                focusedObject.constellation
                   ? {
                       x:
-                        (selectedConstellation.designX / DESIGN.width) * width +
-                        computeCenter(selectedConstellation.stars).centerX,
+                        (focusedObject.constellation.designX / DESIGN.width) * width +
+                        computeCenter(focusedObject.constellation.stars).centerX,
                       y:
-                        (selectedConstellation.designY / DESIGN.height) *
+                        (focusedObject.constellation.designY / DESIGN.height) *
                           height +
-                        computeCenter(selectedConstellation.stars).centerY,
+                        computeCenter(focusedObject.constellation.stars).centerY,
                     }
                   : null
               }
               onHoverEnterCallback={() => {
-                if (!selectedConstellation) {
+                if (!focusedObject.constellation) {
                   setCenterOverlayTextContents({
                     intro: c.intro,
                     title: c.name,
@@ -387,7 +385,7 @@ export default function MainStarField({
                 }
               }}
               onHoverLeaveCallback={() => {
-                if (selectedConstellation !== c) {
+                if (focusedObject.constellation !== c) {
                   resetCenterOverlayTextContents();
                 }
               }}
@@ -435,15 +433,15 @@ export default function MainStarField({
               windowCenter={windowCenter}
               focusedScreenPos={focusedScreenPos}
               focusedUnfocusedPos={
-                selectedConstellation
+                focusedObject.constellation
                   ? {
                       x:
-                        (selectedConstellation.designX / DESIGN.width) * width +
-                        computeCenter(selectedConstellation.stars).centerX,
+                        (focusedObject.constellation.designX / DESIGN.width) * width +
+                        computeCenter(focusedObject.constellation.stars).centerX,
                       y:
-                        (selectedConstellation.designY / DESIGN.height) *
+                        (focusedObject.constellation.designY / DESIGN.height) *
                           height +
-                        computeCenter(selectedConstellation.stars).centerY,
+                        computeCenter(focusedObject.constellation.stars).centerY,
                     }
                   : null
               }
