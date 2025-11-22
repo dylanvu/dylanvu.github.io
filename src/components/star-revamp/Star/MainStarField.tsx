@@ -130,9 +130,9 @@ export default function MainStarField({
       if (focusedObject.star) {
         setTopOverlayTextContents({
           intro: focusedObject.star.classification,
-          title: focusedObject.star.label,
-          origin: focusedObject.star.origin,
-          about: focusedObject.star.about,
+          title: focusedObject.star.label ?? "",
+          origin: focusedObject.star.origin ?? "",
+          about: focusedObject.star.about ?? "",
         });
       } else {
         setTopOverlayTextContents({
