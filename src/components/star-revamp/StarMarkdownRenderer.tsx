@@ -9,8 +9,10 @@ export default function StarMarkdownRenderer({
   markdown: string;
 }) {
   return (
-    <ReactMarkdown
-      remarkPlugins={[gfm]}
+    // this padding bottom is needed because the bottom thing is always cut off
+    <div style={{ paddingBottom: "3rem" }}>
+      <ReactMarkdown
+        remarkPlugins={[gfm]}
       components={{
         h1: ({ children }) => (
           <h1
@@ -138,5 +140,6 @@ export default function StarMarkdownRenderer({
     >
       {markdown}
     </ReactMarkdown>
+    </div>
   );
 }
