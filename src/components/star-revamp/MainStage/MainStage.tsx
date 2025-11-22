@@ -105,8 +105,9 @@ export default function MainStage({
   const isPolarisPage = polarisActivated;
   if (isPolarisPage) {
     panelStyle = { ...panelStyle, ...PolarisStyleOverride };
-  } else {
-    panelStyle = {...panelStyle, ...StarPanelStyle}
+  } else if (pathname !== "/polaris") {
+    // Only apply blur styles when NOT on /polaris route (prevents blur flash during initialization)
+    panelStyle = { ...panelStyle, ...StarPanelStyle };
   }
 
   return (
@@ -145,9 +146,7 @@ export default function MainStage({
                 style={panelStyle}
                 className={FONT_FAMILY.style.fontFamily}
               >
-                {
-                  polarisActivated ? <PolarisPanel /> : children
-                }
+                {polarisActivated ? <PolarisPanel /> : children}
               </motion.div>
             )}
           </AnimatePresence>
