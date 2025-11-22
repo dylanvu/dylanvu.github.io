@@ -73,6 +73,7 @@ export default function MainStar({
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
   const textRef = useRef<Konva.Text>(null);
+  const glowRef = useRef<Konva.Shape>(null);
   const brightnessRef = useRef(brightness);
 
   // Refs for tweens and timers
@@ -80,15 +81,19 @@ export default function MainStar({
   const fullTweenRef = useRef<Konva.Tween | null>(null);
   const delayTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
+  const glowTweenRef = useRef<Konva.Tween | null>(null);
 
   const starColor = useRef(
     ["#FFFFFF", "#F5F8FF", "#FFFEF5", "#FFF5F8"][Math.floor(Math.random() * 4)]
   ).current;
 
   const SCALE_ANIMATION_DURATION = 0.25;
-  const focusScale = onHoverScale * 1.1;
+  const focusScale = onHoverScale * 1.05; // Reduced from 1.1 to 1.05 for subtlety
   const EASING = Konva.Easings.EaseInOut;
   const { focusedObject } = useFocusContext();
+  
+  // Check if this star is currently focused
+  const isFocused = data?.slug && focusedObject.star?.slug === data?.slug;
 
   // 1. Handle Fade Logic (Dim -> Wait -> Bright)
   useEffect(() => {
@@ -291,6 +296,36 @@ export default function MainStar({
     playHoverTween(baseScale, baseScale);
   }, [focusedObject, isConstellationFocused]);
 
+  // 4. Glow fade in/out animation
+  useEffect(() => {
+    const glow = glowRef.current;
+    if (!glow) return;
+
+    // Clean up previous glow tween
+    if (glowTweenRef.current) {
+      glowTweenRef.current.destroy();
+      glowTweenRef.current = null;
+    }
+
+    const targetOpacity = isFocused ? 1 : 0;
+    
+    glowTweenRef.current = new Konva.Tween({
+      node: glow,
+      duration: 0.3,
+      opacity: targetOpacity,
+      easing: EASING,
+    });
+    
+    glowTweenRef.current.play();
+
+    return () => {
+      if (glowTweenRef.current) {
+        glowTweenRef.current.destroy();
+        glowTweenRef.current = null;
+      }
+    };
+  }, [isFocused]);
+
   return (
     <Group
       ref={groupRef}
@@ -304,6 +339,30 @@ export default function MainStar({
       onClick={handleStarClick}
       onTap={handleStarClick}
     >
+      {/* Glow/Halo effect for focused star */}
+      <Shape
+        ref={glowRef}
+        opacity={0}
+        sceneFunc={(ctx) => {
+            const starRadius = actualSize * brightnessRef.current;
+            const glowRadius = starRadius * 2.5; // Glow extends 2.5x the star size
+
+            // Create radial gradient for glow
+            const glowGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glowRadius);
+            glowGradient.addColorStop(0, `${starColor}80`); // 50% opacity at center
+            glowGradient.addColorStop(0.3, `${starColor}40`); // 25% opacity
+            glowGradient.addColorStop(0.6, `${starColor}20`); // 12% opacity
+            glowGradient.addColorStop(1, "transparent"); // Fully transparent at edge
+
+            ctx.fillStyle = glowGradient;
+            ctx.beginPath();
+            ctx.arc(0, 0, glowRadius, 0, Math.PI * 2);
+            ctx.fill();
+          }}
+          listening={false} // Glow doesn't interact with mouse
+        />
+      
+      {/* Main star shape */}
       <Shape
         ref={shapeRef}
         sceneFunc={(ctx) => {
