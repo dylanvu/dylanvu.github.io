@@ -1,6 +1,7 @@
 # University of California, Santa Barbara
 
 ## Freshman Year
+
 I entered UC Santa Barbara (UCSB) in 2019 in the Freshman Summer Start Program originally as a mechanical engineering student aiming to go into astronautical engineering with dreams of working for NASA.
 
 Later on, I realized that I honestly enjoyed my chemistry class way too much and decided to go into chemical engineering instead, looking to follow my second path: get involved in the medical industry in some capacity. I initially juggled goals of going into pharmaceuticals, biomaterials, and even pre-med for a bit.
