@@ -18,6 +18,7 @@ import { TopOverlayProvider } from "@/hooks/useTopOverlay";
 import NightSky from "@/components/star-revamp/NightSky";
 import { FocusProvider } from "@/hooks/useFocusProvider";
 import { PolarisProvider } from "@/hooks/Polaris/usePolarisProvider";
+import PortraitModeOverlay from "@/components/PortraitModeOverlay";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -64,6 +65,7 @@ export default function RootLayout({
                 </TopOverlayProvider>
               </PolarisProvider>
             </CenterOverlayProvider>
+            <PortraitModeOverlay />
           </WindowSizeProvider>
         </main>
       </body>
