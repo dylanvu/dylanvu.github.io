@@ -238,6 +238,28 @@ export default function Polaris({
   const effectiveRadius =
     size * Math.max(brightness, twinkleMax ?? brightness) * 0.8;
 
+  // Use refs to store stable values that shouldn't trigger re-renders
+  const xRef = useRef(x);
+  const yRef = useRef(y);
+  const windowCenterRef = useRef(windowCenter);
+  const focusedUnfocusedPosRef = useRef(focusedUnfocusedPos);
+  const widthRef = useRef(width);
+  const heightRef = useRef(height);
+  const clickTargetXRef = useRef(CLICK_TARGET_X);
+  const clickTargetYRef = useRef(CLICK_TARGET_Y);
+
+  // Update refs on every render
+  useEffect(() => {
+    xRef.current = x;
+    yRef.current = y;
+    windowCenterRef.current = windowCenter;
+    focusedUnfocusedPosRef.current = focusedUnfocusedPos;
+    widthRef.current = width;
+    heightRef.current = height;
+    clickTargetXRef.current = CLICK_TARGET_X;
+    clickTargetYRef.current = CLICK_TARGET_Y;
+  });
+
   // Handle Movement and Animation Logic
   useEffect(() => {
     const node = groupRef.current;
@@ -251,8 +273,8 @@ export default function Polaris({
         node,
         duration: CLICK_ANIMATION_DURATION,
         easing: Konva.Easings.EaseInOut,
-        x: CLICK_TARGET_X,
-        y: CLICK_TARGET_Y,
+        x: clickTargetXRef.current,
+        y: clickTargetYRef.current,
         scaleX: CLICK_TARGET_SCALE,
         scaleY: CLICK_TARGET_SCALE,
       };
@@ -267,9 +289,11 @@ export default function Polaris({
       
       focusTweenRef.current = new Konva.Tween(tweenConfig);
     } else if (focusedScreenPos) {
-      const focal = focusedUnfocusedPos ?? windowCenter;
-      let vx = x - focal.x;
-      let vy = y - focal.y;
+      const focal = focusedUnfocusedPosRef.current ?? windowCenterRef.current;
+      const currentX = xRef.current;
+      const currentY = yRef.current;
+      let vx = currentX - focal.x;
+      let vy = currentY - focal.y;
       let vlen = Math.hypot(vx, vy);
 
       if (vlen < 0.00001) {
@@ -281,15 +305,15 @@ export default function Polaris({
       const nx = vx / vlen;
       const ny = vy / vlen;
 
-      const viewportDiagonal = Math.hypot(width, height);
+      const viewportDiagonal = Math.hypot(widthRef.current, heightRef.current);
       const offscreenDist = viewportDiagonal * 1.4;
 
       focusTweenRef.current = new Konva.Tween({
         node,
         duration: 0.5,
         easing: Konva.Easings.EaseInOut,
-        x: x + nx * offscreenDist,
-        y: y + ny * offscreenDist,
+        x: currentX + nx * offscreenDist,
+        y: currentY + ny * offscreenDist,
         scaleX: 1,
         scaleY: 1,
       });
@@ -298,24 +322,15 @@ export default function Polaris({
         node,
         duration: 0.5,
         easing: Konva.Easings.EaseInOut,
-        x,
-        y,
+        x: xRef.current,
+        y: yRef.current,
         scaleX: 1,
         scaleY: 1,
       });
     }
 
     focusTweenRef.current.play();
-  }, [
-    isReady,
-    focusedScreenPos,
-    focusedUnfocusedPos,
-    x,
-    y,
-    windowCenter,
-    CLICK_TARGET_X,
-    CLICK_TARGET_Y,
-  ]);
+  }, [isReady, focusedScreenPos]);
 
   const handleClick = () => {
     if (!isReady) {

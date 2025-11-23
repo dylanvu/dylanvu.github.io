@@ -66,9 +66,8 @@ export default function MainStarField({
     return { minX, minY, widthLocal, heightLocal, centerX, centerY };
   };
 
-  useMemo(() => {
+  useEffect(() => {
     // compute focused constellation screen center (if any)
-    let focusedScreenPos: { x: number; y: number } | null = null;
     if (focusedObject.constellation) {
       const c = focusedObject.constellation;
       const { centerX, centerY } = computeCenter(c.stars);
@@ -88,7 +87,7 @@ export default function MainStarField({
       const unfocusedY = transformDataForSelected.y + centerY;
 
       // Focused position is at windowCenter
-      focusedScreenPos = {
+      const focusedScreenPos = {
         x: windowCenter.x,
         y: windowCenter.y,
       };
@@ -101,8 +100,11 @@ export default function MainStarField({
         constellation: c,
       });
       setFocusedScreenPos(focusedScreenPos);
+    } else {
+      // Clear when no constellation is focused
+      setFocusedScreenPos(null);
     }
-  }, [focusedObject.constellation]);
+  }, [focusedObject.constellation, width, height, windowCenter]);
 
   const router = useRouter();
   const pathname = usePathname();
