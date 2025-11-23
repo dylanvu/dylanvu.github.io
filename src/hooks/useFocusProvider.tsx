@@ -75,6 +75,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       const constellationData = getConstellationDataByName(constellationName);
       const starData = getStarDataBySlug(slug, constellationName);
       
+      // Always set the focused object first
+      setFocusedObject({
+        constellation: constellationData,
+        star: starData,
+      });
+      
       // Build target path
       const targetPath = `${STAR_BASE_URL}/${slug}`;
       
@@ -82,12 +88,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       if (pathname !== targetPath) {
         router.push(targetPath);
       }
-      
-      // Set the focused object
-      setFocusedObject({
-        constellation: constellationData,
-        star: starData,
-      });
     }
   }, [pathname, router]);
 

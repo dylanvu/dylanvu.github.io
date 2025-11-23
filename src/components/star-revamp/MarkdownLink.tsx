@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 /**
  * Shared markdown link component that handles internal vs external links
@@ -24,28 +25,32 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
   
   // Check if it's a star link (starts with STAR_BASE_URL)
   const isStarLink = href.startsWith(STAR_BASE_URL + '/');
+
+  const { setPolarisDisplayState } = usePolarisContext();
   
   if (isStarLink) {
     // Extract slug from the URL
     const slug = href.replace(STAR_BASE_URL + '/', '');
     
-    const handleClick = (e: React.MouseEvent) => {
-      e.preventDefault();
+    const handleClick = () => {
+      // Call navigateToStar immediately to focus the star
       navigateToStar(slug);
+      // suppress polaris
+      setPolarisDisplayState("suppressed");
     };
     
+    // Use Next.js Link for proper URL navigation + immediate focus
     return (
-      <a
+      <Link
         href={href}
         onClick={handleClick}
         className={FONT_FAMILY.className}
         style={{
           color: SPACE_TEXT_COLOR,
-          cursor: 'pointer',
         }}
       >
         {children}
-      </a>
+      </Link>
     );
   }
   
