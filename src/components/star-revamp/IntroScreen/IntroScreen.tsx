@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FONT_FAMILY,
-  SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
 

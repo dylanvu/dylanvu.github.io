@@ -2,6 +2,7 @@ import React, { JSX, useEffect, useMemo, useState, useRef } from "react";
 import * as opentype from "opentype.js";
 import type { Font } from "opentype.js";
 import { SPACE_TEXT_COLOR } from "@/app/theme";
+import { useMobile } from "@/hooks/useMobile";
 
 // --- Global Font Cache ---
 const fontCache: Record<string, Promise<Font>> = {};
@@ -45,6 +46,8 @@ export default function DrawLetters({
   className = "",
   onComplete,
 }: DrawLettersProps): JSX.Element {
+  const { mobileFontScaleFactor } = useMobile();
+  const scaledFontSize = fontSize * mobileFontScaleFactor;
   const [font, setFont] = useState<Font | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -88,19 +91,19 @@ export default function DrawLetters({
     }
 
     const glyphData: GlyphData[] = [];
-    const fontScale = fontSize / font.unitsPerEm;
+    const fontScale = scaledFontSize / font.unitsPerEm;
     const opentypeGlyphs = font.stringToGlyphs(textStr);
 
     const ascender = font.ascender * fontScale;
-    const descender = font.descender * fontScale || -(fontSize * 0.2);
+    const descender = font.descender * fontScale || -(scaledFontSize * 0.2);
     const baseline = ascender;
 
     let cursorX = 0;
-    const padX = fontSize * 0.1;
-    const padY = fontSize * 0.1;
+    const padX = scaledFontSize * 0.1;
+    const padY = scaledFontSize * 0.1;
 
     opentypeGlyphs.forEach((glyph, i) => {
-      const path = glyph.getPath(cursorX + padX, baseline + padY, fontSize);
+      const path = glyph.getPath(cursorX + padX, baseline + padY, scaledFontSize);
       const d = path.toPathData(2);
 
       // Only process glyphs that actually have drawing commands (skips spaces)
@@ -168,7 +171,7 @@ export default function DrawLetters({
 
   if (!font || !glyphs.length) {
     return (
-      <div className={className} style={{ width, height: fontSize }}></div>
+      <div className={className} style={{ width, height: scaledFontSize }}></div>
     );
   }
 
@@ -205,7 +208,7 @@ export default function DrawLetters({
                 d={g.d}
                 fill="none"
                 stroke="white"
-                strokeWidth={Math.max(2, fontSize / 15)}
+                strokeWidth={Math.max(2, scaledFontSize / 15)}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 pathLength="1"

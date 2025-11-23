@@ -9,6 +9,7 @@ import {
 import { isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useFocusContext } from "@/hooks/useFocusProvider";
+import { useMobile } from "@/hooks/useMobile";
 
 // Helper function to get star size from classification
 const getStarSize = (data?: StarData): number => {
@@ -67,8 +68,12 @@ export default function MainStar({
   onHoverPointerOverride = false,
   onHoverScale = 1.1,
 }: Props) {
+  const { mobileScaleFactor, mobileFontScaleFactor } = useMobile();
+  
   // Derive size from classification, or use provided size, or default to 5
-  const actualSize = size ?? getStarSize(data);
+  // Apply mobile scale factor to star sizes
+  const actualSize = (size ?? getStarSize(data)) * mobileScaleFactor;
+  const scaledLabelSize = labelSize * mobileFontScaleFactor;
   
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
@@ -482,7 +487,7 @@ export default function MainStar({
           const starRadius = actualSize * brightnessRef.current;
           const labelWidth = textRef.current?.width() || 0;
           const labelHeight = textRef.current?.height() || 0;
-          const labelY = actualSize + labelSize;
+          const labelY = actualSize + scaledLabelSize;
 
           const hitRadiusX = Math.max(starRadius, labelWidth / 2);
           const hitRadiusY = starRadius + labelHeight + labelY;
@@ -498,9 +503,9 @@ export default function MainStar({
         <Text
           ref={textRef}
           x={0}
-          y={actualSize + labelSize}
+          y={actualSize + scaledLabelSize}
           text={labelOverride || data?.label}
-          fontSize={labelSize}
+          fontSize={scaledLabelSize}
           fill={SPACE_TEXT_COLOR}
           stroke={SPACE_BACKGROUND_COLOR}
           strokeWidth={0.8}

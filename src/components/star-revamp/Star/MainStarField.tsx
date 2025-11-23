@@ -109,7 +109,7 @@ export default function MainStarField({
   const router = useRouter();
   const pathname = usePathname();
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
-  const { isMobileLandscape } = useMobile();
+  const { isMobileLandscape, mobileScaleFactor } = useMobile();
 
   // Handler for background clicks/taps
   const handleBackgroundInteraction = () => {
@@ -315,8 +315,8 @@ export default function MainStarField({
           x: targetX,
           y: targetY,
           rotation: c.rotation ?? 0,
-          scaleX: c.scale ?? 1,
-          scaleY: c.scale ?? 1,
+          scaleX: (c.scale ?? 1) * mobileScaleFactor,
+          scaleY: (c.scale ?? 1) * mobileScaleFactor,
         };
 
         // Calculate where constellation actually appears (visual center)

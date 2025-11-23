@@ -2,8 +2,10 @@ import { motion } from "motion/react";
 import { FONT_FAMILY, hexToRgba, SPACE_TEXT_COLOR } from "@/app/theme"; // Assuming this exists based on your snippet
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import { useMobile } from "@/hooks/useMobile";
 
 export default function StargazerMessage({ message }: { message: string }) {
+  const { mobileFontScaleFactor } = useMobile();
   return (
     <motion.div
       // FIX: Removed 'x: 10' to prevent right-side overflow/expansion
@@ -24,7 +26,7 @@ export default function StargazerMessage({ message }: { message: string }) {
     >
       <span
         style={{
-          fontSize: "0.7rem",
+          fontSize: `${0.7 * mobileFontScaleFactor}rem`,
           opacity: 0.6,
           marginBottom: "0.2rem",
           marginRight: "0.8rem",

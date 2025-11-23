@@ -4,6 +4,7 @@ import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
 import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
 import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
+import { useMobile } from "@/hooks/useMobile";
 
 export default function GenericOverlay({
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -26,6 +27,17 @@ export default function GenericOverlay({
   horizontalPosition?: "left" | "center" | "right";
 }) {
   const { width } = useWindowSizeContext();
+  const { mobileFontScaleFactor } = useMobile();
+
+  // Helper to scale rem values
+  const scaleFontSize = (size: string): string => {
+    const match = size.match(/^([\d.]+)rem$/);
+    if (match) {
+      const value = parseFloat(match[1]);
+      return `${value * mobileFontScaleFactor}rem`;
+    }
+    return size;
+  };
 
   // Calculate X offset based on window width
   // Center = 0
@@ -45,12 +57,12 @@ export default function GenericOverlay({
 
   const lines = useMemo(() => {
     return [
-      { key: "intro-text", text: introText ?? "", size: "1.2rem" },
-      { key: "title", text: titleText ?? "", size: "5.5rem" },
-      { key: "origin", text: originText ?? "", size: "1.2rem" },
-      { key: "about", text: aboutText ?? "", size: "1.2rem" },
+      { key: "intro-text", text: introText ?? "", size: scaleFontSize("1.2rem") },
+      { key: "title", text: titleText ?? "", size: scaleFontSize("5.5rem") },
+      { key: "origin", text: originText ?? "", size: scaleFontSize("1.2rem") },
+      { key: "about", text: aboutText ?? "", size: scaleFontSize("1.2rem") },
     ];
-  }, [introText, titleText, originText, aboutText]);
+  }, [introText, titleText, originText, aboutText, mobileFontScaleFactor]);
 
   const visibleLines = lines.filter(
     (l) => l.text !== undefined && l.text !== null

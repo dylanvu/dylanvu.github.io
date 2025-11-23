@@ -10,6 +10,7 @@ import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
+import { useMobile } from "@/hooks/useMobile";
 import { STAR_BASE_URL } from "@/constants/Routes";
 
 export default function Constellation({

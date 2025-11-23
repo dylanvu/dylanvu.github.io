@@ -2,10 +2,34 @@
 
 import { useEffect, useState } from "react";
 
+// ============================================
+// MOBILE SCALING CONFIGURATION
+// ============================================
+// Adjust these values to test different scaling factors
+// 
+// MOBILE_SCALE: For elements (constellations, stars, Polaris positions)
+// - 1.0 = No scaling (same as desktop)
+// - 0.65 = Recommended default (65% scale)
+// - 0.5 = More aggressive scaling
+// - 0.8 = Subtle scaling
+//
+// MOBILE_FONT_SCALE: For font sizes (can be different from element scaling)
+// - 1.0 = No scaling (same as desktop)
+// - 0.8 = Recommended default (80% scale - better readability)
+// - 0.7 = More aggressive scaling
+// ============================================
+const DESKTOP_SCALE = 1.0;
+const MOBILE_SCALE = 0.65;
+
+const DESKTOP_FONT_SCALE = 1.0;
+const MOBILE_FONT_SCALE = 0.4;
+
 type MobileState = {
   isMobile: boolean;
   isMobileLandscape: boolean;
   isMobilePortrait: boolean;
+  mobileScaleFactor: number;
+  mobileFontScaleFactor: number;
 };
 
 export function useMobile(): MobileState {
@@ -15,6 +39,8 @@ export function useMobile(): MobileState {
         isMobile: false,
         isMobileLandscape: false,
         isMobilePortrait: false,
+        mobileScaleFactor: DESKTOP_SCALE,
+        mobileFontScaleFactor: DESKTOP_FONT_SCALE,
       };
     }
 
@@ -25,11 +51,15 @@ export function useMobile(): MobileState {
     const isSmallLandscape = width < 1024 && width > height; // Small landscape viewport
     const isMobileLandscape = (isMobile || isSmallLandscape) && width > height;
     const isMobilePortrait = isMobile && height >= width;
+    const mobileScaleFactor = isMobileLandscape ? MOBILE_SCALE : DESKTOP_SCALE;
+    const mobileFontScaleFactor = isMobileLandscape ? MOBILE_FONT_SCALE : DESKTOP_FONT_SCALE;
 
     return {
       isMobile,
       isMobileLandscape,
       isMobilePortrait,
+      mobileScaleFactor,
+      mobileFontScaleFactor,
     };
   });
 
@@ -41,11 +71,15 @@ export function useMobile(): MobileState {
       const isSmallLandscape = width < 1024 && width > height;
       const isMobileLandscape = (isMobile || isSmallLandscape) && width > height;
       const isMobilePortrait = isMobile && height >= width;
+      const mobileScaleFactor = isMobileLandscape ? MOBILE_SCALE : DESKTOP_SCALE;
+      const mobileFontScaleFactor = isMobileLandscape ? MOBILE_FONT_SCALE : DESKTOP_FONT_SCALE;
 
       setMobileState({
         isMobile,
         isMobileLandscape,
         isMobilePortrait,
+        mobileScaleFactor,
+        mobileFontScaleFactor,
       });
     };
 

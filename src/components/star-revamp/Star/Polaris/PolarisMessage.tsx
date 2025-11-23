@@ -5,8 +5,11 @@ import gfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/hooks/Polaris/tools/talk";
 import { MarkdownLink } from "../../MarkdownLink";
+import { useMobile } from "@/hooks/useMobile";
 
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
+  const { mobileFontScaleFactor } = useMobile();
+  
   // Handle both string and ChatMessage object
   const messageText = typeof message === "string" ? message : message.message;
   const isPlaceholder = typeof message === "object" && message.isPlaceholder;
@@ -38,8 +41,8 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
     pre: ({ children }: any) => (
       <pre className={FONT_FAMILY.className}>{children}</pre>
     ),
-    img: ({ src, alt }: any) => <StreamingImage src={src} alt={alt} />,
-  }), []);
+    img: ({ src, alt }: any) => <StreamingImage src={src} alt={alt} mobileFontScaleFactor={mobileFontScaleFactor} />,
+  }), [mobileFontScaleFactor]);
   
   return (
     <motion.div
@@ -60,7 +63,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span
           style={{
-            fontSize: "0.7rem",
+            fontSize: `${0.7 * mobileFontScaleFactor}rem`,
             opacity: 0.6,
             marginBottom: "0.2rem",
             marginLeft: "0.8rem",
@@ -112,7 +115,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
 }
 
 // Component to handle images during streaming with loading and error states
-function StreamingImage({ src, alt }: { src?: string | Blob; alt?: string }) {
+function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Blob; alt?: string; mobileFontScaleFactor: number }) {
   // Use refs to persist state across re-renders (prevents flickering on hover)
   const hasLoadedRef = useRef(false);
   const hasErrorRef = useRef(false);
@@ -146,7 +149,7 @@ function StreamingImage({ src, alt }: { src?: string | Blob; alt?: string }) {
             borderRadius: "8px",
             textAlign: "center",
             lineHeight: "200px",
-            fontSize: "0.85rem",
+            fontSize: `${0.85 * mobileFontScaleFactor}rem`,
             opacity: 0.6,
           }}
         >
@@ -161,7 +164,7 @@ function StreamingImage({ src, alt }: { src?: string | Blob; alt?: string }) {
             background: "rgba(255, 100, 100, 0.1)",
             border: "1px solid rgba(255, 100, 100, 0.3)",
             borderRadius: "8px",
-            fontSize: "0.85rem",
+            fontSize: `${0.85 * mobileFontScaleFactor}rem`,
             opacity: 0.8,
           }}
         >

@@ -5,6 +5,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { useMobile } from "@/hooks/useMobile";
 import { TweenConfig } from "konva/lib/Tween";
 
 type PolarisProps = {
@@ -191,6 +192,7 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isTalking, registerStreamChunkCallback } = usePolarisContext();
+  const { mobileScaleFactor } = useMobile();
   
   // Track if the initial animation to bottom-left has completed
   const hasCompletedInitialAnimation = useRef(false);
@@ -221,12 +223,11 @@ export default function Polaris({
   // --- CLICK ANIMATION CONFIGURATION ---
   // Variables to control the click interaction
   const CLICK_ANIMATION_DURATION = 1; // Time in seconds to move/scale
-  const CLICK_TARGET_SCALE = 6; // How big it grows (e.g., 6x original size)
+  const CLICK_TARGET_SCALE = 6 * mobileScaleFactor; // How big it grows (scaled for mobile)
 
-  // Calculate Bottom Right position (with some padding from edge)
-
-  const CLICK_TARGET_X = 150; // 150px from left edge
-  const CLICK_TARGET_Y = height - 150; // 150px from bottom edge
+  // Calculate Bottom Left position (with some padding from edge, scaled for mobile)
+  const CLICK_TARGET_X = 150 * mobileScaleFactor; // Distance from left edge
+  const CLICK_TARGET_Y = height - (150 * mobileScaleFactor); // Distance from bottom edge
 
   // --- RIPPLE CONFIGURATION ---
   const DEBUG_RIPPLES = false;

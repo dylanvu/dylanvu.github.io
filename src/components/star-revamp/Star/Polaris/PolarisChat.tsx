@@ -5,9 +5,11 @@ import PolarisMessage from "@/components/star-revamp/Star/Polaris/PolarisMessage
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { FONT_FAMILY } from "@/app/theme";
+import { useMobile } from "@/hooks/useMobile";
 
 export default function PolarisChat() {
   const { polarisHistory, talkToPolaris, isThinking, isTalking } = usePolarisContext();
+  const { mobileFontScaleFactor } = useMobile();
   const [inputText, setInputText] = useState("");
 
   // 1. Change ref to target the container instead of a dummy div
@@ -177,7 +179,7 @@ export default function PolarisChat() {
                 color: "inherit",
                 padding: "0.4rem 0.8rem",
                 borderRadius: "20px",
-                fontSize: "0.75rem",
+                fontSize: `${0.75 * mobileFontScaleFactor}rem`,
                 cursor: isThinking ? "not-allowed" : "pointer",
                 backdropFilter: "blur(4px)",
                 transition: "background 0.2s",
@@ -218,7 +220,7 @@ export default function PolarisChat() {
               border: "none",
               outline: "none",
               color: "inherit",
-              fontSize: "0.95rem",
+              fontSize: `${0.95 * mobileFontScaleFactor}rem`,
             }}
             className={FONT_FAMILY.className}
           />
