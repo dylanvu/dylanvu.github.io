@@ -52,15 +52,22 @@ export function FocusProvider({ children }: { children: ReactNode }) {
 
   const { setHorizontalPosition } = useTopOverlayContext();
 
-  const { polarisActivated, setPolarisActivated } = usePolarisContext();
+  const { polarisDisplayState } = usePolarisContext();
 
   useEffect(() => {
-    if (polarisActivated || pathname === "/") {
-      setHorizontalPosition("center");
+
+    if (pathname.startsWith("/star/")) {
+      // if polaris is active, then it is in the center
+      if (polarisDisplayState === "active") {
+        setHorizontalPosition("center")
+      } else {
+        setHorizontalPosition("left")
+      }
+      // otherwise, it is on the left
     } else {
-      setHorizontalPosition("left");
+      setHorizontalPosition("center");
     }
-  }, [pathname, polarisActivated, setHorizontalPosition]);
+  }, [pathname, polarisDisplayState, setHorizontalPosition]);
 
   const navigateToStar = useCallback((slug: string) => {
     const constellationName = getConstellationNameByStarSlug(slug);
@@ -74,12 +81,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       // Only navigate if the path is different
       if (pathname !== targetPath) {
         router.push(targetPath);
-        
-        // Only deactivate Polaris when navigating to a DIFFERENT star
-        // This prevents StarPanel from fighting with Polaris activation
-        if (polarisActivated) {
-          setPolarisActivated(false);
-        }
       }
       
       // Set the focused object
@@ -88,7 +89,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         star: starData,
       });
     }
-  }, [pathname, router, polarisActivated, setPolarisActivated]);
+  }, [pathname, router]);
 
   return (
     <FocusContext.Provider

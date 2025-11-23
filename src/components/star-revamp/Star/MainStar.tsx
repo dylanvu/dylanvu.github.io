@@ -370,7 +370,7 @@ export default function MainStar({
     if (!group) return;
 
     // Only dim if:
-    // 1. Constellation is focused (we're on a star page)
+    // 1. Constellation is focused
     // 2. There IS a focused star
     // 3. This star is NOT the focused one
     const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;

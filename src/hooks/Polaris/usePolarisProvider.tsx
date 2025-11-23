@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ChatMessage, talkToAgent } from "@/hooks/Polaris/tools/talk";
 import { useCenterOverlayContext } from "../useCenterOverlay";
 
+export type PolarisDisplayState = "hidden" | "active" | "suppressed";
+
 interface PolarisContextInterface {
   polarisHistory: ChatMessage[];
   setPolarisHistory: (newHistory: ChatMessage[]) => void;
@@ -15,8 +17,8 @@ interface PolarisContextInterface {
    */
   isReady: boolean;
   setIsReady: (newState: boolean) => void;
-  polarisActivated: boolean;
-  setPolarisActivated: (newState: boolean) => void;
+  polarisDisplayState: PolarisDisplayState;
+  setPolarisDisplayState: (newState: PolarisDisplayState | ((prev: PolarisDisplayState) => PolarisDisplayState)) => void;
   registerStreamChunkCallback: (callback: () => void) => void;
 }
 
@@ -55,9 +57,9 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   const [isTalking, setIsTalking] = useState<boolean>(false);
 
   /**
-   * This state shows whether the polaris HUD is activated or not
+   * This state tracks the display state of the polaris panel
    */
-  const [polarisActivated, setPolarisActivated] = useState<boolean>(false);
+  const [polarisDisplayState, setPolarisDisplayState] = useState<PolarisDisplayState>("hidden");
 
   /**
    * This state shows whether polaris is on the bottom left or not
@@ -88,7 +90,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isReady) {
       let newDefaultAbout = "or consult Polaris to find your way";
-      if (polarisActivated) {
+      if (polarisDisplayState === "active") {
         newDefaultAbout = "or consult Polaris below to find your way"
       }
       setDEFAULT_ABOUT_TEXT(newDefaultAbout);
@@ -101,7 +103,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
         });
       }
     }
-  }, [isReady, polarisActivated]);
+  }, [isReady, polarisDisplayState]);
 
   const PLACEHOLDER_MSG = "Polaris is navigating the night sky..."
   const ERROR_MSG = "I apologize, stargazer. Something went wrong while reading the stars. Please try again."
@@ -128,8 +130,8 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
         talkToPolaris,
         isReady,
         setIsReady,
-        polarisActivated,
-        setPolarisActivated,
+        polarisDisplayState,
+        setPolarisDisplayState,
         isTalking,
         registerStreamChunkCallback
       }}

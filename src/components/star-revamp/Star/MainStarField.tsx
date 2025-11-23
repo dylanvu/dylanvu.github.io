@@ -2,7 +2,6 @@
 import Constellation from "@/components/star-revamp/Star/Constellation/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import {
-  ConstellationData,
   TransformData,
   FocusedConstellationPos,
 } from "@/interfaces/StarInterfaces";
@@ -16,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
 import React from "react";
 import { useFocusContext } from "@/hooks/useFocusProvider";
+import { usePathname } from "next/navigation";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -104,6 +105,8 @@ export default function MainStarField({
   }, [focusedObject.constellation]);
 
   const router = useRouter();
+  const pathname = usePathname();
+  const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   const { isMobileLandscape } = useMobile();
 
   // Handler for background clicks/taps
@@ -117,7 +120,13 @@ export default function MainStarField({
       setTopOverlayVisibility(false);
     }
 
+    if (pathname !== "/") {
       router.push("/");
+      // If exiting from a star page and polaris was suppressed, restore it to active
+      if (polarisDisplayState === "suppressed") {
+        setPolarisDisplayState("active");
+      }
+    }
   };
 
   // DEBUG MODE - set to false to hide debug markers

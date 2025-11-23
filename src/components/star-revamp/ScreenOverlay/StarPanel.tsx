@@ -1,7 +1,8 @@
 "use client";
 import StarMarkdownRenderer from "@/components/star-revamp/StarMarkdownRenderer";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function StarPanel({
   markdown,
@@ -11,11 +12,13 @@ export default function StarPanel({
   slug: string;
 }) {
   const { navigateToStar } = useFocusContext();
-  
+  const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
+
   useEffect(() => {
-    // Navigate to the star on mount or when slug changes
-    navigateToStar(slug);
-  }, [slug, navigateToStar]);
+    if (polarisDisplayState === "active") {
+      setPolarisDisplayState("suppressed");
+    }
+  }, [slug])
   
   return <StarMarkdownRenderer markdown={markdown} />;
 }

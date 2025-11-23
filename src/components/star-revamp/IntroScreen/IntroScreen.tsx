@@ -40,7 +40,6 @@ export default function IntroScreen({
   return (
     <AnimatePresence
       onExitComplete={() => {
-        console.log("Intro complete, parent callback fired!");
         setIntroDoneAction(true);
       }}
     >

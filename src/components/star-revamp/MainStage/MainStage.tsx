@@ -95,20 +95,10 @@ export default function MainStage({
   showMainStars?: boolean;
 }) {
   const { width, height, ready } = useWindowSizeContext();
-  const { polarisActivated } = usePolarisContext();
+  const { polarisDisplayState } = usePolarisContext();
   const pathname = usePathname();
   const [focusedConstellationPos, setFocusedConstellationPos] =
     useState<FocusedConstellationPos | null>(null);
-
-  let panelStyle = { ...BasePanelStyle };
-
-  const isPolarisPage = polarisActivated;
-  if (isPolarisPage) {
-    panelStyle = { ...panelStyle, ...PolarisStyleOverride };
-  } else if (pathname !== "/polaris") {
-    // Only apply blur styles when NOT on /polaris route (prevents blur flash during initialization)
-    panelStyle = { ...panelStyle, ...StarPanelStyle };
-  }
 
   return (
     <div
@@ -125,31 +115,47 @@ export default function MainStage({
         <>
           <CenterOverlay />
           <TopOverlay />
+          
+          {/* Star panels - for /star/[slug] pages */}
           <AnimatePresence mode="wait">
-            {(pathname !== "/" || polarisActivated) && (
+            {pathname.startsWith("/star/") && polarisDisplayState !== "active" && (
               <motion.div
-                key={polarisActivated ? "polaris" : "star"}
-                initial={
-                  isPolarisPage
-                    ? PolarisPanelMotionInitial
-                    : StarPanelMotionInitial
-                }
-                animate={
-                  isPolarisPage
-                    ? PolarisPanelMotionAnimate
-                    : StarPanelMotionAnimate
-                }
-                exit={
-                  isPolarisPage ? PolarisPanelMotionExit : StarPanelMotionExit
-                }
+                key="star-panel"
+                initial={StarPanelMotionInitial}
+                animate={StarPanelMotionAnimate}
+                exit={StarPanelMotionExit}
                 transition={StarPanelMotionTransition}
-                style={panelStyle}
+                style={{...BasePanelStyle, ...StarPanelStyle}}
                 className={FONT_FAMILY.style.fontFamily}
               >
-                {polarisActivated ? <PolarisPanel /> : children}
+                {children}
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Polaris panel - show when activated */}
+          <AnimatePresence mode="wait">
+            {polarisDisplayState === "active" && (
+              <motion.div
+                key="polaris-panel"
+                initial={PolarisPanelMotionInitial}
+                animate={PolarisPanelMotionAnimate}
+                exit={PolarisPanelMotionExit}
+                transition={StarPanelMotionTransition}
+                style={{...BasePanelStyle, ...PolarisStyleOverride}}
+                className={FONT_FAMILY.style.fontFamily}
+              >
+                <PolarisPanel />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Hidden container for /polaris route initialization */}
+          {pathname === "/polaris" && polarisDisplayState !== "active" && (
+            <div style={{ display: 'none' }}>
+              {children}
+            </div>
+          )}
         </>
       )}
       {ready && width > 0 && height > 0 && (

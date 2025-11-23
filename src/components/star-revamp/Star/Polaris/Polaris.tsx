@@ -190,7 +190,7 @@ export default function Polaris({
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-  const { isReady, setIsReady, setPolarisActivated, polarisActivated, isTalking, registerStreamChunkCallback } = usePolarisContext();
+  const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isTalking, registerStreamChunkCallback } = usePolarisContext();
   
   // Track if the initial animation to bottom-left has completed
   const hasCompletedInitialAnimation = useRef(false);
@@ -261,7 +261,7 @@ export default function Polaris({
       tweenConfig.onFinish = () => {
         if (!hasCompletedInitialAnimation.current) {
           hasCompletedInitialAnimation.current = true;
-          setPolarisActivated(true);
+          setPolarisDisplayState("active");
         }
       };
       
@@ -321,12 +321,16 @@ export default function Polaris({
     if (!isReady) {
       document.body.style.cursor = "default";
       // First click: move to bottom-left position
-      // polarisActivated will be set in the animation's onFinish
+      // polarisDisplayState will be set to "active" in the animation's onFinish
       setIsReady(true);
+    } else if (polarisDisplayState === "suppressed") {
+      // On star page with suppressed polaris: reactivate it
+      setPolarisDisplayState("active");
     } else {
-      // Polaris is on the bottom left - just toggle the interface
-      // No need to navigate - MainStage condition handles showing panel on any page
-      setPolarisActivated(!polarisActivated);
+      // Toggle between active and hidden
+      setPolarisDisplayState(prev => 
+        prev === "active" ? "hidden" : "active"
+      );
     }
   };
 

@@ -185,16 +185,16 @@ export default function Constellation({
   const FOCUS_ANIMATION_DURATION = 0.5;
   const EASING = Konva.Easings.EaseInOut;
 
-  const {polarisActivated, setPolarisActivated } = usePolarisContext();
+  const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   
   const { focusedObject } = useFocusContext();
 
   // Memoized target position - automatically updates when pathname or polarisActivated changes
   const focusedTargetX = useMemo(() => {
-    return pathname !== "/" && !polarisActivated
+    return pathname !== "/" && polarisDisplayState !== "active"
       ? windowCenter.x / 2
       : windowCenter.x;
-  }, [pathname, polarisActivated, windowCenter.x]);
+  }, [pathname, polarisDisplayState, windowCenter.x]);
 
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
@@ -375,7 +375,7 @@ export default function Constellation({
         playVanishTween();
       }
     }
-  }, [isFocused, focusedConstellation, pathname, polarisActivated]);
+  }, [isFocused, focusedConstellation, pathname, polarisDisplayState]);
 
   const {
     setOverlayTextContents: setTopOverlayTextContents,
@@ -581,10 +581,10 @@ export default function Constellation({
                     "noopener,noreferrer"
                   );
                 } else if (isStarDataWithInternalLink(data)) {
-                  if (polarisActivated) {
-                    setPolarisActivated(false);
-                  }
                   router.push(`${STAR_BASE_URL}/${data.slug}`);
+                  if (polarisDisplayState === "active") {
+                    setPolarisDisplayState("suppressed");
+                  }
                 }
                 setTopOverlayTextContents({
                   intro: data.classification,
