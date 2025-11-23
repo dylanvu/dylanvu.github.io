@@ -15,10 +15,11 @@ export default function StarPanel({
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
 
   useEffect(() => {
+    navigateToStar(slug)
     if (polarisDisplayState === "active") {
       setPolarisDisplayState("suppressed");
     }
-  }, [slug])
+  }, [slug, navigateToStar])
   
   return <StarMarkdownRenderer markdown={markdown} />;
 }
