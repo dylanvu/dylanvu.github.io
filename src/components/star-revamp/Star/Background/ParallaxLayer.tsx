@@ -50,6 +50,12 @@ export default function ParallaxLayer({
         duration: fadeDuration,
         opacity: 1,
         easing: Konva.Easings.Linear,
+        onFinish: () => {
+          if (fadeTweenRef.current) {
+            fadeTweenRef.current.destroy();
+            fadeTweenRef.current = null;
+          }
+        },
       });
       fadeTweenRef.current.play();
     }, fadeDelay * 1000); // Convert seconds to milliseconds
@@ -95,6 +101,12 @@ export default function ParallaxLayer({
       offsetX: windowCenter.x,
       offsetY: windowCenter.y,
       // Note: We do NOT touch opacity here, preserving the fade-in
+      onFinish: () => {
+        if (moveTweenRef.current) {
+          moveTweenRef.current.destroy();
+          moveTweenRef.current = null;
+        }
+      },
     });
 
     moveTweenRef.current.play();

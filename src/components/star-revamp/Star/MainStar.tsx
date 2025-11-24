@@ -129,6 +129,12 @@ export default function MainStar({
       duration: 1.5,
       opacity: initialOpacity,
       easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        if (dimTweenRef.current) {
+          dimTweenRef.current.destroy();
+          dimTweenRef.current = null;
+        }
+      },
     });
     dimTweenRef.current.play();
 
@@ -145,6 +151,12 @@ export default function MainStar({
         duration: 0.4,
         opacity: 1,
         easing: Konva.Easings.EaseOut,
+        onFinish: () => {
+          if (fullTweenRef.current) {
+            fullTweenRef.current.destroy();
+            fullTweenRef.current = null;
+          }
+        },
       });
       fullTweenRef.current.play();
     }, delay * 1000); // Convert seconds to ms
@@ -235,6 +247,12 @@ export default function MainStar({
       scaleX: toScaleX,
       scaleY: toScaleY,
       easing: EASING,
+      onFinish: () => {
+        if (hoverTweenRef.current) {
+          hoverTweenRef.current.destroy();
+          hoverTweenRef.current = null;
+        }
+      },
     });
     hoverTweenRef.current.play();
   };
@@ -290,6 +308,12 @@ export default function MainStar({
         duration: 0.2,
         opacity: 1,
         easing: EASING,
+        onFinish: () => {
+          if (dimOthersTweenRef.current) {
+            dimOthersTweenRef.current.destroy();
+            dimOthersTweenRef.current = null;
+          }
+        },
       });
       dimOthersTweenRef.current.play();
     }
@@ -324,6 +348,12 @@ export default function MainStar({
         duration: 0.2,
         opacity: 0.4,
         easing: EASING,
+        onFinish: () => {
+          if (dimOthersTweenRef.current) {
+            dimOthersTweenRef.current.destroy();
+            dimOthersTweenRef.current = null;
+          }
+        },
       });
       dimOthersTweenRef.current.play();
     }
@@ -357,6 +387,12 @@ export default function MainStar({
       duration: 0.3,
       opacity: targetOpacity,
       easing: EASING,
+      onFinish: () => {
+        if (glowTweenRef.current) {
+          glowTweenRef.current.destroy();
+          glowTweenRef.current = null;
+        }
+      },
     });
     
     glowTweenRef.current.play();
@@ -407,6 +443,12 @@ export default function MainStar({
       duration: 0.3,
       opacity: targetOpacity,
       easing: EASING,
+      onFinish: () => {
+        if (dimOthersTweenRef.current) {
+          dimOthersTweenRef.current.destroy();
+          dimOthersTweenRef.current = null;
+        }
+      },
     });
     
     dimOthersTweenRef.current.play();

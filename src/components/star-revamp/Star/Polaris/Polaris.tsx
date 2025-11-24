@@ -112,6 +112,12 @@ const PulseRing = ({
           // Mark animation as finished
           isAnimatingRef.current = false;
 
+          // Destroy the tween to free memory
+          if (tweenRef.current) {
+            tweenRef.current.destroy();
+            tweenRef.current = null;
+          }
+
           // Only auto-repeat if not in trigger mode and still active
           if (isActiveRef.current && !triggerModeRef.current) {
             playPulse();
@@ -286,6 +292,10 @@ export default function Polaris({
           hasCompletedInitialAnimation.current = true;
           setPolarisDisplayState("active");
         }
+        if (focusTweenRef.current) {
+          focusTweenRef.current.destroy();
+          focusTweenRef.current = null;
+        }
       };
       
       focusTweenRef.current = new Konva.Tween(tweenConfig);
@@ -317,6 +327,12 @@ export default function Polaris({
         y: currentY + ny * offscreenDist,
         scaleX: 1,
         scaleY: 1,
+        onFinish: () => {
+          if (focusTweenRef.current) {
+            focusTweenRef.current.destroy();
+            focusTweenRef.current = null;
+          }
+        },
       });
     } else {
       focusTweenRef.current = new Konva.Tween({
@@ -327,6 +343,12 @@ export default function Polaris({
         y: yRef.current,
         scaleX: 1,
         scaleY: 1,
+        onFinish: () => {
+          if (focusTweenRef.current) {
+            focusTweenRef.current.destroy();
+            focusTweenRef.current = null;
+          }
+        },
       });
     }
 

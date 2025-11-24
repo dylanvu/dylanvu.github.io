@@ -226,6 +226,12 @@ export default function Constellation({
       scaleX: toScaleX,
       scaleY: toScaleY,
       easing: EASING,
+      onFinish: () => {
+        if (hoverTweenRef.current) {
+          hoverTweenRef.current.destroy();
+          hoverTweenRef.current = null;
+        }
+      },
     });
 
     hoverTweenRef.current.play();
@@ -259,6 +265,12 @@ export default function Constellation({
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
       rotation: 0,
+      onFinish: () => {
+        if (focusTweenRef.current) {
+          focusTweenRef.current.destroy();
+          focusTweenRef.current = null;
+        }
+      },
     });
 
     focusTweenRef.current.play();
@@ -295,6 +307,10 @@ export default function Constellation({
       // FIX: When the tween finishes, we are no longer returning.
       onFinish: () => {
         isReturningRef.current = false;
+        if (focusTweenRef.current) {
+          focusTweenRef.current.destroy();
+          focusTweenRef.current = null;
+        }
       },
     });
 
@@ -358,6 +374,10 @@ export default function Constellation({
       rotation: transformData.rotation ?? 0,
       onFinish: () => {
         isReturningRef.current = false;
+        if (focusTweenRef.current) {
+          focusTweenRef.current.destroy();
+          focusTweenRef.current = null;
+        }
       },
     });
 

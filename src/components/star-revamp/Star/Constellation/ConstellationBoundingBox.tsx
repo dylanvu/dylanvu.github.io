@@ -90,6 +90,12 @@ export default function ConstellationBoundingBox({
         duration: 0.35,
         opacity: 0,
         easing: Konva.Easings.EaseInOut,
+        onFinish: () => {
+          if (tweenRef.current) {
+            tweenRef.current.destroy();
+            tweenRef.current = null;
+          }
+        },
       });
       tweenRef.current.play();
     }
