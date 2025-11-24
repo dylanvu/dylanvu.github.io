@@ -4,8 +4,6 @@ import "./globals.css";
 // fix the large flashing icon: https://blog.cetindere.de/fix-huge-flashing-icons-fontawesome/
 import { WindowSizeProvider } from "@/hooks/useWindowSizeProvider";
 import { SPACE_BACKGROUND_COLOR } from "./theme";
-import Script from "next/script";
-import "leaflet/dist/leaflet.css";
 
 import { CenterOverlayProvider } from "@/hooks/useCenterOverlay";
 import { TopOverlayProvider } from "@/hooks/useTopOverlay";
@@ -33,15 +31,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
-      <head>
-        <link rel="preconnect" href="https://unpkg.com" />
-      </head>
-      <Script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossOrigin=""
-        strategy="lazyOnload"
-      />
       <body className={inter.className} style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
         <main className="main">
           <WindowSizeProvider>
