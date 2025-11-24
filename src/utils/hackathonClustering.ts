@@ -18,6 +18,44 @@ export interface HackathonCluster {
 }
 
 /**
+ * Regional groupings for California hackathons
+ */
+const CALIFORNIA_REGIONS = {
+  "Bay Area": [
+    "san francisco", "berkeley", "sunnyvale", "oakland", "palo alto",
+    "mountain view", "san jose", "santa clara", "fremont", "hayward"
+  ],
+  "Central Valley": ["sacramento", "davis", "stockton", "modesto", "fresno"],
+  "SoCal Central": [
+    "los angeles", "irvine", "anaheim", "long beach", "pasadena",
+    "santa ana", "riverside", "san bernardino", "orange", "costa mesa", "santa monica", "fullerton"
+  ],
+  "Santa Barbara": ["santa barbara", "goleta"],
+  "San Diego": ["san diego", "la jolla", "chula vista"]
+};
+
+/**
+ * Determines which region a city belongs to
+ */
+function getCityRegion(city: string, state: string): string {
+  if (state.toLowerCase() !== "california" && state.toLowerCase() !== "ca") {
+    // Non-California cities remain as individual cities
+    return `${city}, ${state}`;
+  }
+
+  const cityLower = city.toLowerCase();
+  
+  for (const [region, cities] of Object.entries(CALIFORNIA_REGIONS)) {
+    if (cities.includes(cityLower)) {
+      return region;
+    }
+  }
+  
+  // If not in any defined region, keep as individual city
+  return `${city}, ${state}`;
+}
+
+/**
  * Determines star classification based on the number of hackathons
  */
 function getStarClassification(
@@ -30,53 +68,57 @@ function getStarClassification(
 }
 
 /**
- * Groups hackathons by city, creating clusters with aggregated information
+ * Groups hackathons by region (or city for non-CA), creating clusters with aggregated information
  */
 export function clusterHackathonsByCity(
   hackathons: HackathonInformation[]
 ): HackathonCluster[] {
-  // Group hackathons by city
-  const cityMap = new Map<string, HackathonInformation[]>();
+  // Group hackathons by region
+  const regionMap = new Map<string, HackathonInformation[]>();
 
   for (const hackathon of hackathons) {
-    const cityKey = `${hackathon.city}, ${hackathon.state}`;
-    if (!cityMap.has(cityKey)) {
-      cityMap.set(cityKey, []);
+    const regionKey = getCityRegion(hackathon.city, hackathon.state);
+    if (!regionMap.has(regionKey)) {
+      regionMap.set(regionKey, []);
     }
-    cityMap.get(cityKey)!.push(hackathon);
+    regionMap.get(regionKey)!.push(hackathon);
   }
 
   // Convert to cluster objects
   const clusters: HackathonCluster[] = [];
 
-  for (const [cityKey, cityHackathons] of cityMap.entries()) {
+  for (const [regionKey, regionHackathons] of regionMap.entries()) {
     // Calculate average coordinates
     const avgLatitude =
-      cityHackathons.reduce((sum, h) => sum + h.latitude, 0) /
-      cityHackathons.length;
+      regionHackathons.reduce((sum, h) => sum + h.latitude, 0) /
+      regionHackathons.length;
     const avgLongitude =
-      cityHackathons.reduce((sum, h) => sum + h.longitude, 0) /
-      cityHackathons.length;
+      regionHackathons.reduce((sum, h) => sum + h.longitude, 0) /
+      regionHackathons.length;
 
     // Count participants vs mentors
-    const participatedCount = cityHackathons.filter(
+    const participatedCount = regionHackathons.filter(
       (h) => !h.role.toLowerCase().includes("mentor")
     ).length;
-    const mentoredCount = cityHackathons.filter((h) =>
+    const mentoredCount = regionHackathons.filter((h) =>
       h.role.toLowerCase().includes("mentor")
     ).length;
 
     // Count total awards
-    const awardsCount = cityHackathons.reduce(
+    const awardsCount = regionHackathons.reduce(
       (sum, h) => sum + h.awards.length,
       0
     );
 
+    // Use region name as "city" for display
+    const displayName = regionKey.includes(",") ? regionHackathons[0].city : regionKey;
+    const state = regionHackathons[0].state;
+
     clusters.push({
-      city: cityHackathons[0].city,
-      state: cityHackathons[0].state,
-      hackathonCount: cityHackathons.length,
-      hackathons: cityHackathons,
+      city: displayName,
+      state: state,
+      hackathonCount: regionHackathons.length,
+      hackathons: regionHackathons,
       participatedCount,
       mentoredCount,
       awardsCount,

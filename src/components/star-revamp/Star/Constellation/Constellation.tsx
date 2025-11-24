@@ -1,9 +1,10 @@
 import Konva from "konva";
 import { Group, Rect } from "react-konva";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
+import ElevareMap from "./ElevareMap";
 import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
@@ -65,6 +66,8 @@ function Constellation({
   const [brightness, setBrightness] = useState(1);
   const brightnessHover = 1.2;
   const [isHovered, setIsHovered] = useState(false);
+
+  const isElevare = data.name === "Elevare";
 
   const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
@@ -461,6 +464,124 @@ function Constellation({
     if (onHoverLeaveCallback) onHoverLeaveCallback();
   };
 
+  // Helper function to render a single star (reduces duplication)
+  const renderStar = (star: typeof stars[0], i: number) => {
+    const incomingLineIndex = lineSegments.findIndex(
+      ([start, end]) => end === i || start === i
+    );
+    const delay =
+      incomingLineIndex >= 0
+        ? lineDelays[incomingLineIndex] + lineDurations[incomingLineIndex]
+        : 0;
+
+    return (
+      <MainStar
+        key={i}
+        x={star.x}
+        y={star.y}
+        brightness={brightness}
+        delay={delay}
+        data={star.data}
+        showLabel={isFocused}
+        labelSize={4}
+        isConstellationFocused={isFocused}
+        onHoverEnterCallback={() => {
+          if (isReturningRef.current) return;
+
+          if (star.data) {
+            if (isFocusedRef.current) {
+              setTopOverlayTextContents({
+                intro: star.data.classification,
+                title: star.data.label ?? "",
+                origin: star.data.origin ?? "",
+                about: star.data.about ?? "",
+              });
+            } else {
+              setCenterOverlayTextContents({
+                intro: star.data.classification,
+                title: star.data.label ?? "",
+                origin: star.data.origin ?? "",
+                about: star.data.about ?? "",
+              });
+            }
+          }
+        }}
+        onHoverLeaveCallback={() => {
+          if (isReturningRef.current) return;
+
+          if (star.data?.label) {
+            if (isFocusedRef.current) {
+              if (pathname === "/") {
+                setTopOverlayTextContents({
+                  intro: data.intro,
+                  title: data.name,
+                  origin: data.about,
+                  about: "",
+                });
+              } else if (focusedObject.star) {
+                setTopOverlayTextContents({
+                  intro: focusedObject.star.classification,
+                  title: focusedObject.star.label ?? "",
+                  origin: focusedObject.star.origin ?? "",
+                  about: focusedObject.star.about ?? "",
+                });
+              }
+            } else {
+              resetTopOverlayTextContents();
+              setCenterOverlayTextContents({
+                intro: data.intro,
+                title: data.name,
+                origin: data.origin,
+                about: data.about,
+              });
+            }
+          }
+          if (isFocusedRef.current) {
+            document.body.style.cursor = "default";
+          }
+        }}
+        cancelBubble={true}
+        onClickCallback={() => {
+          const starData = star.data;
+          if (starData) {
+            if (starData.externalLink) {
+              window.open(
+                starData.externalLink,
+                "_blank",
+                "noopener,noreferrer"
+              );
+            } else if (isStarDataWithInternalLink(starData)) {
+              router.push(`${STAR_BASE_URL}/${starData.slug}`);
+              if (polarisDisplayState === "active") {
+                setPolarisDisplayState("suppressed");
+              }
+            }
+            setTopOverlayTextContents({
+              intro: starData.classification,
+              title: starData.label ?? "",
+              origin: starData.origin ?? "",
+              about: starData.about ?? "",
+            });
+          }
+        }}
+        onHoverScale={isFocused ? 1.3 : 1.8}
+      />
+    );
+  };
+
+  // Helper function to render constellation lines (reduces duplication)
+  const renderLines = () => {
+    return lineSegments.map(([i1, i2], idx) => (
+      <AnimatedLine
+        key={`conn-${idx}`}
+        p1={stars[i1]}
+        p2={stars[i2]}
+        duration={lineDurations[idx]}
+        delay={lineDelays[idx]}
+      />
+    ));
+  };
+
   return (
     <Group
       ref={groupRef}
@@ -487,17 +608,6 @@ function Constellation({
         listening={true}
       />
 
-      {/* Constellation lines */}
-      {lineSegments.map(([i1, i2], idx) => (
-        <AnimatedLine
-          key={`conn-${idx}`}
-          p1={stars[i1]}
-          p2={stars[i2]}
-          duration={lineDurations[idx]}
-          delay={lineDelays[idx]}
-        />
-      ))}
-
       <ConstellationBoundingBox
         isVisible={isFocused || showStarBoundingBox || isHovered}
         tl={{ x: minX, y: minY }}
@@ -510,115 +620,18 @@ function Constellation({
         totalDuration={totalDuration}
       />
 
-      {/* original stars */}
-      {stars.map((star, i) => {
-        const incomingLineIndex = lineSegments.findIndex(
-          ([start, end]) => end === i || start === i
-        );
-        const delay =
-          incomingLineIndex >= 0
-            ? lineDelays[incomingLineIndex] + lineDurations[incomingLineIndex]
-            : 0;
-
-        return (
-          <MainStar
-            key={i}
-            x={star.x}
-            y={star.y}
-            brightness={brightness}
-            delay={delay}
-            data={star.data}
-            showLabel={isFocused}
-            labelSize={4}
-            isConstellationFocused={isFocused}
-            onHoverEnterCallback={() => {
-              // Guard clause for stars too
-              if (isReturningRef.current) return;
-
-              if (star.data) {
-                if (isFocusedRef.current) {
-                  setTopOverlayTextContents({
-                    intro: star.data.classification,
-                    title: star.data.label ?? "",
-                    origin: star.data.origin ?? "",
-                    about: star.data.about ?? "",
-                  });
-                } else {
-                  setCenterOverlayTextContents({
-                    intro: star.data.classification,
-                    title: star.data.label ?? "",
-                    origin: star.data.origin ?? "",
-                    about: star.data.about ?? "",
-                  });
-                }
-              }
-            }}
-            onHoverLeaveCallback={() => {
-              // Guard clause
-              if (isReturningRef.current) return;
-
-              if (star.data?.label) {
-                if (isFocusedRef.current) {
-                  // go back to the appropriate information
-                  if (pathname === "/") {
-                    // On home page: restore constellation info
-                    setTopOverlayTextContents({
-                      intro: data.intro,
-                      title: data.name,
-                      origin: data.about,
-                      about: "",
-                    });
-                  } else if (focusedObject.star) {
-                    // On star page: restore the focused star's info
-                    setTopOverlayTextContents({
-                      intro: focusedObject.star.classification,
-                      title: focusedObject.star.label ?? "",
-                      origin: focusedObject.star.origin ?? "",
-                      about: focusedObject.star.about ?? "",
-                    });
-                  }
-                } else {
-                  resetTopOverlayTextContents();
-                  setCenterOverlayTextContents({
-                    intro: data.intro,
-                    title: data.name,
-                    origin: data.origin,
-                    about: data.about,
-                  });
-                }
-              }
-              if (isFocusedRef.current) {
-                document.body.style.cursor = "default";
-              }
-            }}
-            cancelBubble={true}
-            onClickCallback={() => {
-              const data = star.data;
-              if (data) {
-                if (data.externalLink) {
-                  window.open(
-                    data.externalLink,
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
-                } else if (isStarDataWithInternalLink(data)) {
-                  router.push(`${STAR_BASE_URL}/${data.slug}`);
-                  if (polarisDisplayState === "active") {
-                    setPolarisDisplayState("suppressed");
-                  }
-                }
-                setTopOverlayTextContents({
-                  intro: data.classification,
-                  title: data.label ?? "",
-                  origin: data.origin ?? "",
-                  about: data.about ?? "",
-                });
-              }
-            }}
-            onHoverScale={isFocused ? 1.3 : 1.8}
-          />
-        );
-      })}
+      {/* Conditional rendering: ElevareMap wrapper for Elevare when focused, normal for others */}
+      {isElevare && isFocused ? (
+        <ElevareMap isFocused={isFocused}>
+          {renderLines()}
+          {stars.map(renderStar)}
+        </ElevareMap>
+      ) : (
+        <>
+          {renderLines()}
+          {stars.map(renderStar)}
+        </>
+      )}
     </Group>
   );
 }

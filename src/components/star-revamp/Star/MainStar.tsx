@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { Group, Shape, Text } from "react-konva";
 import Konva from "konva";
 import {
@@ -10,6 +10,7 @@ import { isStarDataWithoutLink, StarData, StarClassificationSize } from "@/inter
 import { KonvaEventObject } from "konva/lib/Node";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
+import { MapScaleContext } from "./Constellation/ElevareMap";
 
 // Helper function to get star size from classification
 const getStarSize = (data?: StarData): number => {
@@ -69,6 +70,9 @@ function MainStar({
   onHoverScale = 1.1,
 }: Props) {
   const { mobileScaleFactor, mobileFontScaleFactor } = useMobile();
+  
+  // Consume map scale context (defaults to 1 if not in ElevareMap)
+  const mapScale = useContext(MapScaleContext);
   
   // Derive size from classification, or use provided size, or default to 5
   // Apply mobile scale factor to star sizes
@@ -567,6 +571,8 @@ function MainStar({
           fontFamily={FONT_FAMILY.style.fontFamily}
           align="center"
           offsetX={textRef.current ? textRef.current.width() / 2 : 0}
+          scaleX={1 / mapScale}
+          scaleY={1 / mapScale}
         />
       )}
     </Group>
