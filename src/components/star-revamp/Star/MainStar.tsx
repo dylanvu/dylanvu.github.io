@@ -562,10 +562,13 @@ function MainStar({
           const starRadius = actualSize * brightnessRef.current;
           const labelWidth = textRef.current?.width() || 0;
           const labelHeight = textRef.current?.height() || 0;
-          const labelY = actualSize + scaledLabelSize;
+          // Account for reverse scaling applied to the text
+          const visualLabelWidth = labelWidth / mapScale;
+          const visualLabelHeight = labelHeight / mapScale;
+          const labelY = (actualSize + scaledLabelSize) / mapScale;
 
-          const hitRadiusX = Math.max(starRadius, labelWidth / 2);
-          const hitRadiusY = starRadius + labelHeight + labelY;
+          const hitRadiusX = Math.max(starRadius, visualLabelWidth / 2);
+          const hitRadiusY = starRadius + visualLabelHeight + labelY;
 
           ctx.beginPath();
           ctx.rect(-hitRadiusX, -starRadius, hitRadiusX * 2, hitRadiusY);
