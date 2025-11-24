@@ -34,8 +34,11 @@ interface ElevareMapProps {
 export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, constellationBoundingBoxWidth, constellationBoundingBoxHeight, externalZoom, onZoomChange }: ElevareMapProps) {
   const [mapScale, setMapScale] = useState(MIN_ZOOM);
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
   const lastDistRef = useRef(0);
   const innerGroupRef = useRef<Konva.Group>(null);
+  const backgroundShapeRef = useRef<Konva.Shape>(null);
+  const fadeAnimationRef = useRef<Konva.Tween | null>(null);
 
   // Native wheel event listener - bypasses Konva event system
   useEffect(() => {
@@ -179,6 +182,45 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
     }
   }, [isFocused, onZoomChange]);
 
+  // Fade animation for subtle background fill
+  useEffect(() => {
+    const node = backgroundShapeRef.current;
+    if (!node) return;
+
+    // Cancel any existing animation
+    if (fadeAnimationRef.current) {
+      fadeAnimationRef.current.destroy();
+      fadeAnimationRef.current = null;
+    }
+
+    const targetOpacity = isFocused ? 1 : 0;
+    
+    fadeAnimationRef.current = new Konva.Tween({
+      node,
+      duration: 0.5,
+      opacity: targetOpacity,
+      easing: Konva.Easings.EaseInOut,
+      onUpdate: () => {
+        setBackgroundOpacity(node.opacity());
+      },
+      onFinish: () => {
+        if (fadeAnimationRef.current) {
+          fadeAnimationRef.current.destroy();
+          fadeAnimationRef.current = null;
+        }
+      },
+    });
+
+    fadeAnimationRef.current.play();
+
+    return () => {
+      if (fadeAnimationRef.current) {
+        fadeAnimationRef.current.destroy();
+        fadeAnimationRef.current = null;
+      }
+    };
+  }, [isFocused]);
+
   return (
     <Group
       ref={innerGroupRef}
@@ -209,8 +251,29 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         } : undefined}
       />
       
-      {/* Subtle background using US map polygon */}
+      {/* Permanent stroke outline - always visible, never fades */}
       <Shape
+        sceneFunc={(context) => {
+          // Draw stroked US outline polygon
+          context.beginPath();
+          US_MAP_SIMPLE.forEach((star, i) => {
+            if (i === 0) {
+              context.moveTo(star.x, star.y);
+            } else {
+              context.lineTo(star.x, star.y);
+            }
+          });
+          context.closePath();
+          context.strokeStyle = hexToRgba(SPACE_TEXT_COLOR, 0.4);
+          context.lineWidth = 2;
+          context.stroke();
+        }}
+        listening={false}
+      />
+      
+      {/* Subtle background fill - fades in/out when focused */}
+      <Shape
+        ref={backgroundShapeRef}
         sceneFunc={(context) => {
           // Draw filled US outline polygon
           context.beginPath();
@@ -225,6 +288,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
           context.fillStyle = hexToRgba(SPACE_TEXT_COLOR, 0.05);
           context.fill();
         }}
+        opacity={backgroundOpacity}
         listening={false}
       />
       

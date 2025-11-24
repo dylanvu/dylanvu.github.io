@@ -616,8 +616,8 @@ function Constellation({
       scaleX={transformData.scaleX ?? 1}
       scaleY={transformData.scaleY ?? 1}
     >
-      {/* Zoom control - rendered OUTSIDE clipped group */}
-      {isElevare && isFocused && (
+      {/* Zoom control - rendered OUTSIDE clipped group, always present for Elevare but fades in/out */}
+      {isElevare && (
         <ElevareControl
           x={controlX}
           topY={minY}
@@ -657,8 +657,8 @@ function Constellation({
         totalDuration={totalDuration}
       />
 
-        {/* Conditional rendering: ElevareMap wrapper for Elevare when focused, normal for others */}
-        {isElevare && isFocused ? (
+        {/* Conditional rendering: ElevareMap wrapper always for Elevare (to prevent children remounting), normal for others */}
+        {isElevare ? (
           <ElevareMap 
             isFocused={isFocused}
             boundingBox={{ minX, maxX, minY, maxY }}
