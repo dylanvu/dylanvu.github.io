@@ -73,6 +73,13 @@ function Constellation({
   // Local state for Elevare zoom
   const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
 
+  // Reset Elevare zoom when unfocusing
+  useEffect(() => {
+    if (!isFocused && isElevare) {
+      setElevareZoom(MIN_ZOOM);
+    }
+  }, [isFocused, isElevare]);
+
   const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
