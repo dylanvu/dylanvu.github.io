@@ -82,12 +82,13 @@ export default function MainStar({
   const brightnessRef = useRef(brightness);
 
   // Refs for tweens and timers
-  const dimTweenRef = useRef<Konva.Tween | null>(null);
-  const fullTweenRef = useRef<Konva.Tween | null>(null);
+  const opacityTweenRef = useRef<Konva.Tween | null>(null);
   const delayTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const glowTweenRef = useRef<Konva.Tween | null>(null);
-  const dimOthersTweenRef = useRef<Konva.Tween | null>(null);
+  
+  // Track if initial fade-in is complete
+  const initialFadeCompleteRef = useRef(false);
 
   const starColor = useRef(
     ["#FFFFFF", "#F5F8FF", "#FFFEF5", "#FFF5F8"][Math.floor(Math.random() * 4)]
@@ -101,22 +102,19 @@ export default function MainStar({
   // Check if this star is currently focused
   const isFocused = data?.slug && focusedObject.star?.slug === data?.slug;
 
-  // 1. Handle Fade Logic (Dim -> Wait -> Bright)
+  // 1. Initial fade-in animation (runs once on mount)
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
 
     // Start invisible
     group.opacity(0);
+    initialFadeCompleteRef.current = false;
 
     // Clean up previous state
-    if (dimTweenRef.current) {
-      dimTweenRef.current.destroy();
-      dimTweenRef.current = null;
-    }
-    if (fullTweenRef.current) {
-      fullTweenRef.current.destroy();
-      fullTweenRef.current = null;
+    if (opacityTweenRef.current) {
+      opacityTweenRef.current.destroy();
+      opacityTweenRef.current = null;
     }
     if (delayTimerRef.current) {
       clearTimeout(delayTimerRef.current);
@@ -124,52 +122,49 @@ export default function MainStar({
     }
 
     // --- STAGE 1: Fade into DIM state immediately ---
-    dimTweenRef.current = new Konva.Tween({
+    opacityTweenRef.current = new Konva.Tween({
       node: group,
       duration: 1.5,
       opacity: initialOpacity,
       easing: Konva.Easings.EaseInOut,
       onFinish: () => {
-        if (dimTweenRef.current) {
-          dimTweenRef.current.destroy();
-          dimTweenRef.current = null;
+        if (opacityTweenRef.current) {
+          opacityTweenRef.current.destroy();
+          opacityTweenRef.current = null;
         }
       },
     });
-    dimTweenRef.current.play();
+    opacityTweenRef.current.play();
 
     // --- STAGE 2: Schedule fade to FULL state ---
-    // We use setTimeout because Konva.Tween doesn't support 'delay'
     delayTimerRef.current = setTimeout(() => {
-      // Stop the dim tween if it's still running so they don't fight
-      if (dimTweenRef.current) {
-        dimTweenRef.current.finish();
+      // Stop the dim tween if it's still running
+      if (opacityTweenRef.current) {
+        opacityTweenRef.current.finish();
       }
 
-      fullTweenRef.current = new Konva.Tween({
+      opacityTweenRef.current = new Konva.Tween({
         node: group,
         duration: 0.4,
         opacity: 1,
         easing: Konva.Easings.EaseOut,
         onFinish: () => {
-          if (fullTweenRef.current) {
-            fullTweenRef.current.destroy();
-            fullTweenRef.current = null;
+          // Mark initial fade as complete
+          initialFadeCompleteRef.current = true;
+          if (opacityTweenRef.current) {
+            opacityTweenRef.current.destroy();
+            opacityTweenRef.current = null;
           }
         },
       });
-      fullTweenRef.current.play();
-    }, delay * 1000); // Convert seconds to ms
+      opacityTweenRef.current.play();
+    }, delay * 1000);
 
-    // Cleanup on unmount or prop change
+    // Cleanup on unmount
     return () => {
-      if (dimTweenRef.current) {
-        dimTweenRef.current.destroy();
-        dimTweenRef.current = null;
-      }
-      if (fullTweenRef.current) {
-        fullTweenRef.current.destroy();
-        fullTweenRef.current = null;
+      if (opacityTweenRef.current) {
+        opacityTweenRef.current.destroy();
+        opacityTweenRef.current = null;
       }
       if (delayTimerRef.current) {
         clearTimeout(delayTimerRef.current);
@@ -178,11 +173,13 @@ export default function MainStar({
     };
   }, [delay, initialOpacity]);
 
-  // 2. Twinkle logic (Unchanged)
+  // 2. Optimized twinkle logic
   useEffect(() => {
     if (!twinkleEnabled) return;
     let rafId: number | null = null;
     let stopped = false;
+    let lastUpdateTime = 0;
+    const THROTTLE_MS = 16; // ~60fps, adjust higher to reduce CPU usage
 
     const easeInOut = (t: number) => t * t * (3 - 2 * t);
 
@@ -190,16 +187,35 @@ export default function MainStar({
       const startTime = performance.now();
       const step = (now: number) => {
         if (stopped) return;
+        
         const t = (now - startTime) / duration;
         if (t >= 1) {
           brightnessRef.current = target;
-          shapeRef.current?.getLayer()?.batchDraw();
+          // Final update - draw only this shape, not entire layer
+          const shape = shapeRef.current;
+          const layer = shape?.getLayer();
+          if (shape && layer) {
+            layer.batchDraw();
+          }
           scheduleNext();
           return;
         }
-        const eased = easeInOut(t);
-        brightnessRef.current = start + (target - start) * eased;
-        shapeRef.current?.getLayer()?.batchDraw();
+        
+        // Throttle updates to reduce CPU usage
+        if (now - lastUpdateTime >= THROTTLE_MS) {
+          const eased = easeInOut(t);
+          brightnessRef.current = start + (target - start) * eased;
+          
+          // Only redraw this specific shape, not the entire layer
+          const shape = shapeRef.current;
+          const layer = shape?.getLayer();
+          if (shape && layer) {
+            layer.batchDraw();
+          }
+          
+          lastUpdateTime = now;
+        }
+        
         rafId = window.requestAnimationFrame(step);
       };
       rafId = window.requestAnimationFrame(step);
@@ -295,27 +311,30 @@ export default function MainStar({
     }
 
     // If this star is dimmed, restore normal opacity on hover
+    // Only if initial fade is complete
     const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
-    if (shouldDim) {
+    if (shouldDim && initialFadeCompleteRef.current) {
       const group = groupRef.current;
-      if (group && dimOthersTweenRef.current) {
-        dimOthersTweenRef.current.destroy();
-        dimOthersTweenRef.current = null;
+      if (group) {
+        if (opacityTweenRef.current) {
+          opacityTweenRef.current.destroy();
+          opacityTweenRef.current = null;
+        }
+        
+        opacityTweenRef.current = new Konva.Tween({
+          node: group,
+          duration: 0.2,
+          opacity: 1,
+          easing: EASING,
+          onFinish: () => {
+            if (opacityTweenRef.current) {
+              opacityTweenRef.current.destroy();
+              opacityTweenRef.current = null;
+            }
+          },
+        });
+        opacityTweenRef.current.play();
       }
-      
-      dimOthersTweenRef.current = new Konva.Tween({
-        node: group!,
-        duration: 0.2,
-        opacity: 1,
-        easing: EASING,
-        onFinish: () => {
-          if (dimOthersTweenRef.current) {
-            dimOthersTweenRef.current.destroy();
-            dimOthersTweenRef.current = null;
-          }
-        },
-      });
-      dimOthersTweenRef.current.play();
     }
 
     // Determine hover scale based on current state
@@ -335,27 +354,30 @@ export default function MainStar({
     onHoverLeaveCallback?.();
     
     // If this star should be dimmed, restore dim state
+    // Only if initial fade is complete
     const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
-    if (shouldDim) {
+    if (shouldDim && initialFadeCompleteRef.current) {
       const group = groupRef.current;
-      if (group && dimOthersTweenRef.current) {
-        dimOthersTweenRef.current.destroy();
-        dimOthersTweenRef.current = null;
+      if (group) {
+        if (opacityTweenRef.current) {
+          opacityTweenRef.current.destroy();
+          opacityTweenRef.current = null;
+        }
+        
+        opacityTweenRef.current = new Konva.Tween({
+          node: group,
+          duration: 0.2,
+          opacity: 0.4,
+          easing: EASING,
+          onFinish: () => {
+            if (opacityTweenRef.current) {
+              opacityTweenRef.current.destroy();
+              opacityTweenRef.current = null;
+            }
+          },
+        });
+        opacityTweenRef.current.play();
       }
-      
-      dimOthersTweenRef.current = new Konva.Tween({
-        node: group!,
-        duration: 0.2,
-        opacity: 0.4,
-        easing: EASING,
-        onFinish: () => {
-          if (dimOthersTweenRef.current) {
-            dimOthersTweenRef.current.destroy();
-            dimOthersTweenRef.current = null;
-          }
-        },
-      });
-      dimOthersTweenRef.current.play();
     }
     
     // Return to base scale
@@ -405,10 +427,13 @@ export default function MainStar({
     };
   }, [isFocused]);
 
-  // 5. Dim other stars when one is focused
+  // 5. Focus-based dimming (only runs after initial fade completes)
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
+
+    // Wait for initial fade to complete before applying focus-based dimming
+    if (!initialFadeCompleteRef.current) return;
 
     // Only dim if:
     // 1. Constellation is focused
@@ -416,47 +441,34 @@ export default function MainStar({
     // 3. This star is NOT the focused one
     const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
 
-    // Clean up ALL previous tweens that control group opacity
-    // This includes the initial fade-in tweens from Effect #1
-    if (dimTweenRef.current) {
-      dimTweenRef.current.destroy();
-      dimTweenRef.current = null;
-    }
-    if (fullTweenRef.current) {
-      fullTweenRef.current.destroy();
-      fullTweenRef.current = null;
-    }
-    if (delayTimerRef.current) {
-      clearTimeout(delayTimerRef.current);
-      delayTimerRef.current = null;
-    }
-    if (dimOthersTweenRef.current) {
-      dimOthersTweenRef.current.destroy();
-      dimOthersTweenRef.current = null;
+    // Clean up previous opacity tween
+    if (opacityTweenRef.current) {
+      opacityTweenRef.current.destroy();
+      opacityTweenRef.current = null;
     }
 
     // Target opacity: dimmed (0.4) if should dim, otherwise full (1)
     const targetOpacity = shouldDim ? 0.4 : 1;
     
-    dimOthersTweenRef.current = new Konva.Tween({
+    opacityTweenRef.current = new Konva.Tween({
       node: group,
       duration: 0.3,
       opacity: targetOpacity,
       easing: EASING,
       onFinish: () => {
-        if (dimOthersTweenRef.current) {
-          dimOthersTweenRef.current.destroy();
-          dimOthersTweenRef.current = null;
+        if (opacityTweenRef.current) {
+          opacityTweenRef.current.destroy();
+          opacityTweenRef.current = null;
         }
       },
     });
     
-    dimOthersTweenRef.current.play();
+    opacityTweenRef.current.play();
 
     return () => {
-      if (dimOthersTweenRef.current) {
-        dimOthersTweenRef.current.destroy();
-        dimOthersTweenRef.current = null;
+      if (opacityTweenRef.current) {
+        opacityTweenRef.current.destroy();
+        opacityTweenRef.current = null;
       }
     };
   }, [isConstellationFocused, focusedObject.star?.slug, isFocused]);
