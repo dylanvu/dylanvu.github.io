@@ -126,7 +126,7 @@ export default function ElevareControl({
 
   return (
     <Group
-      x={x}
+      x={x - 10}
       y={y}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

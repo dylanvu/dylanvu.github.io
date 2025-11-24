@@ -489,6 +489,7 @@ function Constellation({
         showLabel={isFocused}
         labelSize={4}
         isConstellationFocused={isFocused}
+        constellationData={data}
         onHoverEnterCallback={() => {
           if (isReturningRef.current) return;
 
@@ -582,6 +583,7 @@ function Constellation({
         p2={stars[i2]}
         duration={lineDurations[idx]}
         delay={lineDelays[idx]}
+        constellationData={data}
       />
     ));
   };
@@ -633,11 +635,11 @@ function Constellation({
         width={width}
         height={height}
         fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""}
-        listening={true}
+        listening={!(isElevare && isFocused)}
       />
 
       <ConstellationBoundingBox
-        isVisible={isFocused || showStarBoundingBox || isHovered}
+      isVisible={isFocused || showStarBoundingBox || isHovered}
         tl={{ x: minX, y: minY }}
         tr={{ x: maxX, y: minY }}
         br={{ x: maxX, y: maxY }}
@@ -654,6 +656,8 @@ function Constellation({
             isFocused={isFocused}
             boundingBox={{ minX, maxX, minY, maxY }}
             boundingBoxCenter={{ x: centerX, y: centerY }}
+            constellationBoundingBoxWidth={width}
+            constellationBoundingBoxHeight={height}
             externalZoom={elevareZoom}
             onZoomChange={setElevareZoom}
           >

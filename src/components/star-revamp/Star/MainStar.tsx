@@ -35,6 +35,7 @@ type Props = {
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
   isConstellationFocused?: boolean;
+  constellationData?: { name: string };
   labelOverride?: string;
   showLabel?: boolean;
   labelSize?: number;
@@ -61,6 +62,7 @@ function MainStar({
   onHoverLeaveCallback,
   onClickCallback,
   isConstellationFocused = false,
+  constellationData,
   labelOverride,
   showLabel,
   labelSize = 12,
@@ -73,6 +75,18 @@ function MainStar({
   
   // Consume map scale context (defaults to 1 if not in ElevareMap)
   const mapScale = useContext(MapScaleContext);
+  
+  const { focusedObject } = useFocusContext();
+  
+  // Determine if this star should be non-interactive (disabled listening)
+  // This happens when:
+  // 1. Star is part of Elevare constellation
+  // 2. Elevare is currently focused
+  // 3. Star doesn't have a label (no clickable interaction)
+  const shouldDisableListening = 
+    constellationData?.name === "Elevare" &&
+    focusedObject.constellation?.name === "Elevare" &&
+    !data?.label;
   
   // Derive size from classification, or use provided size, or default to 5
   // Apply mobile scale factor to star sizes
@@ -101,7 +115,6 @@ function MainStar({
   const SCALE_ANIMATION_DURATION = 0.25;
   const focusScale = onHoverScale * 1.05; // Reduced from 1.1 to 1.05 for subtlety
   const EASING = Konva.Easings.EaseInOut;
-  const { focusedObject } = useFocusContext();
   
   // Check if this star is currently focused
   const isFocused = data?.slug && focusedObject.star?.slug === data?.slug;
@@ -559,7 +572,7 @@ function MainStar({
           ctx.closePath();
           ctx.fillStrokeShape(shape);
         }}
-        listening
+        listening={!shouldDisableListening}
       />
       {showLabel && (data?.label || labelOverride) && (
         <Text

@@ -21,11 +21,13 @@ interface ElevareMapProps {
     x: number;
     y: number;
   };
+  constellationBoundingBoxWidth: number;
+  constellationBoundingBoxHeight: number;
   externalZoom?: number;
   onZoomChange?: (zoom: number) => void;
 }
 
-export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, externalZoom, onZoomChange }: ElevareMapProps) {
+export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, constellationBoundingBoxWidth, constellationBoundingBoxHeight, externalZoom, onZoomChange }: ElevareMapProps) {
   const [mapScale, setMapScale] = useState(1);
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
   const lastDistRef = useRef(0);
@@ -171,6 +173,23 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       onTouchMove={isFocused ? handleTouchMove : undefined}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Full constellation bounding box for wheel/drag interaction */}
+      <Rect
+        x={boundingBox.minX}
+        y={boundingBox.minY}
+        width={constellationBoundingBoxWidth}
+        height={constellationBoundingBoxHeight}
+        fill="transparent"
+        listening={isFocused}
+        onWheel={isFocused ? handleWheel : undefined}
+        onMouseEnter={isFocused ? () => {
+          document.body.style.cursor = "grab";
+        } : undefined}
+        onMouseLeave={isFocused ? () => {
+          document.body.style.cursor = "default";
+        } : undefined}
+      />
+      
       {/* Subtle background using US map polygon */}
       <Shape
         sceneFunc={(context) => {
