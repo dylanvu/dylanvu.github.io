@@ -39,6 +39,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
   const innerGroupRef = useRef<Konva.Group>(null);
   const backgroundShapeRef = useRef<Konva.Shape>(null);
   const fadeAnimationRef = useRef<Konva.Tween | null>(null);
+  const resetTweenRef = useRef<Konva.Tween | null>(null);
 
   // Native wheel event listener - bypasses Konva event system
   useEffect(() => {
@@ -171,15 +172,72 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
     }
   }, [externalZoom]); // Only depend on externalZoom, not mapScale!
 
-  // Reset on unfocus
+  // Reset on unfocus with smooth tween animation
   useEffect(() => {
+    const node = innerGroupRef.current;
+    if (!node) return;
+
     if (!isFocused) {
-      setMapScale(MIN_ZOOM);
-      setMapOffset({ x: 0, y: 0});
-      if (onZoomChange) {
-        onZoomChange(MIN_ZOOM);
+      // Cancel any existing reset animation
+      if (resetTweenRef.current) {
+        resetTweenRef.current.destroy();
+        resetTweenRef.current = null;
+      }
+
+      // Capture current values to animate from
+      const startScale = mapScale;
+      const startOffset = { ...mapOffset };
+
+      resetTweenRef.current = new Konva.Tween({
+        node,
+        duration: 0.5,
+        x: 0,
+        y: 0,
+        scaleX: MIN_ZOOM,
+        scaleY: MIN_ZOOM,
+        easing: Konva.Easings.EaseInOut,
+        onUpdate: () => {
+          // Update React state during animation to keep everything in sync
+          const currentScale = node.scaleX();
+          const currentPos = { x: node.x(), y: node.y() };
+          
+          setMapScale(currentScale);
+          setMapOffset(currentPos);
+          
+          if (onZoomChange) {
+            onZoomChange(currentScale);
+          }
+        },
+        onFinish: () => {
+          // Ensure final state is exact
+          setMapScale(MIN_ZOOM);
+          setMapOffset({ x: 0, y: 0 });
+          if (onZoomChange) {
+            onZoomChange(MIN_ZOOM);
+          }
+          
+          if (resetTweenRef.current) {
+            resetTweenRef.current.destroy();
+            resetTweenRef.current = null;
+          }
+        },
+      });
+
+      resetTweenRef.current.play();
+    } else {
+      // If focusing, cancel any ongoing reset animation
+      if (resetTweenRef.current) {
+        resetTweenRef.current.destroy();
+        resetTweenRef.current = null;
       }
     }
+
+    return () => {
+      if (resetTweenRef.current) {
+        resetTweenRef.current.destroy();
+        resetTweenRef.current = null;
+      }
+    };
   }, [isFocused, onZoomChange]);
 
   // Fade animation for subtle background fill
