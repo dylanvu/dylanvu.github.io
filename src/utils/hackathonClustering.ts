@@ -68,6 +68,18 @@ function getStarClassification(
 }
 
 /**
+ * Generates a URL-safe slug from a cluster name
+ */
+function generateSlug(clusterName: string): string {
+  return clusterName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
+}
+
+/**
  * Groups hackathons by region (or city for non-CA), creating clusters with aggregated information
  */
 export function clusterHackathonsByCity(
@@ -169,11 +181,15 @@ export function convertClustersToStars(
     }
     const about = stats.join(" | ");
 
+    // Generate slug from cluster city name
+    const slug = generateSlug(cluster.city);
+
     return {
       x,
       y,
       data: {
         label,
+        slug,
         origin: dateRange,
         about,
         classification,
