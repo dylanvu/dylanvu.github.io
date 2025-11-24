@@ -23,7 +23,7 @@ export interface HackathonCluster {
 const CALIFORNIA_REGIONS = {
   "Bay Area": [
     "san francisco", "berkeley", "sunnyvale", "oakland", "palo alto",
-    "mountain view", "san jose", "santa clara", "fremont", "hayward"
+    "mountain view", "san jose", "santa clara", "fremont", "hayward", "cupertino"
   ],
   "Central Valley": ["sacramento", "davis", "stockton", "modesto", "fresno"],
   "SoCal Central": [
