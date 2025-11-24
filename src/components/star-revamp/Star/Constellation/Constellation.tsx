@@ -653,6 +653,7 @@ function Constellation({
           <ElevareMap 
             isFocused={isFocused}
             boundingBox={{ minX, maxX, minY, maxY }}
+            boundingBoxCenter={{ x: centerX, y: centerY }}
             externalZoom={elevareZoom}
             onZoomChange={setElevareZoom}
           >

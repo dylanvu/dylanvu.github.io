@@ -16,17 +16,21 @@ interface ElevareMapProps {
     minY: number;
     maxY: number;
   };
+  boundingBoxCenter: {
+    x: number;
+    y: number;
+  };
   externalZoom?: number;
   onZoomChange?: (zoom: number) => void;
 }
 
-export default function ElevareMap({ children, isFocused, boundingBox, externalZoom, onZoomChange }: ElevareMapProps) {
+export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, externalZoom, onZoomChange }: ElevareMapProps) {
   const [mapScale, setMapScale] = useState(1);
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
   const lastDistRef = useRef(0);
   const innerGroupRef = useRef<Konva.Group>(null);
 
-  // Zoom handler
+  // Zoom handler - zooms centered on mouse position
   const handleWheel = useCallback(
     (e: Konva.KonvaEventObject<WheelEvent>) => {
       if (!isFocused) return;
@@ -48,23 +52,24 @@ export default function ElevareMap({ children, isFocused, boundingBox, externalZ
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      // Get the current position of the inner group
-      const oldPos = { x: mapOffset.x, y: mapOffset.y };
-      
-      // Calculate mouse position relative to the group's current transform
-      const mousePointTo = {
-        x: (pointer.x - oldPos.x) / oldScale,
-        y: (pointer.y - oldPos.y) / oldScale,
+      // Convert mouse position from screen to local coordinates
+      const mousePointLocal = {
+        x: (pointer.x - mapOffset.x) / oldScale,
+        y: (pointer.y - mapOffset.y) / oldScale,
       };
 
-      // Calculate new position to keep the point under cursor fixed
-      const newPos = {
-        x: pointer.x - mousePointTo.x * clampedScale,
-        y: pointer.y - mousePointTo.y * clampedScale,
+      // Calculate the current screen position of the mouse point (which equals pointer position)
+      const screenX = mapOffset.x + mousePointLocal.x * oldScale;
+      const screenY = mapOffset.y + mousePointLocal.y * oldScale;
+
+      // Calculate new offset to keep the mouse point at the same screen position
+      const newOffset = {
+        x: screenX - mousePointLocal.x * clampedScale,
+        y: screenY - mousePointLocal.y * clampedScale,
       };
 
       setMapScale(clampedScale);
-      setMapOffset(newPos);
+      setMapOffset(newOffset);
       
       if (onZoomChange) {
         onZoomChange(clampedScale);
@@ -123,12 +128,26 @@ export default function ElevareMap({ children, isFocused, boundingBox, externalZ
   }, []);
 
   // Programmatic zoom control (from ElevareControl)
-  // Update internal zoom when external zoom changes
+  // Update internal zoom when external zoom changes, centering around bounding box
   useEffect(() => {
     if (externalZoom !== undefined && externalZoom !== mapScale) {
-      setMapScale(externalZoom);
+      const oldScale = mapScale;
+      const newScale = externalZoom;
+      
+      // Calculate the current screen position of the bounding box center
+      const screenX = mapOffset.x + boundingBoxCenter.x * oldScale;
+      const screenY = mapOffset.y + boundingBoxCenter.y * oldScale;
+      
+      // Calculate new offset to keep the bounding box center at the same screen position
+      const newOffset = {
+        x: screenX - boundingBoxCenter.x * newScale,
+        y: screenY - boundingBoxCenter.y * newScale
+      };
+      
+      setMapScale(newScale);
+      setMapOffset(newOffset);
     }
-  }, [externalZoom]);
+  }, [externalZoom, mapScale, mapOffset, boundingBoxCenter]);
 
   // Reset on unfocus
   useEffect(() => {
