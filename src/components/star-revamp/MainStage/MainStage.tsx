@@ -9,8 +9,9 @@ import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay"
 import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
+import Konva from "konva";
 
 import {
   hexToRgba,
@@ -99,6 +100,20 @@ export default function MainStage({
   const pathname = usePathname();
   const [focusedConstellationPos, setFocusedConstellationPos] =
     useState<FocusedConstellationPos | null>(null);
+  
+  // Ref to track the Stage instance for cleanup
+  const stageRef = useRef<Konva.Stage | null>(null);
+
+  // Cleanup Stage on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (stageRef.current) {
+        // Destroy the stage and all its children (layers, shapes, etc.)
+        stageRef.current.destroy();
+        stageRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -160,6 +175,7 @@ export default function MainStage({
       )}
       {ready && width > 0 && height > 0 && (
         <Stage
+          ref={stageRef}
           width={width}
           height={height}
           style={{ background: SPACE_BACKGROUND_COLOR }}
