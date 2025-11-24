@@ -88,9 +88,10 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       setMapScale(clampedScale);
       setMapOffset(newOffset);
       
-      // Don't call onZoomChange here - it would trigger the externalZoom effect
-      // which recalculates offset centered on boundingBoxCenter instead of mouse!
-      // The zoom control handles its own onZoomChange call.
+      // Sync with external zoom control (safe now since useEffect only depends on externalZoom)
+      if (onZoomChange) {
+        onZoomChange(clampedScale);
+      }
     },
     [isFocused, mapScale, mapOffset]
   );
