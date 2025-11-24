@@ -1,7 +1,8 @@
 import { Group, Rect, Text, Line, Circle } from "react-konva";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Konva from "konva";
 import { SPACE_TEXT_COLOR } from "@/app/theme";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 
 interface ElevareControlProps {
   x: number;
@@ -22,14 +23,18 @@ export default function ElevareControl({
   maxZoom,
   onZoomChange,
 }: ElevareControlProps) {
+  const { focusedObject } = useFocusContext();
+  const isFocused = focusedObject.constellation?.name === "Elevare";
+  
   const controlWidth = 40;
   const controlHeight = bottomY - topY;
   const y = topY;
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [controlOpacity, setControlOpacity] = useState(0);
   const sliderRef = useRef<Konva.Circle>(null);
   const rafIdRef = useRef<number | null>(null);
   const pendingZoomRef = useRef<number | null>(null);
+  const groupRef = useRef<Konva.Group>(null);
+  const fadeAnimationRef = useRef<Konva.Tween | null>(null);
 
   const buttonSize = 30;
   const sliderHeight = controlHeight - buttonSize * 2 - 20;
@@ -93,8 +98,6 @@ export default function ElevareControl({
   };
 
   const handleSliderDragEnd = () => {
-    setIsDragging(false);
-    
     // Cancel any pending RAF
     if (rafIdRef.current !== null) {
       cancelAnimationFrame(rafIdRef.current);
@@ -124,12 +127,51 @@ export default function ElevareControl({
     pendingZoomRef.current = null;
   };
 
+  // Fade animation for control panel
+  useEffect(() => {
+    const node = groupRef.current;
+    if (!node) return;
+
+    // Cancel any existing animation
+    if (fadeAnimationRef.current) {
+      fadeAnimationRef.current.destroy();
+      fadeAnimationRef.current = null;
+    }
+
+    const targetOpacity = isFocused ? 1 : 0;
+    
+    fadeAnimationRef.current = new Konva.Tween({
+      node,
+      duration: 0.5,
+      opacity: targetOpacity,
+      easing: Konva.Easings.EaseInOut,
+      onUpdate: () => {
+        setControlOpacity(node.opacity());
+      },
+      onFinish: () => {
+        if (fadeAnimationRef.current) {
+          fadeAnimationRef.current.destroy();
+          fadeAnimationRef.current = null;
+        }
+      },
+    });
+
+    fadeAnimationRef.current.play();
+
+    return () => {
+      if (fadeAnimationRef.current) {
+        fadeAnimationRef.current.destroy();
+        fadeAnimationRef.current = null;
+      }
+    };
+  }, [isFocused]);
+
   return (
     <Group
+      ref={groupRef}
       x={x - 10}
       y={y}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      opacity={controlOpacity}
     >
       {/* Background */}
       <Rect
@@ -208,7 +250,6 @@ export default function ElevareControl({
           document.body.style.cursor = "default";
         }}
         onDragStart={() => {
-          setIsDragging(true);
           document.body.style.cursor = "grabbing";
         }}
       />
