@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
-import ElevareMap from "./ElevareMap";
+import ElevareMap, { MIN_ZOOM, MAX_ZOOM } from "./ElevareMap";
 import ElevareControl from "./ElevareControl";
 import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
@@ -71,7 +71,7 @@ function Constellation({
   const isElevare = data.name === "Elevare";
   
   // Local state for Elevare zoom
-  const [elevareZoom, setElevareZoom] = useState(1);
+  const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
 
   const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
@@ -609,15 +609,15 @@ function Constellation({
       scaleX={transformData.scaleX ?? 1}
       scaleY={transformData.scaleY ?? 1}
     >
-      {/* Separate Group for controls - NOT clipped */}
+      {/* Zoom control - rendered OUTSIDE clipped group */}
       {isElevare && isFocused && (
         <ElevareControl
           x={controlX}
           topY={minY}
           bottomY={maxY}
           currentZoom={elevareZoom}
-          minZoom={1}
-          maxZoom={5}
+          minZoom={MIN_ZOOM}
+          maxZoom={MAX_ZOOM}
           onZoomChange={setElevareZoom}
         />
       )}

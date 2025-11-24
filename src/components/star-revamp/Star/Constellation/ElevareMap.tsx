@@ -8,6 +8,10 @@ import { SPACE_TEXT_COLOR, hexToRgba } from "@/app/theme";
 // Context to provide map scale to child components
 export const MapScaleContext = createContext<number>(1);
 
+// Shared zoom constants - exported for use in Constellation
+export const MIN_ZOOM = 1;
+export const MAX_ZOOM = 5;
+
 interface ElevareMapProps {
   children: ReactNode;
   isFocused: boolean;
@@ -28,7 +32,7 @@ interface ElevareMapProps {
 }
 
 export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, constellationBoundingBoxWidth, constellationBoundingBoxHeight, externalZoom, onZoomChange }: ElevareMapProps) {
-  const [mapScale, setMapScale] = useState(1);
+  const [mapScale, setMapScale] = useState(MIN_ZOOM);
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
   const lastDistRef = useRef(0);
   const innerGroupRef = useRef<Konva.Group>(null);
@@ -47,43 +51,48 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
 
       const newScale =
         e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-      const clampedScale = Math.max(0.5, Math.min(5, newScale));
+      const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newScale));
 
       const stage = node.getStage();
       if (!stage) return;
 
-      const pointer = stage.getPointerPosition();
-      if (!pointer) return;
+      const stagePointer = stage.getPointerPosition();
+      if (!stagePointer) return;
 
-      // Get pointer in parent's coordinate space (Constellation group coordinates)
-      // This matches the coordinate system used by mapOffset and externalZoom
+      // Convert stage pointer to parent's coordinate space
+      // (mapOffset is in parent coordinates, not stage coordinates!)
       const parent = node.getParent();
       if (!parent) return;
 
       const parentTransform = parent.getAbsoluteTransform().copy();
       parentTransform.invert();
-      const pointerInParent = parentTransform.point(pointer);
+      const pointer = parentTransform.point(stagePointer);
 
-      // Calculate which point in the unscaled content corresponds to the pointer
-      const mousePointLocal = {
-        x: (pointerInParent.x - mapOffset.x) / oldScale,
-        y: (pointerInParent.y - mapOffset.y) / oldScale,
+      // Classic zoom-to-point algorithm in parent's coordinate space:
+      // 1. Find which content point (in unscaled space) is under the mouse
+      //    Formula: pointer = groupOffset + contentPoint * groupScale
+      //    So: contentPoint = (pointer - groupOffset) / groupScale
+      const contentPoint = {
+        x: (pointer.x - mapOffset.x) / oldScale,
+        y: (pointer.y - mapOffset.y) / oldScale,
       };
 
-      // Calculate new offset to keep the mouse point at the same position in parent space
+      // 2. Calculate new group offset to keep that content point under the mouse
+      //    We want: pointer = newOffset + contentPoint * newScale
+      //    So: newOffset = pointer - contentPoint * newScale
       const newOffset = {
-        x: pointerInParent.x - mousePointLocal.x * clampedScale,
-        y: pointerInParent.y - mousePointLocal.y * clampedScale,
+        x: pointer.x - contentPoint.x * clampedScale,
+        y: pointer.y - contentPoint.y * clampedScale,
       };
 
       setMapScale(clampedScale);
       setMapOffset(newOffset);
       
-      if (onZoomChange) {
-        onZoomChange(clampedScale);
-      }
+      // Don't call onZoomChange here - it would trigger the externalZoom effect
+      // which recalculates offset centered on boundingBoxCenter instead of mouse!
+      // The zoom control handles its own onZoomChange call.
     },
-    [isFocused, mapScale, mapOffset, onZoomChange]
+    [isFocused, mapScale, mapOffset]
   );
 
   const handleDragStart = useCallback(() => {
@@ -123,7 +132,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       }
 
       const scale = mapScale * (dist / lastDistRef.current);
-      const clampedScale = Math.max(0.5, Math.min(5, scale));
+      const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, scale));
 
       setMapScale(clampedScale);
       lastDistRef.current = dist;
@@ -137,6 +146,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
 
   // Programmatic zoom control (from ElevareControl)
   // Update internal zoom when external zoom changes, centering around bounding box
+  // Only trigger on externalZoom changes, not on internal mapScale changes
   useEffect(() => {
     if (externalZoom !== undefined && externalZoom !== mapScale) {
       const oldScale = mapScale;
@@ -155,15 +165,15 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       setMapScale(newScale);
       setMapOffset(newOffset);
     }
-  }, [externalZoom, mapScale, mapOffset, boundingBoxCenter]);
+  }, [externalZoom]); // Only depend on externalZoom, not mapScale!
 
   // Reset on unfocus
   useEffect(() => {
     if (!isFocused) {
-      setMapScale(1);
+      setMapScale(MIN_ZOOM);
       setMapOffset({ x: 0, y: 0});
       if (onZoomChange) {
-        onZoomChange(1);
+        onZoomChange(MIN_ZOOM);
       }
     }
   }, [isFocused, onZoomChange]);
