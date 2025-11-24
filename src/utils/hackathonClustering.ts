@@ -207,3 +207,135 @@ export function generateHackathonStars(
   const clusters = clusterHackathonsByCity(hackathons);
   return convertClustersToStars(clusters);
 }
+
+/**
+ * Generates markdown content for a specific cluster by slug
+ * @param clusterSlug The URL slug for the cluster (e.g., "irvine", "bay-area")
+ * @param hackathons The full list of hackathons
+ * @returns Markdown string or null if cluster not found
+ */
+export function generateClusterMarkdown(
+  clusterSlug: string,
+  hackathons: HackathonInformation[]
+): string | null {
+  const clusters = clusterHackathonsByCity(hackathons);
+  const cluster = clusters.find((c) => generateSlug(c.city) === clusterSlug);
+
+  if (!cluster) {
+    return null;
+  }
+
+  // Sort hackathons in reverse chronological order (newest first)
+  const sortedHackathons = [...cluster.hackathons].sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  // Calculate statistics
+  const competedHackathons = cluster.hackathons.filter(
+    (h) => !h.role.toLowerCase().includes("mentor")
+  );
+  const mentoredHackathons = cluster.hackathons.filter((h) =>
+    h.role.toLowerCase().includes("mentor")
+  );
+  const totalParticipated = cluster.hackathons.length;
+  
+  const hoursCompeted = competedHackathons.reduce(
+    (sum, h) => sum + h.duration,
+    0
+  );
+  const hoursMentored = mentoredHackathons.reduce(
+    (sum, h) => sum + h.duration,
+    0
+  );
+  const totalHours = hoursCompeted + hoursMentored;
+
+  // Build markdown content
+  const lines: string[] = [];
+
+  // Title
+  lines.push(`# Hackathons in ${cluster.city}`);
+  lines.push("");
+
+  // Summary statistics
+  lines.push("## Summary");
+  lines.push("");
+  lines.push(`- **Total Hackathons**: ${totalParticipated}`);
+  lines.push(`- **Competed**: ${competedHackathons.length} hackathons (~${hoursCompeted.toLocaleString()} hours)`);
+  lines.push(`- **Mentored**: ${mentoredHackathons.length} hackathons (~${hoursMentored.toLocaleString()} hours)`);
+  lines.push(`- **Total Hours**: ~${totalHours.toLocaleString()} hours`);
+  
+  if (cluster.awardsCount > 0) {
+    lines.push(`- **Awards Won**: ${cluster.awardsCount}`);
+  }
+  
+  lines.push("");
+
+  // List all hackathons
+  lines.push("## Hackathons");
+  lines.push("");
+
+  for (const hackathon of sortedHackathons) {
+    // Hackathon header
+    lines.push(`### ${hackathon.name}`);
+    lines.push("");
+
+    // Basic info
+    lines.push(`**Date**: ${hackathon.date.toLocaleDateString("en-US", { 
+      year: "numeric", 
+      month: "long", 
+      day: "numeric" 
+    })}`);
+    lines.push("");
+    lines.push(`**Role**: ${hackathon.role}`);
+    lines.push("");
+    lines.push(`**Location**: ${hackathon.place}, ${hackathon.city}, ${hackathon.state}`);
+    lines.push("");
+    lines.push(`**Type**: ${hackathon.type}`);
+    lines.push("");
+    lines.push(`**Duration**: ${hackathon.duration} hours`);
+    lines.push("");
+    lines.push(`**Organizer**: ${hackathon.organizer}`);
+
+    // Project name (if participant)
+    if (hackathon.projectName) {
+      lines.push("");
+      lines.push(`**Project**: ${hackathon.projectName}`);
+    }
+
+    // Awards
+    if (hackathon.awards.length > 0) {
+      lines.push("");
+      lines.push(`**Awards**: ${hackathon.awards.join(", ")}`);
+    }
+
+    // Links
+    if (hackathon.devpost) {
+      lines.push("");
+      lines.push(`**Devpost**: [${hackathon.devpost}](${hackathon.devpost})`);
+    }
+
+    if (hackathon.github && hackathon.github.length > 0) {
+      lines.push("");
+      lines.push(`**GitHub**:`);
+      for (const repo of hackathon.github) {
+        lines.push(`- [${repo}](${repo})`);
+      }
+    }
+
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Gets all cluster slugs for static generation
+ * @param hackathons The full list of hackathons
+ * @returns Array of cluster slugs
+ */
+export function getAllClusterSlugs(hackathons: HackathonInformation[]): string[] {
+  const clusters = clusterHackathonsByCity(hackathons);
+  return clusters.map((c) => generateSlug(c.city));
+}

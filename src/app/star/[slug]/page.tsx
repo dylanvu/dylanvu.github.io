@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import StarPanel from "@/components/star-revamp/ScreenOverlay/StarPanel";
 import ReactMarkdown from "react-markdown";
+import { HackathonList } from "@/constants/Hackathons";
+import { generateClusterMarkdown, getAllClusterSlugs } from "@/utils/hackathonClustering";
 
 const directories = [
   "src/app/markdown/projects/active",
@@ -22,6 +24,14 @@ export async function generateStaticParams() {
         slug: file.replace(".md", ""),
       })
     }
+  }
+
+  // Add cluster slugs
+  const clusterSlugs = getAllClusterSlugs(HackathonList);
+  for (const clusterSlug of clusterSlugs) {
+    paths.push({
+      slug: clusterSlug,
+    });
   }
 
   return paths;
@@ -52,9 +62,14 @@ export default async function MarkdownPage({
     }
   }
   
-  // If no file was found, throw an error
+  // If no markdown file was found, try to generate cluster markdown
   if (!markdown) {
-    throw new Error(`Markdown file not found for slug: ${slug}`);
+    const clusterMarkdown = generateClusterMarkdown(slug, HackathonList);
+    if (clusterMarkdown) {
+      markdown = clusterMarkdown;
+    } else {
+      throw new Error(`Markdown file not found for slug: ${slug}`);
+    }
   }
 
   return (
