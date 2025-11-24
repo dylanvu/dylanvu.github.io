@@ -54,3 +54,8 @@ It was built with React-Konva, Motion, TypeScript, React, Next.js, and a lot of 
 If anyone asks, yes, I had plenty of help from ChatGPT and Google Gemini—though the second day was relatively ChatGPT-free. But only tell them this if they explicitly ask if I used AI or vibe-coded at all. Even though I'm not a fan of vibe-coding (I think it severely detracts from learning), I do acknowledge it's power and key role it played in bringing my vision to life here. I handled all of the integration, high level design. I mainly leaned on LLMs to fix tricky bugs regarding positioning in Konva-React and the complex animations and special effects. For example, an LLM enabled me to achieve the parallax zoom effect when you click on a constellation. It also helped me implement the "drawing the constellation/star title" effect, too.
 
 I designed this whole metaphor of a night sky being myself and my portfolio and the actual design of the interface myself, no AI here! I did use AI to help narrow and refine the metaphor, but in general it's all 95% me on that end.
+
+### The Polish and Feel of the Portfolio
+I am so, so, so proud of the polish and feel of this portfolio. I am absolutely in love with all of the animations I packed into this, especially if you ask Polaris to list out all of the constellations, and you go to each one, and it's like you're traveling across the night sky. I love the parallax zoom effect as well when you focus on a constellation.
+
+This is the most artistic piece of software I've had the pleasure of creating and it really pushed me to the limit.
