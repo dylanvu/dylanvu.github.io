@@ -226,7 +226,7 @@ export default function Polaris({
   // --- CLICK ANIMATION CONFIGURATION ---
   // Variables to control the click interaction
   const CLICK_ANIMATION_DURATION = 1; // Time in seconds to move/scale
-  const CLICK_TARGET_SCALE = 6 * mobileScaleFactor; // How big it grows (scaled for mobile)
+  const CLICK_TARGET_SCALE = 4 * mobileScaleFactor; // How big it grows (scaled for mobile)
 
   // Calculate Bottom Left position (with some padding from edge, scaled for mobile)
   const CLICK_TARGET_X = 150 * mobileScaleFactor; // Distance from left edge

@@ -37,6 +37,7 @@ export interface FocusState {
   focusedObject: FocusedObject;
   setFocusedObject: Dispatch<SetStateAction<FocusedObject>>;
   navigateToStar: (slug: string) => void;
+  navigateToConstellation: (slug: string) => void;
 }
 
 const FocusContext = createContext<FocusState | undefined>(undefined);
@@ -91,12 +92,44 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname, router]);
 
+  const navigateToConstellation = useCallback((slug: string) => {
+    console.log('[navigateToConstellation] Input slug:', slug);
+    
+    const capitalizedName = slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();
+    console.log('[navigateToConstellation] Capitalized name:', capitalizedName);
+    
+    const constellationData = getConstellationDataByName(capitalizedName);
+    console.log('[navigateToConstellation] Found constellation:', constellationData);
+    
+    if (constellationData) {
+      console.log('[navigateToConstellation] Setting focused object');
+      // Set focused object with constellation but no specific star
+      setFocusedObject({
+        constellation: constellationData,
+        star: null,
+      });
+      
+      // Build target path
+      const targetPath = `/constellation/${slug.toLowerCase()}`;
+      console.log('[navigateToConstellation] Target path:', targetPath, 'Current path:', pathname);
+      
+      // Only navigate if the path is different
+      if (pathname !== targetPath) {
+        console.log('[navigateToConstellation] Navigating to:', targetPath);
+        router.push(targetPath);
+      }
+    } else {
+      console.error('[navigateToConstellation] No constellation found for name:', capitalizedName);
+    }
+  }, [pathname, router]);
+
   return (
     <FocusContext.Provider
       value={{
         focusedObject,
         setFocusedObject,
         navigateToStar,
+        navigateToConstellation,
       }}
     >
       {children}

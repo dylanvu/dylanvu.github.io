@@ -14,6 +14,14 @@ export interface GeminiMessage {
   parts: GeminiMessagePart[];
 }
 
+export interface ErrorMessages {
+  default: string;
+  rateLimit: string;
+  serverError?: string;
+  timeout?: string;
+  network?: string;
+}
+
 export async function talkToAgent(
   newMessage: string,
   chatHistory: ChatMessage[],
@@ -21,7 +29,7 @@ export async function talkToAgent(
   setIsThinking: React.Dispatch<React.SetStateAction<boolean>>,
   setIsTalking: React.Dispatch<React.SetStateAction<boolean>>,
   placeholderMessage: string,
-  errorMessage: string,
+  errorMessages: ErrorMessages,
   onStreamChunk?: () => void
 ) {
   const newUserMessage: ChatMessage = {
@@ -65,8 +73,21 @@ export async function talkToAgent(
       }),
     });
 
-    if (!res.ok || !res.body) {
-      throw new Error("Failed to get response from Polaris");
+    if (!res.ok) {
+      // Determine the appropriate error message based on status code
+      let errorMsg = errorMessages.default;
+      
+      if (res.status === 429) {
+        errorMsg = errorMessages.rateLimit;
+      } else if (res.status >= 500) {
+        errorMsg = errorMessages.serverError || errorMessages.default;
+      }
+      
+      throw new Error(errorMsg);
+    }
+
+    if (!res.body) {
+      throw new Error(errorMessages.default);
     }
 
     // Replace the placeholder message with an empty message that will be streamed into
@@ -116,6 +137,13 @@ export async function talkToAgent(
     setIsTalking(false);
   } catch (error) {
     console.error("Error talking to LLM:", error);
+    
+    // Determine appropriate error message
+    // If the error has a message (from our thrown errors), use it
+    // Otherwise fall back to network error or default
+    const errorMessage = error instanceof Error && error.message 
+      ? error.message 
+      : errorMessages.network || errorMessages.default;
     
     // Replace the placeholder with an error message
     const errorMsg: ChatMessage = {

@@ -166,7 +166,7 @@ export default function MainStage({
           </AnimatePresence>
 
           {/* Hidden container for /polaris route initialization */}
-          {pathname === "/polaris" && polarisDisplayState !== "active" && (
+          {(pathname === "/polaris" && polarisDisplayState !== "active") || (pathname.startsWith("/constellation/")) && (
             <div style={{ display: 'none' }}>
               {children}
             </div>

@@ -17,9 +17,8 @@ export default function PolarisChat() {
 
   const suggestions = [
     "Why is this called a night sky?",
-    "How did Dylan build this night sky?",
-    "Show me Dylan's projects",
-    "Show me Dylan's resume",
+    "What are Dylan's technical skills?",
+    "Where is Dylan's resume?",
   ];
 
   function handleSubmit(text = inputText) {
@@ -95,8 +94,8 @@ export default function PolarisChat() {
         position: "relative",
         overflowX: "hidden",
         overscrollBehavior: "contain",
-        paddingBottom: "4rem",
-        paddingTop: "4rem"
+        paddingBottom: "2rem",
+        paddingTop: "2rem"
       }}
       className={FONT_FAMILY.className}
     >

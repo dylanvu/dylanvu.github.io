@@ -82,7 +82,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designY: 400,
     rotation: 32,
     scale: 1.5,
-    focusScale: 2.4,
+    focusScale: 2,
   },
   {
     // the career constellation
@@ -183,7 +183,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designY: 400,
     scale: 1.8,
     rotation: 30,
-    focusScale: 2.4,
+    focusScale: 2,
   },
   {
     // the projects constellation
@@ -309,7 +309,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designY: 700,
     rotation: 200,
     scale: 1.5,
-    focusScale: 2.4,
+    focusScale: 2,
   },
   {
     // hackathon map constellation
@@ -322,9 +322,9 @@ export const CONSTELLATIONS: ConstellationData[] = [
     designX: 1600,
     designY: 800,
     rotation: 10,
-    scale: 1.5,
+    scale: 1.2,
     totalDuration: 6,
-    focusScale: 2,
+    focusScale: 1.5,
   },
 ];
 
@@ -409,6 +409,23 @@ export function getStarDataBySlug(
   }
 
   return null;
+}
+
+/**
+ * Formats constellation links for LLM consumption, providing direct navigation
+ * links to each constellation page.
+ *
+ * @returns A formatted string with constellation metadata and links
+ */
+export function formatConstellationLinksForLLM(): string {
+  const constellationLinks = CONSTELLATIONS.map(constellation => ({
+    name: constellation.name,
+    link: `/constellation/${constellation.name.toLowerCase()}`,
+    about: constellation.about,
+    origin: constellation.origin,
+  }));
+
+  return JSON.stringify(constellationLinks, null, 2);
 }
 
 /**

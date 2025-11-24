@@ -109,7 +109,7 @@ export default function MainStarField({
   const router = useRouter();
   const pathname = usePathname();
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
-  const { isMobileLandscape, mobileScaleFactor } = useMobile();
+  const { isSmallScreen, mobileScaleFactor } = useMobile();
 
   // Handler for background clicks/taps
   const handleBackgroundInteraction = () => {
@@ -171,7 +171,7 @@ export default function MainStarField({
           <Text
             x={windowCenter.x + 15}
             y={windowCenter.y - 5}
-            text={`CENTER ${isMobileLandscape ? "(Mobile)" : "(Desktop)"}`}
+            text={`CENTER ${isSmallScreen ? "(Small Screen)" : "(Large Screen)"}`}
             fontSize={14}
             fill="red"
             fontStyle="bold"
@@ -194,8 +194,8 @@ export default function MainStarField({
             opacity={0.3}
           />
 
-          {/* Quadrant center markers - only in mobile landscape */}
-          {isMobileLandscape && (
+          {/* Quadrant center markers - only on small screens */}
+          {isSmallScreen && (
             <>
               {/* Top-left quadrant */}
               <Circle
@@ -280,8 +280,8 @@ export default function MainStarField({
 
         let targetX, targetY;
 
-        if (isMobileLandscape) {
-          // Mobile landscape: Position visual center at quadrant centers
+        if (isSmallScreen) {
+          // Small screen: Position visual center at quadrant centers
           // Viae: top-left, Iter: top-right, Arete: bottom-left, Elevare: bottom-right
           switch (c.name) {
             case "Viae":
@@ -306,7 +306,7 @@ export default function MainStarField({
               targetY = (c.designY / DESIGN.height) * height;
           }
         } else {
-          // Desktop/other viewports: Use percentage positioning
+          // Large screen: Use percentage positioning
           targetX = (c.designX / DESIGN.width) * width;
           targetY = (c.designY / DESIGN.height) * height;
         }

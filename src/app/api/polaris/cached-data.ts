@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { unstable_cache } from "next/cache";
+import "pdf-parse/worker"; // Import worker before PDFParse to fix Next.js/Vercel serverless issues
 import { PDFParse } from "pdf-parse"
 import {
   returnHackathonStatisticsString,

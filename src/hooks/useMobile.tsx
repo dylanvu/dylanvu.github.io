@@ -28,6 +28,7 @@ type MobileState = {
   isMobile: boolean;
   isMobileLandscape: boolean;
   isMobilePortrait: boolean;
+  isSmallScreen: boolean;
   mobileScaleFactor: number;
   mobileFontScaleFactor: number;
 };
@@ -39,6 +40,7 @@ export function useMobile(): MobileState {
         isMobile: false,
         isMobileLandscape: false,
         isMobilePortrait: false,
+        isSmallScreen: false,
         mobileScaleFactor: DESKTOP_SCALE,
         mobileFontScaleFactor: DESKTOP_FONT_SCALE,
       };
@@ -51,6 +53,7 @@ export function useMobile(): MobileState {
     const isSmallLandscape = width < 1024 && width > height; // Small landscape viewport
     const isMobileLandscape = (isMobile || isSmallLandscape) && width > height;
     const isMobilePortrait = isMobile && height >= width;
+    const isSmallScreen = width < 1600; // Custom breakpoint for small screens
     const mobileScaleFactor = isMobileLandscape ? MOBILE_SCALE : DESKTOP_SCALE;
     const mobileFontScaleFactor = isMobileLandscape ? MOBILE_FONT_SCALE : DESKTOP_FONT_SCALE;
 
@@ -58,6 +61,7 @@ export function useMobile(): MobileState {
       isMobile,
       isMobileLandscape,
       isMobilePortrait,
+      isSmallScreen,
       mobileScaleFactor,
       mobileFontScaleFactor,
     };
@@ -71,6 +75,7 @@ export function useMobile(): MobileState {
       const isSmallLandscape = width < 1024 && width > height;
       const isMobileLandscape = (isMobile || isSmallLandscape) && width > height;
       const isMobilePortrait = isMobile && height >= width;
+      const isSmallScreen = width < 1600; // Custom breakpoint for small screens
       const mobileScaleFactor = isMobileLandscape ? MOBILE_SCALE : DESKTOP_SCALE;
       const mobileFontScaleFactor = isMobileLandscape ? MOBILE_FONT_SCALE : DESKTOP_FONT_SCALE;
 
@@ -78,6 +83,7 @@ export function useMobile(): MobileState {
         isMobile,
         isMobileLandscape,
         isMobilePortrait,
+        isSmallScreen,
         mobileScaleFactor,
         mobileFontScaleFactor,
       });

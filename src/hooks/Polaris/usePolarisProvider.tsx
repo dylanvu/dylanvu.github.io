@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { ChatMessage, talkToAgent } from "@/hooks/Polaris/tools/talk";
+import { ChatMessage, ErrorMessages, talkToAgent } from "@/hooks/Polaris/tools/talk";
 import { useCenterOverlayContext } from "../useCenterOverlay";
 
 export type PolarisDisplayState = "hidden" | "active" | "suppressed";
@@ -106,7 +106,13 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   }, [isReady, polarisDisplayState]);
 
   const PLACEHOLDER_MSG = "Polaris is navigating the night sky..."
-  const ERROR_MSG = "I apologize, stargazer. Something went wrong while reading the stars. Please try again."
+  
+  const ERROR_MESSAGES: ErrorMessages = {
+    default: "I apologize, stargazer. Something went wrong while reading the stars. Please try again.",
+    rateLimit: "Forgive me, stargazer. My light grows dim from guiding too many at once. Please rest for a moment, and I shall shine bright again for you.",
+    serverError: "I apologize, stargazer. The cosmic winds have obscured my vision. Please try again in a moment.",
+    network: "I apologize, stargazer. The celestial connection has been interrupted. Please check your connection and try again."
+  };
 
   async function talkToPolaris(newMessage: string) {
     await talkToAgent(
@@ -116,7 +122,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
       setIsThinking,
       setIsTalking,
       PLACEHOLDER_MSG,
-      ERROR_MSG,
+      ERROR_MESSAGES,
       onStreamChunk
     );
   }

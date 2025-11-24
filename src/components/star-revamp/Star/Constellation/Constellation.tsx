@@ -192,7 +192,7 @@ function Constellation({
 
   // Memoized target position - automatically updates when pathname or polarisActivated changes
   const focusedTargetX = useMemo(() => {
-    return pathname !== "/" && polarisDisplayState !== "active"
+    return pathname.startsWith("/star/") && polarisDisplayState !== "active"
       ? windowCenter.x / 2
       : windowCenter.x;
   }, [pathname, polarisDisplayState, windowCenter.x]);

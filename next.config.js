@@ -4,6 +4,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Required for pdf-parse to work in Next.js/Vercel serverless environment
+  serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
   async headers() {
     return [
       {
