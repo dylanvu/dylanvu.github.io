@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L, { IconOptions, LatLngTuple } from "leaflet";
 
-import ContentBlockTitle from "../content-block/ContentBlockTitle";
 import { HackathonList } from "@/constants/Hackathons";
 import HackathonInformation, {
   HackathonRole,
@@ -15,13 +14,6 @@ import HackathonInformation, {
 import HackathonPopup from "./HackathonPopUp";
 import FilterOption, { FilterOptionType } from "./FilterOption";
 import { useState } from "react";
-
-import {
-  faSignal,
-  faPerson,
-  faPersonChalkboard,
-  faLaptop,
-} from "@fortawesome/free-solid-svg-icons";
 
 import "@/styles/hackathon-map/hackathon-map.css";
 
@@ -146,7 +138,7 @@ export default function HackathonMap() {
 
   return (
     <div>
-      <ContentBlockTitle title={"Hackathon Map"} />
+      <div>Hackathon Map</div>
       <div className="map-filter-container">
         <div className="map-filter-row">
           <div>Role</div>
@@ -155,13 +147,11 @@ export default function HackathonMap() {
               label="Hacker"
               filterOptionType="Participant"
               onClick={handleFilterChange}
-              icon={faLaptop}
             />
             <FilterOption
               label="Mentor"
               filterOptionType="Mentor"
               onClick={handleFilterChange}
-              icon={faPersonChalkboard}
             />
           </div>
         </div>
@@ -172,13 +162,11 @@ export default function HackathonMap() {
               label="In-Person"
               filterOptionType="In-Person"
               onClick={handleFilterChange}
-              icon={faPerson}
             />
             <FilterOption
               label="Online"
               filterOptionType="Online"
               onClick={handleFilterChange}
-              icon={faSignal}
             />
           </div>
         </div>

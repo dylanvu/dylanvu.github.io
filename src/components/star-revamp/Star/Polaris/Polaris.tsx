@@ -3,7 +3,6 @@ import { Group, Circle } from "react-konva";
 import Konva from "konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import { useRouter, usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useMobile } from "@/hooks/useMobile";
 import { TweenConfig } from "konva/lib/Tween";
