@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { unstable_cache } from "next/cache";
-import pdf from "pdf-parse/lib/pdf-parse.js";
+import { PDFParse } from "pdf-parse"
 import {
   returnHackathonStatisticsString,
   returnHackathonListAsDocument,
@@ -17,8 +17,9 @@ export const getResumeString = unstable_cache(
   async () => {
     const resumePath = path.join(process.cwd(), "public", "Dylan_Vu_Resume.pdf");
     const resumeFile = fs.readFileSync(resumePath);
-    const resumeString = (await pdf(resumeFile)).text;
-    return resumeString;
+    const parser = new PDFParse({ data: resumeFile });
+    const result = await parser.getText();
+    return result.text;
   },
   ["resume-content"],
   {
