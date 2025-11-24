@@ -561,7 +561,7 @@ function MainStar({
         <Text
           ref={textRef}
           x={0}
-          y={actualSize + scaledLabelSize}
+          y={(actualSize + scaledLabelSize) / mapScale}
           text={labelOverride || data?.label}
           fontSize={scaledLabelSize}
           fill={SPACE_TEXT_COLOR}

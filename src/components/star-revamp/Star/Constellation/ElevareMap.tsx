@@ -10,9 +10,17 @@ export const MapScaleContext = createContext<number>(1);
 interface ElevareMapProps {
   children: ReactNode;
   isFocused: boolean;
+  boundingBox: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  };
+  externalZoom?: number;
+  onZoomChange?: (zoom: number) => void;
 }
 
-export default function ElevareMap({ children, isFocused }: ElevareMapProps) {
+export default function ElevareMap({ children, isFocused, boundingBox, externalZoom, onZoomChange }: ElevareMapProps) {
   const [mapScale, setMapScale] = useState(1);
   const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
   const lastDistRef = useRef(0);
@@ -57,8 +65,12 @@ export default function ElevareMap({ children, isFocused }: ElevareMapProps) {
 
       setMapScale(clampedScale);
       setMapOffset(newPos);
+      
+      if (onZoomChange) {
+        onZoomChange(clampedScale);
+      }
     },
-    [isFocused, mapScale, mapOffset]
+    [isFocused, mapScale, mapOffset, onZoomChange]
   );
 
   const handleDragStart = useCallback(() => {
@@ -110,13 +122,24 @@ export default function ElevareMap({ children, isFocused }: ElevareMapProps) {
     lastDistRef.current = 0;
   }, []);
 
+  // Programmatic zoom control (from ElevareControl)
+  // Update internal zoom when external zoom changes
+  useEffect(() => {
+    if (externalZoom !== undefined && externalZoom !== mapScale) {
+      setMapScale(externalZoom);
+    }
+  }, [externalZoom]);
+
   // Reset on unfocus
   useEffect(() => {
     if (!isFocused) {
       setMapScale(1);
-      setMapOffset({ x: 0, y: 0 });
+      setMapOffset({ x: 0, y: 0});
+      if (onZoomChange) {
+        onZoomChange(1);
+      }
     }
-  }, [isFocused]);
+  }, [isFocused, onZoomChange]);
 
   return (
     <Group

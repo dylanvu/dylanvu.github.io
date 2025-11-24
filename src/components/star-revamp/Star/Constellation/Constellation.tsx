@@ -5,6 +5,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
+import ElevareControl from "./ElevareControl";
 import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
@@ -68,6 +69,9 @@ function Constellation({
   const [isHovered, setIsHovered] = useState(false);
 
   const isElevare = data.name === "Elevare";
+  
+  // Local state for Elevare zoom
+  const [elevareZoom, setElevareZoom] = useState(1);
 
   const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
@@ -582,6 +586,10 @@ function Constellation({
     ));
   };
 
+  // Calculate control position in local coordinates for Elevare
+  const controlWidth = 40;
+  const controlX = minX - controlWidth;
+
   return (
     <Group
       ref={groupRef}
@@ -599,6 +607,26 @@ function Constellation({
       scaleX={transformData.scaleX ?? 1}
       scaleY={transformData.scaleY ?? 1}
     >
+      {/* Separate Group for controls - NOT clipped */}
+      {isElevare && isFocused && (
+        <ElevareControl
+          x={controlX}
+          topY={minY}
+          bottomY={maxY}
+          currentZoom={elevareZoom}
+          minZoom={1}
+          maxZoom={5}
+          onZoomChange={setElevareZoom}
+        />
+      )}
+      
+      {/* Clipped content group */}
+      <Group
+        clipFunc={isElevare && isFocused ? (ctx) => {
+          // Clip to bounding box - stays fixed while content inside transforms
+          ctx.rect(minX, minY, width, height);
+        } : undefined}
+      >
       <Rect
         x={minX}
         y={minY}
@@ -620,18 +648,24 @@ function Constellation({
         totalDuration={totalDuration}
       />
 
-      {/* Conditional rendering: ElevareMap wrapper for Elevare when focused, normal for others */}
-      {isElevare && isFocused ? (
-        <ElevareMap isFocused={isFocused}>
-          {renderLines()}
-          {stars.map(renderStar)}
-        </ElevareMap>
-      ) : (
-        <>
-          {renderLines()}
-          {stars.map(renderStar)}
-        </>
-      )}
+        {/* Conditional rendering: ElevareMap wrapper for Elevare when focused, normal for others */}
+        {isElevare && isFocused ? (
+          <ElevareMap 
+            isFocused={isFocused}
+            boundingBox={{ minX, maxX, minY, maxY }}
+            externalZoom={elevareZoom}
+            onZoomChange={setElevareZoom}
+          >
+            {renderLines()}
+            {stars.map(renderStar)}
+          </ElevareMap>
+        ) : (
+          <>
+            {renderLines()}
+            {stars.map(renderStar)}
+          </>
+        )}
+      </Group>
     </Group>
   );
 }

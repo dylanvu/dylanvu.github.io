@@ -474,6 +474,7 @@ export default function MainStarField({
           </>
         );
       })()}
+      
     </Group>
   );
 }
