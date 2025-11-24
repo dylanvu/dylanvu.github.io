@@ -14,6 +14,7 @@ import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
  */
 export function MarkdownLink({ children, href }: { children: React.ReactNode; href?: string }) {
   const { navigateToStar } = useFocusContext();
+  const { setPolarisDisplayState } = usePolarisContext();
   
   // Handle missing href
   if (!href) {
@@ -26,7 +27,6 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
   // Check if it's a star link (starts with STAR_BASE_URL)
   const isStarLink = href.startsWith(STAR_BASE_URL + '/');
 
-  const { setPolarisDisplayState } = usePolarisContext();
   
   if (isStarLink) {
     // Extract slug from the URL

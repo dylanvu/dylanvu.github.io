@@ -1,11 +1,25 @@
 import { motion } from "motion/react";
-import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
+import { FONT_FAMILY } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/hooks/Polaris/tools/talk";
 import { MarkdownLink } from "../../MarkdownLink";
 import { useMobile } from "@/hooks/useMobile";
+
+// Type definitions for markdown components
+interface MarkdownComponentProps {
+  children?: React.ReactNode;
+}
+
+interface AnchorProps extends MarkdownComponentProps {
+  href?: string;
+}
+
+interface ImageProps {
+  src?: string | Blob;
+  alt?: string;
+}
 
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
   const { mobileFontScaleFactor } = useMobile();
@@ -16,32 +30,32 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
   
   // Memoize components to prevent recreating them on every render
   const markdownComponents = useMemo(() => ({
-    p: ({ children }: any) => (
+    p: ({ children }: MarkdownComponentProps) => (
       <p className={FONT_FAMILY.className}>{children}</p>
     ),
-    a: ({ children, href }: any) => (
+    a: ({ children, href }: AnchorProps) => (
       <MarkdownLink href={href}>{children}</MarkdownLink>
     ),
-    ul: ({ children }: any) => (
+    ul: ({ children }: MarkdownComponentProps) => (
       <ul className={FONT_FAMILY.className}>{children}</ul>
     ),
-    ol: ({ children }: any) => (
+    ol: ({ children }: MarkdownComponentProps) => (
       <ol className={FONT_FAMILY.className}>{children}</ol>
     ),
-    li: ({ children }: any) => (
+    li: ({ children }: MarkdownComponentProps) => (
       <li className={FONT_FAMILY.className}>{children}</li>
     ),
-    strong: ({ children }: any) => (
+    strong: ({ children }: MarkdownComponentProps) => (
       <strong className={FONT_FAMILY.className}>{children}</strong>
     ),
-    em: ({ children }: any) => (
+    em: ({ children }: MarkdownComponentProps) => (
       <em className={FONT_FAMILY.className}>{children}</em>
     ),
-    code: ({ children }: any) => <code>{children}</code>,
-    pre: ({ children }: any) => (
+    code: ({ children }: MarkdownComponentProps) => <code>{children}</code>,
+    pre: ({ children }: MarkdownComponentProps) => (
       <pre className={FONT_FAMILY.className}>{children}</pre>
     ),
-    img: ({ src, alt }: any) => <StreamingImage src={src} alt={alt} mobileFontScaleFactor={mobileFontScaleFactor} />,
+    img: ({ src, alt }: ImageProps) => <StreamingImage src={src} alt={alt} mobileFontScaleFactor={mobileFontScaleFactor} />,
   }), [mobileFontScaleFactor]);
   
   return (
@@ -122,11 +136,6 @@ function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Bl
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Don't render anything if src is not provided or is a Blob (partial markdown still streaming)
-  if (!src || typeof src !== 'string') {
-    return null;
-  }
-
   // Initialize state from refs on mount
   useEffect(() => {
     if (hasLoadedRef.current) {
@@ -136,6 +145,11 @@ function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Bl
       setHasError(true);
     }
   }, []);
+
+  // Don't render anything if src is not provided
+  if (!src || typeof src !== 'string') {
+    return null;
+  }
 
   return (
     <span key={src} style={{ display: "block", margin: "0.5rem 0" }}>

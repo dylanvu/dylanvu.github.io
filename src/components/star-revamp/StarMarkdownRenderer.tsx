@@ -1,4 +1,4 @@
-import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
+import { FONT_FAMILY } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";

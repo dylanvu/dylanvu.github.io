@@ -20,7 +20,7 @@ import {
 } from "@/app/theme";
 import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
-import PolarisPanel from "@/components/star-revamp/Star/Polaris/PolarisPanel";
+import PolarisChat from "@/components/star-revamp/Star/Polaris/PolarisChat";
 
 const BasePanelStyle: React.CSSProperties = {
   position: "absolute",
@@ -160,7 +160,7 @@ export default function MainStage({
                 style={{...BasePanelStyle, ...PolarisStyleOverride}}
                 className={FONT_FAMILY.style.fontFamily}
               >
-                <PolarisPanel />
+                <PolarisChat />
               </motion.div>
             )}
           </AnimatePresence>

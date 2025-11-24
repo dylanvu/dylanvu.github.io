@@ -1,9 +1,10 @@
 import { Shape } from "react-konva";
 import { useRef } from "react";
+import React from "react";
 
 const BG_STAR_COLORS = ["#888888", "#AAAAAA", "#CCCCCC", "#EEEEEE"];
 
-export default function StaticStar({
+function StaticStar({
   x,
   y,
   radius,
@@ -24,7 +25,7 @@ export default function StaticStar({
       // Opacity is now 1, because the Parent Layer handles the fade
       opacity={1}
       listening={false}
-      sceneFunc={(ctx, shape) => {
+      sceneFunc={(ctx) => {
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
         gradient.addColorStop(0, color);
         gradient.addColorStop(0.5, "rgba(255,255,255,0.2)");
@@ -38,3 +39,6 @@ export default function StaticStar({
     />
   );
 }
+
+// Memoize to prevent unnecessary re-renders of 390 background stars
+export default React.memo(StaticStar);

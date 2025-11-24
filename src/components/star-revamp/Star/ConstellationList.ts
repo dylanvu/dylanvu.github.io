@@ -1,7 +1,6 @@
 import {
   ConstellationData,
   Star,
-  StarData,
   StarDataWithInternalLink,
   isStarDataWithInternalLink,
 } from "@/interfaces/StarInterfaces";

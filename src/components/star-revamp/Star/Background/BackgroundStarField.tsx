@@ -21,38 +21,68 @@ export default function StarField({
   const COUNT_MID = 100;
   const COUNT_NEAR = 40;
 
-  // Helper to generate stars within a specific radius range
+  // Generate stars using percentage-based positions (0-1 range)
+  // This allows stars to maintain relative positions on resize
   const generateLayerStars = (count: number, minR: number, maxR: number) => {
     return Array.from({ length: count }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
+      xPercent: Math.random(), // 0-1 range
+      yPercent: Math.random(), // 0-1 range
       radius: Math.random() * (maxR - minR) + minR,
     }));
   };
 
-  // 1. Generate Far Layer (Small, many)
+  // 1. Generate Far Layer (Small, many) - ONCE on mount
   const farStars = useMemo(
     () => generateLayerStars(COUNT_FAR, 0.5, 1.2),
-    [width, height]
+    [] // Empty deps = generate only once!
   );
 
-  // 2. Generate Mid Layer (Medium, moderate amount)
+  // 2. Generate Mid Layer (Medium, moderate amount) - ONCE on mount
   const midStars = useMemo(
     () => generateLayerStars(COUNT_MID, 1.2, 2.0),
-    [width, height]
+    [] // Empty deps = generate only once!
   );
 
-  // 3. Generate Near Layer (Large, few)
+  // 3. Generate Near Layer (Large, few) - ONCE on mount
   const nearStars = useMemo(
     () => generateLayerStars(COUNT_NEAR, 2.0, 3.5),
-    [width, height]
+    [] // Empty deps = generate only once!
+  );
+
+  // Convert percentage positions to actual coordinates
+  // This recalculates positions on resize without regenerating stars
+  const farStarsPositioned = useMemo(
+    () => farStars.map(star => ({
+      x: star.xPercent * width,
+      y: star.yPercent * height,
+      radius: star.radius,
+    })),
+    [farStars, width, height]
+  );
+
+  const midStarsPositioned = useMemo(
+    () => midStars.map(star => ({
+      x: star.xPercent * width,
+      y: star.yPercent * height,
+      radius: star.radius,
+    })),
+    [midStars, width, height]
+  );
+
+  const nearStarsPositioned = useMemo(
+    () => nearStars.map(star => ({
+      x: star.xPercent * width,
+      y: star.yPercent * height,
+      radius: star.radius,
+    })),
+    [nearStars, width, height]
   );
 
   return (
     <Group>
       {/* LAYER 1: BACKGROUND (Far) */}
       <ParallaxLayer
-        stars={farStars}
+        stars={farStarsPositioned}
         depth={0.15}
         focusedConstellationPos={focusedConstellationPos}
         fadeDuration={FADE_DURATION}
@@ -61,7 +91,7 @@ export default function StarField({
 
       {/* LAYER 2: MIDGROUND */}
       <ParallaxLayer
-        stars={midStars}
+        stars={midStarsPositioned}
         depth={0.4}
         focusedConstellationPos={focusedConstellationPos}
         fadeDuration={FADE_DURATION}
@@ -70,7 +100,7 @@ export default function StarField({
 
       {/* LAYER 3: FOREGROUND (Near) */}
       <ParallaxLayer
-        stars={nearStars}
+        stars={nearStarsPositioned}
         depth={0.8}
         focusedConstellationPos={focusedConstellationPos}
         fadeDuration={FADE_DURATION}

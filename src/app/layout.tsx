@@ -2,17 +2,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 // fix the large flashing icon: https://blog.cetindere.de/fix-huge-flashing-icons-fontawesome/
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import { config } from "@fortawesome/fontawesome-svg-core";
 import { WindowSizeProvider } from "@/hooks/useWindowSizeProvider";
 import { SPACE_BACKGROUND_COLOR } from "./theme";
-
-// Prevent fontawesome from dynamically adding its css since we are going to include it manually
-config.autoAddCss = false;
-
-import Head from "next/head";
-
 import Script from "next/script";
+import "leaflet/dist/leaflet.css";
+
 import { CenterOverlayProvider } from "@/hooks/useCenterOverlay";
 import { TopOverlayProvider } from "@/hooks/useTopOverlay";
 import NightSky from "@/components/star-revamp/NightSky";
@@ -38,19 +32,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
-      <Head>
-        {/* Configure leaflet for the hackathon map component */}
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossOrigin=""
-        />
-      </Head>
+      <head>
+        <link rel="preconnect" href="https://unpkg.com" />
+      </head>
       <Script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossOrigin=""
+        strategy="lazyOnload"
       />
       <body className={inter.className} style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
         <main className="main">

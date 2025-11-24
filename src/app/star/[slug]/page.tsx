@@ -11,7 +11,7 @@ const directories = [
 
 export async function generateStaticParams() {
   // read all the files in the active 
-  let paths = []
+  const paths = []
   for (const directory of directories) {
     const currentDirectory = path.join(process.cwd(), directory);
     const files = fs

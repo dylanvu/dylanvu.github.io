@@ -10,10 +10,10 @@ import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import { useMobile } from "@/hooks/useMobile";
 import { STAR_BASE_URL } from "@/constants/Routes";
+import React from "react";
 
-export default function Constellation({
+function Constellation({
   data,
   transformData,
   showBoundingBox,
@@ -409,7 +409,7 @@ export default function Constellation({
 
   const router = useRouter();
 
-  const handleConstellationClick = (e: any) => {
+  const handleConstellationClick = (e: Konva.KonvaPointerEvent) => {
     e.cancelBubble = true;
     if (!isFocusedRef.current) {
       groupRef.current?.moveToTop();
@@ -622,3 +622,56 @@ export default function Constellation({
     </Group>
   );
 }
+
+// Memoize Constellation to prevent unnecessary re-renders
+// Custom comparison to handle complex props
+export default React.memo(Constellation, (prevProps, nextProps) => {
+  // Check if data reference or content changed
+  if (prevProps.data !== nextProps.data) {
+    if (prevProps.data && nextProps.data) {
+      // Compare key properties that would affect rendering
+      if (
+        prevProps.data.name !== nextProps.data.name ||
+        prevProps.data.stars !== nextProps.data.stars ||
+        prevProps.data.connections !== nextProps.data.connections
+      ) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  // Check transform data
+  if (prevProps.transformData !== nextProps.transformData) {
+    if (prevProps.transformData && nextProps.transformData) {
+      if (
+        prevProps.transformData.x !== nextProps.transformData.x ||
+        prevProps.transformData.y !== nextProps.transformData.y ||
+        prevProps.transformData.scaleX !== nextProps.transformData.scaleX ||
+        prevProps.transformData.scaleY !== nextProps.transformData.scaleY ||
+        prevProps.transformData.rotation !== nextProps.transformData.rotation
+      ) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  // Check other critical props
+  return (
+    prevProps.windowCenter.x === nextProps.windowCenter.x &&
+    prevProps.windowCenter.y === nextProps.windowCenter.y &&
+    prevProps.focusedConstellation?.name === nextProps.focusedConstellation?.name &&
+    prevProps.focusedUnfocusedPos?.x === nextProps.focusedUnfocusedPos?.x &&
+    prevProps.focusedUnfocusedPos?.y === nextProps.focusedUnfocusedPos?.y &&
+    prevProps.showBoundingBox === nextProps.showBoundingBox &&
+    prevProps.showStarBoundingBox === nextProps.showStarBoundingBox &&
+    // Note: Callback props will cause re-renders, but that's acceptable
+    // as they should be stabilized with useCallback in parent
+    prevProps.onHoverEnterCallback === nextProps.onHoverEnterCallback &&
+    prevProps.onHoverLeaveCallback === nextProps.onHoverLeaveCallback &&
+    prevProps.onClickCallback === nextProps.onClickCallback
+  );
+});

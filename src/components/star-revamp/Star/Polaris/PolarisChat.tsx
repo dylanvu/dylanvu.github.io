@@ -81,7 +81,7 @@ export default function PolarisChat() {
 
   }
 
-  let disabledChatInput = isThinking || isTalking
+  const disabledChatInput = isThinking || isTalking
 
   return (
     <div

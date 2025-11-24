@@ -43,7 +43,7 @@ type Props = {
   onHoverScale?: number
 };
 
-export default function MainStar({
+function MainStar({
   data,
   x = 0,
   y = 0,
@@ -572,3 +572,48 @@ export default function MainStar({
     </Group>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders
+export default React.memo(MainStar, (prevProps, nextProps) => {
+  // Check if data object is the same or if its properties changed
+  if (prevProps.data !== nextProps.data) {
+    // Deep comparison of data object properties if both exist
+    if (prevProps.data && nextProps.data) {
+      const dataKeys = Object.keys(nextProps.data) as Array<keyof StarData>;
+      for (const key of dataKeys) {
+        if (prevProps.data[key] !== nextProps.data[key]) {
+          return false;
+        }
+      }
+    } else if (prevProps.data || nextProps.data) {
+      // One is defined, the other isn't
+      return false;
+    }
+  }
+
+  // Check all other primitive props
+  return (
+    prevProps.x === nextProps.x &&
+    prevProps.y === nextProps.y &&
+    prevProps.size === nextProps.size &&
+    prevProps.brightness === nextProps.brightness &&
+    prevProps.delay === nextProps.delay &&
+    prevProps.initialOpacity === nextProps.initialOpacity &&
+    prevProps.twinkleEnabled === nextProps.twinkleEnabled &&
+    prevProps.twinkleMin === nextProps.twinkleMin &&
+    prevProps.twinkleMax === nextProps.twinkleMax &&
+    prevProps.twinkleMinDuration === nextProps.twinkleMinDuration &&
+    prevProps.twinkleMaxDuration === nextProps.twinkleMaxDuration &&
+    prevProps.onHoverEnterCallback === nextProps.onHoverEnterCallback &&
+    prevProps.onHoverLeaveCallback === nextProps.onHoverLeaveCallback &&
+    prevProps.onClickCallback === nextProps.onClickCallback &&
+    prevProps.isConstellationFocused === nextProps.isConstellationFocused &&
+    prevProps.labelOverride === nextProps.labelOverride &&
+    prevProps.showLabel === nextProps.showLabel &&
+    prevProps.labelSize === nextProps.labelSize &&
+    prevProps.showHitBox === nextProps.showHitBox &&
+    prevProps.cancelBubble === nextProps.cancelBubble &&
+    prevProps.onHoverPointerOverride === nextProps.onHoverPointerOverride &&
+    prevProps.onHoverScale === nextProps.onHoverScale
+  );
+});

@@ -223,8 +223,6 @@ export default function Polaris({
   };
 
   const { width, height } = useWindowSizeContext();
-  const router = useRouter();
-  const pathname = usePathname();
 
   // --- CLICK ANIMATION CONFIGURATION ---
   // Variables to control the click interaction
@@ -379,11 +377,11 @@ export default function Polaris({
       y={y}
       onClick={handleClick}
       onTap={handleClick}
-      onMouseEnter={(e) => {
+      onMouseEnter={() => {
         document.body.style.cursor = "pointer";
         onHoverEnterCallback?.();
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={() => {
         document.body.style.cursor = "default";
         onHoverLeaveCallback?.();
       }}

@@ -125,6 +125,7 @@ export default function ParallaxLayer({
       offsetX={windowCenter.x}
       offsetY={windowCenter.y}
       opacity={0} // Explicitly start at 0 for the fade effect
+      listening={false} // Background stars don't need mouse events
     >
       {stars.map((star, i) => (
         <StaticStar key={i} x={star.x} y={star.y} radius={star.radius} />
