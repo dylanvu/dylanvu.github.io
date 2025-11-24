@@ -264,9 +264,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
             }
           });
           context.closePath();
-          context.strokeStyle = hexToRgba(SPACE_TEXT_COLOR, 0.4);
           context.lineWidth = 2;
-          context.stroke();
         }}
         listening={false}
       />

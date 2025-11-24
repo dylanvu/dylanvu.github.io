@@ -2,21 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { usePathname } from "next/navigation";
 import {
   FONT_FAMILY,
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
+
+function getIntroTextForPath(pathname: string): string[] {
+  if (pathname.startsWith("/star/")) {
+    return [
+      "In this star that you found",
+      "As it twinkles and glints",
+      "Discover its story",
+    ];
+  }
+  
+  if (pathname.startsWith("/constellation/")) {
+    return [
+      "A tapestry woven by stars",
+      "The constellation blooms",
+      "Explore this corner of the sky",
+    ];
+  }
+  
+  if (pathname === "/polaris" || pathname.startsWith("/polaris/")) {
+    return [
+      "The North Star awaits",
+      "A guide for the stars",
+      "Ask, and Polaris answers",
+    ];
+  }
+  
+  // Default for "/" and any other paths
+  return [
+    "Every star, a part of me",
+    "Every constellation, a guide for you",
+    "Welcome to my night sky",
+  ];
+}
 
 export default function IntroScreen({
   setIntroDoneAction,
 }: {
   setIntroDoneAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const INTRO_TEXT = [
-    "Every star, a part of me",
-    "Every constellation, a guide for you",
-    "Welcome to my night sky",
-  ];
+  const pathname = usePathname();
+  const INTRO_TEXT = getIntroTextForPath(pathname);
 
   const FADE_DURATION = 1; // seconds per line
   const STAGGER_DURATION = 2; // delay between lines
