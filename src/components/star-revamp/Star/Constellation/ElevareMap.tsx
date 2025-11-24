@@ -55,16 +55,25 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      // Convert mouse position from stage coordinates to local coordinates
+      // Get pointer in parent's coordinate space (Constellation group coordinates)
+      // This matches the coordinate system used by mapOffset and externalZoom
+      const parent = node.getParent();
+      if (!parent) return;
+
+      const parentTransform = parent.getAbsoluteTransform().copy();
+      parentTransform.invert();
+      const pointerInParent = parentTransform.point(pointer);
+
+      // Calculate which point in the unscaled content corresponds to the pointer
       const mousePointLocal = {
-        x: (pointer.x - mapOffset.x) / oldScale,
-        y: (pointer.y - mapOffset.y) / oldScale,
+        x: (pointerInParent.x - mapOffset.x) / oldScale,
+        y: (pointerInParent.y - mapOffset.y) / oldScale,
       };
 
-      // Calculate new offset to keep the mouse point at the same stage position
+      // Calculate new offset to keep the mouse point at the same position in parent space
       const newOffset = {
-        x: pointer.x - mousePointLocal.x * clampedScale,
-        y: pointer.y - mousePointLocal.y * clampedScale,
+        x: pointerInParent.x - mousePointLocal.x * clampedScale,
+        y: pointerInParent.y - mousePointLocal.y * clampedScale,
       };
 
       setMapScale(clampedScale);
