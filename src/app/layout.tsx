@@ -11,6 +11,8 @@ import NightSky from "@/components/star-revamp/NightSky";
 import { FocusProvider } from "@/hooks/useFocusProvider";
 import { PolarisProvider } from "@/hooks/Polaris/usePolarisProvider";
 import PortraitModeOverlay from "@/components/PortraitModeOverlay";
+import { Analytics } from '@vercel/analytics/next';
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,6 +49,7 @@ export default function RootLayout({
             <PortraitModeOverlay />
           </WindowSizeProvider>
         </main>
+        <Analytics />
       </body>
     </html>
   );
