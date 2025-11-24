@@ -6,7 +6,7 @@ import {
   SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
 } from "@/app/theme";
-import { isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
+import { isStarDataWithInternalLink, isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
@@ -77,16 +77,6 @@ function MainStar({
   const mapScale = useContext(MapScaleContext);
   
   const { focusedObject } = useFocusContext();
-  
-  // Determine if this star should be non-interactive (disabled listening)
-  // This happens when:
-  // 1. Star is part of Elevare constellation
-  // 2. Elevare is currently focused
-  // 3. Star doesn't have a label (no clickable interaction)
-  const shouldDisableListening = 
-    constellationData?.name === "Elevare" &&
-    focusedObject.constellation?.name === "Elevare" &&
-    !data?.label;
   
   // Derive size from classification, or use provided size, or default to 5
   // Apply mobile scale factor to star sizes
@@ -303,7 +293,10 @@ function MainStar({
   const handleStarClick = (e: KonvaEventObject<MouseEvent>) => {
     if (isConstellationFocused) {
       e.cancelBubble = cancelBubble;
-      if (onClickCallback) onClickCallback();
+      // Only trigger callback if star has an internal link (for navigation)
+      if (data && isStarDataWithInternalLink(data) && onClickCallback) {
+        onClickCallback();
+      }
     }
   };
 
@@ -502,10 +495,7 @@ function MainStar({
       onTouchEnd={handleInteractionEnd}
       onClick={handleStarClick}
       onTap={handleStarClick}
-      onWheel={(e) => {
-        // Allow wheel events to bubble up to parent (ElevareMap)
-        // Don't cancel bubble so zoom can work when hovering over stars
-      }}
+      listening={true}
     >
       {/* Glow/Halo effect for focused star */}
       <Shape
@@ -575,7 +565,7 @@ function MainStar({
           ctx.closePath();
           ctx.fillStrokeShape(shape);
         }}
-        listening={!shouldDisableListening}
+        listening={true}
       />
       {showLabel && (data?.label || labelOverride) && (
         <Text

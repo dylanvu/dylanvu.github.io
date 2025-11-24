@@ -37,30 +37,32 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
   const lastDistRef = useRef(0);
   const innerGroupRef = useRef<Konva.Group>(null);
 
-  // Zoom handler - zooms centered on mouse position
-  const handleWheel = useCallback(
-    (e: Konva.KonvaEventObject<WheelEvent>) => {
-      if (!isFocused) return;
+  // Native wheel event listener - bypasses Konva event system
+  useEffect(() => {
+    if (!isFocused) return;
 
-      e.evt.preventDefault();
-      const node = innerGroupRef.current;
-      if (!node) return;
+    const node = innerGroupRef.current;
+    if (!node) return;
+
+    const stage = node.getStage();
+    if (!stage) return;
+
+    const canvas = stage.container();
+    if (!canvas) return;
+
+    const handleNativeWheel = (evt: WheelEvent) => {
+      evt.preventDefault();
 
       const scaleBy = 1.1;
       const oldScale = mapScale;
 
-      const newScale =
-        e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+      const newScale = evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
       const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newScale));
-
-      const stage = node.getStage();
-      if (!stage) return;
 
       const stagePointer = stage.getPointerPosition();
       if (!stagePointer) return;
 
       // Convert stage pointer to parent's coordinate space
-      // (mapOffset is in parent coordinates, not stage coordinates!)
       const parent = node.getParent();
       if (!parent) return;
 
@@ -68,18 +70,12 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       parentTransform.invert();
       const pointer = parentTransform.point(stagePointer);
 
-      // Classic zoom-to-point algorithm in parent's coordinate space:
-      // 1. Find which content point (in unscaled space) is under the mouse
-      //    Formula: pointer = groupOffset + contentPoint * groupScale
-      //    So: contentPoint = (pointer - groupOffset) / groupScale
+      // Classic zoom-to-point algorithm
       const contentPoint = {
         x: (pointer.x - mapOffset.x) / oldScale,
         y: (pointer.y - mapOffset.y) / oldScale,
       };
 
-      // 2. Calculate new group offset to keep that content point under the mouse
-      //    We want: pointer = newOffset + contentPoint * newScale
-      //    So: newOffset = pointer - contentPoint * newScale
       const newOffset = {
         x: pointer.x - contentPoint.x * clampedScale,
         y: pointer.y - contentPoint.y * clampedScale,
@@ -87,14 +83,18 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
 
       setMapScale(clampedScale);
       setMapOffset(newOffset);
-      
-      // Sync with external zoom control (safe now since useEffect only depends on externalZoom)
+
       if (onZoomChange) {
         onZoomChange(clampedScale);
       }
-    },
-    [isFocused, mapScale, mapOffset]
-  );
+    };
+
+    canvas.addEventListener('wheel', handleNativeWheel, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('wheel', handleNativeWheel);
+    };
+  }, [isFocused, mapScale, mapOffset, onZoomChange]);
 
   const handleDragStart = useCallback(() => {
     if (!isFocused) return;
@@ -193,7 +193,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       onTouchMove={isFocused ? handleTouchMove : undefined}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Full constellation bounding box for wheel/drag interaction */}
+      {/* Full constellation bounding box for drag interaction and cursor */}
       <Rect
         x={boundingBox.minX}
         y={boundingBox.minY}
@@ -201,7 +201,6 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         height={constellationBoundingBoxHeight}
         fill="transparent"
         listening={isFocused}
-        onWheel={isFocused ? handleWheel : undefined}
         onMouseEnter={isFocused ? () => {
           document.body.style.cursor = "grab";
         } : undefined}
@@ -248,7 +247,6 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
           context.fillStrokeShape(shape);
         }}
         listening={isFocused}
-        onWheel={isFocused ? handleWheel : undefined}
         onMouseEnter={isFocused ? () => {
           document.body.style.cursor = "grab";
         } : undefined}
