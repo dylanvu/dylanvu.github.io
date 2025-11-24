@@ -43,13 +43,25 @@ export function transformPoints(
   });
 }
 
+/**
+ * Creates sequential connections between stars, optionally limiting to a range.
+ * @param stars - Array of stars
+ * @param startIndex - Starting index (defaults to 0)
+ * @param endIndex - Ending index (defaults to stars.length - 1)
+ * @returns Array of connection tuples [from, to]
+ */
 export function createSequentialLoopingConnections(
-  stars: Star[]
+  stars: Star[],
+  startIndex: number = 0,
+  endIndex?: number
 ): [number, number][] {
   const connections: [number, number][] = [];
-  for (let i = 0; i < stars.length; i++) {
-    if (i === stars.length - 1) {
-      connections.push([i, 0]);
+  const lastIndex = endIndex !== undefined ? endIndex : stars.length - 1;
+  
+  for (let i = startIndex; i <= lastIndex; i++) {
+    if (i === lastIndex) {
+      // Loop back to start
+      connections.push([i, startIndex]);
     } else {
       connections.push([i, i + 1]);
     }

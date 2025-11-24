@@ -1,5 +1,8 @@
 import { Star } from "@/interfaces/StarInterfaces";
+import { HackathonList } from "@/constants/Hackathons";
+import { generateHackathonStars } from "@/utils/hackathonClustering";
 
+// Original simple US map outline (kept for reference/fallback)
 export const US_MAP_SIMPLE: Star[] = [
   { x: 198, y: 50, data: { classification: "Giant" } },
   { x: 49, y: 52, data: { classification: "Giant" } },
@@ -50,3 +53,26 @@ export const US_MAP_SIMPLE: Star[] = [
   { x: 233, y: 60, data: { classification: "Star" } },
   { x: 213, y: 58, data: { classification: "Star" } },
 ];
+
+/**
+ * Dynamically generated hackathon stars based on city clustering.
+ * These represent actual hackathon locations with labels and metadata.
+ */
+export const US_MAP_HACKATHONS: Star[] = generateHackathonStars(HackathonList);
+
+/**
+ * Combined US map: outline + hackathon locations.
+ * - First 48 stars (indices 0-47): US outline for drawing the shape
+ * - Remaining stars (indices 48+): Hackathon locations with labels
+ * 
+ * This allows connections to only draw the outline while showing hackathon data.
+ */
+export const US_MAP: Star[] = [
+  ...US_MAP_SIMPLE,      // Indices 0-47: US outline
+  ...US_MAP_HACKATHONS   // Indices 48+: Hackathon locations
+];
+
+/**
+ * Number of outline stars (for use in creating connections)
+ */
+export const US_OUTLINE_STAR_COUNT = US_MAP_SIMPLE.length;

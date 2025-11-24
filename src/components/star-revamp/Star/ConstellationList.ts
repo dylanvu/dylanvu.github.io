@@ -4,7 +4,7 @@ import {
   StarDataWithInternalLink,
   isStarDataWithInternalLink,
 } from "@/interfaces/StarInterfaces";
-import { US_MAP_SIMPLE as US_MAP } from "./us_map";
+import { US_MAP, US_OUTLINE_STAR_COUNT } from "./us_map";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
 import { STAR_BASE_URL } from "@/constants/Routes";
 
@@ -318,7 +318,12 @@ export const CONSTELLATIONS: ConstellationData[] = [
     about: "The hackathons where I've grown and mentored",
     intro: "Constellation",
     stars: US_MAP,
-    connections: createSequentialLoopingConnections(US_MAP),
+    // Only connect the outline stars (indices 0-47), not the hackathon locations
+    connections: createSequentialLoopingConnections(
+      US_MAP,
+      0,
+      US_OUTLINE_STAR_COUNT - 1
+    ),
     designX: 1600,
     designY: 800,
     rotation: 10,
