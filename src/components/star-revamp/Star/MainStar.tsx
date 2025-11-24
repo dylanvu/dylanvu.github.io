@@ -489,6 +489,10 @@ function MainStar({
       onTouchEnd={handleInteractionEnd}
       onClick={handleStarClick}
       onTap={handleStarClick}
+      onWheel={(e) => {
+        // Allow wheel events to bubble up to parent (ElevareMap)
+        // Don't cancel bubble so zoom can work when hovering over stars
+      }}
     >
       {/* Glow/Halo effect for focused star */}
       <Shape

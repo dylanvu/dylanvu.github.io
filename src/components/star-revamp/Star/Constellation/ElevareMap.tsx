@@ -1,8 +1,9 @@
 import Konva from "konva";
-import { Group, Shape } from "react-konva";
+import { Group, Shape, Rect } from "react-konva";
 import { useState, useRef, useEffect, useCallback, ReactNode, createContext } from "react";
 import { Star } from "@/interfaces/StarInterfaces";
 import { US_MAP_SIMPLE } from "../us_map";
+import { SPACE_TEXT_COLOR, hexToRgba } from "@/app/theme";
 
 // Context to provide map scale to child components
 export const MapScaleContext = createContext<number>(1);
@@ -52,20 +53,16 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      // Convert mouse position from screen to local coordinates
+      // Convert mouse position from stage coordinates to local coordinates
       const mousePointLocal = {
         x: (pointer.x - mapOffset.x) / oldScale,
         y: (pointer.y - mapOffset.y) / oldScale,
       };
 
-      // Calculate the current screen position of the mouse point (which equals pointer position)
-      const screenX = mapOffset.x + mousePointLocal.x * oldScale;
-      const screenY = mapOffset.y + mousePointLocal.y * oldScale;
-
-      // Calculate new offset to keep the mouse point at the same screen position
+      // Calculate new offset to keep the mouse point at the same stage position
       const newOffset = {
-        x: screenX - mousePointLocal.x * clampedScale,
-        y: screenY - mousePointLocal.y * clampedScale,
+        x: pointer.x - mousePointLocal.x * clampedScale,
+        y: pointer.y - mousePointLocal.y * clampedScale,
       };
 
       setMapScale(clampedScale);
@@ -174,6 +171,25 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       onTouchMove={isFocused ? handleTouchMove : undefined}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Subtle background using US map polygon */}
+      <Shape
+        sceneFunc={(context) => {
+          // Draw filled US outline polygon
+          context.beginPath();
+          US_MAP_SIMPLE.forEach((star, i) => {
+            if (i === 0) {
+              context.moveTo(star.x, star.y);
+            } else {
+              context.lineTo(star.x, star.y);
+            }
+          });
+          context.closePath();
+          context.fillStyle = hexToRgba(SPACE_TEXT_COLOR, 0.05);
+          context.fill();
+        }}
+        listening={false}
+      />
+      
       {/* Invisible shape with hitFunc for precise US outline hit detection */}
       <Shape
         sceneFunc={(context, shape) => {
@@ -194,6 +210,12 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         }}
         listening={isFocused}
         onWheel={isFocused ? handleWheel : undefined}
+        onMouseEnter={isFocused ? () => {
+          document.body.style.cursor = "grab";
+        } : undefined}
+        onMouseLeave={isFocused ? () => {
+          document.body.style.cursor = "default";
+        } : undefined}
       />
       <MapScaleContext.Provider value={mapScale}>
         {children}
