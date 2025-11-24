@@ -1,5 +1,6 @@
 // Enum mapping star classifications to their visual sizes
 export enum StarClassificationSize {
+  Subdwarf = 1,
   Dwarf = 1.5,
   Star = 2.5,
   Giant = 3,
@@ -47,7 +48,7 @@ type BaseStarData = {
   label?: string;
   origin?: string;
   about?: string;
-  classification: "Star" | "Supergiant" | "Giant" | "Dwarf";
+  classification: "Star" | "Supergiant" | "Giant" | "Dwarf" | "Subdwarf";
   color?:
     | "Blue"
     | "Blue-White"
