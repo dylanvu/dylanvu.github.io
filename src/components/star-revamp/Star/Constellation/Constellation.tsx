@@ -10,7 +10,7 @@ import HackathonStatistics from "./HackathonStatistics";
 import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
@@ -115,7 +115,6 @@ function Constellation({
     for (const s of stars) {
       const sx = s.x;
       const sy = s.y;
-      // Get star size from classification, defaulting to 5 if no data
       const starRadius = s.data ? StarClassificationSize[s.data.classification] : 5;
 
       minX = Math.min(minX, sx - starRadius);
@@ -206,7 +205,6 @@ function Constellation({
 
   const mobileState = useMobile();
 
-  // Memoized target position - automatically updates when pathname or polarisActivated changes
   const focusedTargetX = useMemo(() => {
     return pathname.startsWith("/star/") && polarisDisplayState !== "active"
       ? windowCenter.x / 2
@@ -216,21 +214,13 @@ function Constellation({
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
     if (!node) return;
-
-    // Do not play hover animations if focused
     if (isFocusedRef.current) return;
-
-    // FIX: Do not play hover animations if we are currently flying back
     if (isReturningRef.current) return;
 
     if (hoverTweenRef.current) {
       hoverTweenRef.current.destroy();
       hoverTweenRef.current = null;
     }
-
-    // If we are just hovering, we destroy the focus tween so we don't fight over scale.
-    // BUT thanks to the isReturningRef check above, this line will no longer execute
-    // if the focusTween is actively moving the star back home.
     if (focusTweenRef.current) {
       focusTweenRef.current.destroy();
       focusTweenRef.current = null;
@@ -257,19 +247,16 @@ function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    // If we are focusing, we are definitely not "returning" anymore
     isReturningRef.current = false;
 
     if (hoverTweenRef.current) {
       hoverTweenRef.current.destroy();
       hoverTweenRef.current = null;
     }
-
     if (focusTweenRef.current) {
       focusTweenRef.current.destroy();
     }
 
-    // Use memoized target position - automatically updates with pathname/polarisActivated
     const targetY = windowCenter.y;
 
     focusTweenRef.current = new Konva.Tween({
@@ -281,6 +268,9 @@ function Constellation({
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
       rotation: 0,
+      // IMPORTANT: Ensure offsets are reset to local center
+      offsetX: centerX,
+      offsetY: centerY,
       onFinish: () => {
         if (focusTweenRef.current) {
           focusTweenRef.current.destroy();
@@ -299,7 +289,9 @@ function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    // FIX: Mark as returning. This blocks the hover logic.
+    // CRITICAL FIX 1: Make sure the node is rendered before we start animating
+    node.visible(true);
+
     isReturningRef.current = true;
 
     if (hoverTweenRef.current) {
@@ -320,7 +312,13 @@ function Constellation({
       scaleX: transformData.scaleX ?? 1,
       scaleY: transformData.scaleY ?? 1,
       rotation: transformData.rotation ?? 0,
-      // FIX: When the tween finishes, we are no longer returning.
+      
+      // CRITICAL FIX 2: Animate opacity back to 1
+      opacity: 1, 
+      
+      // Ensure offsets are reset to local center
+      offsetX: centerX,
+      offsetY: centerY,
       onFinish: () => {
         isReturningRef.current = false;
         if (focusTweenRef.current) {
@@ -333,65 +331,86 @@ function Constellation({
     focusTweenRef.current.play();
   };
 
+  // --- FIXED PARALLAX FUNCTION ---
   const playVanishTween = () => {
     const node = groupRef.current;
     if (!node) return;
 
-    // If it vanishes, we aren't "returning" to a clickable spot, but we are moving.
-    // Let's block hover anyway.
     isReturningRef.current = true;
 
-    if (focusTweenRef.current) {
-      focusTweenRef.current.destroy();
-    }
+    if (focusTweenRef.current) focusTweenRef.current.destroy();
     if (hoverTweenRef.current) {
       hoverTweenRef.current.destroy();
       hoverTweenRef.current = null;
     }
 
-    const currentX = unfocusedConstellationX;
-    const currentY = unfocusedConstellationY;
-    const focal = parallaxFocusData 
-      ? { x: parallaxFocusData.unfocusedX, y: parallaxFocusData.unfocusedY }
-      : windowCenter;
+    // 1. Get Focus Target Info
+    const focusedUnfocusedX = parallaxFocusData 
+      ? parallaxFocusData.unfocusedX
+      : windowCenter.x;
+    const focusedUnfocusedY = parallaxFocusData 
+      ? parallaxFocusData.unfocusedY
+      : windowCenter.y;
+      
+    // --- CRITICAL FIX START ---
+    // The "World Zoom" is determined by the TARGET constellation, not the current one.
+    // If the target requires 2x zoom, the whole world (including Elevare) must scale relative to that.
+    const worldZoom = focusedConstellation?.focusScale ?? 1;
+    // --- CRITICAL FIX END ---
 
-    let vx = currentX - focal.x;
-    let vy = currentY - focal.y;
-    let vlen = Math.hypot(vx, vy);
+    // 2. Parallax Configuration
+    // Depth > 1.0 = Foreground (Close to camera)
+    const depth = 1.5; 
+    
+    // 3. Vector Calculation (Relative to Focus Point)
+    const vecX = unfocusedConstellationX - focusedUnfocusedX;
+    const vecY = unfocusedConstellationY - focusedUnfocusedY;
 
-    if (vlen < 0.0001) {
-      vx = 0;
-      vy = -1;
-      vlen = 1;
-    }
+    // 4. Calculate Parallax Scale (Dolly Effect)
+    // Use worldZoom here instead of data.focusScale
+    const expansionFactor = 1 + (worldZoom - 1) * depth;
+    
+    const baseScale = transformData.scaleX ?? 1;
+    const targetScale = baseScale * expansionFactor;
 
-    const nx = vx / vlen;
-    const ny = vy / vlen;
+    // 5. Calculate Positional Displacement
+    // Foreground objects move away faster than they scale to avoid cluttering the view
+    const movementMultiplier = expansionFactor * 1.2; 
 
-    const vw =
-      typeof window !== "undefined" ? window.innerWidth : windowCenter.x * 2;
-    const vh =
-      typeof window !== "undefined" ? window.innerHeight : windowCenter.y * 2;
-    const viewportDiagonal = Math.hypot(vw, vh);
-    const offscreenDist = viewportDiagonal * 1.4 + Math.max(width, height);
+    // Calculate where the center should move to (Unrotated Grid Space)
+    const expandedX = windowCenter.x + (vecX * movementMultiplier);
+    const expandedY = windowCenter.y + (vecY * movementMultiplier);
 
-    const targetX = currentX + nx * offscreenDist;
-    const targetY = currentY + ny * offscreenDist;
+    // 6. Orbit Rotation
+    const focusedRotation = focusedConstellation?.rotation ?? 0;
+    const angleRad = (-focusedRotation * Math.PI) / 180;
+    const cos = Math.cos(angleRad);
+    const sin = Math.sin(angleRad);
 
-    const targetScaleX = (transformData.scaleX ?? 1) * 0.9;
-    const targetScaleY = (transformData.scaleY ?? 1) * 0.9;
+    const vX = expandedX - windowCenter.x;
+    const vY = expandedY - windowCenter.y;
+
+    // Rotate vector and add back to center
+    const rotatedX = windowCenter.x + (vX * cos - vY * sin);
+    const rotatedY = windowCenter.y + (vX * sin + vY * cos);
+
+    const targetRotation = (transformData.rotation ?? 0) - focusedRotation;
 
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
       easing: EASING,
-      x: targetX,
-      y: targetY,
-      scaleX: targetScaleX,
-      scaleY: targetScaleY,
-      rotation: transformData.rotation ?? 0,
+      x: rotatedX,
+      y: rotatedY,
+      scaleX: targetScale,
+      scaleY: targetScale,
+      rotation: targetRotation,
+      opacity: 0, // Fade out as it rushes past
+      offsetX: centerX,
+      offsetY: centerY,
       onFinish: () => {
         isReturningRef.current = false;
+        node.visible(false);
         if (focusTweenRef.current) {
           focusTweenRef.current.destroy();
           focusTweenRef.current = null;
@@ -399,6 +418,7 @@ function Constellation({
       },
     });
 
+    node.visible(true);
     focusTweenRef.current.play();
   };
 
@@ -407,11 +427,12 @@ function Constellation({
       groupRef.current?.moveToTop();
       playFocusTween();
     } else {
-      playUnfocusTween();
-    }
-    if (focusedConstellation) {
-      if (!isFocused) {
+      // If ANY constellation is focused, but it's not us -> Vanish/Parallax
+      if (focusedConstellation) {
         playVanishTween();
+      } else {
+        // No focus at all -> Return to normal
+        playUnfocusTween();
       }
     }
   }, [isFocused, focusedConstellation, pathname, polarisDisplayState]);
@@ -425,15 +446,9 @@ function Constellation({
     useCenterOverlayContext();
 
 
-  const router = useRouter();
-
   const handleConstellationClick = (e: Konva.KonvaPointerEvent) => {
     e.cancelBubble = true;
-    
-    // Don't execute constellation click logic if a star is focused
-    if (focusedObject.star) {
-      return;
-    }
+    if (focusedObject.star) return;
     
     if (!isFocusedRef.current) {
       groupRef.current?.moveToTop();
@@ -443,13 +458,11 @@ function Constellation({
   };
 
   const handleInteractionStart = () => {
-    // Always set cursor to pointer when hovering, even if returning
     if (!isFocusedRef.current) {
       document.body.style.cursor = "pointer";
     }
     setIsHovered(true);
 
-    // Check if returning. If so, skip animations but allow cursor change.
     if (isReturningRef.current) {
       if (onHoverEnterCallback) onHoverEnterCallback();
       return;
@@ -467,11 +480,9 @@ function Constellation({
   };
 
   const handleInteractionEnd = () => {
-    // Always reset cursor when leaving, even if returning
     document.body.style.cursor = "default";
     setIsHovered(false);
 
-    // If returning, skip animations but allow cursor change.
     if (isReturningRef.current) {
       if (onHoverLeaveCallback) onHoverLeaveCallback();
       return;
@@ -485,7 +496,7 @@ function Constellation({
     if (onHoverLeaveCallback) onHoverLeaveCallback();
   };
 
-  // Helper function to render a single star (reduces duplication)
+  // Helper function to render a single star
   const renderStar = (star: typeof stars[0], i: number) => {
     const incomingLineIndex = lineSegments.findIndex(
       ([start, end]) => end === i || start === i
@@ -531,10 +542,8 @@ function Constellation({
               if (pathname === "/") {
                 setConstellationOverlay(data, setTopOverlayTextContents);
               } else if (focusedObject.star) {
-                // On star pages, restore the star info
                 setStarOverlayMobileAware(focusedObject.star, setTopOverlayTextContents, mobileState);
               } else if (focusedObject.constellation) {
-                // On constellation pages, restore the constellation info
                 setConstellationOverlay(focusedObject.constellation, setTopOverlayTextContents);
               }
             } else {
@@ -562,7 +571,6 @@ function Constellation({
                 "noopener,noreferrer"
               );
             } else if (isStarDataWithInternalLink(starData)) {
-              // Use navigateToStar which handles both routing and overlay updates
               navigateToStar(starData.slug);
               if (polarisDisplayState === "active") {
                 setPolarisDisplayState("suppressed");
@@ -575,7 +583,6 @@ function Constellation({
     );
   };
 
-  // Helper function to render constellation lines (reduces duplication)
   const renderLines = () => {
     return lineSegments.map(([i1, i2], idx) => (
       <AnimatedLine
@@ -589,7 +596,6 @@ function Constellation({
     ));
   };
 
-  // Calculate control position in local coordinates for Elevare
   const controlWidth = 40;
   const controlX = minX - controlWidth;
 
@@ -610,7 +616,6 @@ function Constellation({
       scaleX={transformData.scaleX ?? 1}
       scaleY={transformData.scaleY ?? 1}
     >
-      {/* Zoom control - rendered OUTSIDE clipped group, always present for Elevare but fades in/out */}
       {isElevare && (
         <ElevareControl
           x={controlX}
@@ -623,7 +628,6 @@ function Constellation({
         />
       )}
       
-      {/* Hackathon Statistics - rendered OUTSIDE clipped group, positioned below bounding box */}
       {isElevare && (
         <HackathonStatistics
           x={minX}
@@ -632,10 +636,8 @@ function Constellation({
         />
       )}
       
-      {/* Clipped content group */}
       <Group
         clipFunc={isElevare && isFocused ? (ctx) => {
-          // Clip to bounding box - stays fixed while content inside transforms
           ctx.rect(minX, minY, width, height);
         } : undefined}
       >
@@ -649,7 +651,7 @@ function Constellation({
       />
 
       <ConstellationBoundingBox
-      isVisible={isFocused || showStarBoundingBox || isHovered}
+        isVisible={isFocused || showStarBoundingBox || isHovered}
         tl={{ x: minX, y: minY }}
         tr={{ x: maxX, y: minY }}
         br={{ x: maxX, y: maxY }}
@@ -660,7 +662,6 @@ function Constellation({
         totalDuration={totalDuration}
       />
 
-        {/* Conditional rendering: ElevareMap wrapper always for Elevare (to prevent children remounting), normal for others */}
         {isElevare ? (
           <ElevareMap 
             isFocused={isFocused}
@@ -685,13 +686,9 @@ function Constellation({
   );
 }
 
-// Memoize Constellation to prevent unnecessary re-renders
-// Custom comparison to handle complex props
 export default React.memo(Constellation, (prevProps, nextProps) => {
-  // Check if data reference or content changed
   if (prevProps.data !== nextProps.data) {
     if (prevProps.data && nextProps.data) {
-      // Compare key properties that would affect rendering
       if (
         prevProps.data.name !== nextProps.data.name ||
         prevProps.data.stars !== nextProps.data.stars ||
@@ -704,7 +701,6 @@ export default React.memo(Constellation, (prevProps, nextProps) => {
     }
   }
 
-  // Check transform data
   if (prevProps.transformData !== nextProps.transformData) {
     if (prevProps.transformData && nextProps.transformData) {
       if (
@@ -721,15 +717,12 @@ export default React.memo(Constellation, (prevProps, nextProps) => {
     }
   }
 
-  // Check other critical props
   return (
     prevProps.windowCenter.x === nextProps.windowCenter.x &&
     prevProps.windowCenter.y === nextProps.windowCenter.y &&
     prevProps.focusedConstellation?.name === nextProps.focusedConstellation?.name &&
     prevProps.showBoundingBox === nextProps.showBoundingBox &&
     prevProps.showStarBoundingBox === nextProps.showStarBoundingBox &&
-    // Note: Callback props will cause re-renders, but that's acceptable
-    // as they should be stabilized with useCallback in parent
     prevProps.onHoverEnterCallback === nextProps.onHoverEnterCallback &&
     prevProps.onHoverLeaveCallback === nextProps.onHoverLeaveCallback &&
     prevProps.onClickCallback === nextProps.onClickCallback
