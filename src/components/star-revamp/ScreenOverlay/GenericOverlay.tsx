@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR, TEXT_SIZE, SPACING, DURATION, PANEL } from "@/app/theme";
+import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR, TEXT_SIZE, SPACING, DURATION } from "@/app/theme";
 import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
 import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
@@ -44,26 +44,10 @@ export default function GenericOverlay({
   // Left Half Center = -width / 4 (Shift left by 25% of screen)
   // Right Half Center = width / 4  (Shift right by 25% of screen)
   const xOffset = useMemo(() => {
-    // For top overlay positioned left, don't apply offset since maxWidth handles positioning
-    if (titlePosition === "top" && horizontalPosition === "left") return 0;
     if (horizontalPosition === "left") return -width / 4;
     if (horizontalPosition === "right") return width / 4;
     return 0;
-  }, [width, horizontalPosition, titlePosition]);
-
-  // Calculate maxWidth for top overlay when positioned left
-  // Account for panel width and padding (left + right padding = padding * 2)
-  const maxWidth = useMemo(() => {
-    if (titlePosition === "top" && horizontalPosition === "left") {
-      return `calc(${PANEL.width} - calc(${PANEL.padding} * 2))`;
-    }
-    return "100%";
-  }, [titlePosition, horizontalPosition]);
-
-  // Enable text wrapping for constrained overlays
-  const shouldWrapText = useMemo(() => {
-    return titlePosition === "top" && horizontalPosition === "left";
-  }, [titlePosition, horizontalPosition]);
+  }, [width, horizontalPosition]);
 
   const OverlayPositionToCSS = {
     center: 0,
@@ -119,7 +103,6 @@ export default function GenericOverlay({
             top: 0,
             left: 0,
             width: "100%",
-            maxWidth: maxWidth,
             height: "100%",
             display: "flex",
             justifyContent: "center",
@@ -174,12 +157,7 @@ export default function GenericOverlay({
             return (
               <div
                 key={`${line.key}-${line.text ?? ""}`}
-                style={{
-                  display: shouldWrapText ? "block" : "inline-block",
-                  maxWidth: shouldWrapText ? "100%" : undefined,
-                  wordWrap: shouldWrapText ? "break-word" : undefined,
-                  textAlign: shouldWrapText ? "center" : undefined,
-                }}
+                style={{ display: "inline-block" }}
               >
                 {showOtherLines ? (
                   <FadeLine
@@ -192,7 +170,6 @@ export default function GenericOverlay({
                       idx === titleIndex ? FANCY_FONT_FAMILY : FONT_FAMILY
                     }
                     delay={idx * staggerDelay}
-                    style={shouldWrapText ? { whiteSpace: "pre-wrap", textAlign: "center" } : undefined}
                   />
                 ) : (
                   <div
