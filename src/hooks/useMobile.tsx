@@ -53,7 +53,7 @@ export function useMobile(): MobileState {
     const isSmallLandscape = width < 1024 && width > height; // Small landscape viewport
     const isMobileLandscape = (isMobile || isSmallLandscape) && width > height;
     const isMobilePortrait = isMobile && height >= width;
-    const isSmallScreen = width < 1600; // Custom breakpoint for small screens
+    const isSmallScreen = width < 1600; // Custom breakpoint for small screens, mainly for my Mac
     const mobileScaleFactor = isMobileLandscape ? MOBILE_SCALE : DESKTOP_SCALE;
     const mobileFontScaleFactor = isMobileLandscape ? MOBILE_FONT_SCALE : DESKTOP_FONT_SCALE;
 

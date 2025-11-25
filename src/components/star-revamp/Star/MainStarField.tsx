@@ -14,6 +14,10 @@ import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
 import React from "react";
+import {
+  setConstellationOverlayMobileAware,
+  setStarOverlayMobileAware,
+} from "@/utils/overlayHelpers";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
@@ -109,7 +113,8 @@ export default function MainStarField({
   const router = useRouter();
   const pathname = usePathname();
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
-  const { isSmallScreen, mobileScaleFactor } = useMobile();
+  const mobileState = useMobile();
+  const { isSmallScreen, mobileScaleFactor } = mobileState;
 
   // Handler for background clicks/taps
   const handleBackgroundInteraction = () => {
@@ -139,22 +144,20 @@ export default function MainStarField({
     if (focusedObject.constellation) {
       setCenterOverlayVisibility(false);
       if (focusedObject.star) {
-        setTopOverlayTextContents({
-          intro: focusedObject.star.classification,
-          title: focusedObject.star.label ?? "",
-          origin: focusedObject.star.origin ?? "",
-          about: focusedObject.star.about ?? "",
-        });
+        setStarOverlayMobileAware(
+          focusedObject.star,
+          setTopOverlayTextContents,
+          mobileState
+        );
       } else {
-        setTopOverlayTextContents({
-          intro: focusedObject.constellation.intro,
-          title: focusedObject.constellation.name,
-          origin: focusedObject.constellation.about,
-          about: "",
-        });
+        setConstellationOverlayMobileAware(
+          focusedObject.constellation,
+          setTopOverlayTextContents,
+          mobileState
+        );
       }
     }
-  }, [focusedObject]);
+  }, [focusedObject, mobileState]);
 
   return (
     <Group>
@@ -361,12 +364,11 @@ export default function MainStarField({
               key={i}
               onClickCallback={() => {
                 setFocusedObject({ constellation: c, star: null });
-                setTopOverlayTextContents({
-                  intro: c.intro,
-                  title: c.name,
-                  origin: c.about,
-                  about: "",
-                });
+                setConstellationOverlayMobileAware(
+                  c,
+                  setTopOverlayTextContents,
+                  mobileState
+                );
                 setCenterOverlayVisibility(false);
                 setTopOverlayVisibility(true);
               }}

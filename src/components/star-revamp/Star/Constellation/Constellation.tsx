@@ -14,8 +14,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
-import { setConstellationOverlay, setStarOverlay } from "@/utils/overlayHelpers";
+import { setConstellationOverlay, setStarOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import React from "react";
+import { useMobile } from "@/hooks/useMobile";
 
 function Constellation({
   data,
@@ -205,6 +206,8 @@ function Constellation({
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   
   const { focusedObject } = useFocusContext();
+
+  const mobileState = useMobile();
 
   // Memoized target position - automatically updates when pathname or polarisActivated changes
   const focusedTargetX = useMemo(() => {
@@ -504,12 +507,7 @@ function Constellation({
 
           if (star.data) {
             if (isFocusedRef.current) {
-              setTopOverlayTextContents({
-                intro: star.data.classification,
-                title: star.data.label ?? "",
-                origin: star.data.origin ?? "",
-                about: star.data.about ?? "",
-              });
+              setStarOverlayMobileAware(star.data, setTopOverlayTextContents, mobileState);
             } else {
               setCenterOverlayTextContents({
                 intro: star.data.classification,
@@ -529,7 +527,7 @@ function Constellation({
                 setConstellationOverlay(data, setTopOverlayTextContents);
               } else if (focusedObject.star) {
                 // On star pages, restore the star info
-                setStarOverlay(focusedObject.star, setTopOverlayTextContents);
+                setStarOverlayMobileAware(focusedObject.star, setTopOverlayTextContents, mobileState);
               } else if (focusedObject.constellation) {
                 // On constellation pages, restore the constellation info
                 setConstellationOverlay(focusedObject.constellation, setTopOverlayTextContents);
@@ -564,7 +562,7 @@ function Constellation({
                 setPolarisDisplayState("suppressed");
               }
             }
-            setStarOverlay(starData, setTopOverlayTextContents);
+            setStarOverlayMobileAware(starData, setTopOverlayTextContents, mobileState);
           }
         }}
         onHoverScale={isFocused ? 1.3 : 1.8}
