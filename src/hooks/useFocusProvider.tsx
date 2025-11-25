@@ -43,7 +43,6 @@ interface FocusedObject {
 
 export interface FocusState {
   focusedObject: FocusedObject;
-  setFocusedObject: Dispatch<SetStateAction<FocusedObject>>;
   parallaxFocusData: ParallaxFocusData | null;
   navigateToStar: (slug: string) => void;
   navigateToConstellation: (slug: string) => void;
@@ -71,6 +70,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   
   const {
     setOverlayVisibility: setCenterOverlayVisibility,
+    resetOverlayTextContents: resetCenterOverlayTextContents,
   } = useCenterOverlayContext();
 
   const { polarisDisplayState } = usePolarisContext();
@@ -118,11 +118,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         setConstellationOverlayMobileAware(focusedObject.constellation, setTopOverlayTextContents, mobileState);
       }
     } else {
-      // Nothing focused: show center overlay, hide top overlay
+      // Nothing focused: show center overlay, hide top overlay, reset content
       setCenterOverlayVisibility(true);
       setTopOverlayVisibility(false);
+      resetCenterOverlayTextContents();
     }
-  }, [focusedObject, mobileState, setCenterOverlayVisibility, setTopOverlayVisibility, setTopOverlayTextContents]);
+  }, [focusedObject, mobileState, setCenterOverlayVisibility, setTopOverlayVisibility, setTopOverlayTextContents, resetCenterOverlayTextContents]);
 
   useEffect(() => {
 
@@ -213,7 +214,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     <FocusContext.Provider
       value={{
         focusedObject,
-        setFocusedObject,
         parallaxFocusData,
         navigateToStar,
         navigateToConstellation,

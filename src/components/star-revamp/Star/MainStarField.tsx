@@ -2,19 +2,13 @@
 import Constellation from "@/components/star-revamp/Star/Constellation/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { TransformData } from "@/interfaces/StarInterfaces";
-import { useEffect } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
 import Polaris from "@/components/star-revamp/Star/Polaris/Polaris";
 import { CONSTELLATIONS } from "@/components/star-revamp/Star/ConstellationList";
-import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useRouter } from "next/navigation";
 import { useMobile } from "@/hooks/useMobile";
 import React from "react";
-import {
-  setConstellationOverlayMobileAware,
-  setStarOverlayMobileAware,
-} from "@/utils/overlayHelpers";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
@@ -31,15 +25,9 @@ export default function MainStarField() {
   const {
     setOverlayTextContents: setCenterOverlayTextContents,
     resetOverlayTextContents: resetCenterOverlayTextContents,
-    setOverlayVisibility: setCenterOverlayVisibility,
   } = useCenterOverlayContext();
 
-  const {
-    setOverlayTextContents: setTopOverlayTextContents,
-    setOverlayVisibility: setTopOverlayVisibility,
-  } = useTopOverlayContext();
-
-  const { focusedObject, setFocusedObject, navigateToConstellation } = useFocusContext();
+  const { focusedObject, navigateToConstellation } = useFocusContext();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -48,13 +36,7 @@ export default function MainStarField() {
 
   // Handler for background clicks/taps
   const handleBackgroundInteraction = () => {
-    if (focusedObject.constellation) {
-      setFocusedObject({ constellation: null, star: null });
-      resetCenterOverlayTextContents();
-      setCenterOverlayVisibility(true);
-      setTopOverlayVisibility(false);
-    }
-
+    // Navigate to home - pathname change will automatically clear focus and reset overlays
     if (pathname !== "/") {
       router.push("/");
       // If exiting from a star page and polaris was suppressed, restore it to active
