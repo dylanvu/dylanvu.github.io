@@ -8,7 +8,7 @@ import { FONT_FAMILY } from "@/app/theme";
 import { useMobile } from "@/hooks/useMobile";
 
 export default function PolarisChat() {
-  const { polarisHistory, talkToPolaris, isThinking, isTalking } = usePolarisContext();
+  const { polarisHistory, talkToPolaris, isThinking, isTalking, setPolarisDisplayState } = usePolarisContext();
   const { mobileFontScaleFactor } = useMobile();
   const [inputText, setInputText] = useState("");
 
@@ -82,6 +82,10 @@ export default function PolarisChat() {
 
   const disabledChatInput = isThinking || isTalking
 
+  const handleClose = () => {
+    setPolarisDisplayState(prev => prev === "active" ? "hidden" : "active");
+  };
+
   return (
     <div
       style={{
@@ -99,6 +103,41 @@ export default function PolarisChat() {
       }}
       className={FONT_FAMILY.className}
     >
+      {/* Close Button */}
+      <button
+        onClick={handleClose}
+        style={{
+          position: "absolute",
+          top: "1.5rem",
+          right: "1.5rem",
+          width: "2rem",
+          height: "2rem",
+          borderRadius: "50%",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          background: "rgba(255, 255, 255, 0.08)",
+          backdropFilter: "blur(12px)",
+          color: "white",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "1.2rem",
+          transition: "all 0.2s",
+          zIndex: 10,
+          pointerEvents: "auto",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+          e.currentTarget.style.transform = "scale(1.05)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+          e.currentTarget.style.transform = "scale(1)";
+        }}
+        aria-label="Close Polaris"
+      >
+        ✕
+      </button>
       {/* Scrollbar Styling */}
       <style jsx global>{`
         .polaris-scroll-container::-webkit-scrollbar {
