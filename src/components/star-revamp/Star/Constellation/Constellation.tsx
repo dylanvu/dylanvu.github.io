@@ -68,7 +68,6 @@ function Constellation({
 
   const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
 
-  // Update the last known state whenever a constellation is focused AND data is available
   useEffect(() => {
     if (focusedConstellation && parallaxFocusData) {
       lastFocusStateRef.current = {
@@ -303,7 +302,7 @@ function Constellation({
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
-// --- FIXED UNFOCUS FUNCTION (With Moving Origin) ---
+  // --- FIXED UNFOCUS FUNCTION (Unified Camera Model) ---
   const playUnfocusTween = () => {
     const node = groupRef.current;
     if (!node) return;
@@ -319,33 +318,7 @@ function Constellation({
         focusTweenRef.current.destroy();
     }
 
-    // --- CASE A: WE WERE FOCUSED ---
-    if (lastFocusStateRef.current?.name === data.name) {
-        focusTweenRef.current = new Konva.Tween({
-            node,
-            duration: FOCUS_ANIMATION_DURATION,
-            easing: EASING,
-            x: unfocusedConstellationX,
-            y: unfocusedConstellationY,
-            scaleX: transformData.scaleX ?? 1,
-            scaleY: transformData.scaleY ?? 1,
-            rotation: transformData.rotation ?? 0,
-            offsetX: centerX,
-            offsetY: centerY,
-            opacity: 1,
-            onFinish: () => {
-                isReturningRef.current = false;
-                if (focusTweenRef.current) {
-                    focusTweenRef.current.destroy();
-                    focusTweenRef.current = null;
-                }
-            },
-        });
-        focusTweenRef.current.play();
-        return;
-    }
-
-    // --- CASE B: WE WERE VANISHED (PARALLAX RETURN) ---
+    // Fallback for missing data
     if (!lastFocusStateRef.current) {
          focusTweenRef.current = new Konva.Tween({
             node,
@@ -373,95 +346,150 @@ function Constellation({
         focusScale: worldZoom 
     } = lastFocusStateRef.current;
     
-    // Vector from Focused Star -> This Star
-    const vecX = unfocusedConstellationX - focusedStarOriginalX;
-    const vecY = unfocusedConstellationY - focusedStarOriginalY;
-    
+    // The "Home" position of THIS constellation
+    const thisStarHomeX = unfocusedConstellationX;
+    const thisStarHomeY = unfocusedConstellationY;
+
     const depth = 3.5;
     const expansionFactor = 1 + (worldZoom - 1) * depth;
     
     const baseScale = transformData.scaleX ?? 1;
     const baseRotation = transformData.rotation ?? 0;
 
-    // 2. SET INITIAL STATE
-    // We calculate the start position assuming Origin is at WindowCenter
-    const startExpansion = expansionFactor;
-    const startRotOffset = prevRotation;
+    // Helper function for Unified Camera Math
+    // Calculates where a star should be given a progress 'p'
+    const calculatePosition = (p: number) => {
+        // A. INTERPOLATE CAMERA FOCUS POINT (World Space)
+        // p=0: Camera is looking at FocusedStarHome
+        // p=1: Camera is looking at WindowCenter (neutral)
+        const camFocusX = focusedStarOriginalX + (windowCenter.x - focusedStarOriginalX) * p;
+        const camFocusY = focusedStarOriginalY + (windowCenter.y - focusedStarOriginalY) * p;
 
-    const startExpandedX = windowCenter.x + (vecX * startExpansion);
-    const startExpandedY = windowCenter.y + (vecY * startExpansion);
-    
-    const startAngleRad = (-startRotOffset * Math.PI) / 180;
-    const sCos = Math.cos(startAngleRad);
-    const sSin = Math.sin(startAngleRad);
-    const svX = startExpandedX - windowCenter.x;
-    const svY = startExpandedY - windowCenter.y;
-    
-    node.x(windowCenter.x + (svX * sCos - svY * sSin));
-    node.y(windowCenter.y + (svX * sSin + svY * sCos));
-    node.scaleX(baseScale * startExpansion);
-    node.scaleY(baseScale * startExpansion);
-    node.rotation(baseRotation - startRotOffset);
-    node.opacity(0);
+        // B. INTERPOLATE ZOOM & ROTATION
+        const currentZoom = expansionFactor + (1 - expansionFactor) * p;
+        const currentRotation = prevRotation * (1 - p); // Interpolate towards 0
 
-    // 3. TWEEN TRAJECTORY
-    focusTweenRef.current = new Konva.Tween({
-      node: node,
-      duration: FOCUS_ANIMATION_DURATION,
-      easing: EASING,
-      opacity: 1,
-      
-      onUpdate: () => {
-        const p = node.opacity(); // 0 to 1
-        
-        // INTERPOLATE EVERYTHING
-        const currentExpansion = expansionFactor + (1 - expansionFactor) * p;
-        const currentRotOffset = prevRotation * (1 - p);
-        
-        // CRITICAL FIX: Interpolate the 'Origin' of the world from WindowCenter back to Original Pos
-        const currentOriginX = windowCenter.x + (focusedStarOriginalX - windowCenter.x) * p;
-        const currentOriginY = windowCenter.y + (focusedStarOriginalY - windowCenter.y) * p;
+        // C. VECTOR: From Camera Focus -> This Star
+        const vecX = (thisStarHomeX - camFocusX) * currentZoom;
+        const vecY = (thisStarHomeY - camFocusY) * currentZoom;
 
-        // Calculate Position relative to the Moving Origin
-        const expandedX = currentOriginX + (vecX * currentExpansion);
-        const expandedY = currentOriginY + (vecY * currentExpansion);
-        
-        // Orbit around the CAMERA (Window Center) because that's where the rotation happens visually
-        const angleRad = (-currentRotOffset * Math.PI) / 180;
+        // D. ROTATE AROUND OPTICAL AXIS (Window Center)
+        // Note: We rotate by NEGATIVE currentRotation because we are simulating
+        // the world rotating relative to the camera.
+        const angleRad = (-currentRotation * Math.PI) / 180;
         const cos = Math.cos(angleRad);
         const sin = Math.sin(angleRad);
 
-        const vX = expandedX - windowCenter.x;
-        const vY = expandedY - windowCenter.y;
+        // E. PROJECT TO SCREEN
+        // ScreenPos = ScreenCenter + RotatedVector
+        const screenX = windowCenter.x + (vecX * cos - vecY * sin);
+        const screenY = windowCenter.y + (vecX * sin + vecY * cos);
 
-        const rotatedX = windowCenter.x + (vX * cos - vY * sin);
-        const rotatedY = windowCenter.y + (vX * sin + vY * cos);
+        return { x: screenX, y: screenY, scale: currentZoom, rotation: -currentRotation };
+    };
+
+    // 2. SET INITIAL STATE (p=0) to prevent jump
+    const startState = calculatePosition(0);
+    
+    node.x(startState.x);
+    node.y(startState.y);
+    node.scaleX(baseScale * startState.scale);
+    node.scaleY(baseScale * startState.scale);
+    
+    // Add base rotation to the world rotation offset
+    node.rotation(baseRotation + startState.rotation); 
+    
+    // Opacity Logic:
+    // - If we were the Focused Star, start at 1 (we are visible).
+    // - If we were Neighbors, start at 0 (we are vanished).
+    const isTarget = lastFocusStateRef.current.name === data.name;
+    node.opacity(isTarget ? 1 : 0); 
+
+    // 3. TWEEN TRAJECTORY
+    // We tween opacity to drive the animation loop
+    focusTweenRef.current = new Konva.Tween({
+        node,
+        duration: FOCUS_ANIMATION_DURATION,
+        easing: EASING,
+        opacity: 1, // Tween to 1
         
-        node.x(rotatedX);
-        node.y(rotatedY);
-        node.scaleX(baseScale * currentExpansion);
-        node.scaleY(baseScale * currentExpansion);
-        node.rotation(baseRotation - currentRotOffset);
-      },
-      
-      onFinish: () => {
-        isReturningRef.current = false;
+        onUpdate: () => {
+            // Get progress 'p'. 
+            // If we are the target (opacity already 1), we need a fallback since opacity won't change.
+            // However, Konva tween updates regardless if value changes? 
+            // Actually, if opacity start=1 end=1, Konva might optimize or p calculation fails.
+            // Safe bet: Use internal 'tween.anim.progress' if available, OR just stick to the node.opacity approach
+            // but realize it only works for neighbors.
+            
+            // FIX: Since we can't use opacity for the Target (it stays 1),
+            // and we can't use a proxy object (TS issues),
+            // we will use 'rotation' as a carrier if it changes, OR 'scale'.
+            // But robustly, we can just use 'opacity' for neighbors.
+            // For the Target, we need a way to drive 'p'.
+            
+            // HACK: We will tween a hidden attribute like 'shadowOpacity' or 'strokeWidth' if it's unused?
+            // Better: Just tween opacity from 0.999 to 1 for target? No.
+            // Let's rely on the fact that for neighbors, opacity goes 0->1.
+            // For Target, we will accept that it returns linearly via Case A logic above?
+            // WAIT: I removed Case A separation to unify the physics.
+            // So we need a driver for Target too.
+            
+            // Let's use 'cornerRadius' (unused on Group) or similar as a carrier?
+            // Or just 'brightness'? No.
+            // Let's use `node.attrs.progress` if we manually set it? Konva allows custom attrs.
+        },
+    });
+    
+    // REFACTOR: We really need a Proxy-like behavior without the type errors.
+    // The solution is to use a 'dummy' tween on the node itself using a custom attribute.
+    // Konva Nodes support custom attributes.
+    if (focusTweenRef.current) focusTweenRef.current.destroy();
+
+    // Manually set a custom attribute 'animProgress' on the node
+    node.setAttr('animProgress', 0);
+
+    focusTweenRef.current = new Konva.Tween({
+        node,
+        duration: FOCUS_ANIMATION_DURATION,
+        easing: EASING,
+        animProgress: 1, // Tween this custom attribute from 0 to 1
         
-        // Hard Snap
-        node.x(unfocusedConstellationX);
-        node.y(unfocusedConstellationY);
-        node.scaleX(baseScale);
-        node.scaleY(baseScale);
-        node.rotation(baseRotation);
-        node.opacity(1);
-        node.offsetX(centerX);
-        node.offsetY(centerY);
+        onUpdate: () => {
+            const p = node.getAttr('animProgress'); // 0 to 1
+            
+            const state = calculatePosition(p);
+            
+            node.x(state.x);
+            node.y(state.y);
+            node.scaleX(baseScale * state.scale);
+            node.scaleY(baseScale * state.scale);
+            node.rotation(baseRotation + state.rotation);
+            
+            // Opacity handling:
+            // Neighbors: Fade in (0 -> 1) -> Use 'p'
+            // Target: Stay visible (1)
+            const isTarget = lastFocusStateRef.current?.name === data.name;
+            node.opacity(isTarget ? 1 : p);
+        },
         
-        if (focusTweenRef.current) {
-          focusTweenRef.current.destroy();
-          focusTweenRef.current = null;
+        onFinish: () => {
+            isReturningRef.current = false;
+            
+            // Hard Snap to Home
+            node.x(unfocusedConstellationX);
+            node.y(unfocusedConstellationY);
+            node.scaleX(baseScale);
+            node.scaleY(baseScale);
+            node.rotation(baseRotation);
+            node.opacity(1);
+            node.offsetX(centerX);
+            node.offsetY(centerY);
+            
+            if (focusTweenRef.current) {
+                focusTweenRef.current.destroy();
+                focusTweenRef.current = null;
+            }
         }
-      },
     });
     
     node.offsetX(centerX);
@@ -488,6 +516,7 @@ function Constellation({
     const worldZoom = focusedConstellation?.focusScale ?? 1;
     const depth = 3.5; 
     
+    // This logic matches the calculatePosition(0) logic in Unfocus!
     const vecX = unfocusedConstellationX - focusedUnfocusedX;
     const vecY = unfocusedConstellationY - focusedUnfocusedY;
 
