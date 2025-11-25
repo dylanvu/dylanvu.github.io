@@ -118,16 +118,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     currentConstellationSlugRef.current = slug;
     currentStarSlugRef.current = null; // Clear star when navigating to constellation
 
-    console.log('[navigateToConstellation] Input slug:', slug);
     
     const capitalizedName = slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();
-    console.log('[navigateToConstellation] Capitalized name:', capitalizedName);
     
     const constellationData = getConstellationDataByName(capitalizedName);
-    console.log('[navigateToConstellation] Found constellation:', constellationData);
     
     if (constellationData) {
-      console.log('[navigateToConstellation] Setting focused object');
       // Set focused object with constellation but no specific star
       setFocusedObject({
         constellation: constellationData,
@@ -139,11 +135,9 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       
       // Build target path
       const targetPath = `/constellation/${slug.toLowerCase()}`;
-      console.log('[navigateToConstellation] Target path:', targetPath, 'Current path:', pathname);
       
       // Only navigate if the path is different
       if (pathname !== targetPath) {
-        console.log('[navigateToConstellation] Navigating to:', targetPath);
         router.push(targetPath);
       }
     } else {
