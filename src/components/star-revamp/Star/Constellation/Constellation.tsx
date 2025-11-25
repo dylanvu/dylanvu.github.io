@@ -68,6 +68,7 @@ function Constellation({
 
   const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
 
+  // Update the last known state whenever a constellation is focused AND data is available
   useEffect(() => {
     if (focusedConstellation && parallaxFocusData) {
       lastFocusStateRef.current = {
@@ -302,7 +303,7 @@ function Constellation({
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
-  // --- FIXED UNFOCUS FUNCTION (Split Logic for Stability) ---
+  // --- UNFOCUS: RETURN TO GRID ---
   const playUnfocusTween = () => {
     const node = groupRef.current;
     if (!node) return;
@@ -341,11 +342,11 @@ function Constellation({
     const isTarget = lastFocusStateRef.current.name === data.name;
 
     // --- CASE A: TARGET STAR (Simple Reversal) ---
-    // We FORCE the target to start from WindowCenter and tween linearly home.
-    // This prevents any floating point "teleport" caused by the unified math.
+    // FIX: Start from 'focusedTargetX' (handled by useMemo/Context) not 'windowCenter.x'
+    // This accounts for split-screen offsets.
     if (isTarget) {
-        // Force Start State
-        node.x(windowCenter.x);
+        // Force Start State to match where FocusTween left it
+        node.x(focusedTargetX); 
         node.y(windowCenter.y);
         node.scaleX((transformData.scaleX ?? 1) * lastFocusStateRef.current.focusScale);
         node.scaleY((transformData.scaleY ?? 1) * lastFocusStateRef.current.focusScale);
@@ -377,9 +378,7 @@ function Constellation({
     }
 
     // --- CASE B: NEIGHBORS (Unified Camera Math) ---
-    // For neighbors, we MUST use the camera math to prevent crossover/shearing.
-    
-    // 1. DATA PREP
+    // Data Prep
     const { 
         unfocusedX: focusedStarOriginalX, 
         unfocusedY: focusedStarOriginalY,
@@ -387,38 +386,35 @@ function Constellation({
         focusScale: worldZoom 
     } = lastFocusStateRef.current;
     
-    // Vector from Focused Star -> This Star
     const vecX = unfocusedConstellationX - focusedStarOriginalX;
     const vecY = unfocusedConstellationY - focusedStarOriginalY;
 
-    const vecToTargetHomeX = focusedStarOriginalX - windowCenter.x;
-    const vecToTargetHomeY = focusedStarOriginalY - windowCenter.y;
-
     const depth = 3.5;
     const expansionFactor = 1 + (worldZoom - 1) * depth;
-    
     const baseScale = transformData.scaleX ?? 1;
     const baseRotation = transformData.rotation ?? 0;
 
-    // 2. SET INITIAL STATE (p=0)
-    // Calculate exactly where it should be based on the unified model
+    // Initial State Calculation (p=0, Deep Space)
     {
         const p = 0;
         const currentExpansion = expansionFactor;
-        const currentRotOffset = prevRotation;
+        const currentRotOffset = prevRotation; // Max rotation at start
 
-        // Shift is 0 at start (Camera at Target)
-        // Combined Vector = (Relative * Expansion)
+        // At p=0 (Deep), World Origin is WindowCenter
+        const currentOriginX = windowCenter.x;
+        const currentOriginY = windowCenter.y;
+
+        // Calculate Vector
         const combinedX = vecX * currentExpansion;
         const combinedY = vecY * currentExpansion;
 
-        // Rotate around Window Center
+        // Rotate around Origin (WindowCenter)
         const angleRad = (-currentRotOffset * Math.PI) / 180;
         const cos = Math.cos(angleRad);
         const sin = Math.sin(angleRad);
 
-        const startX = windowCenter.x + (combinedX * cos - combinedY * sin);
-        const startY = windowCenter.y + (combinedX * sin + combinedY * cos);
+        const startX = currentOriginX + (combinedX * cos - combinedY * sin);
+        const startY = currentOriginY + (combinedX * sin + combinedY * cos);
 
         node.x(startX);
         node.y(startY);
@@ -428,8 +424,7 @@ function Constellation({
         node.opacity(0);
     }
 
-    // 3. TWEEN TRAJECTORY
-    // We use 'animProgress' custom attribute to drive the math
+    // Tween
     node.setAttr('animProgress', 0);
 
     focusTweenRef.current = new Konva.Tween({
@@ -445,36 +440,35 @@ function Constellation({
             const currentExpansion = expansionFactor + (1 - expansionFactor) * p;
             const currentRotOffset = prevRotation * (1 - p);
             
-            // Interpolate Shift (Slide the whole world)
-            const shiftX = vecToTargetHomeX * p;
-            const shiftY = vecToTargetHomeY * p;
+            // Interpolate World Origin: WindowCenter -> Original Focus Star Pos
+            const currentOriginX = windowCenter.x + (focusedStarOriginalX - windowCenter.x) * p;
+            const currentOriginY = windowCenter.y + (focusedStarOriginalY - windowCenter.y) * p;
             
             // Combine Vectors
-            const combinedX = vecX * currentExpansion + shiftX;
-            const combinedY = vecY * currentExpansion + shiftY;
+            // Note: Shift is implicit in the Moving Origin logic now.
+            // We simply expand the vector from the Original Focus Star to This Star.
+            const combinedX = vecX * currentExpansion;
+            const combinedY = vecY * currentExpansion;
             
-            // Rotate System
+            // Rotate around Current Origin
+            // (The entire coordinate system rotates around the "Camera Focus Point")
             const angleRad = (-currentRotOffset * Math.PI) / 180;
             const cos = Math.cos(angleRad);
             const sin = Math.sin(angleRad);
 
-            const finalX = windowCenter.x + (combinedX * cos - combinedY * sin);
-            const finalY = windowCenter.y + (combinedX * sin + combinedY * cos);
+            const finalX = currentOriginX + (combinedX * cos - combinedY * sin);
+            const finalY = currentOriginY + (combinedX * sin + combinedY * cos);
             
             node.x(finalX);
             node.y(finalY);
             node.scaleX(baseScale * currentExpansion);
             node.scaleY(baseScale * currentExpansion);
             node.rotation(baseRotation - currentRotOffset);
-            
-            // Neighbors fade in
             node.opacity(p);
         },
         
         onFinish: () => {
             isReturningRef.current = false;
-            
-            // Hard Snap
             node.x(unfocusedConstellationX);
             node.y(unfocusedConstellationY);
             node.scaleX(baseScale);
@@ -497,10 +491,12 @@ function Constellation({
     focusTweenRef.current.play();
   };
 
+  // --- VANISH: MOVE TO DEEP SPACE ---
   const playVanishTween = () => {
     const node = groupRef.current;
     if (!node) return;
     
+    // GUARD: If data isn't ready, don't animate yet
     if (!parallaxFocusData) return;
     
     isReturningRef.current = true;
@@ -519,41 +515,54 @@ function Constellation({
     const vecY = unfocusedConstellationY - focusedUnfocusedY;
 
     const expansionFactor = 1 + (worldZoom - 1) * depth;
-    
     const baseScale = transformData.scaleX ?? 1;
-    const targetScale = baseScale * expansionFactor;
-
-    const movementMultiplier = expansionFactor; 
-
-    // For vanish, Origin is fixed at Window Center
-    const expandedX = windowCenter.x + (vecX * movementMultiplier);
-    const expandedY = windowCenter.y + (vecY * movementMultiplier);
-
+    const baseRotation = transformData.rotation ?? 0;
     const focusedRotation = focusedConstellation?.rotation ?? 0;
-    const angleRad = (-focusedRotation * Math.PI) / 180;
-    const cos = Math.cos(angleRad);
-    const sin = Math.sin(angleRad);
 
-    const vX = expandedX - windowCenter.x;
-    const vY = expandedY - windowCenter.y;
-
-    const rotatedX = windowCenter.x + (vX * cos - vY * sin);
-    const rotatedY = windowCenter.y + (vX * sin + vY * cos);
-
-    const targetRotation = (transformData.rotation ?? 0) - focusedRotation;
+    // We use the same Unified Camera Math, interpolating p from 0 (Home) -> 1 (Deep)
+    // p=0: Origin=FocusedOriginal, Exp=1, RotOffset=0
+    // p=1: Origin=WindowCenter, Exp=Max, RotOffset=Max
+    node.setAttr('animProgress', 0);
 
     focusTweenRef.current = new Konva.Tween({
       node,
       duration: FOCUS_ANIMATION_DURATION,
       easing: EASING,
-      x: rotatedX,
-      y: rotatedY,
-      scaleX: targetScale,
-      scaleY: targetScale,
-      rotation: targetRotation,
-      opacity: 0, 
-      offsetX: centerX,
-      offsetY: centerY,
+      animProgress: 1,
+      
+      onUpdate: () => {
+        const p = node.getAttr('animProgress');
+        
+        // Interpolate: 0 -> Max
+        const currentExpansion = 1 + (expansionFactor - 1) * p;
+        const currentRotOffset = focusedRotation * p;
+        
+        // Interpolate Origin: FocusedOriginal -> WindowCenter
+        const currentOriginX = focusedUnfocusedX + (windowCenter.x - focusedUnfocusedX) * p;
+        const currentOriginY = focusedUnfocusedY + (windowCenter.y - focusedUnfocusedY) * p;
+
+        // Vector Logic
+        const combinedX = vecX * currentExpansion;
+        const combinedY = vecY * currentExpansion;
+
+        // Rotate around Current Origin
+        const angleRad = (-currentRotOffset * Math.PI) / 180;
+        const cos = Math.cos(angleRad);
+        const sin = Math.sin(angleRad);
+
+        const finalX = currentOriginX + (combinedX * cos - combinedY * sin);
+        const finalY = currentOriginY + (combinedX * sin + combinedY * cos);
+
+        node.x(finalX);
+        node.y(finalY);
+        node.scaleX(baseScale * currentExpansion);
+        node.scaleY(baseScale * currentExpansion);
+        node.rotation(baseRotation - currentRotOffset);
+        
+        // Fade Out
+        node.opacity(1 - p);
+      },
+      
       onFinish: () => {
         isReturningRef.current = false;
         node.visible(false);
