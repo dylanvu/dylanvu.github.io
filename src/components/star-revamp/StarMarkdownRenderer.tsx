@@ -2,21 +2,14 @@ import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, TEXT_SIZE, DURATION } fro
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
-import { useState, useEffect } from "react";
 
 export default function StarMarkdownRenderer({
   markdown,
 }: {
   markdown: string;
 }) {
-  const [showGlass, setShowGlass] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowGlass(true);
-    }, DURATION.normal * 1000); // Wait for StarPanel fade-in to complete
-    return () => clearTimeout(timer);
-  }, []);
+  // Glass effect is always enabled to prevent flash from state transitions
+  const showGlass = true;
 
   return (
     // this padding bottom is needed because the bottom thing is always cut off
