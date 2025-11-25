@@ -430,6 +430,12 @@ function Constellation({
 
   const handleConstellationClick = (e: Konva.KonvaPointerEvent) => {
     e.cancelBubble = true;
+    
+    // Don't execute constellation click logic if a star is focused
+    if (focusedObject.star) {
+      return;
+    }
+    
     if (!isFocusedRef.current) {
       groupRef.current?.moveToTop();
     }
