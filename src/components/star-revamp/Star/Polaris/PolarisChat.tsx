@@ -10,24 +10,29 @@ import {
   RADIUS, 
   DURATION, 
   OPACITY,
-  hexToRgba,
-  FOCUS_RING,
   TEXT_SIZE,
   SPACING,
   SHADOW,
 } from "@/app/theme";
-import { useMobile } from "@/hooks/useMobile";
 
 export default function PolarisChat() {
   const { polarisHistory, talkToPolaris, isThinking, isTalking, setPolarisDisplayState } = usePolarisContext();
-  const { mobileFontScaleFactor } = useMobile();
   const [inputText, setInputText] = useState("");
+  const [showGlass, setShowGlass] = useState(false);
 
   // 1. Change ref to target the container instead of a dummy div
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Activate glass effect after parent fade-in completes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGlass(true);
+    }, DURATION.normal * 1000); // Wait for parent animation to finish
+    return () => clearTimeout(timer);
+  }, []);
+
   const suggestions = [
-    "Why is this called a night sky?",
+    "What does \"night sky\" mean?",
     "What are Dylan's technical skills?",
     "Where is Dylan's resume?",
   ];
@@ -124,14 +129,16 @@ export default function PolarisChat() {
           width: "2rem",
           height: "2rem",
           borderRadius: RADIUS.circle,
-          ...GLASS.medium,
+          background: GLASS.medium.background,
+          border: GLASS.medium.border,
+          backdropFilter: showGlass ? "blur(12px)" : "none",
           color: "white",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "1.2rem",
-          transition: `all ${DURATION.fast}s`,
+          transition: `backdrop-filter ${DURATION.normal}s ease, transform ${DURATION.fast}s, background ${DURATION.fast}s`,
           zIndex: 10,
           pointerEvents: "auto",
         }}
@@ -229,14 +236,16 @@ export default function PolarisChat() {
                 e.currentTarget.style.background = GLASS.light.background;
               }}
               style={{
-                ...GLASS.light,
+                background: GLASS.light.background,
+                border: GLASS.light.border,
+                backdropFilter: showGlass ? "blur(8px)" : "none",
                 color: "inherit",
                 padding: `${SPACING.sm} ${SPACING.md}`,
                 borderRadius: RADIUS.lg,
                 fontSize: TEXT_SIZE.xs,
                 cursor: disabledChatInput ? "not-allowed" : "pointer",
-                transition: `all ${DURATION.fast}s ease`,
                 opacity: disabledChatInput ? OPACITY.half : 1,
+                transition: `backdrop-filter ${DURATION.normal}s ease, background ${DURATION.fast}s`,
               }}
               className={FONT_FAMILY.className}
             >
@@ -250,11 +259,14 @@ export default function PolarisChat() {
           style={{
             display: "flex",
             alignItems: "center",
-            ...GLASS.medium,
+            background: GLASS.medium.background,
+            border: GLASS.medium.border,
+            backdropFilter: showGlass ? "blur(12px)" : "none",
             borderRadius: RADIUS.pill,
             padding: `${SPACING.sm} ${SPACING.sm} ${SPACING.sm} ${SPACING.lg}`,
             boxShadow: SHADOW.md,
             pointerEvents: "all",
+            transition: `backdrop-filter ${DURATION.normal}s ease`,
           }}
         >
           <input

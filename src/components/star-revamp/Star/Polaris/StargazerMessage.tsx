@@ -1,11 +1,18 @@
 import { motion } from "motion/react";
 import { FONT_FAMILY, SPACE_TEXT_COLOR, GLASS, RADIUS, DURATION, TEXT_SIZE, SPACING } from "@/app/theme";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import { useMobile } from "@/hooks/useMobile";
 
 export default function StargazerMessage({ message }: { message: string }) {
-  const { mobileFontScaleFactor } = useMobile();
+  const [showGlass, setShowGlass] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGlass(true);
+    }, DURATION.normal * 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <motion.div
       // FIX: Removed 'x: 10' to prevent right-side overflow/expansion
@@ -36,12 +43,15 @@ export default function StargazerMessage({ message }: { message: string }) {
       </span>
       <div
         style={{
-          ...GLASS.strong,
+          background: GLASS.strong.background,
+          border: GLASS.strong.border,
+          backdropFilter: showGlass ? "blur(12px)" : "none",
           color: SPACE_TEXT_COLOR,
           padding: `${SPACING.md} ${SPACING.lg}`,
           borderRadius: `${RADIUS.lg} ${RADIUS.lg} ${RADIUS.sm} ${RADIUS.lg}`,
           lineHeight: "1.5",
           wordWrap: "break-word",
+          transition: `backdrop-filter ${DURATION.normal}s ease`,
         }}
       >
         <ReactMarkdown>{message}</ReactMarkdown>

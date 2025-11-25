@@ -1,13 +1,23 @@
-import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, TEXT_SIZE } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, TEXT_SIZE, DURATION } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
+import { useState, useEffect } from "react";
 
 export default function StarMarkdownRenderer({
   markdown,
 }: {
   markdown: string;
 }) {
+  const [showGlass, setShowGlass] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGlass(true);
+    }, DURATION.normal * 1000); // Wait for StarPanel fade-in to complete
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     // this padding bottom is needed because the bottom thing is always cut off
     <div style={{ paddingBottom: "3rem" }}>
@@ -74,9 +84,11 @@ export default function StarMarkdownRenderer({
               <code
                 style={{
                   background: GLASS.medium.background,
+                  backdropFilter: showGlass ? "blur(8px)" : "none",
                   padding: `${SPACING.xs} ${SPACING.sm}`,
                   borderRadius: RADIUS.sm,
                   fontSize: "0.9em",
+                  transition: `backdrop-filter ${DURATION.normal}s ease`,
                 }}
               >
                 {children}
@@ -91,12 +103,15 @@ export default function StarMarkdownRenderer({
           <pre
             className={FONT_FAMILY.className}
             style={{
-              ...GLASS.medium,
+              background: GLASS.medium.background,
+              border: GLASS.medium.border,
+              backdropFilter: showGlass ? "blur(12px)" : "none",
               borderRadius: RADIUS.md,
               padding: SPACING.md,
               overflowX: "auto",
               marginTop: SPACING.md,
               marginBottom: SPACING.md,
+              transition: `backdrop-filter ${DURATION.normal}s ease`,
             }}
           >
             {children}
@@ -125,10 +140,12 @@ export default function StarMarkdownRenderer({
             className={FONT_FAMILY.className}
             style={{
               background: GLASS.subtle.background,
+              backdropFilter: showGlass ? "blur(4px)" : "none",
               borderLeft: `4px solid rgba(255, 255, 255, ${OPACITY.bolder})`,
               padding: `${SPACING.sm} ${SPACING.md}`,
               margin: `${SPACING.md} 0`,
               fontStyle: "italic",
+              transition: `backdrop-filter ${DURATION.normal}s ease`,
             }}
           >
             {children}

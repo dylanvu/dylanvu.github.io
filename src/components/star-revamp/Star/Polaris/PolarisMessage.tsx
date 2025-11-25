@@ -23,6 +23,14 @@ interface ImageProps {
 
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
   const { mobileFontScaleFactor } = useMobile();
+  const [showGlass, setShowGlass] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGlass(true);
+    }, DURATION.slow * 1000); // Use slow duration to match the animation
+    return () => clearTimeout(timer);
+  }, []);
   
   // Handle both string and ChatMessage object
   const messageText = typeof message === "string" ? message : message.message;
@@ -55,8 +63,8 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
     pre: ({ children }: MarkdownComponentProps) => (
       <pre className={FONT_FAMILY.className}>{children}</pre>
     ),
-    img: ({ src, alt }: ImageProps) => <StreamingImage src={src} alt={alt} mobileFontScaleFactor={mobileFontScaleFactor} />,
-  }), [mobileFontScaleFactor]);
+    img: ({ src, alt }: ImageProps) => <StreamingImage src={src} alt={alt} mobileFontScaleFactor={mobileFontScaleFactor} showGlass={showGlass} />,
+  }), [mobileFontScaleFactor, showGlass]);
   
   return (
     <motion.div
@@ -107,11 +115,14 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
                 }
           }
           style={{
-            ...GLASS.light,
+            background: GLASS.light.background,
+            border: GLASS.light.border,
+            backdropFilter: showGlass ? "blur(8px)" : "none",
             padding: `${SPACING.md} ${SPACING.lg}`,
             borderRadius: `${RADIUS.sm} ${RADIUS.lg} ${RADIUS.lg} ${RADIUS.lg}`,
             lineHeight: "1.5",
             wordWrap: "break-word",
+            transition: `backdrop-filter ${DURATION.normal}s ease`,
           }}
         >
           <ReactMarkdown
@@ -127,7 +138,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
 }
 
 // Component to handle images during streaming with loading and error states
-function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Blob; alt?: string; mobileFontScaleFactor: number }) {
+function StreamingImage({ src, alt, mobileFontScaleFactor, showGlass }: { src?: string | Blob; alt?: string; mobileFontScaleFactor: number; showGlass: boolean }) {
   // Use refs to persist state across re-renders (prevents flickering on hover)
   const hasLoadedRef = useRef(false);
   const hasErrorRef = useRef(false);
@@ -158,11 +169,13 @@ function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Bl
             width: "100%",
             height: "200px",
             background: GLASS.light.background,
+            backdropFilter: showGlass ? "blur(8px)" : "none",
             borderRadius: RADIUS.md,
             textAlign: "center",
             lineHeight: "200px",
             fontSize: `${0.85 * mobileFontScaleFactor}rem`,
             opacity: 0.6,
+            transition: `backdrop-filter ${DURATION.normal}s ease`,
           }}
         >
           Loading image...
