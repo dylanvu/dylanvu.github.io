@@ -1,0 +1,240 @@
+import { Group, Rect } from "react-konva";
+import { ReactNode } from "react";
+import MainStar from "@/components/star-revamp/Star/MainStar";
+import AnimatedLine from "./AnimatedLine";
+import ConstellationBoundingBox from "./ConstellationBoundingBox";
+import ElevareMap from "./ElevareMap";
+import { ConstellationData, isStarDataWithInternalLink } from "@/interfaces/StarInterfaces";
+import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
+import { PolarisDisplayState } from "@/hooks/Polaris/usePolarisProvider";
+
+interface ConstellationContentProps {
+  // Bounding box dimensions
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  width: number;
+  height: number;
+
+  // Visual state
+  brightness: number;
+  isFocused: boolean;
+  isHovered: boolean;
+  showBoundingBox?: boolean;
+  showStarBoundingBox?: boolean;
+
+  // Constellation data
+  data: ConstellationData;
+  stars: Array<{ x: number; y: number; data?: any }>;
+  lineSegments: [number, number][];
+  lineDurations: number[];
+  lineDelays: number[];
+
+  // Elevare-specific
+  isElevare: boolean;
+  elevareZoom?: number;
+  onElevareZoomChange?: (zoom: number) => void;
+
+  // Callbacks and context
+  isReturningRef: React.RefObject<boolean>;
+  isFocusedRef: React.RefObject<boolean>;
+  pathname: string;
+  focusedObject: { star: any; constellation: any };
+  mobileState: any;
+  polarisDisplayState: string;
+  
+  // Overlay handlers
+  setTopOverlayTextContents: (contents: any) => void;
+  resetTopOverlayTextContents: () => void;
+  setCenterOverlayTextContents: (contents: any) => void;
+  
+  // Navigation
+  navigateToStar: (slug: string) => void;
+  setPolarisDisplayState: (newState: PolarisDisplayState | ((prev: PolarisDisplayState) => PolarisDisplayState)) => void;
+}
+
+export default function ConstellationContent({
+  minX,
+  maxX,
+  minY,
+  maxY,
+  width,
+  height,
+  brightness,
+  isFocused,
+  isHovered,
+  showBoundingBox,
+  showStarBoundingBox,
+  data,
+  stars,
+  lineSegments,
+  lineDurations,
+  lineDelays,
+  isElevare,
+  elevareZoom,
+  onElevareZoomChange,
+  isReturningRef,
+  isFocusedRef,
+  pathname,
+  focusedObject,
+  mobileState,
+  polarisDisplayState,
+  setTopOverlayTextContents,
+  resetTopOverlayTextContents,
+  setCenterOverlayTextContents,
+  navigateToStar,
+  setPolarisDisplayState,
+}: ConstellationContentProps) {
+  const centerX = minX + width / 2;
+  const centerY = minY + height / 2;
+
+  // Helper function to render a single star
+  const renderStar = (star: typeof stars[0], i: number) => {
+    const incomingLineIndex = lineSegments.findIndex(
+      ([start, end]) => end === i || start === i
+    );
+    const delay =
+      incomingLineIndex >= 0
+        ? lineDelays[incomingLineIndex] + lineDurations[incomingLineIndex]
+        : 0;
+
+    return (
+      <MainStar
+        key={i}
+        x={star.x}
+        y={star.y}
+        brightness={brightness}
+        delay={delay}
+        data={star.data}
+        showLabel={isFocused}
+        labelSize={4}
+        isConstellationFocused={isFocused}
+        constellationData={data}
+        onHoverEnterCallback={() => {
+          if (isReturningRef.current) return;
+
+          if (star.data) {
+            if (isFocusedRef.current) {
+              setStarOverlayMobileAware(star.data, setTopOverlayTextContents, mobileState);
+            } else {
+              setCenterOverlayTextContents({
+                intro: star.data.classification,
+                title: star.data.label ?? "",
+                origin: star.data.origin ?? "",
+                about: star.data.about ?? "",
+              });
+            }
+          }
+        }}
+        onHoverLeaveCallback={() => {
+          if (isReturningRef.current) return;
+
+          if (star.data?.label) {
+            if (isFocusedRef.current) {
+              if (pathname === "/") {
+                setConstellationOverlay(data, setTopOverlayTextContents);
+              } else if (focusedObject.star) {
+                setStarOverlayMobileAware(focusedObject.star, setTopOverlayTextContents, mobileState);
+              } else if (focusedObject.constellation) {
+                setConstellationOverlay(focusedObject.constellation, setTopOverlayTextContents);
+              }
+            } else {
+              resetTopOverlayTextContents();
+              setCenterOverlayTextContents({
+                intro: data.intro,
+                title: data.name,
+                origin: data.origin,
+                about: data.about,
+              });
+            }
+          }
+          if (isFocusedRef.current) {
+            document.body.style.cursor = "default";
+          }
+        }}
+        cancelBubble={true}
+        onClickCallback={() => {
+          const starData = star.data;
+          if (starData) {
+            if (starData.externalLink) {
+              window.open(
+                starData.externalLink,
+                "_blank",
+                "noopener,noreferrer"
+              );
+            } else if (isStarDataWithInternalLink(starData)) {
+              navigateToStar(starData.slug);
+              if (polarisDisplayState === "active") {
+                setPolarisDisplayState("suppressed");
+              }
+            }
+          }
+        }}
+        onHoverScale={isFocused ? 1.3 : 1.8}
+      />
+    );
+  };
+
+  const renderLines = () => {
+    return lineSegments.map(([i1, i2], idx) => (
+      <AnimatedLine
+        key={`conn-${idx}`}
+        p1={stars[i1]}
+        p2={stars[i2]}
+        duration={lineDurations[idx]}
+        delay={lineDelays[idx]}
+        constellationData={data}
+      />
+    ));
+  };
+
+  return (
+    <Group
+      clipFunc={isElevare && isFocused ? (ctx) => {
+        ctx.rect(minX, minY, width, height);
+      } : undefined}
+    >
+      <Rect
+        x={minX}
+        y={minY}
+        width={width}
+        height={height}
+        fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""}
+        listening={!(isElevare && isFocused)}
+      />
+
+      <ConstellationBoundingBox
+        isVisible={isFocused || showStarBoundingBox || isHovered}
+        tl={{ x: minX, y: minY }}
+        tr={{ x: maxX, y: minY }}
+        br={{ x: maxX, y: maxY }}
+        bl={{ x: minX, y: maxY }}
+        width={width}
+        height={height}
+        brightness={brightness}
+        totalDuration={data.totalDuration}
+      />
+
+      {isElevare && elevareZoom !== undefined && onElevareZoomChange ? (
+        <ElevareMap 
+          isFocused={isFocused}
+          boundingBox={{ minX, maxX, minY, maxY }}
+          boundingBoxCenter={{ x: centerX, y: centerY }}
+          constellationBoundingBoxWidth={width}
+          constellationBoundingBoxHeight={height}
+          externalZoom={elevareZoom}
+          onZoomChange={onElevareZoomChange}
+        >
+          {renderLines()}
+          {stars.map(renderStar)}
+        </ElevareMap>
+      ) : (
+        <>
+          {renderLines()}
+          {stars.map(renderStar)}
+        </>
+      )}
+    </Group>
+  );
+}

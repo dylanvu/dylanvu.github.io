@@ -1,19 +1,16 @@
 import Konva from "konva";
-import { Group, Rect } from "react-konva";
+import { Group } from "react-konva";
 import { useState, useRef, useEffect, useMemo } from "react";
-import MainStar from "@/components/star-revamp/Star/MainStar";
-import AnimatedLine from "./AnimatedLine";
-import ConstellationBoundingBox from "./ConstellationBoundingBox";
-import ElevareMap, { MIN_ZOOM, MAX_ZOOM } from "./ElevareMap";
 import ElevareControl from "./ElevareControl";
 import HackathonStatistics from "./HackathonStatistics";
-import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
+import ConstellationContent from "./ConstellationContent";
+import { MIN_ZOOM, MAX_ZOOM } from "./ElevareMap";
+import { ConstellationData, TransformData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import React from "react";
 import { useMobile } from "@/hooks/useMobile";
 import { useConstellationInteractions } from "./useConstellationInteractions";
@@ -464,106 +461,6 @@ function Constellation({
       groupRef,
     });
 
-  // Helper function to render a single star
-  const renderStar = (star: typeof stars[0], i: number) => {
-    const incomingLineIndex = lineSegments.findIndex(
-      ([start, end]) => end === i || start === i
-    );
-    const delay =
-      incomingLineIndex >= 0
-        ? lineDelays[incomingLineIndex] + lineDurations[incomingLineIndex]
-        : 0;
-
-    return (
-      <MainStar
-        key={i}
-        x={star.x}
-        y={star.y}
-        brightness={brightness}
-        delay={delay}
-        data={star.data}
-        showLabel={isFocused}
-        labelSize={4}
-        isConstellationFocused={isFocused}
-        constellationData={data}
-        onHoverEnterCallback={() => {
-          if (isReturningRef.current) return;
-
-          if (star.data) {
-            if (isFocusedRef.current) {
-              setStarOverlayMobileAware(star.data, setTopOverlayTextContents, mobileState);
-            } else {
-              setCenterOverlayTextContents({
-                intro: star.data.classification,
-                title: star.data.label ?? "",
-                origin: star.data.origin ?? "",
-                about: star.data.about ?? "",
-              });
-            }
-          }
-        }}
-        onHoverLeaveCallback={() => {
-          if (isReturningRef.current) return;
-
-          if (star.data?.label) {
-            if (isFocusedRef.current) {
-              if (pathname === "/") {
-                setConstellationOverlay(data, setTopOverlayTextContents);
-              } else if (focusedObject.star) {
-                setStarOverlayMobileAware(focusedObject.star, setTopOverlayTextContents, mobileState);
-              } else if (focusedObject.constellation) {
-                setConstellationOverlay(focusedObject.constellation, setTopOverlayTextContents);
-              }
-            } else {
-              resetTopOverlayTextContents();
-              setCenterOverlayTextContents({
-                intro: data.intro,
-                title: data.name,
-                origin: data.origin,
-                about: data.about,
-              });
-            }
-          }
-          if (isFocusedRef.current) {
-            document.body.style.cursor = "default";
-          }
-        }}
-        cancelBubble={true}
-        onClickCallback={() => {
-          const starData = star.data;
-          if (starData) {
-            if (starData.externalLink) {
-              window.open(
-                starData.externalLink,
-                "_blank",
-                "noopener,noreferrer"
-              );
-            } else if (isStarDataWithInternalLink(starData)) {
-              navigateToStar(starData.slug);
-              if (polarisDisplayState === "active") {
-                setPolarisDisplayState("suppressed");
-              }
-            }
-          }
-        }}
-        onHoverScale={isFocused ? 1.3 : 1.8}
-      />
-    );
-  };
-
-  const renderLines = () => {
-    return lineSegments.map(([i1, i2], idx) => (
-      <AnimatedLine
-        key={`conn-${idx}`}
-        p1={stars[i1]}
-        p2={stars[i2]}
-        duration={lineDurations[idx]}
-        delay={lineDelays[idx]}
-        constellationData={data}
-      />
-    ));
-  };
-
   const controlWidth = 40;
   const controlX = minX - controlWidth;
 
@@ -604,52 +501,38 @@ function Constellation({
         />
       )}
       
-      <Group
-        clipFunc={isElevare && isFocused ? (ctx) => {
-          ctx.rect(minX, minY, width, height);
-        } : undefined}
-      >
-      <Rect
-        x={minX}
-        y={minY}
-        width={width}
-        height={height}
-        fill={showBoundingBox ? "rgba(255,0,0,0.2)" : ""}
-        listening={!(isElevare && isFocused)}
-      />
-
-      <ConstellationBoundingBox
-        isVisible={isFocused || showStarBoundingBox || isHovered}
-        tl={{ x: minX, y: minY }}
-        tr={{ x: maxX, y: minY }}
-        br={{ x: maxX, y: maxY }}
-        bl={{ x: minX, y: maxY }}
+      <ConstellationContent
+        minX={minX}
+        maxX={maxX}
+        minY={minY}
+        maxY={maxY}
         width={width}
         height={height}
         brightness={brightness}
-        totalDuration={totalDuration}
+        isFocused={isFocused}
+        isHovered={isHovered}
+        showBoundingBox={showBoundingBox}
+        showStarBoundingBox={showStarBoundingBox}
+        data={data}
+        stars={stars}
+        lineSegments={lineSegments}
+        lineDurations={lineDurations}
+        lineDelays={lineDelays}
+        isElevare={isElevare}
+        elevareZoom={elevareZoom}
+        onElevareZoomChange={setElevareZoom}
+        isReturningRef={isReturningRef}
+        isFocusedRef={isFocusedRef}
+        pathname={pathname}
+        focusedObject={focusedObject}
+        mobileState={mobileState}
+        polarisDisplayState={polarisDisplayState}
+        setTopOverlayTextContents={setTopOverlayTextContents}
+        resetTopOverlayTextContents={resetTopOverlayTextContents}
+        setCenterOverlayTextContents={setCenterOverlayTextContents}
+        navigateToStar={navigateToStar}
+        setPolarisDisplayState={setPolarisDisplayState}
       />
-
-        {isElevare ? (
-          <ElevareMap 
-            isFocused={isFocused}
-            boundingBox={{ minX, maxX, minY, maxY }}
-            boundingBoxCenter={{ x: centerX, y: centerY }}
-            constellationBoundingBoxWidth={width}
-            constellationBoundingBoxHeight={height}
-            externalZoom={elevareZoom}
-            onZoomChange={setElevareZoom}
-          >
-            {renderLines()}
-            {stars.map(renderStar)}
-          </ElevareMap>
-        ) : (
-          <>
-            {renderLines()}
-            {stars.map(renderStar)}
-          </>
-        )}
-      </Group>
     </Group>
   );
 }
