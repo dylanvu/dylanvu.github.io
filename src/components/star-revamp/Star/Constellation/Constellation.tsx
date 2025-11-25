@@ -1,11 +1,12 @@
 import Konva from "konva";
 import { Group, Rect } from "react-konva";
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap, { MIN_ZOOM, MAX_ZOOM } from "./ElevareMap";
 import ElevareControl from "./ElevareControl";
+import HackathonStatistics from "./HackathonStatistics";
 import { ConstellationData, TransformData, isStarDataWithInternalLink, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
@@ -626,6 +627,15 @@ function Constellation({
           minZoom={MIN_ZOOM}
           maxZoom={MAX_ZOOM}
           onZoomChange={setElevareZoom}
+        />
+      )}
+      
+      {/* Hackathon Statistics - rendered OUTSIDE clipped group, positioned below bounding box */}
+      {isElevare && (
+        <HackathonStatistics
+          x={minX}
+          y={maxY}
+          width={width}
         />
       )}
       
