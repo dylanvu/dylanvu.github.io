@@ -81,9 +81,12 @@ function MainStar({
   const { focusedObject } = useFocusContext();
   
   // Derive size from classification, or use provided size, or default to 5
-  // Apply mobile scale factor to star sizes
-  const actualSize = (size ?? getStarSize(data)) * mobileScaleFactor;
-  const scaledLabelSize = labelSize * mobileFontScaleFactor;
+  // Apply mobile scale factor to star sizes ONLY when constellation is not focused
+  // When focused, show stars at full size for better visibility
+  const actualSize = (size ?? getStarSize(data)) * (isConstellationFocused ? 1 : mobileScaleFactor);
+  // Apply mobile font scale factor to labels ONLY when constellation is not focused
+  // When focused, show labels at full size for better readability
+  const scaledLabelSize = labelSize * (isConstellationFocused ? 1 : mobileFontScaleFactor);
   
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
