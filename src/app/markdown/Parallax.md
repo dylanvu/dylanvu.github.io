@@ -1,129 +1,123 @@
 # 2.5D Camera Dolly & Parallax Algorithm Implementation Guide
 
-This document details the mathematical framework for simulating a 3D camera dolly, zoom, and rotation within a 2D rendering environment (Canvas, DOM, SVG, etc.).
+This document details the mathematical framework and implementation strategy for simulating a 3D camera dolly, zoom, and rotation within a 2D rendering environment (Konva/Canvas).
 
 ## 1. Core Concepts & Definitions
 
-To mimic a camera flying toward a target, we manipulate the 2D coordinates of all objects in the scene relative to the viewport center.
+To mimic a camera flying toward a target, we manipulate the 2D coordinates of all objects in the scene relative to a "Moving Origin."
 
 ### Variables
-*   **$C$ (Viewport Center):** The coordinates of the center of the user's screen $(W/2, H/2)$.
-*   **$T$ (Target Object):** The object being focused on.
-    *   $T_{pos}$: Original world position $(x, y)$.
+*   **$C$ (Window Center):** The fixed center coordinates of the viewport $(W/2, H/2)$.
+*   **$T$ (Target Object):** The star/constellation being focused on.
+    *   $T_{home}$: Original world position $(x, y)$.
     *   $T_{rot}$: Original rotation (degrees).
     *   $T_{zoom}$: The scale factor the camera should zoom to (e.g., 2.5x).
-*   **$O$ (Other Object):** A foreground/background object being manipulated.
+*   **$O$ (Other Object):** A neighbor or foreground object being manipulated.
     *   $O_{pos}$: Original world position $(x, y)$.
     *   $O_{depth}$: Z-axis multiplier.
-        *   $Depth < 1$: Background (Moves slower than target).
-        *   $Depth = 1$: Focal Plane (Moves with target).
-        *   $Depth > 1$: Foreground (Moves faster than target).
+        *   $Depth \approx 3.5$: Standard Background.
+        *   $Depth > 5.0$: Foreground (Polaris).
+*   **$p$ (Progress):** A value from $0.0$ to $1.0$ representing the camera's travel percentage.
+    *   $p=0$: Camera is at "Home" (World View).
+    *   $p=1$: Camera is at "Target" (Deep Space View).
 
 ---
 
-## 2. Phase 1: Focusing (The Dolly In)
+## 2. The Unified Camera Model
 
-When a target is selected, we calculate the destination transform for every other object ($O$) in the scene.
+Previous attempts using linear tweening (flat movement) or pivot-point manipulation (snapping issues) failed. The solution is a **Unified Parametric Function** that drives Position, Scale, and Rotation simultaneously based on $p$.
 
-### Step 1: Vector Calculation (Relative Position)
-Determine the vector from the **Target** to the **Other Object**. This ignores screen coordinates and establishes their relationship in "World Space."
+### Step 1: The Moving Origin
+In a real 3D camera move, the perspective shifts. In 2D, we simulate this by sliding the "World Center" from the Target's original position to the Screen Center.
 
-$$V_x = O_{pos}.x - T_{pos}.x$$
-$$V_y = O_{pos}.y - T_{pos}.y$$
+$$Origin_x(p) = T_{home}.x + (C.x - T_{home}.x) \times p$$
+$$Origin_y(p) = T_{home}.y + (C.y - T_{home}.y) \times p$$
 
-### Step 2: Radial Expansion (The Dolly Effect)
-As a camera moves closer to a specific point, objects do not just translate linearly; they expand outwards radially from the focus point. Objects closer to the camera ($Depth > 1$) expand faster.
+### Step 2: Radial Expansion (Dolly Zoom)
+As the camera moves closer, objects expand outward radially from the center. The expansion is non-linear based on depth.
 
-Calculate the **Expansion Factor** ($E$):
+$$E_{factor} = 1 + (T_{zoom} - 1) \times O_{depth}$$
+$$CurrentScale(p) = 1 + (E_{factor} - 1) \times p$$
 
-$$E = 1 + (T_{zoom} - 1) \times O_{depth}$$
+### Step 3: Rigid Body Rotation (Camera Roll)
+The camera rotates to align the target to $0\degree$. To simulate this, the entire world must counter-rotate around the Moving Origin.
 
-*Example:* If Target Zoom is 2.0 (2x) and Object Depth is 1.5 (Foreground):
-$E = 1 + (1) \times 1.5 = 2.5$. The object moves 2.5x further away from the focal point.
+$$RotationOffset(p) = T_{rot} \times p$$
 
-Apply this to find the **Unrotated Screen Position** ($P_{raw}$):
+### Step 4: The Vector Transform
+We calculate the vector from the **Target** to the **Object**, scale it, rotate it, and apply it to the **Moving Origin**.
 
-$$P_{raw}.x = C.x + (V_x \times E)$$
-$$P_{raw}.y = C.y + (V_y \times E)$$
+1.  **Base Vector:**
+    $$V_x = O_{pos}.x - T_{home}.x$$
+    $$V_y = O_{pos}.y - T_{home}.y$$
 
-### Step 3: Orbital Rotation (The "Spinning World")
-Since the camera rotates to align the Target to $0\degree$, the rest of the world must counter-rotate around the Viewport Center.
+2.  **Scale Vector:**
+    $$V'_x = V_x \times CurrentScale(p)$$
+    $$V'_y = V_y \times CurrentScale(p)$$
 
-Calculate the rotation angle $\theta$ (in radians):
-$$\theta = (-T_{rot} \times \pi) / 180$$
-
-Apply the 2D Rotation Matrix around Center $C$:
-
-$$P_{final}.x = C.x + (P_{raw}.x - C.x)\cos(\theta) - (P_{raw}.y - C.y)\sin(\theta)$$
-$$P_{final}.y = C.y + (P_{raw}.x - C.x)\sin(\theta) + (P_{raw}.y - C.y)\cos(\theta)$$
-
-### Step 4: Local Transformation
-The object itself must scale up and counter-rotate to maintain its orientation relative to the world.
-
-*   **Final Scale:** $S_{final} = S_{original} \times E$
-*   **Final Rotation:** $R_{final} = R_{original} - T_{rot}$
-*   **Final Opacity:** If $Depth > 1$ and the object is moving off-screen, interpolate Opacity to 0.
+3.  **Rotate Vector (2D Rotation Matrix):**
+    $$\theta = (-RotationOffset(p) \times \pi) / 180$$
+    $$Final_x = Origin_x(p) + (V'_x \cos\theta - V'_y \sin\theta)$$
+    $$Final_y = Origin_y(p) + (V'_x \sin\theta + V'_y \cos\theta)$$
 
 ---
 
-## 3. Phase 2: Unfocusing (The Return Arc)
+## 3. Solving Artifacts (Stutter & Flash)
 
-Standard linear interpolation (tweening $x/y$) causes objects to cut across the screen in a straight line, breaking the "spinning world" illusion. We must animate along an **Arc**.
+Mathematical precision is not enough; React render cycles introduce visual artifacts. We solve these using **State Locking** and **Layout Effects**.
 
-### The "Pivot Trick" Logic
-Instead of calculating a Bezier curve for the $(x,y)$ path, we manipulate the **Transformation Pivot (Anchor Point)**.
+### 1. The "Unfocus Flash"
+*   **Problem:** When unfocusing, React renders the component with its default props (Home Position) for one frame before the animation starts, causing a visual flash.
+*   **Solution:**
+    *   We use `useLayoutEffect` (synchronous) instead of `useEffect`.
+    *   We manually calculate the transform at $p=1$ (Deep Space).
+    *   We force-apply these coordinates to the DOM node *immediately* before the browser paints.
+    *   We set `opacity: 0` initially, then fade in, ensuring no jumps are visible.
 
-### Step 1: Shift Pivot to Viewport Center
-We temporarily move the object's rotational origin to the Viewport Center ($C$).
+### 2. The "Return Trip" Jitter
+*   **Problem:** If the `Target` coordinates shift slightly (e.g., due to window resizing or floating point math) while focused, the return animation calculates a different path than the entry animation, causing a jump.
+*   **Solution:** **Geometry Locking.**
+    *   When an object enters the "Focused" state, we capture the exact world coordinates of the Target into a `ref`.
+    *   When Unfocusing, we ignore the current live data and use the **Locked Data** to calculate the return path.
+    *   This guarantees $ExitPath \equiv EntryPath$.
 
-Calculate the offset required to place the object at its "Home" position ($O_{pos}$) relative to $C$:
+### 3. The "Unified Driver" Pattern
+Instead of tweening `x` and `y` properties directly (which results in linear movement), we tween a custom attribute `animProgress`.
 
-$$Offset_x = C.x - O_{pos}.x + LocalCenter.x$$
-$$Offset_y = C.y - O_{pos}.y + LocalCenter.y$$
-
-### Step 2: Set Initial "Deep" State
-Before the animation starts, snap the object to the state calculated in Phase 1 (The Parallax State).
-*   **Position:** $C.x, C.y$ (Object is anchored to screen center).
-*   **Offset:** The calculated offsets from Step 1.
-*   **Rotation:** $R_{original} - T_{rot}$
-*   **Scale:** $S_{original} \times E$
-*   **Opacity:** 0
-
-### Step 3: Animate Rotation
-Tween the properties back to their original values:
-*   **Rotation** $\rightarrow$ $R_{original}$
-*   **Scale** $\rightarrow$ $S_{original}$
-*   **Opacity** $\rightarrow$ 1
-
-*Result:* Because the pivot is at the screen center, tweening the rotation causes the object to swing in a perfect arc back to its home position.
-
-### Step 4: Cleanup (Critical)
-When the animation finishes, you **must** reset the coordinates to standard local space to ensure mouse interactions (hover, click) work correctly on the object itself.
-
-*   Set $x, y$ back to $O_{pos}$.
-*   Set Pivot/Offset back to local center.
+```
+// Konva Tween Config
+{
+  node: groupRef.current,
+  duration: 0.5,
+  animProgress: 1, // We tween this abstract number from 0 to 1
+  onUpdate: () => {
+    // We manually call the math function every frame
+    const p = node.getAttr('animProgress');
+    const state = calculateParallaxTransform(p, ...lockedData);
+    
+    // And apply the result
+    node.setAttrs(state);
+  }
+}
+```
+This forces the object to follow the calculated arc perfectly.
 
 ---
 
 ## 4. Implementation Guards
 
-### Race Conditions (The "Veer")
-If the `FocusedObject` ID updates before the `TargetCoordinates` are calculated, the math will use $(0,0)$ or stale coordinates, causing the object to move toward the center before snapping to the correct path.
-
-**Logic Guard:**
-
+### Race Conditions
+If `parallaxFocusData` is missing (e.g., on first load), the math will return $(0,0)$.
+**Guard:**
 ```
-if (isFocused && !TargetCoordinates) {
-   // STOP. Do not start animation.
-   // Wait for data to populate.
-   return;
-}
+if (!parallaxFocusData || !focusedConstellation) return null;
 ```
 
-### The "Foreground Clutter" Fix
-Foreground objects ($Depth > 1$) can scale up massively (e.g., 5x) and block the view as they move off-screen.
-
+### Foreground Physics (Polaris)
+Foreground objects need to move faster than the background to create depth.
 **Logic:**
-If calculating Phase 1 (Focusing), apply a `MovementMultiplier` to the vector length.
-$$MovementMultiplier = ExpansionFactor \times 1.2$$
-This ensures the object translates away faster than it scales up, clearing the viewport.
+We pass a `depth` parameter to the hook.
+*   Standard Constellations: `depth = 3.5`
+*   Polaris (Foreground): `depth = 6.0`
+
+This multiplier dramatically increases `ExpansionFactor`, causing the object to fly off-screen faster, simulating extreme proximity to the camera.
