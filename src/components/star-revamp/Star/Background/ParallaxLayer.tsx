@@ -1,56 +1,9 @@
 import { Group } from "react-konva";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Konva from "konva";
 import StaticStar from "./StaticStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-
-/**
- * ParallaxLayer - Creates a camera dolly zoom / parallax effect
- * 
- * === THE DESIRED EFFECT ===
- * When focusing on a constellation, we want:
- * 1. The focused constellation zooms into the center and scales up
- * 2. ALL other objects (background stars, other constellations) appear to move in a 
- *    "spinning world" effect - they orbit around the focused point
- * 3. Objects at different depths move by different amounts, creating depth perception
- * 4. Everything rotates together to maintain upright orientation
- * 
- * === HOW IT WORKS ===
- * 
- * DEPTH SYSTEM:
- * - depth < 1: Background layers (e.g., 0.3, 0.5, 0.7) - move LESS than focused object
- * - depth = 1: Middle layer - moves SAME as focused object
- * - depth > 1: Foreground layers (e.g., 1.5, 2.0) - move MORE than focused object, rush past camera
- * 
- * TRANSLATION (ARC MOTION):
- * - Calculate how much focused constellation moved: (windowCenter - unfocusedPosition)
- * - Multiply by depth: dx = (windowCenter.x - unfocusedX) * depth
- * - Apply to current position: targetX = currentX + dx
- * - CRITICAL: Set offsetX/offsetY to create ARC motion (not linear!)
- *   - The offset point is where rotation happens around
- *   - This causes objects to orbit in a curve rather than move in a straight line
- * 
- * ROTATION (SPINNING WORLD):
- * - All layers counter-rotate by the focused constellation's rotation
- * - If focused constellation rotates from 30° to 0° (rotates -30°)
- * - All other layers also rotate -30° to maintain relative orientation
- * - Creates the "spinning world" effect where everything appears connected
- * 
- * SCALE (ZOOM):
- * - Background (depth < 1): Scales up less than focused constellation
- * - Foreground (depth > 1): Scales up MORE than focused constellation
- * - Formula: targetScale = 1 + (focusScale - 1) * depth
- * - Example: if focusScale = 2 and depth = 0.5, then targetScale = 1.5
- * - Example: if focusScale = 2 and depth = 1.5, then targetScale = 2.5
- * 
- * === RESULT ===
- * Creates a camera dolly zoom where:
- * - Focusing zooms toward the constellation
- * - Background recedes (moves away slower)
- * - Foreground rushes past (moves away faster, eventually offscreen)
- * - Everything orbits in arcs with rotation, creating 3D depth illusion
- */
 
 interface ParallaxLayerProps {
   stars: Array<{ x: number; y: number; radius: number }>;
@@ -77,48 +30,50 @@ export default function ParallaxLayer({
   const { windowCenter } = useWindowSizeContext();
   const { parallaxFocusData, focusedObject } = useFocusContext();
 
-  // 1. ENTRANCE FADE EFFECT (Timer based)
+  // 1. ENTRANCE FADE EFFECT
+  // We keep this standard useEffect because it's a "Mount" animation, not a "Physics" update.
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
 
-    // Cleanup previous attempts to avoid race conditions
     if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
-    fadeTweenRef.current?.finish();
+    if (fadeTweenRef.current) fadeTweenRef.current.destroy();
 
-    // Start invisible
+    // Reset to invisible initially
     group.opacity(0);
 
-    // Start the timer
     fadeTimerRef.current = setTimeout(() => {
       fadeTweenRef.current = new Konva.Tween({
         node: group,
         duration: fadeDuration,
         opacity: 1,
         easing: Konva.Easings.Linear,
-        onFinish: () => {
-          if (fadeTweenRef.current) {
-            fadeTweenRef.current.destroy();
-            fadeTweenRef.current = null;
-          }
-        },
+        onFinish: () => { fadeTweenRef.current = null; },
       });
       fadeTweenRef.current.play();
-    }, fadeDelay * 1000); // Convert seconds to milliseconds
+    }, fadeDelay * 1000);
 
     return () => {
       if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
-      fadeTweenRef.current?.finish();
+      if (fadeTweenRef.current) fadeTweenRef.current.destroy();
     };
   }, [fadeDuration, fadeDelay]);
 
-  // 2. MOVEMENT & PARALLAX EFFECT
-  useEffect(() => {
+
+  // 2. PHYSICS & PARALLAX ENGINE
+  // Changed to useLayoutEffect to prevent "Flashes" where React renders the group 
+  // at the wrong position before the tween starts.
+  useLayoutEffect(() => {
     const group = groupRef.current;
     if (!group) return;
 
-    moveTweenRef.current?.finish();
+    // A. Destroy previous movement tween to prevent fighting
+    if (moveTweenRef.current) {
+        moveTweenRef.current.destroy();
+        moveTweenRef.current = null;
+    }
 
+    // B. Calculate Target State
     let targetRotation = 0;
     let targetScale = 1;
     let targetX = windowCenter.x;
@@ -127,15 +82,29 @@ export default function ParallaxLayer({
     if (parallaxFocusData && focusedObject.constellation) {
       const { unfocusedX, unfocusedY } = parallaxFocusData;
       const constellation = focusedObject.constellation;
+      
+      // Counter-rotate the world
       targetRotation = -(constellation.rotation ?? 0);
+      
+      // Scale based on depth (Matches the Unified Camera Model math)
       const focusScale = constellation.focusScale ?? 1;
       targetScale = 1 + (focusScale - 1) * depth;
+      
+      // Parallax Shift
       const dx = (windowCenter.x - unfocusedX) * depth;
       const dy = (windowCenter.y - unfocusedY) * depth;
       targetX += dx;
       targetY += dy;
     }
 
+    // C. Handle Initialization Case
+    // If we are mounting, or if React re-rendered, we must ensure the node 
+    // is positioned correctly relative to the pivot.
+    // We set the Pivot (Offset) to the window center. This is crucial for the rotation math.
+    group.offsetX(windowCenter.x);
+    group.offsetY(windowCenter.y);
+
+    // D. Start Tween
     moveTweenRef.current = new Konva.Tween({
       node: group,
       duration: MOVEMENT_ANIMATION_DURATION,
@@ -145,38 +114,29 @@ export default function ParallaxLayer({
       rotation: targetRotation,
       scaleX: targetScale,
       scaleY: targetScale,
-      // IMPORTANT: offsetX and offsetY create ARC MOTION, not linear translation!
-      // The rotation happens around this offset point, causing objects to move along
-      // a curved trajectory as they rotate. This creates the parallax "spinning world"
-      // effect where objects appear to orbit around the focus point.
+      // Ensure we maintain the pivot point during animation
       offsetX: windowCenter.x,
       offsetY: windowCenter.y,
-      // Note: We do NOT touch opacity here, preserving the fade-in
-      onFinish: () => {
-        if (moveTweenRef.current) {
-          moveTweenRef.current.destroy();
-          moveTweenRef.current = null;
-        }
-      },
+      
+      onFinish: () => { moveTweenRef.current = null; },
     });
 
     moveTweenRef.current.play();
 
-    return () => {
-      // We usually don't force finish moveTween on unmount/re-render
-      // to allow smooth transitions if inputs change rapidly
-    };
-  }, [parallaxFocusData, depth, windowCenter]);
+  }, [parallaxFocusData, depth, windowCenter, focusedObject]);
 
   return (
     <Group
       ref={groupRef}
+      // STATIC PROPS:
+      // We explicitly set x/y/offset to the center here to satisfy initial render,
+      // but useLayoutEffect takes over control immediately.
       x={windowCenter.x}
       y={windowCenter.y}
       offsetX={windowCenter.x}
       offsetY={windowCenter.y}
-      opacity={0} // Explicitly start at 0 for the fade effect
-      listening={false} // Background stars don't need mouse events
+      opacity={0} // Start hidden for fade-in
+      listening={false}
     >
       {stars.map((star, i) => (
         <StaticStar key={i} x={star.x} y={star.y} radius={star.radius} />
