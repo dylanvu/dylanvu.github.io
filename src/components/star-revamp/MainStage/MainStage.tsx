@@ -21,6 +21,7 @@ import {
   BLUR,
   DURATION,
   SHADOW,
+  PANEL,
 } from "@/app/theme";
 import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
@@ -30,7 +31,7 @@ const BasePanelStyle: React.CSSProperties = {
   position: "absolute",
   color: SPACE_TEXT_COLOR,
   overflowY: "auto",
-  width: "50%",
+  width: PANEL.width,
   height: "100%",
   zIndex: 11,
   background: hexToRgba(SECONDARY_SPACE_COLOR, OPACITY.light),
@@ -42,7 +43,7 @@ const StarPanelStyle: React.CSSProperties = {
   background: hexToRgba(SECONDARY_SPACE_COLOR, OPACITY.light),
   backdropFilter: BLUR.heavy,
   borderLeft: `1px solid rgba(255, 255, 255, ${OPACITY.normal})`,
-  padding: "2rem",
+  padding: PANEL.padding,
   boxShadow: SHADOW.lg,
 };
 

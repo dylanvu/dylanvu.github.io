@@ -33,4 +33,4 @@ Notable classes I took:
 * EECS Senior Design Project (for no credit, since I was not in EECS. I took it to build an interdisciplinary project with Electrical and Computer Engineers) building a Flutter application paired with a wellness sensor for Thales Avionics
 * Graduate robotic autonomy, where I learned Robotic Operation System and Gazebo
 
-After graduating, I headed off to One Medical (now acquired by [Amazon](/star/amazon))for my first job out of college!
+After graduating, I headed off to One Medical (now acquired by [Amazon](/star/amazon)) for my first job out of college!

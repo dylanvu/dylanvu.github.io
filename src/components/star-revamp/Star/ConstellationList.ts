@@ -211,7 +211,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "Haptic Definition",
           origin: "Apr. 2024",
-          about: "The pinnacle of my hackathon experience: feel temperature and touch wirelessly",
+          about: "Feel temperature and touch wirelessly",
           classification: "Giant",
           slug: "haptic-definition",
         },
@@ -222,7 +222,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "Trigger Finger Tango",
           origin: "Feb. 2024",
-          about: "Custom Mediapipe gestures control an Unreal Engine destruction simulator",
+          about: "Custom Mediapipe gestures control an Unreal Engine game",
           classification: "Giant",
           slug: "trigger-finger-tango",
         },
@@ -233,7 +233,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "Amelia",
           origin: "Jan. 2024",
-          about: "A cardboard robot with an LLM brain that accidentally learned to play I-Spy",
+          about: "A cardboard robot with an LLM brain that accidentally learned I-Spy",
           classification: "Giant",
           slug: "amelia",
         },
@@ -255,7 +255,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "FishGPT",
           origin: "Nov. 2023",
-          about: "Chat with a real fish using ChatGPT, computer vision, and 5 gallons of water",
+          about: "Chat with a fish using ChatGPT, computer vision, and 5 gallons of water",
           classification: "Star",
           slug: "fishgpt",
         },
@@ -266,7 +266,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "WordShip",
           origin: "Feb. 2022",
-          about: "Wordle meets retro arcade shooter with cross-platform WebSocket magic",
+          about: "Wordle meets retro arcade shooter with cross-platform WebSockets",
           classification: "Dwarf",
           slug: "wordship",
         },
@@ -277,7 +277,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "AIChE Careers Bot",
           origin: "Dec. 2021 - Feb. 2022",
-          about: "TypeScript Discord bot that auto-delivers LinkedIn jobs to an entire department",
+          about: "Discord bot that sends LinkedIn jobs to a club",
           classification: "Star",
           slug: "aiche-careers",
         },
@@ -288,7 +288,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
         data: {
           label: "GRIP Board",
           origin: "Sep. 2021",
-          about: "Camera calibration magic transforms whiteboards into smart boards",
+          about: "Camera calibration transforms whiteboards into smart boards",
           classification: "Dwarf",
           slug: "grip-board",
         },

@@ -142,6 +142,14 @@ export const SPACING = {
 } as const;
 
 // ===========================
+// PANEL DIMENSIONS
+// ===========================
+export const PANEL = {
+  width: "50%",           // Width of the side panel
+  padding: "2rem",        // Padding inside the panel
+} as const;
+
+// ===========================
 // FOCUS STYLES (Accessibility)
 // ===========================
 export const FOCUS_RING = {
