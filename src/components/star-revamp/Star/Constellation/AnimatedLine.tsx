@@ -1,6 +1,7 @@
 import { Line } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
+import { OPACITY } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 
 export default function AnimatedLine({
@@ -55,7 +56,7 @@ export default function AnimatedLine({
     <Line
       ref={lineRef}
       points={[p1.x, p1.y, p2.x, p2.y]}
-      stroke="rgba(255,255,255,0.5)"
+      stroke={`rgba(255,255,255,${OPACITY.half})`}
       strokeWidth={1}
       lineCap="round"
       lineJoin="round"

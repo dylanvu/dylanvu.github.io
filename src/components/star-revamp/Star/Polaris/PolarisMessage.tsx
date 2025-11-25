@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { FONT_FAMILY } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, DURATION, OPACITY, ERROR_COLOR, hexToRgba } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -63,7 +63,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
       // FIX: Switched to vertical only to match user bubble
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: DURATION.slow, ease: "easeOut" }}
       style={{
         display: "flex",
         gap: "12px",
@@ -107,9 +107,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
                 }
           }
           style={{
-            background: "rgba(255, 255, 255, 0.05)",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
+            ...GLASS.light,
             padding: "0.8rem 1.2rem",
             borderRadius: "2px 18px 18px 18px",
             lineHeight: "1.5",
@@ -159,8 +157,8 @@ function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Bl
             display: "block",
             width: "100%",
             height: "200px",
-            background: "rgba(255, 255, 255, 0.05)",
-            borderRadius: "8px",
+            background: GLASS.light.background,
+            borderRadius: RADIUS.md,
             textAlign: "center",
             lineHeight: "200px",
             fontSize: `${0.85 * mobileFontScaleFactor}rem`,
@@ -175,9 +173,9 @@ function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Bl
           style={{
             display: "block",
             padding: "1rem",
-            background: "rgba(255, 100, 100, 0.1)",
-            border: "1px solid rgba(255, 100, 100, 0.3)",
-            borderRadius: "8px",
+            background: hexToRgba(ERROR_COLOR, OPACITY.normal),
+            border: `1px solid ${hexToRgba(ERROR_COLOR, OPACITY.bolder)}`,
+            borderRadius: RADIUS.md,
             fontSize: `${0.85 * mobileFontScaleFactor}rem`,
             opacity: 0.8,
           }}
@@ -199,7 +197,7 @@ function StreamingImage({ src, alt, mobileFontScaleFactor }: { src?: string | Bl
           }}
           style={{
             maxWidth: "100%",
-            borderRadius: "8px",
+            borderRadius: RADIUS.md,
             display: isLoading ? "none" : "block",
           }}
         />

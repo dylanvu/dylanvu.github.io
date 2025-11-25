@@ -1,4 +1,4 @@
-import { FONT_FAMILY } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, OPACITY } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
@@ -73,7 +73,7 @@ export default function StarMarkdownRenderer({
             return (
               <code
                 style={{
-                  background: "rgba(255, 255, 255, 0.08)",
+                  background: GLASS.medium.background,
                   padding: "0.2rem 0.4rem",
                   borderRadius: "4px",
                   fontSize: "0.9em",
@@ -91,9 +91,7 @@ export default function StarMarkdownRenderer({
           <pre
             className={FONT_FAMILY.className}
             style={{
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(8px)",
+              ...GLASS.light,
               borderRadius: "12px",
               padding: "1rem",
               overflowX: "auto",
@@ -113,8 +111,8 @@ export default function StarMarkdownRenderer({
               display: "block",
               maxWidth: "70%",
               maxHeight: "50vh",
-              borderRadius: "8px",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: RADIUS.md,
+              border: GLASS.light.border,
               margin: "auto",
               marginTop: "0.5rem",
               marginBottom: "0.5rem",
@@ -126,8 +124,8 @@ export default function StarMarkdownRenderer({
           <blockquote
             className={FONT_FAMILY.className}
             style={{
-              background: "rgba(255, 255, 255, 0.03)",
-              borderLeft: "4px solid rgba(255, 255, 255, 0.3)",
+              background: GLASS.subtle.background,
+              borderLeft: `4px solid rgba(255, 255, 255, ${OPACITY.bolder})`,
               padding: "0.5rem 1rem",
               margin: "1rem 0",
               fontStyle: "italic",

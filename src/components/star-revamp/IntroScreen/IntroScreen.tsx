@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   FONT_FAMILY,
   SPACE_TEXT_COLOR,
+  DURATION,
 } from "@/app/theme";
 
 function getIntroTextForPath(pathname: string): string[] {
@@ -49,9 +50,9 @@ export default function IntroScreen({
   const pathname = usePathname();
   const INTRO_TEXT = getIntroTextForPath(pathname);
 
-  const FADE_DURATION = 1; // seconds per line
+  const FADE_DURATION = DURATION.intro; // seconds per line
   const STAGGER_DURATION = 2; // delay between lines
-  const VISIBLE_DURATION = 1; // how long all lines stay fully visible
+  const VISIBLE_DURATION = DURATION.intro; // how long all lines stay fully visible
   const GAP = "1.5rem"; // <- change this to adjust spacing between lines
 
   const [show, setShow] = useState(true);

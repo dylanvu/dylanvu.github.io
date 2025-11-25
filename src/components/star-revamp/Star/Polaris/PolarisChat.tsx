@@ -4,7 +4,14 @@ import StargazerMessage from "@/components/star-revamp/Star/Polaris/StargazerMes
 import PolarisMessage from "@/components/star-revamp/Star/Polaris/PolarisMessage";
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { FONT_FAMILY } from "@/app/theme";
+import { 
+  FONT_FAMILY, 
+  GLASS, 
+  RADIUS, 
+  DURATION, 
+  OPACITY,
+  hexToRgba,
+} from "@/app/theme";
 import { useMobile } from "@/hooks/useMobile";
 
 export default function PolarisChat() {
@@ -112,26 +119,24 @@ export default function PolarisChat() {
           right: "1.5rem",
           width: "2rem",
           height: "2rem",
-          borderRadius: "50%",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          background: "rgba(255, 255, 255, 0.08)",
-          backdropFilter: "blur(12px)",
+          borderRadius: RADIUS.circle,
+          ...GLASS.medium,
           color: "white",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "1.2rem",
-          transition: "all 0.2s",
+          transition: `all ${DURATION.fast}s`,
           zIndex: 10,
           pointerEvents: "auto",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+          e.currentTarget.style.background = `rgba(255, 255, 255, ${OPACITY.strong})`;
           e.currentTarget.style.transform = "scale(1.05)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+          e.currentTarget.style.background = GLASS.medium.background;
           e.currentTarget.style.transform = "scale(1)";
         }}
         aria-label="Close Polaris"
@@ -147,11 +152,11 @@ export default function PolarisChat() {
           background: transparent;
         }
         .polaris-scroll-container::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, ${OPACITY.bold});
           border-radius: 10px;
         }
         .polaris-scroll-container::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.4);
+          background: rgba(255, 255, 255, ${OPACITY.semitransparent});
         }
       `}</style>
 
@@ -212,15 +217,13 @@ export default function PolarisChat() {
               onClick={() => handleSubmit(suggestion)}
               disabled={disabledChatInput}
               style={{
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                ...GLASS.light,
                 color: "inherit",
                 padding: "0.4rem 0.8rem",
-                borderRadius: "20px",
+                borderRadius: RADIUS.lg,
                 fontSize: `${0.75 * mobileFontScaleFactor}rem`,
                 cursor: isThinking ? "not-allowed" : "pointer",
-                backdropFilter: "blur(4px)",
-                transition: "background 0.2s",
+                transition: `background ${DURATION.fast}s`,
               }}
               className={FONT_FAMILY.className}
             >
@@ -234,12 +237,10 @@ export default function PolarisChat() {
           style={{
             display: "flex",
             alignItems: "center",
-            background: "rgba(255, 255, 255, 0.08)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "99px",
+            ...GLASS.medium,
+            borderRadius: RADIUS.pill,
             padding: "0.4rem 0.4rem 0.4rem 1.2rem",
-            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            boxShadow: `0 4px 30px rgba(0, 0, 0, ${OPACITY.normal})`,
             pointerEvents: "all",
           }}
         >
@@ -268,9 +269,9 @@ export default function PolarisChat() {
             style={{
               width: "2.2rem",
               height: "2.2rem",
-              borderRadius: "50%",
+              borderRadius: RADIUS.circle,
               border: "none",
-              background: "rgba(255, 255, 255, 0.2)",
+              background: `rgba(255, 255, 255, ${OPACITY.bold})`,
               color: "white",
               cursor: isThinking ? "wait" : "pointer",
               display: "flex",

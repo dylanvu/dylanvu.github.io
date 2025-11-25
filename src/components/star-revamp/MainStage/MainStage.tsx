@@ -17,6 +17,9 @@ import {
   hexToRgba,
   SECONDARY_SPACE_COLOR,
   SPACE_TEXT_COLOR,
+  OPACITY,
+  BLUR,
+  DURATION,
 } from "@/app/theme";
 import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
@@ -29,15 +32,15 @@ const BasePanelStyle: React.CSSProperties = {
   width: "50%",
   height: "100%",
   zIndex: 11,
-  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.05),
+  background: hexToRgba(SECONDARY_SPACE_COLOR, OPACITY.light),
   right: 0,
   cursor: "auto",
 }
 
 const StarPanelStyle: React.CSSProperties = {
-  background: hexToRgba(SECONDARY_SPACE_COLOR, 0.05),
-  backdropFilter: "blur(12px)",
-  borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
+  background: hexToRgba(SECONDARY_SPACE_COLOR, OPACITY.light),
+  backdropFilter: BLUR.heavy,
+  borderLeft: `1px solid rgba(255, 255, 255, ${OPACITY.normal})`,
   padding: "2rem",
 };
 
@@ -77,7 +80,7 @@ export const PolarisPanelMotionExit:
 };
 
 export const StarPanelMotionTransition: Transition = {
-  duration: 0.4,
+  duration: DURATION.normal,
   ease: "easeInOut",
 };
 

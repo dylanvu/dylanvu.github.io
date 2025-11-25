@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { FONT_FAMILY, hexToRgba, SPACE_TEXT_COLOR } from "@/app/theme"; // Assuming this exists based on your snippet
+import { FONT_FAMILY, hexToRgba, SPACE_TEXT_COLOR, GLASS, RADIUS, DURATION } from "@/app/theme";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { useMobile } from "@/hooks/useMobile";
@@ -11,7 +11,7 @@ export default function StargazerMessage({ message }: { message: string }) {
       // FIX: Removed 'x: 10' to prevent right-side overflow/expansion
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ duration: DURATION.normal, ease: "easeOut" }}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -36,15 +36,12 @@ export default function StargazerMessage({ message }: { message: string }) {
       </span>
       <div
         style={{
-          // background: "rgba(255, 255, 255, 0.1)",
-          background: hexToRgba(SPACE_TEXT_COLOR, 0.15),
+          ...GLASS.strong,
           color: SPACE_TEXT_COLOR,
-          backdropFilter: "blur(8px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
           padding: "0.8rem 1.2rem",
           borderRadius: "18px 18px 2px 18px",
           lineHeight: "1.5",
-          wordWrap: "break-word", // Ensure long words don't overflow
+          wordWrap: "break-word",
         }}
       >
         <ReactMarkdown>{message}</ReactMarkdown>

@@ -1,7 +1,7 @@
 import { Group, Rect, Text } from "react-konva";
 import { useState, useRef, useEffect } from "react";
 import Konva from "konva";
-import { SPACE_TEXT_COLOR, FONT_FAMILY } from "@/app/theme";
+import { SPACE_TEXT_COLOR, FONT_FAMILY, GLASS, DURATION, RADIUS } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { calculateHackathonStatistics } from "@/constants/Hackathons";
 
@@ -52,7 +52,7 @@ export default function HackathonStatistics({
     
     fadeAnimationRef.current = new Konva.Tween({
       node,
-      duration: 0.5,
+      duration: DURATION.slow,
       opacity: targetOpacity,
       easing: Konva.Easings.EaseInOut,
       onUpdate: () => {
@@ -89,10 +89,10 @@ export default function HackathonStatistics({
         y={0}
         width={width}
         height={contentHeight}
-        fill="rgba(0, 0, 0, 0.5)"
+        fill={GLASS.dark.background}
         stroke={SPACE_TEXT_COLOR}
         strokeWidth={1}
-        cornerRadius={5}
+        cornerRadius={parseInt(RADIUS.sm)}
       />
 
       {/* Statistics Text */}

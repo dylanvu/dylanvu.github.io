@@ -1,8 +1,9 @@
 import { Shape } from "react-konva";
 import { useRef } from "react";
 import React from "react";
+import { BACKGROUND_STAR_COLORS, getRandomColor, OPACITY } from "@/app/theme";
 
-const BG_STAR_COLORS = ["#888888", "#AAAAAA", "#CCCCCC", "#EEEEEE"];
+const BG_STAR_COLORS = BACKGROUND_STAR_COLORS;
 
 function StaticStar({
   x,
@@ -15,7 +16,7 @@ function StaticStar({
 }) {
   // Stable color per instance
   const color = useRef(
-    BG_STAR_COLORS[Math.floor(Math.random() * BG_STAR_COLORS.length)]
+    getRandomColor(BG_STAR_COLORS)
   ).current;
 
   return (
@@ -28,7 +29,7 @@ function StaticStar({
       sceneFunc={(ctx) => {
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
         gradient.addColorStop(0, color);
-        gradient.addColorStop(0.5, "rgba(255,255,255,0.2)");
+        gradient.addColorStop(0.5, `rgba(255,255,255,${OPACITY.bold})`);
         gradient.addColorStop(1, "transparent");
 
         ctx.fillStyle = gradient;

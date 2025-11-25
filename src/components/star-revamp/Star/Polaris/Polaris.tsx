@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Group, Circle } from "react-konva";
 import Konva from "konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
+import { POLARIS_GLOW_COLOR } from "@/app/theme";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useMobile } from "@/hooks/useMobile";
@@ -175,7 +176,7 @@ const PulseRing = ({
       x={0}
       y={0}
       radius={radius}
-      stroke={debug ? "red" : "rgba(200, 230, 255, 0.6)"}
+      stroke={debug ? "red" : POLARIS_GLOW_COLOR}
       listening={false}
     />
   );

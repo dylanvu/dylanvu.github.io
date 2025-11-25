@@ -5,6 +5,8 @@ import {
   FONT_FAMILY,
   SPACE_BACKGROUND_COLOR,
   SPACE_TEXT_COLOR,
+  MAIN_STAR_COLORS,
+  getRandomColor,
 } from "@/app/theme";
 import { isStarDataWithInternalLink, isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -99,7 +101,7 @@ function MainStar({
   const initialFadeCompleteRef = useRef(false);
 
   const starColor = useRef(
-    ["#FFFFFF", "#F5F8FF", "#FFFEF5", "#FFF5F8"][Math.floor(Math.random() * 4)]
+    getRandomColor(MAIN_STAR_COLORS)
   ).current;
 
   const SCALE_ANIMATION_DURATION = 0.25;
