@@ -15,8 +15,8 @@ import {
 function getIntroTextForPath(pathname: string): string[] {
   if (pathname.startsWith("/star/")) {
     return [
-      "In this star that you found",
-      "As it twinkles and glints",
+      "In this star that you seek",
+      "Within its twinkling light",
       "Discover its story",
     ];
   }
