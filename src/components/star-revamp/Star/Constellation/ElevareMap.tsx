@@ -1,7 +1,6 @@
 import Konva from "konva";
 import { Group, Shape, Rect } from "react-konva";
 import { useState, useRef, useEffect, useCallback, ReactNode, createContext } from "react";
-import { Star } from "@/interfaces/StarInterfaces";
 import { US_MAP_SIMPLE } from "../us_map";
 import { SPACE_TEXT_COLOR, hexToRgba } from "@/app/theme";
 
@@ -183,10 +182,6 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         resetTweenRef.current.destroy();
         resetTweenRef.current = null;
       }
-
-      // Capture current values to animate from
-      const startScale = mapScale;
-      const startOffset = { ...mapOffset };
 
       resetTweenRef.current = new Konva.Tween({
         node,
