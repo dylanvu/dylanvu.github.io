@@ -19,6 +19,7 @@ import { useFocusContext } from "@/hooks/useFocusProvider";
 import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { DESIGN_REFERENCE } from "@/app/theme";
+import { computeCenter } from "@/utils/constellationUtils";
 
 /**
  * Responsive star field: positions constellations relative to screen center
@@ -39,21 +40,6 @@ export default function MainStarField() {
   } = useTopOverlayContext();
 
   const { focusedObject, setFocusedObject } = useFocusContext();
-
-  // helper to compute the constellation center in its local coordinates
-  const computeCenter = (stars: { x: number; y: number }[]) => {
-    const xs = stars.map((s) => s.x);
-    const ys = stars.map((s) => s.y);
-    const minX = Math.min(...xs) - 10;
-    const maxX = Math.max(...xs) + 10;
-    const minY = Math.min(...ys) - 10;
-    const maxY = Math.max(...ys) + 10;
-    const widthLocal = maxX - minX;
-    const heightLocal = maxY - minY;
-    const centerX = minX + widthLocal / 2;
-    const centerY = minY + heightLocal / 2;
-    return { minX, minY, widthLocal, heightLocal, centerX, centerY };
-  };
 
   const router = useRouter();
   const pathname = usePathname();
