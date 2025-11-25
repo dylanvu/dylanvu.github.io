@@ -16,6 +16,8 @@ import { useFocusContext } from "@/hooks/useFocusProvider";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import React from "react";
 import { useMobile } from "@/hooks/useMobile";
+import { useConstellationInteractions } from "./useConstellationInteractions";
+import { areConstellationPropsEqual } from "./useConstellationMemo";
 
 function Constellation({
   data,
@@ -445,56 +447,22 @@ function Constellation({
   const { setOverlayTextContents: setCenterOverlayTextContents } =
     useCenterOverlayContext();
 
-
-  const handleConstellationClick = (e: Konva.KonvaPointerEvent) => {
-    e.cancelBubble = true;
-    if (focusedObject.star) return;
-    
-    if (!isFocusedRef.current) {
-      groupRef.current?.moveToTop();
-    }
-    document.body.style.cursor = "default";
-    if (onClickCallback) onClickCallback();
-  };
-
-  const handleInteractionStart = () => {
-    if (!isFocusedRef.current) {
-      document.body.style.cursor = "pointer";
-    }
-    setIsHovered(true);
-
-    if (isReturningRef.current) {
-      if (onHoverEnterCallback) onHoverEnterCallback();
-      return;
-    }
-
-    if (!isFocusedRef.current) {
-      setBrightness(brightnessHover);
-      playHoverTween(
-        (transformData.scaleX ?? 1) * HOVER_SCALE,
-        (transformData.scaleY ?? 1) * HOVER_SCALE
-      );
-    }
-
-    if (onHoverEnterCallback) onHoverEnterCallback();
-  };
-
-  const handleInteractionEnd = () => {
-    document.body.style.cursor = "default";
-    setIsHovered(false);
-
-    if (isReturningRef.current) {
-      if (onHoverLeaveCallback) onHoverLeaveCallback();
-      return;
-    }
-
-    if (!isFocusedRef.current) {
-      setBrightness(1);
-      playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
-    }
-
-    if (onHoverLeaveCallback) onHoverLeaveCallback();
-  };
+  const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
+    useConstellationInteractions({
+      isFocusedRef,
+      isReturningRef,
+      focusedObjectStar: focusedObject.star,
+      transformData,
+      brightnessHover,
+      HOVER_SCALE,
+      playHoverTween,
+      onClickCallback,
+      onHoverEnterCallback,
+      onHoverLeaveCallback,
+      setBrightness,
+      setIsHovered,
+      groupRef,
+    });
 
   // Helper function to render a single star
   const renderStar = (star: typeof stars[0], i: number) => {
@@ -686,45 +654,4 @@ function Constellation({
   );
 }
 
-export default React.memo(Constellation, (prevProps, nextProps) => {
-  if (prevProps.data !== nextProps.data) {
-    if (prevProps.data && nextProps.data) {
-      if (
-        prevProps.data.name !== nextProps.data.name ||
-        prevProps.data.stars !== nextProps.data.stars ||
-        prevProps.data.connections !== nextProps.data.connections
-      ) {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  if (prevProps.transformData !== nextProps.transformData) {
-    if (prevProps.transformData && nextProps.transformData) {
-      if (
-        prevProps.transformData.x !== nextProps.transformData.x ||
-        prevProps.transformData.y !== nextProps.transformData.y ||
-        prevProps.transformData.scaleX !== nextProps.transformData.scaleX ||
-        prevProps.transformData.scaleY !== nextProps.transformData.scaleY ||
-        prevProps.transformData.rotation !== nextProps.transformData.rotation
-      ) {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  return (
-    prevProps.windowCenter.x === nextProps.windowCenter.x &&
-    prevProps.windowCenter.y === nextProps.windowCenter.y &&
-    prevProps.focusedConstellation?.name === nextProps.focusedConstellation?.name &&
-    prevProps.showBoundingBox === nextProps.showBoundingBox &&
-    prevProps.showStarBoundingBox === nextProps.showStarBoundingBox &&
-    prevProps.onHoverEnterCallback === nextProps.onHoverEnterCallback &&
-    prevProps.onHoverLeaveCallback === nextProps.onHoverLeaveCallback &&
-    prevProps.onClickCallback === nextProps.onClickCallback
-  );
-});
+export default React.memo(Constellation, areConstellationPropsEqual);
