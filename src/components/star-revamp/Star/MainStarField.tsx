@@ -38,11 +38,6 @@ export default function MainStarField() {
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
 
-  const [focusedScreenPos, setFocusedScreenPos] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-
   const { focusedObject, setFocusedObject } = useFocusContext();
 
   // helper to compute the constellation center in its local coordinates
@@ -60,18 +55,6 @@ export default function MainStarField() {
     return { minX, minY, widthLocal, heightLocal, centerX, centerY };
   };
 
-  // Update focusedScreenPos for Polaris when constellation is focused
-  useEffect(() => {
-    if (focusedObject.constellation) {
-      setFocusedScreenPos({
-        x: windowCenter.x,
-        y: windowCenter.y,
-      });
-    } else {
-      setFocusedScreenPos(null);
-    }
-  }, [focusedObject.constellation, windowCenter]);
-
   const router = useRouter();
   const pathname = usePathname();
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
@@ -82,7 +65,6 @@ export default function MainStarField() {
   const handleBackgroundInteraction = () => {
     if (focusedObject.constellation) {
       setFocusedObject({ constellation: null, star: null });
-      setFocusedScreenPos(null);
       resetCenterOverlayTextContents();
       setCenterOverlayVisibility(true);
       setTopOverlayVisibility(false);
@@ -405,20 +387,6 @@ export default function MainStarField() {
               twinkleMin={4.9}
               twinkleMax={5.1}
               windowCenter={windowCenter}
-              focusedScreenPos={focusedScreenPos}
-              focusedUnfocusedPos={
-                focusedObject.constellation
-                  ? {
-                      x:
-                        (focusedObject.constellation.designX / DESIGN_REFERENCE.width) * width +
-                        computeCenter(focusedObject.constellation.stars).centerX,
-                      y:
-                        (focusedObject.constellation.designY / DESIGN_REFERENCE.height) *
-                          height +
-                        computeCenter(focusedObject.constellation.stars).centerY,
-                    }
-                  : null
-              }
               onHoverEnterCallback={() => {
                 setCenterOverlayTextContents({
                   intro: "The North Star",

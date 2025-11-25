@@ -5,6 +5,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import { POLARIS_GLOW_COLOR } from "@/app/theme";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
 import { TweenConfig } from "konva/lib/Tween";
 
@@ -15,8 +16,6 @@ type PolarisProps = {
   brightness?: number;
   twinkleMin?: number;
   twinkleMax?: number;
-  focusedScreenPos?: { x: number; y: number } | null;
-  focusedUnfocusedPos?: { x: number; y: number } | null;
   windowCenter: { x: number; y: number };
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
@@ -189,8 +188,6 @@ export default function Polaris({
   brightness = 5,
   twinkleMin = 4.9,
   twinkleMax = 5.1,
-  focusedScreenPos,
-  focusedUnfocusedPos,
   windowCenter,
   onHoverEnterCallback,
   onHoverLeaveCallback,
@@ -198,6 +195,7 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isTalking, registerStreamChunkCallback } = usePolarisContext();
+  const { focusedObject, parallaxFocusData } = useFocusContext();
   const { mobileScaleFactor } = useMobile();
   
   // Track if the initial animation to bottom-left has completed
@@ -247,7 +245,7 @@ export default function Polaris({
   const xRef = useRef(x);
   const yRef = useRef(y);
   const windowCenterRef = useRef(windowCenter);
-  const focusedUnfocusedPosRef = useRef(focusedUnfocusedPos);
+  const parallaxFocusDataRef = useRef(parallaxFocusData);
   const widthRef = useRef(width);
   const heightRef = useRef(height);
   const clickTargetXRef = useRef(CLICK_TARGET_X);
@@ -258,7 +256,7 @@ export default function Polaris({
     xRef.current = x;
     yRef.current = y;
     windowCenterRef.current = windowCenter;
-    focusedUnfocusedPosRef.current = focusedUnfocusedPos;
+    parallaxFocusDataRef.current = parallaxFocusData;
     widthRef.current = width;
     heightRef.current = height;
     clickTargetXRef.current = CLICK_TARGET_X;
@@ -297,8 +295,10 @@ export default function Polaris({
       };
       
       focusTweenRef.current = new Konva.Tween(tweenConfig);
-    } else if (focusedScreenPos) {
-      const focal = focusedUnfocusedPosRef.current ?? windowCenterRef.current;
+    } else if (focusedObject.constellation) {
+      const focal = parallaxFocusDataRef.current 
+        ? { x: parallaxFocusDataRef.current.unfocusedX, y: parallaxFocusDataRef.current.unfocusedY }
+        : windowCenterRef.current;
       const currentX = xRef.current;
       const currentY = yRef.current;
       let vx = currentX - focal.x;
@@ -351,7 +351,7 @@ export default function Polaris({
     }
 
     focusTweenRef.current.play();
-  }, [isReady, focusedScreenPos]);
+  }, [isReady, focusedObject.constellation]);
 
   const handleClick = () => {
     if (!isReady) {
