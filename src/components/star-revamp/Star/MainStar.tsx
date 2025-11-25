@@ -73,20 +73,31 @@ function MainStar({
   onHoverPointerOverride = false,
   onHoverScale = 1.1,
 }: Props) {
-  const { mobileScaleFactor, mobileFontScaleFactor } = useMobile();
+  const { mobileScaleFactor, mobileFontScaleFactor, isMobileLandscape } = useMobile();
   
   // Consume map scale context (defaults to 1 if not in ElevareMap)
   const mapScale = useContext(MapScaleContext);
   
   const { focusedObject } = useFocusContext();
   
+  // Check if this star has a label
+  const hasLabel = !!(data?.label || labelOverride);
+  
+  // Calculate scale factors - no growth during Elevare zoom on any device
+  // When constellation is focused, stars stay at constant size (scale = 1)
+  // This removes the mapScale compensation entirely
+  const focusedScaleFactor = isConstellationFocused ? 1 : mobileScaleFactor;
+  const focusedFontScaleFactor = isConstellationFocused ? 1 : mobileFontScaleFactor;
+  
   // Derive size from classification, or use provided size, or default to 5
   // Apply mobile scale factor to star sizes ONLY when constellation is not focused
-  // When focused, show stars at full size for better visibility
-  const actualSize = (size ?? getStarSize(data)) * (isConstellationFocused ? 1 : mobileScaleFactor);
+  // When focused, multiply by mapScale (or dampened mapScale on mobile) to compensate 
+  // for ElevareMap's inverse scaling (1/mapScale)
+  const actualSize = (size ?? getStarSize(data)) * focusedScaleFactor;
   // Apply mobile font scale factor to labels ONLY when constellation is not focused
-  // When focused, show labels at full size for better readability
-  const scaledLabelSize = labelSize * (isConstellationFocused ? 1 : mobileFontScaleFactor);
+  // When focused, multiply by mapScale (or dampened mapScale on mobile) to compensate
+  // for ElevareMap's inverse scaling
+  const scaledLabelSize = labelSize * focusedFontScaleFactor;
   
   const groupRef = useRef<Konva.Group>(null);
   const shapeRef = useRef<Konva.Shape>(null);
@@ -327,7 +338,8 @@ function MainStar({
 
     // If this star is dimmed, restore normal opacity on hover
     // Only if initial fade is complete
-    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
+    // Stars without labels never dim, so no need to restore
+    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused && hasLabel;
     if (shouldDim && initialFadeCompleteRef.current) {
       const group = groupRef.current;
       if (group) {
@@ -370,7 +382,8 @@ function MainStar({
     
     // If this star should be dimmed, restore dim state
     // Only if initial fade is complete
-    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
+    // Stars without labels never dim
+    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused && hasLabel;
     if (shouldDim && initialFadeCompleteRef.current) {
       const group = groupRef.current;
       if (group) {
@@ -454,7 +467,8 @@ function MainStar({
     // 1. Constellation is focused
     // 2. There IS a focused star
     // 3. This star is NOT the focused one
-    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused;
+    // 4. This star has a label (stars without labels never dim)
+    const shouldDim = isConstellationFocused && focusedObject.star && !isFocused && hasLabel;
 
     // Clean up previous opacity tween
     if (opacityTweenRef.current) {
@@ -559,15 +573,12 @@ function MainStar({
           const starRadius = actualSize * brightnessRef.current;
           const labelWidth = textRef.current?.width() || 0;
           const labelHeight = textRef.current?.height() || 0;
-          // Account for reverse scaling applied to the text
-          const visualLabelWidth = labelWidth / mapScale;
-          const visualLabelHeight = labelHeight / mapScale;
           // Use base star size for padding (not affected by brightness/twinkle)
           const labelPadding = actualSize * 0.8;
-          const labelY = (actualSize + labelPadding) / mapScale;
+          const labelY = actualSize + labelPadding;
 
-          const hitRadiusX = Math.max(starRadius, visualLabelWidth / 2);
-          const hitRadiusY = starRadius + visualLabelHeight + labelY;
+          const hitRadiusX = Math.max(starRadius, labelWidth / 2);
+          const hitRadiusY = starRadius + labelHeight + labelY;
 
           ctx.beginPath();
           ctx.rect(-hitRadiusX, -starRadius, hitRadiusX * 2, hitRadiusY);
@@ -585,7 +596,7 @@ function MainStar({
           <Text
             ref={textRef}
             x={0}
-            y={(actualSize + labelPadding) / mapScale}
+            y={actualSize + labelPadding}
             text={labelOverride || data?.label}
             fontSize={scaledLabelSize}
             fill={SPACE_TEXT_COLOR}
@@ -595,8 +606,6 @@ function MainStar({
             fontFamily={FONT_FAMILY.style.fontFamily}
             align="center"
             offsetX={textRef.current ? textRef.current.width() / 2 : 0}
-            scaleX={1 / mapScale}
-            scaleY={1 / mapScale}
           />
         );
       })()}
