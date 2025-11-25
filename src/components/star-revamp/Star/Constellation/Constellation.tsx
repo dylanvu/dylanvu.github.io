@@ -57,6 +57,30 @@ function Constellation({
   const isFocusedRef = useRef(isFocused);
   isFocusedRef.current = isFocused;
 
+  // Track detailed state of the focused object to allow perfect reversal
+  const lastFocusStateRef = useRef<{ 
+    name: string;
+    rotation: number; 
+    focusScale: number;
+    unfocusedX: number;
+    unfocusedY: number;
+  } | null>(null);
+
+  const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
+
+  // Update the last known state whenever a constellation is focused AND data is available
+  useEffect(() => {
+    if (focusedConstellation && parallaxFocusData) {
+      lastFocusStateRef.current = {
+        name: focusedConstellation.name,
+        rotation: focusedConstellation.rotation ?? 0,
+        focusScale: focusedConstellation.focusScale ?? 1,
+        unfocusedX: parallaxFocusData.unfocusedX,
+        unfocusedY: parallaxFocusData.unfocusedY,
+      };
+    }
+  }, [focusedConstellation, parallaxFocusData]);
+
   const isReturningRef = useRef(false);
 
   const pathname = usePathname();
@@ -69,10 +93,8 @@ function Constellation({
 
   const isElevare = data.name === "Elevare";
   
-  // Local state for Elevare zoom
   const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
 
-  // Reset Elevare zoom when unfocusing
   useEffect(() => {
     if (!isFocused && isElevare) {
       setElevareZoom(MIN_ZOOM);
@@ -200,8 +222,6 @@ function Constellation({
 
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   
-  const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
-
   const mobileState = useMobile();
 
   const focusedTargetX = useMemo(() => {
@@ -267,7 +287,6 @@ function Constellation({
       scaleX: (transformData.scaleX ?? 1) * focusScale,
       scaleY: (transformData.scaleY ?? 1) * focusScale,
       rotation: 0,
-      // IMPORTANT: Ensure offsets are reset to local center
       offsetX: centerX,
       offsetY: centerY,
       onFinish: () => {
@@ -284,61 +303,177 @@ function Constellation({
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
+// --- FIXED UNFOCUS FUNCTION (With Moving Origin) ---
   const playUnfocusTween = () => {
     const node = groupRef.current;
     if (!node) return;
 
-    // CRITICAL FIX: Make sure the node is rendered before we start animating
     node.visible(true);
-
     isReturningRef.current = true;
 
     if (hoverTweenRef.current) {
-      hoverTweenRef.current.destroy();
-      hoverTweenRef.current = null;
+        hoverTweenRef.current.destroy();
+        hoverTweenRef.current = null;
     }
-
     if (focusTweenRef.current) {
-      focusTweenRef.current.destroy();
+        focusTweenRef.current.destroy();
     }
 
+    // --- CASE A: WE WERE FOCUSED ---
+    if (lastFocusStateRef.current?.name === data.name) {
+        focusTweenRef.current = new Konva.Tween({
+            node,
+            duration: FOCUS_ANIMATION_DURATION,
+            easing: EASING,
+            x: unfocusedConstellationX,
+            y: unfocusedConstellationY,
+            scaleX: transformData.scaleX ?? 1,
+            scaleY: transformData.scaleY ?? 1,
+            rotation: transformData.rotation ?? 0,
+            offsetX: centerX,
+            offsetY: centerY,
+            opacity: 1,
+            onFinish: () => {
+                isReturningRef.current = false;
+                if (focusTweenRef.current) {
+                    focusTweenRef.current.destroy();
+                    focusTweenRef.current = null;
+                }
+            },
+        });
+        focusTweenRef.current.play();
+        return;
+    }
+
+    // --- CASE B: WE WERE VANISHED (PARALLAX RETURN) ---
+    if (!lastFocusStateRef.current) {
+         focusTweenRef.current = new Konva.Tween({
+            node,
+            duration: FOCUS_ANIMATION_DURATION,
+            easing: EASING,
+            x: unfocusedConstellationX,
+            y: unfocusedConstellationY,
+            scaleX: transformData.scaleX ?? 1,
+            scaleY: transformData.scaleY ?? 1,
+            rotation: transformData.rotation ?? 0,
+            offsetX: centerX,
+            offsetY: centerY,
+            opacity: 1,
+            onFinish: () => { isReturningRef.current = false; }
+        });
+        focusTweenRef.current.play();
+        return;
+    }
+
+    // 1. DATA PREP
+    const { 
+        unfocusedX: focusedStarOriginalX, 
+        unfocusedY: focusedStarOriginalY,
+        rotation: prevRotation,
+        focusScale: worldZoom 
+    } = lastFocusStateRef.current;
+    
+    // Vector from Focused Star -> This Star
+    const vecX = unfocusedConstellationX - focusedStarOriginalX;
+    const vecY = unfocusedConstellationY - focusedStarOriginalY;
+    
+    const depth = 3.5;
+    const expansionFactor = 1 + (worldZoom - 1) * depth;
+    
+    const baseScale = transformData.scaleX ?? 1;
+    const baseRotation = transformData.rotation ?? 0;
+
+    // 2. SET INITIAL STATE
+    // We calculate the start position assuming Origin is at WindowCenter
+    const startExpansion = expansionFactor;
+    const startRotOffset = prevRotation;
+
+    const startExpandedX = windowCenter.x + (vecX * startExpansion);
+    const startExpandedY = windowCenter.y + (vecY * startExpansion);
+    
+    const startAngleRad = (-startRotOffset * Math.PI) / 180;
+    const sCos = Math.cos(startAngleRad);
+    const sSin = Math.sin(startAngleRad);
+    const svX = startExpandedX - windowCenter.x;
+    const svY = startExpandedY - windowCenter.y;
+    
+    node.x(windowCenter.x + (svX * sCos - svY * sSin));
+    node.y(windowCenter.y + (svX * sSin + svY * sCos));
+    node.scaleX(baseScale * startExpansion);
+    node.scaleY(baseScale * startExpansion);
+    node.rotation(baseRotation - startRotOffset);
+    node.opacity(0);
+
+    // 3. TWEEN TRAJECTORY
     focusTweenRef.current = new Konva.Tween({
-      node,
+      node: node,
       duration: FOCUS_ANIMATION_DURATION,
       easing: EASING,
-      x: unfocusedConstellationX,
-      y: unfocusedConstellationY,
-      scaleX: transformData.scaleX ?? 1,
-      scaleY: transformData.scaleY ?? 1,
-      rotation: transformData.rotation ?? 0,
+      opacity: 1,
       
-      // CRITICAL FIX: Animate opacity back to 1
-      opacity: 1, 
+      onUpdate: () => {
+        const p = node.opacity(); // 0 to 1
+        
+        // INTERPOLATE EVERYTHING
+        const currentExpansion = expansionFactor + (1 - expansionFactor) * p;
+        const currentRotOffset = prevRotation * (1 - p);
+        
+        // CRITICAL FIX: Interpolate the 'Origin' of the world from WindowCenter back to Original Pos
+        const currentOriginX = windowCenter.x + (focusedStarOriginalX - windowCenter.x) * p;
+        const currentOriginY = windowCenter.y + (focusedStarOriginalY - windowCenter.y) * p;
+
+        // Calculate Position relative to the Moving Origin
+        const expandedX = currentOriginX + (vecX * currentExpansion);
+        const expandedY = currentOriginY + (vecY * currentExpansion);
+        
+        // Orbit around the CAMERA (Window Center) because that's where the rotation happens visually
+        const angleRad = (-currentRotOffset * Math.PI) / 180;
+        const cos = Math.cos(angleRad);
+        const sin = Math.sin(angleRad);
+
+        const vX = expandedX - windowCenter.x;
+        const vY = expandedY - windowCenter.y;
+
+        const rotatedX = windowCenter.x + (vX * cos - vY * sin);
+        const rotatedY = windowCenter.y + (vX * sin + vY * cos);
+        
+        node.x(rotatedX);
+        node.y(rotatedY);
+        node.scaleX(baseScale * currentExpansion);
+        node.scaleY(baseScale * currentExpansion);
+        node.rotation(baseRotation - currentRotOffset);
+      },
       
-      // Ensure offsets are reset to local center
-      offsetX: centerX,
-      offsetY: centerY,
       onFinish: () => {
         isReturningRef.current = false;
+        
+        // Hard Snap
+        node.x(unfocusedConstellationX);
+        node.y(unfocusedConstellationY);
+        node.scaleX(baseScale);
+        node.scaleY(baseScale);
+        node.rotation(baseRotation);
+        node.opacity(1);
+        node.offsetX(centerX);
+        node.offsetY(centerY);
+        
         if (focusTweenRef.current) {
           focusTweenRef.current.destroy();
           focusTweenRef.current = null;
         }
       },
     });
+    
+    node.offsetX(centerX);
+    node.offsetY(centerY);
 
     focusTweenRef.current.play();
   };
 
-  // --- FIXED PARALLAX FUNCTION ---
   const playVanishTween = () => {
     const node = groupRef.current;
     if (!node) return;
     
-    // --- RACE CONDITION GUARD ---
-    // If we are supposed to be vanishing because another constellation is focused,
-    // but we don't know WHERE that constellation is yet (parallaxFocusData is null),
-    // we MUST wait. Otherwise we animate to the wrong place (Center) and then snap/veer later.
     if (!parallaxFocusData) return;
     
     isReturningRef.current = true;
@@ -349,37 +484,23 @@ function Constellation({
       hoverTweenRef.current = null;
     }
 
-    // 1. Get Focus Target Info
     const { unfocusedX: focusedUnfocusedX, unfocusedY: focusedUnfocusedY } = parallaxFocusData;
-      
-    // The "World Zoom" is determined by the TARGET constellation.
     const worldZoom = focusedConstellation?.focusScale ?? 1;
-
-    // 2. Parallax Configuration
-    // CRITICAL UPDATE: INCREASE DEPTH
-    // 3.0 or higher ensures foreground objects clear the screen completely.
     const depth = 3.5; 
     
-    // 3. Vector Calculation (Relative to Focus Point)
     const vecX = unfocusedConstellationX - focusedUnfocusedX;
     const vecY = unfocusedConstellationY - focusedUnfocusedY;
 
-    // 4. Calculate Parallax Scale (Dolly Effect)
     const expansionFactor = 1 + (worldZoom - 1) * depth;
     
     const baseScale = transformData.scaleX ?? 1;
     const targetScale = baseScale * expansionFactor;
 
-    // 5. Calculate Positional Displacement
-    // Just match the expansion factor here for standard dolly physics. 
-    // The high 'depth' above handles the distance.
     const movementMultiplier = expansionFactor; 
 
-    // Calculate where the center should move to (Unrotated Grid Space)
     const expandedX = windowCenter.x + (vecX * movementMultiplier);
     const expandedY = windowCenter.y + (vecY * movementMultiplier);
 
-    // 6. Orbit Rotation
     const focusedRotation = focusedConstellation?.rotation ?? 0;
     const angleRad = (-focusedRotation * Math.PI) / 180;
     const cos = Math.cos(angleRad);
@@ -388,7 +509,6 @@ function Constellation({
     const vX = expandedX - windowCenter.x;
     const vY = expandedY - windowCenter.y;
 
-    // Rotate vector and add back to center
     const rotatedX = windowCenter.x + (vX * cos - vY * sin);
     const rotatedY = windowCenter.y + (vX * sin + vY * cos);
 
@@ -426,12 +546,10 @@ function Constellation({
       playFocusTween();
     } else {
       if (focusedConstellation) {
-        // Only run vanish if we have the data to do it correctly
         if (parallaxFocusData) {
           playVanishTween();
         }
       } else {
-        // No focus at all -> Return to normal
         playUnfocusTween();
       }
     }
