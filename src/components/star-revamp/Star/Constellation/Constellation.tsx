@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
+import { setConstellationOverlay, setStarOverlay } from "@/utils/overlayHelpers";
 import React from "react";
 
 function Constellation({
@@ -525,19 +526,13 @@ function Constellation({
           if (star.data?.label) {
             if (isFocusedRef.current) {
               if (pathname === "/") {
-                setTopOverlayTextContents({
-                  intro: data.intro,
-                  title: data.name,
-                  origin: data.about,
-                  about: "",
-                });
+                setConstellationOverlay(data, setTopOverlayTextContents);
               } else if (focusedObject.star) {
-                setTopOverlayTextContents({
-                  intro: focusedObject.star.classification,
-                  title: focusedObject.star.label ?? "",
-                  origin: focusedObject.star.origin ?? "",
-                  about: focusedObject.star.about ?? "",
-                });
+                // On star pages, restore the star info
+                setStarOverlay(focusedObject.star, setTopOverlayTextContents);
+              } else if (focusedObject.constellation) {
+                // On constellation pages, restore the constellation info
+                setConstellationOverlay(focusedObject.constellation, setTopOverlayTextContents);
               }
             } else {
               resetTopOverlayTextContents();
@@ -569,12 +564,7 @@ function Constellation({
                 setPolarisDisplayState("suppressed");
               }
             }
-            setTopOverlayTextContents({
-              intro: starData.classification,
-              title: starData.label ?? "",
-              origin: starData.origin ?? "",
-              about: starData.about ?? "",
-            });
+            setStarOverlay(starData, setTopOverlayTextContents);
           }
         }}
         onHoverScale={isFocused ? 1.3 : 1.8}

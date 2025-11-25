@@ -27,6 +27,7 @@ import {
   getStarDataBySlug,
 } from "@/components/star-revamp/Star/ConstellationList";
 import { STAR_BASE_URL } from "@/constants/Routes";
+import { setConstellationOverlay, setStarOverlay } from "@/utils/overlayHelpers";
 
 interface FocusedObject {
   constellation: ConstellationData | null;
@@ -51,7 +52,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { setHorizontalPosition } = useTopOverlayContext();
+  const { setHorizontalPosition, setOverlayTextContents } = useTopOverlayContext();
 
   const { polarisDisplayState } = usePolarisContext();
 
@@ -82,6 +83,11 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         star: starData,
       });
       
+      // Set the top overlay content with star information
+      if (starData) {
+        setStarOverlay(starData, setOverlayTextContents);
+      }
+      
       // Build target path
       const targetPath = `${STAR_BASE_URL}/${slug}`;
       
@@ -90,7 +96,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         router.push(targetPath);
       }
     }
-  }, [pathname, router]);
+  }, [pathname, router, setOverlayTextContents]);
 
   const navigateToConstellation = useCallback((slug: string) => {
     console.log('[navigateToConstellation] Input slug:', slug);
@@ -109,6 +115,9 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         star: null,
       });
       
+      // Set the top overlay content with constellation information
+      setConstellationOverlay(constellationData, setOverlayTextContents);
+      
       // Build target path
       const targetPath = `/constellation/${slug.toLowerCase()}`;
       console.log('[navigateToConstellation] Target path:', targetPath, 'Current path:', pathname);
@@ -121,7 +130,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     } else {
       console.error('[navigateToConstellation] No constellation found for name:', capitalizedName);
     }
-  }, [pathname, router]);
+  }, [pathname, router, setOverlayTextContents]);
 
   return (
     <FocusContext.Provider
