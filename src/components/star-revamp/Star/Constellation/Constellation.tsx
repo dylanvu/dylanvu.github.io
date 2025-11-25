@@ -288,7 +288,7 @@ function Constellation({
     const node = groupRef.current;
     if (!node) return;
 
-    // CRITICAL FIX 1: Make sure the node is rendered before we start animating
+    // CRITICAL FIX: Make sure the node is rendered before we start animating
     node.visible(true);
 
     isReturningRef.current = true;
@@ -312,7 +312,7 @@ function Constellation({
       scaleY: transformData.scaleY ?? 1,
       rotation: transformData.rotation ?? 0,
       
-      // CRITICAL FIX 2: Animate opacity back to 1
+      // CRITICAL FIX: Animate opacity back to 1
       opacity: 1, 
       
       // Ensure offsets are reset to local center
@@ -334,7 +334,13 @@ function Constellation({
   const playVanishTween = () => {
     const node = groupRef.current;
     if (!node) return;
-
+    
+    // --- RACE CONDITION GUARD ---
+    // If we are supposed to be vanishing because another constellation is focused,
+    // but we don't know WHERE that constellation is yet (parallaxFocusData is null),
+    // we MUST wait. Otherwise we animate to the wrong place (Center) and then snap/veer later.
+    if (!parallaxFocusData) return;
+    
     isReturningRef.current = true;
 
     if (focusTweenRef.current) focusTweenRef.current.destroy();
@@ -344,37 +350,30 @@ function Constellation({
     }
 
     // 1. Get Focus Target Info
-    const focusedUnfocusedX = parallaxFocusData 
-      ? parallaxFocusData.unfocusedX
-      : windowCenter.x;
-    const focusedUnfocusedY = parallaxFocusData 
-      ? parallaxFocusData.unfocusedY
-      : windowCenter.y;
+    const { unfocusedX: focusedUnfocusedX, unfocusedY: focusedUnfocusedY } = parallaxFocusData;
       
-    // --- CRITICAL FIX START ---
-    // The "World Zoom" is determined by the TARGET constellation, not the current one.
-    // If the target requires 2x zoom, the whole world (including Elevare) must scale relative to that.
+    // The "World Zoom" is determined by the TARGET constellation.
     const worldZoom = focusedConstellation?.focusScale ?? 1;
-    // --- CRITICAL FIX END ---
 
     // 2. Parallax Configuration
-    // Depth > 1.0 = Foreground (Close to camera)
-    const depth = 1.5; 
+    // CRITICAL UPDATE: INCREASE DEPTH
+    // 3.0 or higher ensures foreground objects clear the screen completely.
+    const depth = 3.5; 
     
     // 3. Vector Calculation (Relative to Focus Point)
     const vecX = unfocusedConstellationX - focusedUnfocusedX;
     const vecY = unfocusedConstellationY - focusedUnfocusedY;
 
     // 4. Calculate Parallax Scale (Dolly Effect)
-    // Use worldZoom here instead of data.focusScale
     const expansionFactor = 1 + (worldZoom - 1) * depth;
     
     const baseScale = transformData.scaleX ?? 1;
     const targetScale = baseScale * expansionFactor;
 
     // 5. Calculate Positional Displacement
-    // Foreground objects move away faster than they scale to avoid cluttering the view
-    const movementMultiplier = expansionFactor * 1.2; 
+    // Just match the expansion factor here for standard dolly physics. 
+    // The high 'depth' above handles the distance.
+    const movementMultiplier = expansionFactor; 
 
     // Calculate where the center should move to (Unrotated Grid Space)
     const expandedX = windowCenter.x + (vecX * movementMultiplier);
@@ -404,7 +403,7 @@ function Constellation({
       scaleX: targetScale,
       scaleY: targetScale,
       rotation: targetRotation,
-      opacity: 0, // Fade out as it rushes past
+      opacity: 0, 
       offsetX: centerX,
       offsetY: centerY,
       onFinish: () => {
@@ -426,15 +425,17 @@ function Constellation({
       groupRef.current?.moveToTop();
       playFocusTween();
     } else {
-      // If ANY constellation is focused, but it's not us -> Vanish/Parallax
       if (focusedConstellation) {
-        playVanishTween();
+        // Only run vanish if we have the data to do it correctly
+        if (parallaxFocusData) {
+          playVanishTween();
+        }
       } else {
         // No focus at all -> Return to normal
         playUnfocusTween();
       }
     }
-  }, [isFocused, focusedConstellation, pathname, polarisDisplayState]);
+  }, [isFocused, focusedConstellation, parallaxFocusData, pathname, polarisDisplayState]);
 
   const {
     setOverlayTextContents: setTopOverlayTextContents,
