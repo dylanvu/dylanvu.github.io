@@ -30,7 +30,6 @@ function Constellation({
   bboxLabelFontFamily = "sans-serif",
   windowCenter,
   focusedConstellation,
-  focusedUnfocusedPos,
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
@@ -46,7 +45,6 @@ function Constellation({
   bboxLabelFontFamily?: string;
   windowCenter: { x: number; y: number };
   focusedConstellation: ConstellationData | null;
-  focusedUnfocusedPos?: { x: number; y: number } | null;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
@@ -205,7 +203,7 @@ function Constellation({
 
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   
-  const { focusedObject } = useFocusContext();
+  const { focusedObject, parallaxFocusData } = useFocusContext();
 
   const mobileState = useMobile();
 
@@ -354,7 +352,9 @@ function Constellation({
 
     const currentX = unfocusedConstellationX;
     const currentY = unfocusedConstellationY;
-    const focal = focusedUnfocusedPos ?? windowCenter;
+    const focal = parallaxFocusData 
+      ? { x: parallaxFocusData.unfocusedX, y: parallaxFocusData.unfocusedY }
+      : windowCenter;
 
     let vx = currentX - focal.x;
     let vy = currentY - focal.y;
@@ -727,8 +727,6 @@ export default React.memo(Constellation, (prevProps, nextProps) => {
     prevProps.windowCenter.x === nextProps.windowCenter.x &&
     prevProps.windowCenter.y === nextProps.windowCenter.y &&
     prevProps.focusedConstellation?.name === nextProps.focusedConstellation?.name &&
-    prevProps.focusedUnfocusedPos?.x === nextProps.focusedUnfocusedPos?.x &&
-    prevProps.focusedUnfocusedPos?.y === nextProps.focusedUnfocusedPos?.y &&
     prevProps.showBoundingBox === nextProps.showBoundingBox &&
     prevProps.showStarBoundingBox === nextProps.showStarBoundingBox &&
     // Note: Callback props will cause re-renders, but that's acceptable

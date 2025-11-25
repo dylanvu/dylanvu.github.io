@@ -2,7 +2,7 @@
 import Constellation from "@/components/star-revamp/Star/Constellation/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { TransformData } from "@/interfaces/StarInterfaces";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
 import Polaris from "@/components/star-revamp/Star/Polaris/Polaris";
@@ -316,20 +316,6 @@ export default function MainStarField() {
                 setTopOverlayVisibility(true);
               }}
               focusedConstellation={focusedObject.constellation}
-              // pass the unfocused position of the focused constellation (for parallax effect)
-              focusedUnfocusedPos={
-                focusedObject.constellation
-                  ? {
-                      x:
-                        (focusedObject.constellation.designX / DESIGN_REFERENCE.width) * width +
-                        computeCenter(focusedObject.constellation.stars).centerX,
-                      y:
-                        (focusedObject.constellation.designY / DESIGN_REFERENCE.height) *
-                          height +
-                        computeCenter(focusedObject.constellation.stars).centerY,
-                    }
-                  : null
-              }
               onHoverEnterCallback={() => {
                 if (!focusedObject.constellation) {
                   setCenterOverlayTextContents({
