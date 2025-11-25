@@ -52,7 +52,7 @@ export default function GenericOverlay({
   const OverlayPositionToCSS = {
     center: 0,
     bottom: "40vh",
-    top: "-35vh",
+    top: "-30vh", // -35 for the big screen
   };
 
   const lines = useMemo(() => {
