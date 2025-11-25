@@ -109,9 +109,9 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   
   const ERROR_MESSAGES: ErrorMessages = {
     default: "I apologize, stargazer. Something went wrong while reading the stars. Please try again.",
-    rateLimit: "Forgive me, stargazer. My light grows dim from guiding too many at once. Please rest for a moment, and I shall shine bright again for you.",
+    rateLimit: "Forgive me, stargazer. I've been reading the stars too often and quickly. Please wait a moment and ask me again.",
     serverError: "I apologize, stargazer. The cosmic winds have obscured my vision. Please try again in a moment.",
-    network: "I apologize, stargazer. The celestial connection has been interrupted. Please check your connection and try again."
+    network: "I apologize, stargazer. The celestial connection has been interrupted. Please check the connection and try again."
   };
 
   async function talkToPolaris(newMessage: string) {

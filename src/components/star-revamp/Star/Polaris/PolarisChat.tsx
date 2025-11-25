@@ -33,8 +33,8 @@ export default function PolarisChat() {
 
   const suggestions = [
     "What does \"night sky\" mean?",
-    "What are Dylan's technical skills?",
-    "Where is Dylan's resume?",
+    "What are his technical skills?",
+    "Where is his resume?",
   ];
 
   function handleSubmit(text = inputText) {
@@ -216,7 +216,7 @@ export default function PolarisChat() {
           style={{
             display: "flex",
             gap: "0.5rem",
-            flexWrap: "wrap",
+            flexWrap: "nowrap",
             justifyContent: "flex-end",
             marginBottom: "1rem",
             pointerEvents: "all",
