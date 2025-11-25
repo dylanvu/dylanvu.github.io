@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { FONT_FAMILY, hexToRgba, SPACE_TEXT_COLOR, GLASS, RADIUS, DURATION } from "@/app/theme";
+import { FONT_FAMILY, SPACE_TEXT_COLOR, GLASS, RADIUS, DURATION, TEXT_SIZE, SPACING } from "@/app/theme";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { useMobile } from "@/hooks/useMobile";
@@ -26,10 +26,10 @@ export default function StargazerMessage({ message }: { message: string }) {
     >
       <span
         style={{
-          fontSize: `${0.7 * mobileFontScaleFactor}rem`,
+          fontSize: TEXT_SIZE.xs,
           opacity: 0.6,
-          marginBottom: "0.2rem",
-          marginRight: "0.8rem",
+          marginBottom: SPACING.xs,
+          marginRight: SPACING.md,
         }}
       >
         You
@@ -38,8 +38,8 @@ export default function StargazerMessage({ message }: { message: string }) {
         style={{
           ...GLASS.strong,
           color: SPACE_TEXT_COLOR,
-          padding: "0.8rem 1.2rem",
-          borderRadius: "18px 18px 2px 18px",
+          padding: `${SPACING.md} ${SPACING.lg}`,
+          borderRadius: `${RADIUS.lg} ${RADIUS.lg} ${RADIUS.sm} ${RADIUS.lg}`,
           lineHeight: "1.5",
           wordWrap: "break-word",
         }}

@@ -20,6 +20,7 @@ import {
   OPACITY,
   BLUR,
   DURATION,
+  SHADOW,
 } from "@/app/theme";
 import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
@@ -42,6 +43,7 @@ const StarPanelStyle: React.CSSProperties = {
   backdropFilter: BLUR.heavy,
   borderLeft: `1px solid rgba(255, 255, 255, ${OPACITY.normal})`,
   padding: "2rem",
+  boxShadow: SHADOW.lg,
 };
 
 type MotionInputs = boolean | TargetAndTransition | VariantLabels | undefined;

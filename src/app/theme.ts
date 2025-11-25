@@ -113,6 +113,43 @@ export const SHADOW = {
 } as const;
 
 // ===========================
+// TYPOGRAPHY SCALE
+// ===========================
+export const TEXT_SIZE = {
+  xs: "0.75rem",
+  sm: "0.875rem",
+  base: "1rem",
+  lg: "1.125rem",
+  xl: "1.25rem",
+  "2xl": "1.5rem",
+  "3xl": "2rem",
+  "4xl": "3rem",
+  "5xl": "4rem",
+  "6xl": "5.5rem",
+} as const;
+
+// ===========================
+// SPACING SCALE
+// ===========================
+export const SPACING = {
+  xs: "0.25rem",
+  sm: "0.5rem",
+  md: "1rem",
+  lg: "1.5rem",
+  xl: "2rem",
+  "2xl": "3rem",
+  "3xl": "4rem",
+} as const;
+
+// ===========================
+// FOCUS STYLES (Accessibility)
+// ===========================
+export const FOCUS_RING = {
+  outline: `2px solid ${ACCENT_COLOR}`,
+  outlineOffset: "2px",
+} as const;
+
+// ===========================
 // HELPER FUNCTIONS
 // ===========================
 

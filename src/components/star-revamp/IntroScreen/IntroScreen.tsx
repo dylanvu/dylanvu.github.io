@@ -7,6 +7,8 @@ import {
   FONT_FAMILY,
   SPACE_TEXT_COLOR,
   DURATION,
+  TEXT_SIZE,
+  SPACING,
 } from "@/app/theme";
 
 function getIntroTextForPath(pathname: string): string[] {
@@ -53,7 +55,6 @@ export default function IntroScreen({
   const FADE_DURATION = DURATION.intro; // seconds per line
   const STAGGER_DURATION = 2; // delay between lines
   const VISIBLE_DURATION = DURATION.intro; // how long all lines stay fully visible
-  const GAP = "1.5rem"; // <- change this to adjust spacing between lines
 
   const [show, setShow] = useState(true);
 
@@ -102,8 +103,8 @@ export default function IntroScreen({
               }}
               style={{
                 color: SPACE_TEXT_COLOR,
-                fontSize: "2rem",
-                marginTop: i === 0 ? 0 : GAP, // <- apply gap only after first element
+                fontSize: TEXT_SIZE["3xl"],
+                marginTop: i === 0 ? 0 : SPACING.lg,
               }}
               className={FONT_FAMILY.className}
             >

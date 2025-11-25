@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
+import { FONT_FAMILY, SPACE_TEXT_COLOR, ACCENT_COLOR, DURATION, FOCUS_RING, OPACITY } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { useState } from "react";
 
 /**
  * Shared markdown link component that handles internal vs external links
@@ -15,6 +16,7 @@ import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 export function MarkdownLink({ children, href }: { children: React.ReactNode; href?: string }) {
   const { navigateToStar } = useFocusContext();
   const { setPolarisDisplayState } = usePolarisContext();
+  const [isHovered, setIsHovered] = useState(false);
   
   // Handle missing href
   if (!href) {
@@ -27,6 +29,20 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
   // Check if it's a star link (starts with STAR_BASE_URL)
   const isStarLink = href.startsWith(STAR_BASE_URL + '/');
 
+  // Shared link styles with hover states
+  const linkStyle: React.CSSProperties = {
+    color: isHovered ? ACCENT_COLOR : SPACE_TEXT_COLOR,
+    textDecorationLine: "underline",
+    textDecorationColor: isHovered ? ACCENT_COLOR : `rgba(255, 255, 255, ${OPACITY.semitransparent})`,
+    textDecorationThickness: "1px",
+    textUnderlineOffset: "2px",
+    transition: `all ${DURATION.fast}s ease`,
+    cursor: "pointer",
+  };
+
+  const focusStyle: React.CSSProperties = {
+    outline: "none",
+  };
   
   if (isStarLink) {
     // Extract slug from the URL
@@ -44,10 +60,12 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
       <Link
         href={href}
         onClick={handleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onFocus={() => setIsHovered(true)}
+        onBlur={() => setIsHovered(false)}
         className={FONT_FAMILY.className}
-        style={{
-          color: SPACE_TEXT_COLOR,
-        }}
+        style={{ ...linkStyle, ...focusStyle }}
       >
         {children}
       </Link>
@@ -62,10 +80,12 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
     return (
       <Link
         href={href}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onFocus={() => setIsHovered(true)}
+        onBlur={() => setIsHovered(false)}
         className={FONT_FAMILY.className}
-        style={{
-          color: SPACE_TEXT_COLOR,
-        }}
+        style={{ ...linkStyle, ...focusStyle }}
       >
         {children}
       </Link>
@@ -78,10 +98,12 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
       href={href}
       target="_blank"
       rel="noreferrer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
       className={FONT_FAMILY.className}
-      style={{
-        color: SPACE_TEXT_COLOR,
-      }}
+      style={{ ...linkStyle, ...focusStyle }}
     >
       {children}
     </a>

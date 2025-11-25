@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { FONT_FAMILY, GLASS, RADIUS, DURATION, OPACITY, ERROR_COLOR, hexToRgba } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, DURATION, OPACITY, ERROR_COLOR, hexToRgba, TEXT_SIZE, SPACING } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -77,10 +77,10 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span
           style={{
-            fontSize: `${0.7 * mobileFontScaleFactor}rem`,
+            fontSize: TEXT_SIZE.xs,
             opacity: 0.6,
-            marginBottom: "0.2rem",
-            marginLeft: "0.8rem",
+            marginBottom: SPACING.xs,
+            marginLeft: SPACING.md,
           }}
         >
           Polaris
@@ -108,8 +108,8 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
           }
           style={{
             ...GLASS.light,
-            padding: "0.8rem 1.2rem",
-            borderRadius: "2px 18px 18px 18px",
+            padding: `${SPACING.md} ${SPACING.lg}`,
+            borderRadius: `${RADIUS.sm} ${RADIUS.lg} ${RADIUS.lg} ${RADIUS.lg}`,
             lineHeight: "1.5",
             wordWrap: "break-word",
           }}

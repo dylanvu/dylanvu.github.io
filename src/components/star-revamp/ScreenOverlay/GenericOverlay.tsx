@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR } from "@/app/theme";
+import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR, TEXT_SIZE, SPACING, DURATION } from "@/app/theme";
 import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
 import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
@@ -57,10 +57,10 @@ export default function GenericOverlay({
 
   const lines = useMemo(() => {
     return [
-      { key: "intro-text", text: introText ?? "", size: scaleFontSize("1.2rem") },
-      { key: "title", text: titleText ?? "", size: scaleFontSize("5.5rem") },
-      { key: "origin", text: originText ?? "", size: scaleFontSize("1.2rem") },
-      { key: "about", text: aboutText ?? "", size: scaleFontSize("1.2rem") },
+      { key: "intro-text", text: introText ?? "", size: scaleFontSize(TEXT_SIZE.xl) },
+      { key: "title", text: titleText ?? "", size: scaleFontSize(TEXT_SIZE["6xl"]) },
+      { key: "origin", text: originText ?? "", size: scaleFontSize(TEXT_SIZE.xl) },
+      { key: "about", text: aboutText ?? "", size: scaleFontSize(TEXT_SIZE.xl) },
     ];
   }, [introText, titleText, originText, aboutText, mobileFontScaleFactor]);
 
@@ -165,7 +165,7 @@ export default function GenericOverlay({
                     text={line.text}
                     size={line.size}
                     color={SPACE_TEXT_COLOR}
-                    duration={0.42}
+                    duration={DURATION.normal}
                     fontFamily={
                       idx === titleIndex ? FANCY_FONT_FAMILY : FONT_FAMILY
                     }

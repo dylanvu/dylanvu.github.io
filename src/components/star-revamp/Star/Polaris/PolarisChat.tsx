@@ -11,6 +11,10 @@ import {
   DURATION, 
   OPACITY,
   hexToRgba,
+  FOCUS_RING,
+  TEXT_SIZE,
+  SPACING,
+  SHADOW,
 } from "@/app/theme";
 import { useMobile } from "@/hooks/useMobile";
 
@@ -216,14 +220,23 @@ export default function PolarisChat() {
               key={i}
               onClick={() => handleSubmit(suggestion)}
               disabled={disabledChatInput}
+              onMouseEnter={(e) => {
+                if (!disabledChatInput) {
+                  e.currentTarget.style.background = GLASS.medium.background;
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = GLASS.light.background;
+              }}
               style={{
                 ...GLASS.light,
                 color: "inherit",
-                padding: "0.4rem 0.8rem",
+                padding: `${SPACING.sm} ${SPACING.md}`,
                 borderRadius: RADIUS.lg,
-                fontSize: `${0.75 * mobileFontScaleFactor}rem`,
-                cursor: isThinking ? "not-allowed" : "pointer",
-                transition: `background ${DURATION.fast}s`,
+                fontSize: TEXT_SIZE.xs,
+                cursor: disabledChatInput ? "not-allowed" : "pointer",
+                transition: `all ${DURATION.fast}s ease`,
+                opacity: disabledChatInput ? OPACITY.half : 1,
               }}
               className={FONT_FAMILY.className}
             >
@@ -239,16 +252,14 @@ export default function PolarisChat() {
             alignItems: "center",
             ...GLASS.medium,
             borderRadius: RADIUS.pill,
-            padding: "0.4rem 0.4rem 0.4rem 1.2rem",
-            boxShadow: `0 4px 30px rgba(0, 0, 0, ${OPACITY.normal})`,
+            padding: `${SPACING.sm} ${SPACING.sm} ${SPACING.sm} ${SPACING.lg}`,
+            boxShadow: SHADOW.md,
             pointerEvents: "all",
           }}
         >
           <input
             type="text"
-            placeholder={
-              polarisInputPlaceholder
-            }
+            placeholder={polarisInputPlaceholder}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -259,13 +270,25 @@ export default function PolarisChat() {
               border: "none",
               outline: "none",
               color: "inherit",
-              fontSize: `${0.95 * mobileFontScaleFactor}rem`,
+              fontSize: TEXT_SIZE.base,
+              opacity: disabledChatInput ? OPACITY.half : 1,
+              transition: `opacity ${DURATION.fast}s ease`,
             }}
             className={FONT_FAMILY.className}
           />
           <button
             onClick={() => handleSubmit()}
             disabled={disabledChatInput}
+            onMouseEnter={(e) => {
+              if (!disabledChatInput) {
+                e.currentTarget.style.background = `rgba(255, 255, 255, ${OPACITY.bolder})`;
+                e.currentTarget.style.transform = "scale(1.05)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = `rgba(255, 255, 255, ${OPACITY.bold})`;
+              e.currentTarget.style.transform = "scale(1)";
+            }}
             style={{
               width: "2.2rem",
               height: "2.2rem",
@@ -273,12 +296,15 @@ export default function PolarisChat() {
               border: "none",
               background: `rgba(255, 255, 255, ${OPACITY.bold})`,
               color: "white",
-              cursor: isThinking ? "wait" : "pointer",
+              cursor: disabledChatInput ? "not-allowed" : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginLeft: "0.5rem",
+              marginLeft: SPACING.sm,
+              transition: `all ${DURATION.fast}s ease`,
+              opacity: disabledChatInput ? OPACITY.half : 1,
             }}
+            aria-label="Send message"
           >
             ➤
           </button>

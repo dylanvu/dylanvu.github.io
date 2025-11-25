@@ -1,4 +1,4 @@
-import { FONT_FAMILY, GLASS, RADIUS, OPACITY } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, TEXT_SIZE } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
@@ -74,8 +74,8 @@ export default function StarMarkdownRenderer({
               <code
                 style={{
                   background: GLASS.medium.background,
-                  padding: "0.2rem 0.4rem",
-                  borderRadius: "4px",
+                  padding: `${SPACING.xs} ${SPACING.sm}`,
+                  borderRadius: RADIUS.sm,
                   fontSize: "0.9em",
                 }}
               >
@@ -91,12 +91,12 @@ export default function StarMarkdownRenderer({
           <pre
             className={FONT_FAMILY.className}
             style={{
-              ...GLASS.light,
-              borderRadius: "12px",
-              padding: "1rem",
+              ...GLASS.medium,
+              borderRadius: RADIUS.md,
+              padding: SPACING.md,
               overflowX: "auto",
-              marginTop: "1rem",
-              marginBottom: "1rem",
+              marginTop: SPACING.md,
+              marginBottom: SPACING.md,
             }}
           >
             {children}
@@ -114,8 +114,8 @@ export default function StarMarkdownRenderer({
               borderRadius: RADIUS.md,
               border: GLASS.light.border,
               margin: "auto",
-              marginTop: "0.5rem",
-              marginBottom: "0.5rem",
+              marginTop: SPACING.sm,
+              marginBottom: SPACING.sm,
             }}
           />
         ),
@@ -126,8 +126,8 @@ export default function StarMarkdownRenderer({
             style={{
               background: GLASS.subtle.background,
               borderLeft: `4px solid rgba(255, 255, 255, ${OPACITY.bolder})`,
-              padding: "0.5rem 1rem",
-              margin: "1rem 0",
+              padding: `${SPACING.sm} ${SPACING.md}`,
+              margin: `${SPACING.md} 0`,
               fontStyle: "italic",
             }}
           >
