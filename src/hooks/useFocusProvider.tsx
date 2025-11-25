@@ -108,6 +108,14 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname, polarisDisplayState, setHorizontalPosition]);
 
+  // Clear navigation refs when returning to homepage
+  useEffect(() => {
+    if (pathname === "/") {
+      currentStarSlugRef.current = null;
+      currentConstellationSlugRef.current = null;
+    }
+  }, [pathname]);
+
   const navigateToStar = useCallback((slug: string) => {
     // Prevent redundant navigation to same slug
     if (currentStarSlugRef.current === slug) {

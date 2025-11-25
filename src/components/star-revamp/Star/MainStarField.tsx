@@ -39,7 +39,7 @@ export default function MainStarField() {
     setOverlayVisibility: setTopOverlayVisibility,
   } = useTopOverlayContext();
 
-  const { focusedObject, setFocusedObject } = useFocusContext();
+  const { focusedObject, setFocusedObject, navigateToConstellation } = useFocusContext();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -72,6 +72,7 @@ export default function MainStarField() {
   useEffect(() => {
     if (focusedObject.constellation) {
       setCenterOverlayVisibility(false);
+      setTopOverlayVisibility(true);
       if (focusedObject.star) {
         setStarOverlayMobileAware(
           focusedObject.star,
@@ -292,14 +293,7 @@ export default function MainStarField() {
               transformData={transformData}
               key={i}
               onClickCallback={() => {
-                setFocusedObject({ constellation: c, star: null });
-                setConstellationOverlayMobileAware(
-                  c,
-                  setTopOverlayTextContents,
-                  mobileState
-                );
-                setCenterOverlayVisibility(false);
-                setTopOverlayVisibility(true);
+                navigateToConstellation(c.name.toLowerCase());
               }}
               focusedConstellation={focusedObject.constellation}
               onHoverEnterCallback={() => {
