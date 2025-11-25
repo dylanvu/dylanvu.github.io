@@ -164,6 +164,14 @@ export const PANEL = {
 } as const;
 
 // ===========================
+// DESIGN REFERENCE DIMENSIONS
+// ===========================
+export const DESIGN_REFERENCE = {
+  width: 2560,
+  height: 1271,
+} as const;
+
+// ===========================
 // FOCUS STYLES (Accessibility)
 // ===========================
 export const FOCUS_RING = {

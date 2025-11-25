@@ -1,10 +1,7 @@
 "use client";
 import Constellation from "@/components/star-revamp/Star/Constellation/Constellation";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import {
-  TransformData,
-  FocusedConstellationPos,
-} from "@/interfaces/StarInterfaces";
+import { TransformData } from "@/interfaces/StarInterfaces";
 import { useEffect, useState } from "react";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { Circle, Group, Rect, Text } from "react-konva";
@@ -21,21 +18,14 @@ import {
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { usePathname } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { DESIGN_REFERENCE } from "@/app/theme";
 
 /**
  * Responsive star field: positions constellations relative to screen center
  * and scales offsets from design center. Star coordinates and sizes stay fixed.
  */
 
-const DESIGN = { width: 2560, height: 1271 }; // design reference
-
-export default function MainStarField({
-  setFocusedConstellationPosAction,
-}: {
-  setFocusedConstellationPosAction: React.Dispatch<
-    React.SetStateAction<FocusedConstellationPos | null>
-  >;
-}) {
+export default function MainStarField() {
   const { width, height, windowCenter } = useWindowSizeContext();
   const {
     setOverlayTextContents: setCenterOverlayTextContents,
@@ -70,45 +60,17 @@ export default function MainStarField({
     return { minX, minY, widthLocal, heightLocal, centerX, centerY };
   };
 
+  // Update focusedScreenPos for Polaris when constellation is focused
   useEffect(() => {
-    // compute focused constellation screen center (if any)
     if (focusedObject.constellation) {
-      const c = focusedObject.constellation;
-      const { centerX, centerY } = computeCenter(c.stars);
-      // Use viewport percentage positioning
-      const percentX = c.designX / DESIGN.width;
-      const percentY = c.designY / DESIGN.height;
-      const transformDataForSelected = {
-        x: percentX * width,
-        y: percentY * height,
-        rotation: c.rotation ?? 0,
-        scaleX: c.scale ?? 1,
-        scaleY: c.scale ?? 1,
-      } as TransformData;
-
-      // Calculate unfocused position (where the constellation starts)
-      const unfocusedX = transformDataForSelected.x + centerX;
-      const unfocusedY = transformDataForSelected.y + centerY;
-
-      // Focused position is at windowCenter
-      const focusedScreenPos = {
+      setFocusedScreenPos({
         x: windowCenter.x,
         y: windowCenter.y,
-      };
-
-      setFocusedConstellationPosAction({
-        x: focusedScreenPos.x,
-        y: focusedScreenPos.y,
-        unfocusedX,
-        unfocusedY,
-        constellation: c,
       });
-      setFocusedScreenPos(focusedScreenPos);
     } else {
-      // Clear when no constellation is focused
       setFocusedScreenPos(null);
     }
-  }, [focusedObject.constellation, width, height, windowCenter]);
+  }, [focusedObject.constellation, windowCenter]);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -120,7 +82,6 @@ export default function MainStarField({
   const handleBackgroundInteraction = () => {
     if (focusedObject.constellation) {
       setFocusedObject({ constellation: null, star: null });
-      setFocusedConstellationPosAction(null);
       setFocusedScreenPos(null);
       resetCenterOverlayTextContents();
       setCenterOverlayVisibility(true);
@@ -305,13 +266,13 @@ export default function MainStarField({
               break;
             default:
               // Fallback for any other constellations
-              targetX = (c.designX / DESIGN.width) * width;
-              targetY = (c.designY / DESIGN.height) * height;
+              targetX = (c.designX / DESIGN_REFERENCE.width) * width;
+              targetY = (c.designY / DESIGN_REFERENCE.height) * height;
           }
         } else {
           // Large screen: Use percentage positioning
-          targetX = (c.designX / DESIGN.width) * width;
-          targetY = (c.designY / DESIGN.height) * height;
+          targetX = (c.designX / DESIGN_REFERENCE.width) * width;
+          targetY = (c.designY / DESIGN_REFERENCE.height) * height;
         }
 
         const transformData: TransformData = {
@@ -378,10 +339,10 @@ export default function MainStarField({
                 focusedObject.constellation
                   ? {
                       x:
-                        (focusedObject.constellation.designX / DESIGN.width) * width +
+                        (focusedObject.constellation.designX / DESIGN_REFERENCE.width) * width +
                         computeCenter(focusedObject.constellation.stars).centerX,
                       y:
-                        (focusedObject.constellation.designY / DESIGN.height) *
+                        (focusedObject.constellation.designY / DESIGN_REFERENCE.height) *
                           height +
                         computeCenter(focusedObject.constellation.stars).centerY,
                     }
@@ -408,10 +369,10 @@ export default function MainStarField({
       })}
       {/* Polaris, the guiding chatbot star */}
       {(() => {
-        const polarisDesignX = DESIGN.width / 2 + 2;
+        const polarisDesignX = DESIGN_REFERENCE.width / 2 + 2;
         const polarisDesignY = 200; // bigger number moves it down
-        const polarisPercentX = polarisDesignX / DESIGN.width;
-        const polarisPercentY = polarisDesignY / DESIGN.height;
+        const polarisPercentX = polarisDesignX / DESIGN_REFERENCE.width;
+        const polarisPercentY = polarisDesignY / DESIGN_REFERENCE.height;
         const polarisScreenX = polarisPercentX * width;
         const polarisScreenY = polarisPercentY * height;
         return (
@@ -449,10 +410,10 @@ export default function MainStarField({
                 focusedObject.constellation
                   ? {
                       x:
-                        (focusedObject.constellation.designX / DESIGN.width) * width +
+                        (focusedObject.constellation.designX / DESIGN_REFERENCE.width) * width +
                         computeCenter(focusedObject.constellation.stars).centerX,
                       y:
-                        (focusedObject.constellation.designY / DESIGN.height) *
+                        (focusedObject.constellation.designY / DESIGN_REFERENCE.height) *
                           height +
                         computeCenter(focusedObject.constellation.stars).centerY,
                     }

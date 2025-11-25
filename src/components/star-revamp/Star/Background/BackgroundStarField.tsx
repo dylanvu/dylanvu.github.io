@@ -1,16 +1,13 @@
 import { Group } from "react-konva";
 import { useMemo } from "react";
 import ParallaxLayer from "@/components/star-revamp/Star/Background/ParallaxLayer";
-import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
 
 export default function StarField({
   width,
   height,
-  focusedConstellationPos,
 }: {
   width: number;
   height: number;
-  focusedConstellationPos: FocusedConstellationPos | null;
 }) {
   // --- ANIMATION CONFIG ---
   const FADE_DURATION = 1;
@@ -84,7 +81,6 @@ export default function StarField({
       <ParallaxLayer
         stars={farStarsPositioned}
         depth={0.15}
-        focusedConstellationPos={focusedConstellationPos}
         fadeDuration={FADE_DURATION}
         fadeDelay={0}
       />
@@ -93,7 +89,6 @@ export default function StarField({
       <ParallaxLayer
         stars={midStarsPositioned}
         depth={0.4}
-        focusedConstellationPos={focusedConstellationPos}
         fadeDuration={FADE_DURATION}
         fadeDelay={STAGGER_DURATION}
       />
@@ -102,7 +97,6 @@ export default function StarField({
       <ParallaxLayer
         stars={nearStarsPositioned}
         depth={0.8}
-        focusedConstellationPos={focusedConstellationPos}
         fadeDuration={FADE_DURATION}
         fadeDelay={STAGGER_DURATION * 2}
       />

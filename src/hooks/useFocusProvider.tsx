@@ -6,6 +6,7 @@
 import {
   ConstellationData,
   StarDataWithInternalLink,
+  ParallaxFocusData,
 } from "@/interfaces/StarInterfaces";
 import {
   createContext,
@@ -29,6 +30,8 @@ import {
 } from "@/components/star-revamp/Star/ConstellationList";
 import { STAR_BASE_URL } from "@/constants/Routes";
 import { setConstellationOverlay, setStarOverlay } from "@/utils/overlayHelpers";
+import { useWindowSizeContext } from "./useWindowSizeProvider";
+import { DESIGN_REFERENCE } from "@/app/theme";
 
 interface FocusedObject {
   constellation: ConstellationData | null;
@@ -38,6 +41,7 @@ interface FocusedObject {
 export interface FocusState {
   focusedObject: FocusedObject;
   setFocusedObject: Dispatch<SetStateAction<FocusedObject>>;
+  parallaxFocusData: ParallaxFocusData | null;
   navigateToStar: (slug: string) => void;
   navigateToConstellation: (slug: string) => void;
 }
@@ -50,9 +54,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     star: null,
   });
 
+  const [parallaxFocusData, setParallaxFocusData] = useState<ParallaxFocusData | null>(null);
+
   const pathname = usePathname();
   const router = useRouter();
 
+  const { width, height } = useWindowSizeContext();
   const { setHorizontalPosition, setOverlayTextContents } = useTopOverlayContext();
 
   const { polarisDisplayState } = usePolarisContext();
@@ -60,6 +67,45 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   // Track current slug to prevent redundant navigation calls
   const currentStarSlugRef = useRef<string | null>(null);
   const currentConstellationSlugRef = useRef<string | null>(null);
+
+  // Helper to compute the constellation center in its local coordinates
+  const computeCenter = useCallback((stars: { x: number; y: number }[]) => {
+    const xs = stars.map((s) => s.x);
+    const ys = stars.map((s) => s.y);
+    const minX = Math.min(...xs) - 10;
+    const maxX = Math.max(...xs) + 10;
+    const minY = Math.min(...ys) - 10;
+    const maxY = Math.max(...ys) + 10;
+    const widthLocal = maxX - minX;
+    const heightLocal = maxY - minY;
+    const centerX = minX + widthLocal / 2;
+    const centerY = minY + heightLocal / 2;
+    return { minX, minY, widthLocal, heightLocal, centerX, centerY };
+  }, []);
+
+  // Compute parallax focus data when constellation is focused
+  useEffect(() => {
+    if (focusedObject.constellation) {
+      const c = focusedObject.constellation;
+      const { centerX, centerY } = computeCenter(c.stars);
+      
+      // Use viewport percentage positioning
+      const percentX = c.designX / DESIGN_REFERENCE.width;
+      const percentY = c.designY / DESIGN_REFERENCE.height;
+      
+      // Calculate unfocused position (where the constellation's center is)
+      const unfocusedX = percentX * width + centerX;
+      const unfocusedY = percentY * height + centerY;
+
+      setParallaxFocusData({
+        unfocusedX,
+        unfocusedY,
+      });
+    } else {
+      // Clear when no constellation is focused
+      setParallaxFocusData(null);
+    }
+  }, [focusedObject.constellation, width, height, computeCenter]);
 
   useEffect(() => {
 
@@ -150,6 +196,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       value={{
         focusedObject,
         setFocusedObject,
+        parallaxFocusData,
         navigateToStar,
         navigateToConstellation,
       }}

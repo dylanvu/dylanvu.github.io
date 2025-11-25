@@ -9,8 +9,7 @@ import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay"
 import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
-import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
+import React, { useEffect, useRef } from "react";
 import Konva from "konva";
 
 import {
@@ -104,8 +103,6 @@ export default function MainStage({
   const { width, height, ready } = useWindowSizeContext();
   const { polarisDisplayState } = usePolarisContext();
   const pathname = usePathname();
-  const [focusedConstellationPos, setFocusedConstellationPos] =
-    useState<FocusedConstellationPos | null>(null);
   
   // Ref to track the Stage instance for cleanup
   const stageRef = useRef<Konva.Stage | null>(null);
@@ -190,13 +187,8 @@ export default function MainStage({
             <BackgroundStarField
               width={width}
               height={height}
-              focusedConstellationPos={focusedConstellationPos}
             />
-            {showMainStars && (
-              <MainStarField
-                setFocusedConstellationPosAction={setFocusedConstellationPos}
-              />
-            )}
+            {showMainStars && <MainStarField />}
           </Layer>
         </Stage>
       )}

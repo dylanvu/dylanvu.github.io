@@ -3,12 +3,11 @@ import { useEffect, useRef } from "react";
 import Konva from "konva";
 import StaticStar from "./StaticStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
-import { FocusedConstellationPos } from "@/interfaces/StarInterfaces";
+import { useFocusContext } from "@/hooks/useFocusProvider";
 
 interface ParallaxLayerProps {
   stars: Array<{ x: number; y: number; radius: number }>;
   depth: number;
-  focusedConstellationPos: FocusedConstellationPos | null;
   fadeDuration: number; // in seconds
   fadeDelay: number; // in seconds
 }
@@ -18,7 +17,6 @@ const MOVEMENT_ANIMATION_DURATION = 0.5;
 export default function ParallaxLayer({
   stars,
   depth,
-  focusedConstellationPos,
   fadeDuration,
   fadeDelay,
 }: ParallaxLayerProps) {
@@ -30,6 +28,7 @@ export default function ParallaxLayer({
   const fadeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { windowCenter } = useWindowSizeContext();
+  const { parallaxFocusData, focusedObject } = useFocusContext();
 
   // 1. ENTRANCE FADE EFFECT (Timer based)
   useEffect(() => {
@@ -78,8 +77,9 @@ export default function ParallaxLayer({
     let targetX = windowCenter.x;
     let targetY = windowCenter.y;
 
-    if (focusedConstellationPos) {
-      const { constellation, unfocusedX, unfocusedY } = focusedConstellationPos;
+    if (parallaxFocusData && focusedObject.constellation) {
+      const { unfocusedX, unfocusedY } = parallaxFocusData;
+      const constellation = focusedObject.constellation;
       targetRotation = -(constellation.rotation ?? 0);
       const focusScale = constellation.focusScale ?? 1;
       targetScale = 1 + (focusScale - 1) * depth;
@@ -115,7 +115,7 @@ export default function ParallaxLayer({
       // We usually don't force finish moveTween on unmount/re-render
       // to allow smooth transitions if inputs change rapidly
     };
-  }, [focusedConstellationPos, depth, windowCenter]);
+  }, [parallaxFocusData, depth, windowCenter]);
 
   return (
     <Group
