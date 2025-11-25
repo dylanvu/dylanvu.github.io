@@ -9,6 +9,7 @@ import {
   DURATION,
   TEXT_SIZE,
   SPACING,
+  TEXT_OUTLINE,
 } from "@/app/theme";
 
 function getIntroTextForPath(pathname: string): string[] {
@@ -105,6 +106,7 @@ export default function IntroScreen({
                 color: SPACE_TEXT_COLOR,
                 fontSize: TEXT_SIZE["3xl"],
                 marginTop: i === 0 ? 0 : SPACING.lg,
+                textShadow: TEXT_OUTLINE,
               }}
               className={FONT_FAMILY.className}
             >

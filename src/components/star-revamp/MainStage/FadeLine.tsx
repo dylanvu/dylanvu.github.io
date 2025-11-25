@@ -2,6 +2,7 @@
 import { motion } from "motion/react";
 import { NextFont } from "next/dist/compiled/@next/font";
 import React from "react";
+import { TEXT_OUTLINE } from "@/app/theme";
 
 interface FadeLineProps {
   text: string;
@@ -37,6 +38,7 @@ export function FadeLine({
         lineHeight: 1.2,
         display: "inline-block",
         whiteSpace: "pre", // preserve spacing if any
+        textShadow: TEXT_OUTLINE,
         ...style,
       }}
       // support NextFont objects (className), or plain strings if you pass style.fontFamily

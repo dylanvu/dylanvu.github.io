@@ -113,6 +113,20 @@ export const SHADOW = {
 } as const;
 
 // ===========================
+// TEXT OUTLINE
+// ===========================
+export const TEXT_OUTLINE = `
+  -1px -1px 0 ${SPACE_BACKGROUND_COLOR},
+  1px -1px 0 ${SPACE_BACKGROUND_COLOR},
+  -1px 1px 0 ${SPACE_BACKGROUND_COLOR},
+  1px 1px 0 ${SPACE_BACKGROUND_COLOR},
+  0 -1px 0 ${SPACE_BACKGROUND_COLOR},
+  0 1px 0 ${SPACE_BACKGROUND_COLOR},
+  -1px 0 0 ${SPACE_BACKGROUND_COLOR},
+  1px 0 0 ${SPACE_BACKGROUND_COLOR}
+`;
+
+// ===========================
 // TYPOGRAPHY SCALE
 // ===========================
 export const TEXT_SIZE = {

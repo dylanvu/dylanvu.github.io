@@ -543,7 +543,9 @@ function MainStar({
           if (showHitBox) {
             const labelWidth = textRef.current?.width() || 0;
             const labelHeight = textRef.current?.height() || 0;
-            const labelY = actualSize + labelSize;
+            // Use base star size for padding (not affected by brightness/twinkle)
+            const labelPadding = actualSize * 0.8;
+            const labelY = actualSize + labelPadding;
             const hitRadiusX = Math.max(starRadius, labelWidth / 2);
             const hitRadiusY = starRadius + labelHeight + labelY;
             ctx.fillStyle = "rgba(255,0,0,0.2)";
@@ -557,7 +559,9 @@ function MainStar({
           // Account for reverse scaling applied to the text
           const visualLabelWidth = labelWidth / mapScale;
           const visualLabelHeight = labelHeight / mapScale;
-          const labelY = (actualSize + scaledLabelSize) / mapScale;
+          // Use base star size for padding (not affected by brightness/twinkle)
+          const labelPadding = actualSize * 0.8;
+          const labelY = (actualSize + labelPadding) / mapScale;
 
           const hitRadiusX = Math.max(starRadius, visualLabelWidth / 2);
           const hitRadiusY = starRadius + visualLabelHeight + labelY;
@@ -569,24 +573,30 @@ function MainStar({
         }}
         listening={true}
       />
-      {showLabel && (data?.label || labelOverride) && (
-        <Text
-          ref={textRef}
-          x={0}
-          y={(actualSize + scaledLabelSize) / mapScale}
-          text={labelOverride || data?.label}
-          fontSize={scaledLabelSize}
-          fill={SPACE_TEXT_COLOR}
-          stroke={SPACE_BACKGROUND_COLOR}
-          strokeWidth={0.8}
-          fillAfterStrokeEnabled={true}
-          fontFamily={FONT_FAMILY.style.fontFamily}
-          align="center"
-          offsetX={textRef.current ? textRef.current.width() / 2 : 0}
-          scaleX={1 / mapScale}
-          scaleY={1 / mapScale}
-        />
-      )}
+      {showLabel && (data?.label || labelOverride) && (() => {
+        // Calculate padding proportional to base star size (not affected by brightness/twinkle)
+        // This keeps the label position fixed while the star twinkles
+        const labelPadding = actualSize * 0.8; // 80% of base star size as padding
+        
+        return (
+          <Text
+            ref={textRef}
+            x={0}
+            y={(actualSize + labelPadding) / mapScale}
+            text={labelOverride || data?.label}
+            fontSize={scaledLabelSize}
+            fill={SPACE_TEXT_COLOR}
+            stroke={SPACE_BACKGROUND_COLOR}
+            strokeWidth={0.8}
+            fillAfterStrokeEnabled={true}
+            fontFamily={FONT_FAMILY.style.fontFamily}
+            align="center"
+            offsetX={textRef.current ? textRef.current.width() / 2 : 0}
+            scaleX={1 / mapScale}
+            scaleY={1 / mapScale}
+          />
+        );
+      })()}
     </Group>
   );
 }

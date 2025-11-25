@@ -22,7 +22,7 @@ const DESKTOP_SCALE = 1.0;
 const MOBILE_SCALE = 0.65;
 
 const DESKTOP_FONT_SCALE = 1.0;
-const MOBILE_FONT_SCALE = 0.4;
+const MOBILE_FONT_SCALE = 0.8;
 
 type MobileState = {
   isMobile: boolean;
