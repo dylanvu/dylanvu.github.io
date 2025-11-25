@@ -44,8 +44,6 @@ function calculateParallaxTransform(
 }
 
 // --- INTERFACE ---
-// We use "any" for the RefObject generic to accept RefObject<Group>, RefObject<Shape>, etc.
-// Casting occurs inside the hook.
 interface UseParallaxCameraProps {
   nodeRef: React.RefObject<any>; 
   identityId: string;        
@@ -55,7 +53,8 @@ interface UseParallaxCameraProps {
   baseRotation?: number;
   focusScale: number;        
   windowCenter: { x: number; y: number };
-  focusedTargetX: number;    
+  focusedTargetX: number;
+  focusedTargetY?: number; // <--- ADDED THIS PROP
   
   // Global State
   isFocused: boolean;        
@@ -83,12 +82,16 @@ export const useParallaxCamera = ({
   focusScale,
   windowCenter,
   focusedTargetX,
+  focusedTargetY, // <--- DESTRUCTURED HERE
   isFocused,
   focusedGlobalId,
   parallaxData,
   depth = 3.5,
   duration = 0.5
 }: UseParallaxCameraProps) => {
+
+  // Calculate the actual target Y (Default to Center if not provided)
+  const targetY = focusedTargetY ?? windowCenter.y;
 
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const EASING = Konva.Easings.EaseInOut;
@@ -127,7 +130,7 @@ export const useParallaxCamera = ({
     }
   };
 
-  // A. TARGET FOCUS
+  // A. TARGET FOCUS (Move to UI Position)
   const animateTargetFocus = () => {
     const node = getNode();
     if (!node) return;
@@ -136,7 +139,7 @@ export const useParallaxCamera = ({
     focusTweenRef.current = new Konva.Tween({
       node, duration, easing: EASING,
       x: focusedTargetX, 
-      y: windowCenter.y,
+      y: targetY, // <--- USE DYNAMIC TARGET Y
       scaleX: baseScale * focusScale,
       scaleY: baseScale * focusScale,
       rotation: 0,
@@ -145,7 +148,7 @@ export const useParallaxCamera = ({
     focusTweenRef.current.play();
   };
 
-  // B. TARGET RETURN
+  // B. TARGET RETURN (Return Home)
   const animateTargetReturn = () => {
     const node = getNode();
     if (!node) return;
@@ -153,8 +156,10 @@ export const useParallaxCamera = ({
 
     const startZoom = lockedFocusState.current?.worldZoom || focusScale;
     
+    // Snap to "Active" position to prevent flash
     node.setAttrs({
-      x: focusedTargetX, y: windowCenter.y,
+      x: focusedTargetX, 
+      y: targetY, // <--- USE DYNAMIC TARGET Y
       scaleX: baseScale * startZoom,
       scaleY: baseScale * startZoom,
       rotation: 0,

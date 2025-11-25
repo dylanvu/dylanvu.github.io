@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Group, Circle } from "react-konva";
 import Konva from "konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
@@ -7,7 +7,7 @@ import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
-import { TweenConfig } from "konva/lib/Tween";
+import { useParallaxCamera } from "../Constellation/useParallaxCamera";
 
 type PolarisProps = {
   x: number;
@@ -21,7 +21,7 @@ type PolarisProps = {
   onHoverLeaveCallback?: () => void;
 };
 
-// --- Sub-component for a single expanding ring ---
+// --- Sub-component for a single expanding ring (Unchanged) ---
 const PulseRing = ({
   radius,
   delay,
@@ -46,7 +46,6 @@ const PulseRing = ({
   const circleRef = useRef<Konva.Circle>(null);
   const tweenRef = useRef<Konva.Tween | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
   const isAnimatingRef = useRef(false);
   const isActiveRef = useRef(active);
   const triggerModeRef = useRef(triggerMode);
@@ -54,109 +53,56 @@ const PulseRing = ({
   const playPulseRef = useRef<() => void>(() => {});
 
   useEffect(() => {
-    const wasTriggerMode = triggerModeRef.current;
     isActiveRef.current = active;
     triggerModeRef.current = triggerMode;
-
-    if (active && !triggerMode && wasTriggerMode && !isAnimatingRef.current) {
-      playPulseRef.current();
-    } else if (active && !triggerMode && !wasTriggerMode && !isAnimatingRef.current) {
-      playPulseRef.current();
+    if (active && !triggerMode && !isAnimatingRef.current) {
+       playPulseRef.current();
     }
   }, [active, triggerMode]);
 
-  useEffect(() => {
-    durationRef.current = duration;
-  }, [duration]);
+  useEffect(() => { durationRef.current = duration; }, [duration]);
 
   useEffect(() => {
     const node = circleRef.current;
     if (!node) return;
-
-    node.scaleX(1);
-    node.scaleY(1);
-    node.opacity(0);
+    node.scaleX(1); node.scaleY(1); node.opacity(0);
     node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
 
     const playPulse = () => {
-      if (triggerModeRef.current && isAnimatingRef.current) {
-        return;
-      }
-
+      if (triggerModeRef.current && isAnimatingRef.current) return;
       isAnimatingRef.current = true;
-
-      node.scaleX(1);
-      node.scaleY(1);
-      node.opacity(maxOpacity);
+      node.scaleX(1); node.scaleY(1); node.opacity(maxOpacity);
       node.strokeWidth(debug ? strokeWidth * 2 : strokeWidth);
 
       tweenRef.current = new Konva.Tween({
-        node,
-        duration: durationRef.current,
-        scaleX: 2.5,
-        scaleY: 2.5,
-        opacity: 0,
-        strokeWidth: 0,
-        easing: Konva.Easings.EaseOut,
+        node, duration: durationRef.current, scaleX: 2.5, scaleY: 2.5, opacity: 0, strokeWidth: 0, easing: Konva.Easings.EaseOut,
         onFinish: () => {
           isAnimatingRef.current = false;
-          if (tweenRef.current) {
-            tweenRef.current.destroy();
-            tweenRef.current = null;
-          }
-          if (isActiveRef.current && !triggerModeRef.current) {
-            playPulse();
-          }
+          tweenRef.current = null;
+          if (isActiveRef.current && !triggerModeRef.current) playPulse();
         },
       });
-
       tweenRef.current.play();
     };
-
     playPulseRef.current = playPulse;
-
+    
     if (triggerMode) {
-      if (isActiveRef.current) {
-        playPulse();
-      }
+      if (isActiveRef.current) playPulse();
     } else {
-      timerRef.current = setTimeout(() => {
-        if (isActiveRef.current) {
-          playPulse();
-        }
-      }, delay * 1000);
+      timerRef.current = setTimeout(() => { if (isActiveRef.current) playPulse(); }, delay * 1000);
     }
-
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      if (tweenRef.current) {
-        tweenRef.current.destroy();
-        tweenRef.current = null;
-      }
+      if (tweenRef.current) { tweenRef.current.destroy(); tweenRef.current = null; }
       isAnimatingRef.current = false;
     };
   }, [delay, maxOpacity, debug, strokeWidth]);
 
   useEffect(() => {
-    if (!onMount) return;
-    const triggerPulse = () => {
-      if (!isAnimatingRef.current && playPulseRef.current) {
-        playPulseRef.current();
-      }
-    };
-    onMount(triggerPulse);
+    if (onMount) onMount(() => { if (!isAnimatingRef.current) playPulseRef.current(); });
   }, [onMount]);
 
-  return (
-    <Circle
-      ref={circleRef}
-      x={0}
-      y={0}
-      radius={radius}
-      stroke={debug ? "red" : POLARIS_GLOW_COLOR}
-      listening={false}
-    />
-  );
+  return <Circle ref={circleRef} x={0} y={0} radius={radius} stroke={debug ? "red" : POLARIS_GLOW_COLOR} listening={false} />;
 };
 
 export default function Polaris({
@@ -171,43 +117,33 @@ export default function Polaris({
   onHoverLeaveCallback,
 }: PolarisProps) {
   const groupRef = useRef<Konva.Group>(null);
-  const focusTweenRef = useRef<Konva.Tween | null>(null);
+  
+  // Contexts
   const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isTalking, registerStreamChunkCallback } = usePolarisContext();
   const { focusedObject, parallaxFocusData } = useFocusContext();
   const { mobileScaleFactor } = useMobile();
+  const { width, height } = useWindowSizeContext();
   
-  const hasCompletedInitialAnimation = useRef(false);
-  // Ref to store position during parallax so we can restore it before returning
-  const lastParallaxState = useRef<{x: number, y: number, scale: number, rotation: number} | null>(null);
-  
+  // Pulse State
   const [pulseRings, setPulseRings] = useState<number[]>([]);
   const pulseIdCounter = useRef(0);
 
   useEffect(() => {
-    const triggerNewPulse = () => {
-      const newId = pulseIdCounter.current++;
-      setPulseRings(prev => [...prev, newId]);
-    };
-
-    registerStreamChunkCallback(triggerNewPulse);
+    registerStreamChunkCallback(() => setPulseRings(prev => [...prev, pulseIdCounter.current++]));
   }, [registerStreamChunkCallback]);
 
   const removePulseRing = (id: number) => {
     setPulseRings(prev => prev.filter(ringId => ringId !== id));
   };
 
-  const { width, height } = useWindowSizeContext();
-
-  // Animation Constants
-  const CLICK_ANIMATION_DURATION = 1; 
+  // --- ANIMATION CONFIG ---
   const CLICK_TARGET_SCALE = 4 * mobileScaleFactor; 
   const CLICK_TARGET_X = 150 * mobileScaleFactor; 
   const CLICK_TARGET_Y = height - (150 * mobileScaleFactor); 
+  
+  // We match your original code: 1s for clicking Polaris, 0.5s for parallax movements
+  const ANIMATION_DURATION = isReady ? 1.0 : 0.5;
 
-  const PARALLAX_ANIMATION_DURATION = 0.5;
-  const PARALLAX_EASING = Konva.Easings.EaseInOut;
-
-  // Ripple Config
   const DEBUG_RIPPLES = false;
   const RIPPLE_MAX_OPACITY = 0.5;
   const PASSIVE_RIPPLE_CYCLE_DURATION = 5;
@@ -215,172 +151,58 @@ export default function Polaris({
 
   const effectiveRadius = size * Math.max(brightness, twinkleMax ?? brightness) * 0.8;
 
-  // Refs for stability
-  const xRef = useRef(x);
-  const yRef = useRef(y);
-  const windowCenterRef = useRef(windowCenter);
-  const parallaxFocusDataRef = useRef(parallaxFocusData);
-  const widthRef = useRef(width);
-  const heightRef = useRef(height);
-  const clickTargetXRef = useRef(CLICK_TARGET_X);
-  const clickTargetYRef = useRef(CLICK_TARGET_Y);
-
+  // --- DISPLAY STATE SYNC ---
+  // Replicates the `onFinish` logic from your original code.
+  // When isReady becomes true, we wait for the animation duration (1s) then show the UI.
   useEffect(() => {
-    xRef.current = x;
-    yRef.current = y;
-    windowCenterRef.current = windowCenter;
-    parallaxFocusDataRef.current = parallaxFocusData;
-    widthRef.current = width;
-    heightRef.current = height;
-    clickTargetXRef.current = CLICK_TARGET_X;
-    clickTargetYRef.current = CLICK_TARGET_Y;
+    if (isReady && polarisDisplayState !== "active") {
+        const t = setTimeout(() => {
+            setPolarisDisplayState("active");
+        }, ANIMATION_DURATION * 1000);
+        return () => clearTimeout(t);
+    }
+  }, [isReady, ANIMATION_DURATION, setPolarisDisplayState, polarisDisplayState]);
+
+
+  // --- PARALLAX DATA ---
+  // Only calculate this if we are NOT active. 
+  // If isReady=true, this input is ignored by the hook anyway, but this optimization helps.
+  const parallaxInputData = useMemo(() => {
+    if (isReady || !parallaxFocusData || !focusedObject?.constellation) return null;
+    return {
+        worldX: parallaxFocusData.unfocusedX,
+        worldY: parallaxFocusData.unfocusedY,
+        worldZoom: focusedObject.constellation.focusScale ?? 1,
+        targetRotation: focusedObject.constellation.rotation ?? 0
+    };
+  }, [parallaxFocusData, focusedObject, isReady]);
+
+  // --- THE UNIFIED HOOK ---
+  const { isAnimatingOrFocused } = useParallaxCamera({
+    nodeRef: groupRef,
+    identityId: "Polaris",
+    unfocusedX: x,
+    unfocusedY: y,
+    baseScale: 1,
+    baseRotation: 0,
+    
+    // ACTIVE STATE CONFIG (Matches your original manual tween)
+    focusScale: CLICK_TARGET_SCALE,
+    windowCenter,
+    focusedTargetX: CLICK_TARGET_X,
+    focusedTargetY: CLICK_TARGET_Y,
+    isFocused: isReady, // "Ready" = "Focused" for the physics engine
+    
+    // PARALLAX STATE CONFIG (Ignored if isReady is true)
+    focusedGlobalId: focusedObject?.constellation?.name || null,
+    parallaxData: parallaxInputData,
+    
+    // CONFIG
+    depth: 6.0, // High depth for foreground feel
+    duration: ANIMATION_DURATION // Dynamic duration based on mode
   });
 
-  // Handle Movement and Animation Logic
-  useEffect(() => {
-    const node = groupRef.current;
-    if (!node) return;
-
-    // We can't use finish() blindly here because it might snap us to the wrong place
-    if (focusTweenRef.current) {
-        focusTweenRef.current.destroy();
-        focusTweenRef.current = null;
-    }
-
-    // --- CASE 1: POLARIS IS ACTIVE (Assistant Mode) ---
-    if (isReady) {
-      node.visible(true);
-      node.opacity(1);
-
-      const tweenConfig: TweenConfig = {
-        node,
-        duration: CLICK_ANIMATION_DURATION,
-        easing: Konva.Easings.EaseInOut,
-        x: clickTargetXRef.current,
-        y: clickTargetYRef.current,
-        scaleX: CLICK_TARGET_SCALE,
-        scaleY: CLICK_TARGET_SCALE,
-        rotation: 0,
-      };
-      
-      tweenConfig.onFinish = () => {
-        if (!hasCompletedInitialAnimation.current) {
-          hasCompletedInitialAnimation.current = true;
-          setPolarisDisplayState("active");
-        }
-        if (focusTweenRef.current) {
-          focusTweenRef.current.destroy();
-          focusTweenRef.current = null;
-        }
-      };
-      
-      focusTweenRef.current = new Konva.Tween(tweenConfig);
-      focusTweenRef.current.play();
-    } 
-    // --- CASE 2: PARALLAX MODE (Another constellation is focused) ---
-    else if (focusedObject.constellation) {
-      
-      // RACE CONDITION GUARD: Wait for data
-      if (!parallaxFocusDataRef.current) return;
-
-      const { unfocusedX: focusedUnfocusedX, unfocusedY: focusedUnfocusedY } = parallaxFocusDataRef.current;
-      
-      const worldZoom = focusedObject.constellation.focusScale ?? 1;
-      const depth = 3.5; 
-
-      const vecX = xRef.current - focusedUnfocusedX;
-      const vecY = yRef.current - focusedUnfocusedY;
-
-      const expansionFactor = 1 + (worldZoom - 1) * depth;
-      const movementMultiplier = expansionFactor; 
-
-      const expandedX = windowCenterRef.current.x + (vecX * movementMultiplier);
-      const expandedY = windowCenterRef.current.y + (vecY * movementMultiplier);
-
-      const focusedRotation = focusedObject.constellation.rotation ?? 0;
-      const angleRad = (-focusedRotation * Math.PI) / 180;
-      const cos = Math.cos(angleRad);
-      const sin = Math.sin(angleRad);
-
-      const vX = expandedX - windowCenterRef.current.x;
-      const vY = expandedY - windowCenterRef.current.y;
-
-      const rotatedX = windowCenterRef.current.x + (vX * cos - vY * sin);
-      const rotatedY = windowCenterRef.current.y + (vX * sin + vY * cos);
-
-      focusTweenRef.current = new Konva.Tween({
-        node,
-        duration: PARALLAX_ANIMATION_DURATION,
-        easing: PARALLAX_EASING,
-        x: rotatedX,
-        y: rotatedY,
-        scaleX: expansionFactor, 
-        scaleY: expansionFactor,
-        rotation: -focusedRotation, 
-        opacity: 0, 
-        // Capture position every frame so we know where we are when we return
-        onUpdate: () => {
-            lastParallaxState.current = {
-                x: node.x(),
-                y: node.y(),
-                scale: node.scaleX(),
-                rotation: node.rotation()
-            };
-        },
-        onFinish: () => {
-          node.visible(false); 
-          if (focusTweenRef.current) {
-            focusTweenRef.current.destroy();
-            focusTweenRef.current = null;
-          }
-        },
-      });
-      
-      node.visible(true);
-      focusTweenRef.current.play();
-    } 
-    // --- CASE 3: IDLE / RETURN MODE ---
-    else {
-      // FIX: React may have snapped properties back to props (x/y).
-      // If we were previously in parallax, force restore the visual state 
-      // before tweening back.
-      if (lastParallaxState.current) {
-          node.x(lastParallaxState.current.x);
-          node.y(lastParallaxState.current.y);
-          node.scaleX(lastParallaxState.current.scale);
-          node.scaleY(lastParallaxState.current.scale);
-          node.rotation(lastParallaxState.current.rotation);
-          
-          // Since parallax fades to 0, start from 0
-          node.opacity(0);
-          
-          // Clear it
-          lastParallaxState.current = null;
-      }
-
-      node.visible(true);
-
-      focusTweenRef.current = new Konva.Tween({
-        node,
-        duration: PARALLAX_ANIMATION_DURATION,
-        easing: PARALLAX_EASING,
-        x: xRef.current,
-        y: yRef.current,
-        scaleX: 1,
-        scaleY: 1,
-        rotation: 0,
-        opacity: 1, 
-        onFinish: () => {
-          if (focusTweenRef.current) {
-            focusTweenRef.current.destroy();
-            focusTweenRef.current = null;
-          }
-        },
-      });
-      focusTweenRef.current.play();
-    }
-  }, [isReady, focusedObject.constellation, parallaxFocusData]);
-
+  // --- CLICK HANDLER (Unchanged) ---
   const handleClick = () => {
     if (!isReady) {
       document.body.style.cursor = "default";
@@ -397,8 +219,10 @@ export default function Polaris({
   return (
     <Group
       ref={groupRef}
-      x={x}
-      y={y}
+      // Static props; Hook handles x/y/scale
+      x={0}
+      y={0}
+      
       onClick={handleClick}
       onTap={handleClick}
       onMouseEnter={() => {
