@@ -16,6 +16,7 @@ import {
   SetStateAction,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 
 import { useTopOverlayContext } from "./useTopOverlay";
@@ -56,6 +57,10 @@ export function FocusProvider({ children }: { children: ReactNode }) {
 
   const { polarisDisplayState } = usePolarisContext();
 
+  // Track current slug to prevent redundant navigation calls
+  const currentStarSlugRef = useRef<string | null>(null);
+  const currentConstellationSlugRef = useRef<string | null>(null);
+
   useEffect(() => {
 
     if (pathname.startsWith("/star/")) {
@@ -72,6 +77,13 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   }, [pathname, polarisDisplayState, setHorizontalPosition]);
 
   const navigateToStar = useCallback((slug: string) => {
+    // Prevent redundant navigation to same slug
+    if (currentStarSlugRef.current === slug) {
+      return;
+    }
+    currentStarSlugRef.current = slug;
+    currentConstellationSlugRef.current = null; // Clear constellation when navigating to star
+
     const constellationName = getConstellationNameByStarSlug(slug);
     if (constellationName) {
       const constellationData = getConstellationDataByName(constellationName);
@@ -99,6 +111,13 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   }, [pathname, router, setOverlayTextContents]);
 
   const navigateToConstellation = useCallback((slug: string) => {
+    // Prevent redundant navigation to same constellation
+    if (currentConstellationSlugRef.current === slug) {
+      return;
+    }
+    currentConstellationSlugRef.current = slug;
+    currentStarSlugRef.current = null; // Clear star when navigating to constellation
+
     console.log('[navigateToConstellation] Input slug:', slug);
     
     const capitalizedName = slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();

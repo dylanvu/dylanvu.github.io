@@ -14,12 +14,17 @@ export default function StarPanel({
   const { navigateToStar } = useFocusContext();
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
 
+  // Navigation effect - only runs when slug changes
   useEffect(() => {
     navigateToStar(slug)
+  }, [slug, navigateToStar])
+
+  // Polaris suppression effect - runs independently
+  useEffect(() => {
     if (polarisDisplayState === "active") {
       setPolarisDisplayState("suppressed");
     }
-  }, [slug, navigateToStar])
+  }, [polarisDisplayState, setPolarisDisplayState])
   
   return <StarMarkdownRenderer markdown={markdown} />;
 }

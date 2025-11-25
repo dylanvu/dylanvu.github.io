@@ -100,9 +100,12 @@ export function createOverlayContext(defaults: {
         aboutText,
         introText,
         overlayVisibility,
+        setOverlayVisibility,
         resetOverlayTextContents,
         setOverlayTextContents,
         horizontalPosition,
+        setHorizontalPosition,
+        setDEFAULT_ABOUT_TEXT,
       ]
     );
 

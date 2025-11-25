@@ -249,6 +249,12 @@ export function generateClusterMarkdown(
   );
   const totalHours = hoursCompeted + hoursMentored;
 
+  // Get year range
+  const years = sortedHackathons.map((h) => h.date.getFullYear());
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
+  const yearRange = minYear === maxYear ? `${minYear}` : `${minYear}–${maxYear}`;
+
   // Build markdown content
   const lines: string[] = [];
 
@@ -256,75 +262,129 @@ export function generateClusterMarkdown(
   lines.push(`# Hackathons in ${cluster.city}`);
   lines.push("");
 
-  // Summary statistics
-  lines.push("## Summary");
-  lines.push("");
-  lines.push(`- **Total Hackathons**: ${totalParticipated}`);
-  lines.push(`- **Competed**: ${competedHackathons.length} hackathons (~${hoursCompeted.toLocaleString()} hours)`);
-  lines.push(`- **Mentored**: ${mentoredHackathons.length} hackathons (~${hoursMentored.toLocaleString()} hours)`);
-  lines.push(`- **Total Hours**: ~${totalHours.toLocaleString()} hours`);
-  
+  // Summary statistics with blockquote
+  lines.push("> ### Summary Statistics");
+  lines.push(">");
+  lines.push(`> **${totalParticipated} total hackathon${totalParticipated !== 1 ? 's' : ''}** spanning ${yearRange} • **~${totalHours.toLocaleString()} total hours** of hacking and mentoring`);
   if (cluster.awardsCount > 0) {
-    lines.push(`- **Awards Won**: ${cluster.awardsCount}`);
+    lines.push(">");
+    lines.push(`> **${cluster.awardsCount} award${cluster.awardsCount !== 1 ? 's' : ''} won** across all events`);
   }
-  
   lines.push("");
 
-  // List all hackathons
-  lines.push("## Hackathons");
-  lines.push("");
+  // Helper function to render a hackathon entry
+  const renderHackathon = (hackathon: HackathonInformation) => {
+    const output: string[] = [];
+    
+    output.push(`### ${hackathon.name}`);
+    output.push("");
 
-  for (const hackathon of sortedHackathons) {
-    // Hackathon header
-    lines.push(`### ${hackathon.name}`);
-    lines.push("");
-
-    // Basic info
-    lines.push(`**Date**: ${hackathon.date.toLocaleDateString("en-US", { 
-      year: "numeric", 
-      month: "long", 
-      day: "numeric" 
-    })}`);
-    lines.push("");
-    lines.push(`**Role**: ${hackathon.role}`);
-    lines.push("");
-    lines.push(`**Location**: ${hackathon.place}, ${hackathon.city}, ${hackathon.state}`);
-    lines.push("");
-    lines.push(`**Type**: ${hackathon.type}`);
-    lines.push("");
-    lines.push(`**Duration**: ${hackathon.duration} hours`);
-    lines.push("");
-    lines.push(`**Organizer**: ${hackathon.organizer}`);
-
-    // Project name (if participant)
-    if (hackathon.projectName) {
-      lines.push("");
-      lines.push(`**Project**: ${hackathon.projectName}`);
-    }
-
-    // Awards
+    // Awards in blockquote if present
     if (hackathon.awards.length > 0) {
-      lines.push("");
-      lines.push(`**Awards**: ${hackathon.awards.join(", ")}`);
+      output.push(`> **${hackathon.awards.join(" • ")}**`);
+      output.push("");
     }
 
-    // Links
-    if (hackathon.devpost) {
-      lines.push("");
-      lines.push(`**Devpost**: [${hackathon.devpost}](${hackathon.devpost})`);
+    // Key details in a compact format
+    output.push(`**${hackathon.date.toLocaleDateString("en-US", { 
+      month: "long", 
+      day: "numeric",
+      year: "numeric"
+    })}** • ${hackathon.duration} hours • ${hackathon.type}`);
+    output.push("");
+    
+    output.push(`**Location:** ${hackathon.place}, ${hackathon.city}, ${hackathon.state}`);
+    output.push("");
+    
+    output.push(`**Organizer:** ${hackathon.organizer}`);
+    output.push("");
+
+    // Project info
+    if (hackathon.projectName) {
+      output.push(`**Project:** ${hackathon.projectName}`);
+      output.push("");
     }
 
-    if (hackathon.github && hackathon.github.length > 0) {
-      lines.push("");
-      lines.push(`**GitHub**:`);
-      for (const repo of hackathon.github) {
-        lines.push(`- [${repo}](${repo})`);
+    // Links section
+    const hasLinks = hackathon.devpost || (hackathon.github && hackathon.github.length > 0);
+    if (hasLinks) {
+      const linkParts: string[] = [];
+      
+      if (hackathon.devpost) {
+        linkParts.push(`[Devpost](${hackathon.devpost})`);
       }
+      
+      if (hackathon.github && hackathon.github.length > 0) {
+        for (const repo of hackathon.github) {
+          linkParts.push(`[GitHub](${repo})`);
+        }
+      }
+      
+      output.push(`**Links:** ${linkParts.join(" • ")}`);
+      output.push("");
     }
 
+    output.push("---");
+    output.push("");
+    
+    return output;
+  };
+
+  // Competed Hackathons Section
+  if (competedHackathons.length > 0) {
+    const sortedCompeted = competedHackathons.sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    );
+    
+    const competedAwards = competedHackathons.reduce(
+      (sum, h) => sum + h.awards.length,
+      0
+    );
+    
+    lines.push("## Competed");
     lines.push("");
-    lines.push("---");
+    lines.push(`**${competedHackathons.length} hackathon${competedHackathons.length !== 1 ? 's' : ''}** • ~${hoursCompeted.toLocaleString()} hours${competedAwards > 0 ? ` • ${competedAwards} award${competedAwards !== 1 ? 's' : ''} won` : ''}`);
     lines.push("");
+
+    // Group by year
+    let currentYear: number | null = null;
+    for (const hackathon of sortedCompeted) {
+      const hackathonYear = hackathon.date.getFullYear();
+      
+      if (currentYear !== hackathonYear) {
+        currentYear = hackathonYear;
+        lines.push(`#### ${currentYear}`);
+        lines.push("");
+      }
+      
+      lines.push(...renderHackathon(hackathon));
+    }
+  }
+
+  // Mentored Hackathons Section
+  if (mentoredHackathons.length > 0) {
+    const sortedMentored = mentoredHackathons.sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    );
+    
+    lines.push("## Mentored");
+    lines.push("");
+    lines.push(`**${mentoredHackathons.length} hackathon${mentoredHackathons.length !== 1 ? 's' : ''}** • ~${hoursMentored.toLocaleString()} hours of mentorship`);
+    lines.push("");
+
+    // Group by year
+    let currentYear: number | null = null;
+    for (const hackathon of sortedMentored) {
+      const hackathonYear = hackathon.date.getFullYear();
+      
+      if (currentYear !== hackathonYear) {
+        currentYear = hackathonYear;
+        lines.push(`#### ${currentYear}`);
+        lines.push("");
+      }
+      
+      lines.push(...renderHackathon(hackathon));
+    }
   }
 
   return lines.join("\n");
