@@ -144,6 +144,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     if (pathname === "/") {
       currentStarSlugRef.current = null;
       currentConstellationSlugRef.current = null;
+      setFocusedObject({ constellation: null, star: null });
     }
   }, [pathname]);
 
