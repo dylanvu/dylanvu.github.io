@@ -13,8 +13,7 @@ import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import { STAR_BASE_URL } from "@/constants/Routes";
-import { setConstellationOverlay, setStarOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
+import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import React from "react";
 import { useMobile } from "@/hooks/useMobile";
 
@@ -203,7 +202,7 @@ function Constellation({
 
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   
-  const { focusedObject, parallaxFocusData } = useFocusContext();
+  const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
 
   const mobileState = useMobile();
 
@@ -563,12 +562,12 @@ function Constellation({
                 "noopener,noreferrer"
               );
             } else if (isStarDataWithInternalLink(starData)) {
-              router.push(`${STAR_BASE_URL}/${starData.slug}`);
+              // Use navigateToStar which handles both routing and overlay updates
+              navigateToStar(starData.slug);
               if (polarisDisplayState === "active") {
                 setPolarisDisplayState("suppressed");
               }
             }
-            setStarOverlayMobileAware(starData, setTopOverlayTextContents, mobileState);
           }
         }}
         onHoverScale={isFocused ? 1.3 : 1.8}

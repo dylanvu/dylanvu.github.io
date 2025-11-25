@@ -44,8 +44,7 @@ export default function MainStarField() {
   const router = useRouter();
   const pathname = usePathname();
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
-  const mobileState = useMobile();
-  const { isSmallScreen, mobileScaleFactor } = mobileState;
+  const { isSmallScreen, mobileScaleFactor } = useMobile();
 
   // Handler for background clicks/taps
   const handleBackgroundInteraction = () => {
@@ -67,27 +66,6 @@ export default function MainStarField() {
 
   // DEBUG MODE - set to false to hide debug markers
   const DEBUG_MODE = false;
-
-  // Update overlays when focusedObject changes
-  useEffect(() => {
-    if (focusedObject.constellation) {
-      setCenterOverlayVisibility(false);
-      setTopOverlayVisibility(true);
-      if (focusedObject.star) {
-        setStarOverlayMobileAware(
-          focusedObject.star,
-          setTopOverlayTextContents,
-          mobileState
-        );
-      } else {
-        setConstellationOverlayMobileAware(
-          focusedObject.constellation,
-          setTopOverlayTextContents,
-          mobileState
-        );
-      }
-    }
-  }, [focusedObject, mobileState]);
 
   return (
     <Group>

@@ -21,15 +21,17 @@ import {
 } from "react";
 
 import { useTopOverlayContext } from "./useTopOverlay";
+import { useCenterOverlayContext } from "./useCenterOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { useMobile } from "./useMobile";
 import {
   getConstellationNameByStarSlug,
   getConstellationDataByName,
   getStarDataBySlug,
 } from "@/components/star-revamp/Star/ConstellationList";
 import { STAR_BASE_URL } from "@/constants/Routes";
-import { setConstellationOverlay, setStarOverlay } from "@/utils/overlayHelpers";
+import { setStarOverlayMobileAware, setConstellationOverlayMobileAware } from "@/utils/overlayHelpers";
 import { useWindowSizeContext } from "./useWindowSizeProvider";
 import { DESIGN_REFERENCE } from "@/app/theme";
 import { computeCenter } from "@/utils/constellationUtils";
@@ -61,9 +63,18 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const { width, height } = useWindowSizeContext();
-  const { setHorizontalPosition, setOverlayTextContents } = useTopOverlayContext();
+  const { 
+    setHorizontalPosition, 
+    setOverlayTextContents: setTopOverlayTextContents,
+    setOverlayVisibility: setTopOverlayVisibility 
+  } = useTopOverlayContext();
+  
+  const {
+    setOverlayVisibility: setCenterOverlayVisibility,
+  } = useCenterOverlayContext();
 
   const { polarisDisplayState } = usePolarisContext();
+  const mobileState = useMobile();
 
   // Track current slug to prevent redundant navigation calls
   const currentStarSlugRef = useRef<string | null>(null);
@@ -92,6 +103,26 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       setParallaxFocusData(null);
     }
   }, [focusedObject.constellation, width, height]);
+
+  // Centralized overlay management based on focused object
+  useEffect(() => {
+    if (focusedObject.constellation) {
+      // Something is focused: hide center overlay, show top overlay
+      setCenterOverlayVisibility(false);
+      setTopOverlayVisibility(true);
+      
+      // Set contents based on whether a specific star or just constellation is focused
+      if (focusedObject.star) {
+        setStarOverlayMobileAware(focusedObject.star, setTopOverlayTextContents, mobileState);
+      } else {
+        setConstellationOverlayMobileAware(focusedObject.constellation, setTopOverlayTextContents, mobileState);
+      }
+    } else {
+      // Nothing focused: show center overlay, hide top overlay
+      setCenterOverlayVisibility(true);
+      setTopOverlayVisibility(false);
+    }
+  }, [focusedObject, mobileState, setCenterOverlayVisibility, setTopOverlayVisibility, setTopOverlayTextContents]);
 
   useEffect(() => {
 
@@ -135,11 +166,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         star: starData,
       });
       
-      // Set the top overlay content with star information
-      if (starData) {
-        setStarOverlay(starData, setOverlayTextContents);
-      }
-      
       // Build target path
       const targetPath = `${STAR_BASE_URL}/${slug}`;
       
@@ -148,7 +174,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         router.push(targetPath);
       }
     }
-  }, [pathname, router, setOverlayTextContents]);
+  }, [pathname, router]);
 
   const navigateToConstellation = useCallback((slug: string) => {
     // Prevent redundant navigation to same constellation
@@ -170,9 +196,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         star: null,
       });
       
-      // Set the top overlay content with constellation information
-      setConstellationOverlay(constellationData, setOverlayTextContents);
-      
       // Build target path
       const targetPath = `/constellation/${slug.toLowerCase()}`;
       
@@ -183,7 +206,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     } else {
       console.error('[navigateToConstellation] No constellation found for name:', capitalizedName);
     }
-  }, [pathname, router, setOverlayTextContents]);
+  }, [pathname, router]);
 
   return (
     <FocusContext.Provider
