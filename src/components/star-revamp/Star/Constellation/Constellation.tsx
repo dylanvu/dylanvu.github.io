@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { Group } from "react-konva";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from "react";
 import ElevareControl from "./ElevareControl";
 import HackathonStatistics from "./HackathonStatistics";
 import ConstellationContent from "./ConstellationContent";
@@ -15,6 +15,64 @@ import React from "react";
 import { useMobile } from "@/hooks/useMobile";
 import { useConstellationInteractions } from "./useConstellationInteractions";
 import { areConstellationPropsEqual } from "./useConstellationMemo";
+
+/**
+ * PURE MATH FUNCTION
+ * Calculates the exact position of a neighbor constellation based on the "Camera Progress".
+ * p=0: Normal Home Position (World View)
+ * p=1: Deep Space Position (Focused View)
+ */
+function calculateParallaxTransform(
+  p: number,
+  baseX: number,
+  baseY: number,
+  baseScale: number,
+  baseRotation: number,
+  focusX: number,
+  focusY: number,
+  windowCenterX: number,
+  windowCenterY: number,
+  worldZoom: number,
+  targetRotation: number
+) {
+  // Depth Factor: How much faster background moves
+  const depth = 3.5;
+  const expansionFactor = 1 + (worldZoom - 1) * depth;
+
+  // Interpolate Factors based on p
+  const currentExpansion = 1 + (expansionFactor - 1) * p;
+  
+  // Rotation offset
+  const currentRotOffset = targetRotation * p;
+
+  // Vector from FocusStar to ThisConstellation
+  const vecX = baseX - focusX;
+  const vecY = baseY - focusY;
+
+  // The "Effective" Origin moves from FocusStar(at home) to WindowCenter
+  const currentOriginX = focusX + (windowCenterX - focusX) * p;
+  const currentOriginY = focusY + (windowCenterY - focusY) * p;
+
+  // Apply Rotation & Scale to the Vector
+  const combinedX = vecX * currentExpansion;
+  const combinedY = vecY * currentExpansion;
+
+  const angleRad = (-currentRotOffset * Math.PI) / 180;
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+
+  const finalX = currentOriginX + (combinedX * cos - combinedY * sin);
+  const finalY = currentOriginY + (combinedX * sin + combinedY * cos);
+
+  return {
+    x: finalX,
+    y: finalY,
+    scaleX: baseScale * currentExpansion,
+    scaleY: baseScale * currentExpansion,
+    rotation: baseRotation - currentRotOffset,
+    opacity: 1 
+  };
+}
 
 function Constellation({
   data,
@@ -47,168 +105,87 @@ function Constellation({
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
 }) {
-  let isFocused = false;
-  if (focusedConstellation) {
-    if (focusedConstellation.name === data.name) {
-      isFocused = true;
-    }
-  }
+  const isTarget = focusedConstellation?.name === data.name;
+  const isFocused = isTarget; 
 
   const isFocusedRef = useRef(isFocused);
   isFocusedRef.current = isFocused;
 
-  // Track detailed state of the focused object to allow perfect reversal
-  const lastFocusStateRef = useRef<{ 
-    name: string;
-    rotation: number; 
-    focusScale: number;
-    unfocusedX: number;
-    unfocusedY: number;
+  // --- STATE TRACKING ---
+  
+  // 1. Identity of previous focus (to detect return type)
+  const lastFocusStateRef = useRef<{ name: string } | null>(null);
+
+  // 2. Geometry of previous focus (to prevent math jitter)
+  const lockedFocusState = useRef<{
+    focusX: number;
+    focusY: number;
+    worldZoom: number;
+    targetRotation: number;
   } | null>(null);
 
   const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
 
-  // Update the last known state whenever a constellation is focused AND data is available
+  // Update State Refs
   useEffect(() => {
-    if (focusedConstellation && parallaxFocusData) {
-      lastFocusStateRef.current = {
-        name: focusedConstellation.name,
-        rotation: focusedConstellation.rotation ?? 0,
-        focusScale: focusedConstellation.focusScale ?? 1,
-        unfocusedX: parallaxFocusData.unfocusedX,
-        unfocusedY: parallaxFocusData.unfocusedY,
-      };
+    if (focusedConstellation) {
+        lastFocusStateRef.current = { name: focusedConstellation.name };
+        
+        if (parallaxFocusData) {
+            lockedFocusState.current = {
+                focusX: parallaxFocusData.unfocusedX,
+                focusY: parallaxFocusData.unfocusedY,
+                worldZoom: focusedConstellation.focusScale ?? 1,
+                targetRotation: focusedConstellation.rotation ?? 0,
+            };
+        }
     }
   }, [focusedConstellation, parallaxFocusData]);
 
   const isReturningRef = useRef(false);
-
   const pathname = usePathname();
-
   const { stars, connections, totalDuration } = data;
   const DEFAULT_TOTAL_DURATION = 2;
   const [brightness, setBrightness] = useState(1);
   const brightnessHover = 1.2;
   const [isHovered, setIsHovered] = useState(false);
-
   const isElevare = data.name === "Elevare";
-  
   const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
 
   useEffect(() => {
-    if (!isFocused && isElevare) {
-      setElevareZoom(MIN_ZOOM);
-    }
+    if (!isFocused && isElevare) setElevareZoom(MIN_ZOOM);
   }, [isFocused, isElevare]);
 
   const groupRef = useRef<Konva.Group>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const focusTweenRef = useRef<Konva.Tween | null>(null);
-
   const focusScale: number = data.focusScale;
-
   const xs = stars.map((s) => s.x);
   const ys = stars.map((s) => s.y);
 
-  // --- BOUNDING BOX MEASUREMENTS ---
+  // --- BOUNDING BOX (Standard) ---
   const hasLabels = stars.some((s) => !!s.data?.label);
   const SHOULD_MEASURE_LABELS = useExactLabelFit && hasLabels;
-
   const measuredExtents = (() => {
-    const defaultMinX = Math.min(...xs);
-    const defaultMaxX = Math.max(...xs);
-    const defaultMinY = Math.min(...ys);
-    const defaultMaxY = Math.max(...ys);
-
-    if (!SHOULD_MEASURE_LABELS) {
-      const minX = defaultMinX - boundingBoxPaddingX;
-      const maxX = defaultMaxX + boundingBoxPaddingX;
-      const minY = defaultMinY - boundingBoxPaddingY;
-      const maxY = defaultMaxY + boundingBoxPaddingY;
-      return { minX, maxX, minY, maxY };
-    }
-
-    let minX = Infinity;
-    let maxX = -Infinity;
-    let minY = Infinity;
-    let maxY = -Infinity;
-
-    for (const s of stars) {
-      const sx = s.x;
-      const sy = s.y;
-      const starRadius = s.data ? StarClassificationSize[s.data.classification] : 5;
-
-      minX = Math.min(minX, sx - starRadius);
-      maxX = Math.max(maxX, sx + starRadius);
-      minY = Math.min(minY, sy - starRadius);
-      maxY = Math.max(maxY, sy + starRadius);
-
-      if (s.data?.label) {
-        const temp = new Konva.Text({
-          text: String(s.data.label),
-          fontSize: bboxLabelSize,
-          fontFamily: bboxLabelFontFamily,
-        });
-        const labelW = temp.width();
-        const labelH = temp.height();
-        const labelTop = sy + starRadius + bboxLabelSize;
-        const labelBottom = labelTop + labelH;
-
-        const labelLeft = sx - labelW / 2;
-        const labelRight = sx + labelW / 2;
-
-        minX = Math.min(minX, labelLeft);
-        maxX = Math.max(maxX, labelRight);
-        minY = Math.min(minY, labelTop);
-        maxY = Math.max(maxY, labelBottom);
-      }
-    }
-
-    minX -= boundingBoxPaddingX;
-    maxX += boundingBoxPaddingX;
-    minY -= boundingBoxPaddingY;
-    maxY += boundingBoxPaddingY;
-
-    if (!isFinite(minX) || !isFinite(minY)) {
-      return {
-        minX: (Math.min(...xs) || 0) - boundingBoxPaddingX,
-        maxX: (Math.max(...xs) || 0) + boundingBoxPaddingX,
-        minY: (Math.min(...ys) || 0) - boundingBoxPaddingY,
-        maxY: (Math.max(...ys) || 0) + boundingBoxPaddingY,
-      };
-    }
-
-    return { minX, maxX, minY, maxY };
+    const defaultMinX = Math.min(...xs); const defaultMaxX = Math.max(...xs);
+    const defaultMinY = Math.min(...ys); const defaultMaxY = Math.max(...ys);
+    if (!SHOULD_MEASURE_LABELS) return { minX: defaultMinX - boundingBoxPaddingX, maxX: defaultMaxX + boundingBoxPaddingX, minY: defaultMinY - boundingBoxPaddingY, maxY: defaultMaxY + boundingBoxPaddingY };
+    return { minX: defaultMinX - boundingBoxPaddingX, maxX: defaultMaxX + boundingBoxPaddingX, minY: defaultMinY - boundingBoxPaddingY, maxY: defaultMaxY + boundingBoxPaddingY };
   })();
-
   const minX = measuredExtents.minX - 10;
   const maxX = measuredExtents.maxX + 10;
   const minY = measuredExtents.minY - 10;
   const maxY = measuredExtents.maxY + 10;
   const width = maxX - minX;
   const height = maxY - minY;
-
-  // center in local group coordinates
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
 
-  const getDistance = (
-    p1: { x: number; y: number },
-    p2: { x: number; y: number }
-  ) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
-
-  const lineSegments =
-    connections && connections.length > 0
-      ? connections
-      : stars.slice(1).map((_, i) => [i, i + 1] as [number, number]);
-
-  const lineLengths = lineSegments.map(([i1, i2]) =>
-    getDistance(stars[i1], stars[i2])
-  );
+  const getDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
+  const lineSegments = connections && connections.length > 0 ? connections : stars.slice(1).map((_, i) => [i, i + 1] as [number, number]);
+  const lineLengths = lineSegments.map(([i1, i2]) => getDistance(stars[i1], stars[i2]));
   const totalLineLength = lineLengths.reduce((sum, l) => sum + l, 0) || 1;
-  const lineDurations = lineLengths.map(
-    (l) => (l / totalLineLength) * (totalDuration ?? DEFAULT_TOTAL_DURATION)
-  );
+  const lineDurations = lineLengths.map((l) => (l / totalLineLength) * (totalDuration ?? DEFAULT_TOTAL_DURATION));
   const lineDelays = lineDurations.reduce<number[]>((acc, dur, idx) => {
     if (idx === 0) acc.push(0);
     else acc.push(acc[idx - 1] + lineDurations[idx - 1]);
@@ -221,474 +198,249 @@ function Constellation({
   const EASING = Konva.Easings.EaseInOut;
 
   const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
-  
   const mobileState = useMobile();
 
   const focusedTargetX = useMemo(() => {
-    return pathname.startsWith("/star/") && polarisDisplayState !== "active"
-      ? windowCenter.x / 2
-      : windowCenter.x;
+    return pathname.startsWith("/star/") && polarisDisplayState !== "active" ? windowCenter.x / 2 : windowCenter.x;
   }, [pathname, polarisDisplayState, windowCenter.x]);
-
-  const playHoverTween = (toScaleX: number, toScaleY: number) => {
-    const node = groupRef.current;
-    if (!node) return;
-    if (isFocusedRef.current) return;
-    if (isReturningRef.current) return;
-
-    if (hoverTweenRef.current) {
-      hoverTweenRef.current.destroy();
-      hoverTweenRef.current = null;
-    }
-    if (focusTweenRef.current) {
-      focusTweenRef.current.destroy();
-      focusTweenRef.current = null;
-    }
-
-    hoverTweenRef.current = new Konva.Tween({
-      node,
-      duration: SCALE_ANIMATION_DURATION,
-      scaleX: toScaleX,
-      scaleY: toScaleY,
-      easing: EASING,
-      onFinish: () => {
-        if (hoverTweenRef.current) {
-          hoverTweenRef.current.destroy();
-          hoverTweenRef.current = null;
-        }
-      },
-    });
-
-    hoverTweenRef.current.play();
-  };
-
-  const playFocusTween = () => {
-    const node = groupRef.current;
-    if (!node) return;
-
-    isReturningRef.current = false;
-
-    if (hoverTweenRef.current) {
-      hoverTweenRef.current.destroy();
-      hoverTweenRef.current = null;
-    }
-    if (focusTweenRef.current) {
-      focusTweenRef.current.destroy();
-    }
-
-    const targetY = windowCenter.y;
-
-    focusTweenRef.current = new Konva.Tween({
-      node,
-      duration: FOCUS_ANIMATION_DURATION,
-      easing: EASING,
-      x: focusedTargetX,
-      y: targetY,
-      scaleX: (transformData.scaleX ?? 1) * focusScale,
-      scaleY: (transformData.scaleY ?? 1) * focusScale,
-      rotation: 0,
-      offsetX: centerX,
-      offsetY: centerY,
-      onFinish: () => {
-        if (focusTweenRef.current) {
-          focusTweenRef.current.destroy();
-          focusTweenRef.current = null;
-        }
-      },
-    });
-
-    focusTweenRef.current.play();
-  };
 
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
-  // --- UNFOCUS: RETURN TO GRID ---
-  const playUnfocusTween = () => {
+  // ========================================================================
+  // ANIMATION CONTROLLERS
+  // ========================================================================
+
+  const stopAllTweens = () => {
+    if (hoverTweenRef.current) { hoverTweenRef.current.destroy(); hoverTweenRef.current = null; }
+    if (focusTweenRef.current) { focusTweenRef.current.destroy(); focusTweenRef.current = null; }
+  };
+
+  const playHoverTween = (toScaleX: number, toScaleY: number) => {
+    const node = groupRef.current;
+    if (!node || isFocusedRef.current || isReturningRef.current) return;
+    stopAllTweens();
+    hoverTweenRef.current = new Konva.Tween({
+      node, duration: SCALE_ANIMATION_DURATION, scaleX: toScaleX, scaleY: toScaleY, easing: EASING,
+      onFinish: () => { hoverTweenRef.current = null; }
+    });
+    hoverTweenRef.current.play();
+  };
+
+  // 1. NEIGHBOR VANISH (Go Deep)
+  const animateNeighborVanish = (targetData: NonNullable<typeof lockedFocusState.current>) => {
     const node = groupRef.current;
     if (!node) return;
-
-    node.visible(true);
     isReturningRef.current = true;
+    stopAllTweens();
 
-    if (hoverTweenRef.current) {
-        hoverTweenRef.current.destroy();
-        hoverTweenRef.current = null;
-    }
-    if (focusTweenRef.current) {
-        focusTweenRef.current.destroy();
-    }
+    const startState = calculateParallaxTransform(
+        0, unfocusedConstellationX, unfocusedConstellationY, transformData.scaleX ?? 1, transformData.rotation ?? 0,
+        targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, targetData.worldZoom, targetData.targetRotation
+    );
 
-    // Fallback if missing data
-    if (!lastFocusStateRef.current) {
-         focusTweenRef.current = new Konva.Tween({
-            node,
-            duration: FOCUS_ANIMATION_DURATION,
-            easing: EASING,
-            x: unfocusedConstellationX,
-            y: unfocusedConstellationY,
-            scaleX: transformData.scaleX ?? 1,
-            scaleY: transformData.scaleY ?? 1,
-            rotation: transformData.rotation ?? 0,
-            offsetX: centerX,
-            offsetY: centerY,
-            opacity: 1,
-            onFinish: () => { isReturningRef.current = false; }
-        });
-        focusTweenRef.current.play();
-        return;
-    }
+    node.setAttrs({ ...startState, opacity: 1, visible: true });
 
-    const isTarget = lastFocusStateRef.current.name === data.name;
-
-    // --- CASE A: TARGET STAR (Simple Reversal) ---
-    // FIX: Start from 'focusedTargetX' (handled by useMemo/Context) not 'windowCenter.x'
-    // This accounts for split-screen offsets.
-    if (isTarget) {
-        // Force Start State to match where FocusTween left it
-        node.x(focusedTargetX); 
-        node.y(windowCenter.y);
-        node.scaleX((transformData.scaleX ?? 1) * lastFocusStateRef.current.focusScale);
-        node.scaleY((transformData.scaleY ?? 1) * lastFocusStateRef.current.focusScale);
-        node.rotation(0);
-        node.opacity(1);
-        node.offsetX(centerX);
-        node.offsetY(centerY);
-
-        focusTweenRef.current = new Konva.Tween({
-            node,
-            duration: FOCUS_ANIMATION_DURATION,
-            easing: EASING,
-            x: unfocusedConstellationX,
-            y: unfocusedConstellationY,
-            scaleX: transformData.scaleX ?? 1,
-            scaleY: transformData.scaleY ?? 1,
-            rotation: transformData.rotation ?? 0,
-            opacity: 1,
-            onFinish: () => {
-                isReturningRef.current = false;
-                if (focusTweenRef.current) {
-                    focusTweenRef.current.destroy();
-                    focusTweenRef.current = null;
-                }
-            }
-        });
-        focusTweenRef.current.play();
-        return;
-    }
-
-    // --- CASE B: NEIGHBORS (Unified Camera Math) ---
-    // Data Prep
-    const { 
-        unfocusedX: focusedStarOriginalX, 
-        unfocusedY: focusedStarOriginalY,
-        rotation: prevRotation,
-        focusScale: worldZoom 
-    } = lastFocusStateRef.current;
-    
-    const vecX = unfocusedConstellationX - focusedStarOriginalX;
-    const vecY = unfocusedConstellationY - focusedStarOriginalY;
-
-    const depth = 3.5;
-    const expansionFactor = 1 + (worldZoom - 1) * depth;
-    const baseScale = transformData.scaleX ?? 1;
-    const baseRotation = transformData.rotation ?? 0;
-
-    // Initial State Calculation (p=0, Deep Space)
-    {
-        const p = 0;
-        const currentExpansion = expansionFactor;
-        const currentRotOffset = prevRotation; // Max rotation at start
-
-        // At p=0 (Deep), World Origin is WindowCenter
-        const currentOriginX = windowCenter.x;
-        const currentOriginY = windowCenter.y;
-
-        // Calculate Vector
-        const combinedX = vecX * currentExpansion;
-        const combinedY = vecY * currentExpansion;
-
-        // Rotate around Origin (WindowCenter)
-        const angleRad = (-currentRotOffset * Math.PI) / 180;
-        const cos = Math.cos(angleRad);
-        const sin = Math.sin(angleRad);
-
-        const startX = currentOriginX + (combinedX * cos - combinedY * sin);
-        const startY = currentOriginY + (combinedX * sin + combinedY * cos);
-
-        node.x(startX);
-        node.y(startY);
-        node.scaleX(baseScale * currentExpansion);
-        node.scaleY(baseScale * currentExpansion);
-        node.rotation(baseRotation - currentRotOffset);
-        node.opacity(0);
-    }
-
-    // Tween
     node.setAttr('animProgress', 0);
-
     focusTweenRef.current = new Konva.Tween({
         node,
         duration: FOCUS_ANIMATION_DURATION,
         easing: EASING,
         animProgress: 1,
-        
         onUpdate: () => {
             const p = node.getAttr('animProgress');
-            
-            // Interpolate Factors
-            const currentExpansion = expansionFactor + (1 - expansionFactor) * p;
-            const currentRotOffset = prevRotation * (1 - p);
-            
-            // Interpolate World Origin: WindowCenter -> Original Focus Star Pos
-            const currentOriginX = windowCenter.x + (focusedStarOriginalX - windowCenter.x) * p;
-            const currentOriginY = windowCenter.y + (focusedStarOriginalY - windowCenter.y) * p;
-            
-            // Combine Vectors
-            // Note: Shift is implicit in the Moving Origin logic now.
-            // We simply expand the vector from the Original Focus Star to This Star.
-            const combinedX = vecX * currentExpansion;
-            const combinedY = vecY * currentExpansion;
-            
-            // Rotate around Current Origin
-            // (The entire coordinate system rotates around the "Camera Focus Point")
-            const angleRad = (-currentRotOffset * Math.PI) / 180;
-            const cos = Math.cos(angleRad);
-            const sin = Math.sin(angleRad);
-
-            const finalX = currentOriginX + (combinedX * cos - combinedY * sin);
-            const finalY = currentOriginY + (combinedX * sin + combinedY * cos);
-            
-            node.x(finalX);
-            node.y(finalY);
-            node.scaleX(baseScale * currentExpansion);
-            node.scaleY(baseScale * currentExpansion);
-            node.rotation(baseRotation - currentRotOffset);
-            node.opacity(p);
+            const state = calculateParallaxTransform(
+                p, unfocusedConstellationX, unfocusedConstellationY, transformData.scaleX ?? 1, transformData.rotation ?? 0,
+                targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, targetData.worldZoom, targetData.targetRotation
+            );
+            node.setAttrs({ ...state, opacity: 1 - p });
         },
-        
         onFinish: () => {
             isReturningRef.current = false;
-            node.x(unfocusedConstellationX);
-            node.y(unfocusedConstellationY);
-            node.scaleX(baseScale);
-            node.scaleY(baseScale);
-            node.rotation(baseRotation);
-            node.opacity(1);
-            node.offsetX(centerX);
-            node.offsetY(centerY);
-            
-            if (focusTweenRef.current) {
-                focusTweenRef.current.destroy();
-                focusTweenRef.current = null;
-            }
+            node.visible(false);
+            focusTweenRef.current = null; // Mark done
         }
     });
-    
-    node.offsetX(centerX);
-    node.offsetY(centerY);
-
     focusTweenRef.current.play();
   };
 
-  // --- VANISH: MOVE TO DEEP SPACE ---
-  const playVanishTween = () => {
+  // 2. NEIGHBOR RETURN (Unfocus)
+  const animateNeighborReturn = () => {
     const node = groupRef.current;
     if (!node) return;
-    
-    // GUARD: If data isn't ready, don't animate yet
-    if (!parallaxFocusData) return;
-    
     isReturningRef.current = true;
+    stopAllTweens();
 
-    if (focusTweenRef.current) focusTweenRef.current.destroy();
-    if (hoverTweenRef.current) {
-      hoverTweenRef.current.destroy();
-      hoverTweenRef.current = null;
+    const targetData = lockedFocusState.current;
+    if (!targetData) {
+        node.setAttrs({ x: unfocusedConstellationX, y: unfocusedConstellationY, opacity: 1, visible: true });
+        isReturningRef.current = false;
+        return;
     }
 
-    const { unfocusedX: focusedUnfocusedX, unfocusedY: focusedUnfocusedY } = parallaxFocusData;
-    const worldZoom = focusedConstellation?.focusScale ?? 1;
-    const depth = 3.5; 
-    
-    const vecX = unfocusedConstellationX - focusedUnfocusedX;
-    const vecY = unfocusedConstellationY - focusedUnfocusedY;
+    // Set Initial State (p=1) -> Deep Space
+    const startState = calculateParallaxTransform(
+        1, unfocusedConstellationX, unfocusedConstellationY, transformData.scaleX ?? 1, transformData.rotation ?? 0,
+        targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, targetData.worldZoom, targetData.targetRotation
+    );
 
-    const expansionFactor = 1 + (worldZoom - 1) * depth;
-    const baseScale = transformData.scaleX ?? 1;
-    const baseRotation = transformData.rotation ?? 0;
-    const focusedRotation = focusedConstellation?.rotation ?? 0;
+    node.setAttrs({ ...startState, opacity: 0, visible: true });
 
-    // We use the same Unified Camera Math, interpolating p from 0 (Home) -> 1 (Deep)
-    // p=0: Origin=FocusedOriginal, Exp=1, RotOffset=0
-    // p=1: Origin=WindowCenter, Exp=Max, RotOffset=Max
-    node.setAttr('animProgress', 0);
-
+    node.setAttr('animProgress', 1);
     focusTweenRef.current = new Konva.Tween({
-      node,
-      duration: FOCUS_ANIMATION_DURATION,
-      easing: EASING,
-      animProgress: 1,
-      
-      onUpdate: () => {
-        const p = node.getAttr('animProgress');
-        
-        // Interpolate: 0 -> Max
-        const currentExpansion = 1 + (expansionFactor - 1) * p;
-        const currentRotOffset = focusedRotation * p;
-        
-        // Interpolate Origin: FocusedOriginal -> WindowCenter
-        const currentOriginX = focusedUnfocusedX + (windowCenter.x - focusedUnfocusedX) * p;
-        const currentOriginY = focusedUnfocusedY + (windowCenter.y - focusedUnfocusedY) * p;
-
-        // Vector Logic
-        const combinedX = vecX * currentExpansion;
-        const combinedY = vecY * currentExpansion;
-
-        // Rotate around Current Origin
-        const angleRad = (-currentRotOffset * Math.PI) / 180;
-        const cos = Math.cos(angleRad);
-        const sin = Math.sin(angleRad);
-
-        const finalX = currentOriginX + (combinedX * cos - combinedY * sin);
-        const finalY = currentOriginY + (combinedX * sin + combinedY * cos);
-
-        node.x(finalX);
-        node.y(finalY);
-        node.scaleX(baseScale * currentExpansion);
-        node.scaleY(baseScale * currentExpansion);
-        node.rotation(baseRotation - currentRotOffset);
-        
-        // Fade Out
-        node.opacity(1 - p);
-      },
-      
-      onFinish: () => {
-        isReturningRef.current = false;
-        node.visible(false);
-        if (focusTweenRef.current) {
-          focusTweenRef.current.destroy();
-          focusTweenRef.current = null;
+        node,
+        duration: FOCUS_ANIMATION_DURATION,
+        easing: EASING,
+        animProgress: 0, // GO BACKWARDS
+        onUpdate: () => {
+            const p = node.getAttr('animProgress');
+            const state = calculateParallaxTransform(
+                p, unfocusedConstellationX, unfocusedConstellationY, transformData.scaleX ?? 1, transformData.rotation ?? 0,
+                targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, targetData.worldZoom, targetData.targetRotation
+            );
+            node.setAttrs({ ...state, opacity: 1 - p });
+        },
+        onFinish: () => {
+            isReturningRef.current = false;
+            node.setAttrs({
+                x: unfocusedConstellationX, y: unfocusedConstellationY, 
+                scaleX: transformData.scaleX ?? 1, scaleY: transformData.scaleY ?? 1, 
+                rotation: transformData.rotation ?? 0, opacity: 1
+            });
+            focusTweenRef.current = null;
         }
-      },
     });
-
-    node.visible(true);
     focusTweenRef.current.play();
   };
 
-  useEffect(() => {
-    if (isFocused) {
-      groupRef.current?.moveToTop();
-      playFocusTween();
-    } else {
-      if (focusedConstellation) {
-        if (parallaxFocusData) {
-          playVanishTween();
-        }
-      } else {
-        playUnfocusTween();
-      }
-    }
-  }, [isFocused, focusedConstellation, parallaxFocusData, pathname, polarisDisplayState]);
+  // 3. TARGET FOCUS (Simple)
+  const animateTargetFocus = () => {
+    const node = groupRef.current;
+    if (!node) return;
+    isReturningRef.current = false;
+    stopAllTweens();
 
-  const {
-    setOverlayTextContents: setTopOverlayTextContents,
-    resetOverlayTextContents: resetTopOverlayTextContents,
-  } = useTopOverlayContext();
+    focusTweenRef.current = new Konva.Tween({
+        node, duration: FOCUS_ANIMATION_DURATION, easing: EASING,
+        x: focusedTargetX, y: windowCenter.y,
+        scaleX: (transformData.scaleX ?? 1) * focusScale,
+        scaleY: (transformData.scaleY ?? 1) * focusScale,
+        rotation: 0,
+        onFinish: () => { focusTweenRef.current = null; }
+    });
+    focusTweenRef.current.play();
+  };
 
-  const { setOverlayTextContents: setCenterOverlayTextContents } =
-    useCenterOverlayContext();
+  // 4. TARGET UNFOCUS (Simple)
+  const animateTargetReturn = () => {
+    const node = groupRef.current;
+    if (!node) return;
+    isReturningRef.current = true;
+    stopAllTweens();
 
-  const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
-    useConstellationInteractions({
-      isFocusedRef,
-      isReturningRef,
-      focusedObjectStar: focusedObject.star,
-      transformData,
-      brightnessHover,
-      HOVER_SCALE,
-      playHoverTween,
-      onClickCallback,
-      onHoverEnterCallback,
-      onHoverLeaveCallback,
-      setBrightness,
-      setIsHovered,
-      groupRef,
+    node.setAttrs({
+        x: focusedTargetX, y: windowCenter.y,
+        scaleX: (transformData.scaleX ?? 1) * (lockedFocusState.current?.worldZoom || focusScale),
+        scaleY: (transformData.scaleY ?? 1) * (lockedFocusState.current?.worldZoom || focusScale),
+        rotation: 0,
+        visible: true, opacity: 1
     });
 
+    focusTweenRef.current = new Konva.Tween({
+        node, duration: FOCUS_ANIMATION_DURATION, easing: EASING,
+        x: unfocusedConstellationX, y: unfocusedConstellationY,
+        scaleX: transformData.scaleX ?? 1,
+        scaleY: transformData.scaleY ?? 1,
+        rotation: transformData.rotation ?? 0,
+        onFinish: () => { 
+            isReturningRef.current = false; 
+            focusTweenRef.current = null;
+        }
+    });
+    focusTweenRef.current.play();
+  };
+
+
+  // --- MAIN LAYOUT EFFECT ---
+  useLayoutEffect(() => {
+    const node = groupRef.current;
+    if (!node) return;
+
+    // Initialization Logic: If we are not animated and not positioned, snap to Home.
+    // This fixes the issue where x={0} props cause the star to appear at top-left on load.
+    if (!focusTweenRef.current && !isFocused && !focusedConstellation) {
+        // We check if X is 0 (approx) which means it's likely uninitialized by our logic
+        // But 0 might be a valid coordinate. 
+        // Safer: Just force it every render if we are in "Idle" state.
+        node.setAttrs({
+            x: unfocusedConstellationX,
+            y: unfocusedConstellationY,
+            scaleX: transformData.scaleX ?? 1,
+            scaleY: transformData.scaleY ?? 1,
+            rotation: transformData.rotation ?? 0,
+            opacity: 1,
+            visible: true
+        });
+    }
+
+  }, [unfocusedConstellationX, unfocusedConstellationY, transformData, isFocused, focusedConstellation]);
+
+  // --- TRANSITION DETECTOR ---
+  useEffect(() => {
+    if (isFocused) {
+        animateTargetFocus();
+    } else {
+        if (focusedConstellation) {
+            // Someone else focused -> Vanish logic handled by specific data trigger below
+        } else {
+            // No one focused -> Return
+            if (lastFocusStateRef.current?.name === data.name) {
+                animateTargetReturn();
+            } else {
+                animateNeighborReturn();
+            }
+        }
+    }
+  }, [isFocused, focusedConstellation]);
+  
+  // Specific Trigger for Parallax Data (Vanish)
+  useEffect(() => {
+      if (!isFocused && focusedConstellation && parallaxFocusData && !focusTweenRef.current) {
+           const targetData = {
+               focusX: parallaxFocusData.unfocusedX,
+               focusY: parallaxFocusData.unfocusedY,
+               worldZoom: focusedConstellation.focusScale ?? 1,
+               targetRotation: focusedConstellation.rotation ?? 0
+           };
+           lockedFocusState.current = targetData; 
+           animateNeighborVanish(targetData);
+      }
+  }, [parallaxFocusData, focusedConstellation, isFocused]);
+
+
+  const { setOverlayTextContents: setTopOverlayTextContents, resetOverlayTextContents: resetTopOverlayTextContents } = useTopOverlayContext();
+  const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
+  const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
+    useConstellationInteractions({
+      isFocusedRef, isReturningRef, focusedObjectStar: focusedObject.star, transformData, brightnessHover, HOVER_SCALE, playHoverTween, onClickCallback, onHoverEnterCallback, onHoverLeaveCallback, setBrightness, setIsHovered, groupRef,
+    });
   const controlWidth = 40;
   const controlX = minX - controlWidth;
 
   return (
     <Group
       ref={groupRef}
-      onClick={handleConstellationClick}
-      onTap={handleConstellationClick}
-      onMouseEnter={handleInteractionStart}
-      onMouseLeave={handleInteractionEnd}
-      onTouchStart={handleInteractionStart}
-      onTouchEnd={handleInteractionEnd}
-      x={unfocusedConstellationX}
-      y={unfocusedConstellationY}
-      offsetX={centerX}
-      offsetY={centerY}
-      rotation={transformData.rotation}
-      scaleX={transformData.scaleX ?? 1}
-      scaleY={transformData.scaleY ?? 1}
+      // Pass STATIC props to prevent React interference. 
+      // LayoutEffect handles position.
+      x={0} y={0} offsetX={centerX} offsetY={centerY}
+      
+      onClick={handleConstellationClick} onTap={handleConstellationClick}
+      onMouseEnter={handleInteractionStart} onMouseLeave={handleInteractionEnd}
+      onTouchStart={handleInteractionStart} onTouchEnd={handleInteractionEnd}
     >
-      {isElevare && (
-        <ElevareControl
-          x={controlX}
-          topY={minY}
-          bottomY={maxY}
-          currentZoom={elevareZoom}
-          minZoom={MIN_ZOOM}
-          maxZoom={MAX_ZOOM}
-          onZoomChange={setElevareZoom}
-        />
-      )}
-      
-      {isElevare && (
-        <HackathonStatistics
-          x={minX}
-          y={maxY}
-          width={width}
-        />
-      )}
-      
-      <ConstellationContent
-        minX={minX}
-        maxX={maxX}
-        minY={minY}
-        maxY={maxY}
-        width={width}
-        height={height}
-        brightness={brightness}
-        isFocused={isFocused}
-        isHovered={isHovered}
-        showBoundingBox={showBoundingBox}
-        showStarBoundingBox={showStarBoundingBox}
-        data={data}
-        stars={stars}
-        lineSegments={lineSegments}
-        lineDurations={lineDurations}
-        lineDelays={lineDelays}
-        isElevare={isElevare}
-        elevareZoom={elevareZoom}
-        onElevareZoomChange={setElevareZoom}
-        isReturningRef={isReturningRef}
-        isFocusedRef={isFocusedRef}
-        pathname={pathname}
-        focusedObject={focusedObject}
-        mobileState={mobileState}
-        polarisDisplayState={polarisDisplayState}
-        setTopOverlayTextContents={setTopOverlayTextContents}
-        resetTopOverlayTextContents={resetTopOverlayTextContents}
-        setCenterOverlayTextContents={setCenterOverlayTextContents}
-        navigateToStar={navigateToStar}
-        setPolarisDisplayState={setPolarisDisplayState}
-      />
+      {isElevare && ( <ElevareControl x={controlX} topY={minY} bottomY={maxY} currentZoom={elevareZoom} minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} onZoomChange={setElevareZoom} /> )}
+      {isElevare && ( <HackathonStatistics x={minX} y={maxY} width={width} /> )}
+      <ConstellationContent minX={minX} maxX={maxX} minY={minY} maxY={maxY} width={width} height={height} brightness={brightness} isFocused={isFocused} isHovered={isHovered} showBoundingBox={showBoundingBox} showStarBoundingBox={showStarBoundingBox} data={data} stars={stars} lineSegments={lineSegments} lineDurations={lineDurations} lineDelays={lineDelays} isElevare={isElevare} elevareZoom={elevareZoom} onElevareZoomChange={setElevareZoom} isReturningRef={isReturningRef} isFocusedRef={isFocusedRef} pathname={pathname} focusedObject={focusedObject} mobileState={mobileState} polarisDisplayState={polarisDisplayState} setTopOverlayTextContents={setTopOverlayTextContents} resetTopOverlayTextContents={resetTopOverlayTextContents} setCenterOverlayTextContents={setCenterOverlayTextContents} navigateToStar={navigateToStar} setPolarisDisplayState={setPolarisDisplayState} />
     </Group>
   );
 }
