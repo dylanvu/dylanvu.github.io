@@ -13,6 +13,7 @@ interface PolarisContextInterface {
   talkToPolaris: (newMessage: string) => void;
   isThinking: boolean;
   isTalking: boolean;
+  hasError: boolean;
   /**
    * This state shows whether polaris is on the bottom left or not
    */
@@ -145,6 +146,9 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
 
   }, [pathname])
 
+  // Check if the last message is an error
+  const hasError = polarisHistory.length > 0 && polarisHistory[polarisHistory.length - 1].isError === true;
+
   return (
     <PolarisContext.Provider
       value={{
@@ -157,6 +161,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
         polarisDisplayState,
         setPolarisDisplayState,
         isTalking,
+        hasError,
         registerStreamChunkCallback
       }}
     >

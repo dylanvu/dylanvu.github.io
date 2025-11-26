@@ -44,7 +44,8 @@ type Props = {
   showHitBox?: boolean;
   cancelBubble?: boolean;
   onHoverPointerOverride?: boolean;
-  onHoverScale?: number
+  onHoverScale?: number;
+  colorOverride?: string; // Override the star color
 };
 
 function MainStar({
@@ -72,6 +73,7 @@ function MainStar({
   cancelBubble = false,
   onHoverPointerOverride = false,
   onHoverScale = 1.1,
+  colorOverride,
 }: Props) {
   const { mobileScaleFactor, mobileFontScaleFactor } = useMobile();
   
@@ -131,6 +133,9 @@ function MainStar({
   const starColor = useRef(
     getRandomColor(MAIN_STAR_COLORS)
   ).current;
+
+  // Use colorOverride if provided, otherwise use the randomly generated color
+  const effectiveColor = colorOverride || starColor;
 
   const SCALE_ANIMATION_DURATION = 0.25;
   const focusScale = onHoverScale * 1.05; // Reduced from 1.1 to 1.05 for subtlety
@@ -584,9 +589,9 @@ function MainStar({
 
             // Create radial gradient for glow
             const glowGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glowRadius);
-            glowGradient.addColorStop(0, `${starColor}80`); // 50% opacity at center
-            glowGradient.addColorStop(0.3, `${starColor}40`); // 25% opacity
-            glowGradient.addColorStop(0.6, `${starColor}20`); // 12% opacity
+            glowGradient.addColorStop(0, `${effectiveColor}80`); // 50% opacity at center
+            glowGradient.addColorStop(0.3, `${effectiveColor}40`); // 25% opacity
+            glowGradient.addColorStop(0.6, `${effectiveColor}20`); // 12% opacity
             glowGradient.addColorStop(1, "transparent"); // Fully transparent at edge
 
             ctx.fillStyle = glowGradient;
@@ -605,8 +610,8 @@ function MainStar({
 
           // Draw the star
           const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, starRadius);
-          gradient.addColorStop(0, starColor);
-          gradient.addColorStop(0.5, starColor);
+          gradient.addColorStop(0, effectiveColor);
+          gradient.addColorStop(0.5, effectiveColor);
           gradient.addColorStop(1, "transparent");
 
           ctx.fillStyle = gradient;
@@ -713,6 +718,7 @@ export default React.memo(MainStar, (prevProps, nextProps) => {
     prevProps.showHitBox === nextProps.showHitBox &&
     prevProps.cancelBubble === nextProps.cancelBubble &&
     prevProps.onHoverPointerOverride === nextProps.onHoverPointerOverride &&
-    prevProps.onHoverScale === nextProps.onHoverScale
+    prevProps.onHoverScale === nextProps.onHoverScale &&
+    prevProps.colorOverride === nextProps.colorOverride
   );
 });

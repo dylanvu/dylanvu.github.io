@@ -2,12 +2,41 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { Group, Circle } from "react-konva";
 import Konva from "konva";
 import MainStar from "@/components/star-revamp/Star/MainStar";
-import { POLARIS_GLOW_COLOR } from "@/app/theme";
+import { POLARIS_GLOW_COLOR, POLARIS_ERROR_COLOR, POLARIS_THINKING_COLOR, POLARIS_TALKING_COLOR, POLARIS_IDLE_COLOR, DURATION } from "@/app/theme";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
 import { useParallaxCamera } from "../Constellation/useParallaxCamera";
+
+// Color interpolation helpers
+const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+  const cleanHex = hex.replace("#", "");
+  return {
+    r: parseInt(cleanHex.substring(0, 2), 16),
+    g: parseInt(cleanHex.substring(2, 4), 16),
+    b: parseInt(cleanHex.substring(4, 6), 16),
+  };
+};
+
+const rgbToHex = (r: number, g: number, b: number): string => {
+  const toHex = (n: number) => {
+    const hex = Math.round(n).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
+const interpolateColor = (color1: string, color2: string, progress: number): string => {
+  const rgb1 = hexToRgb(color1);
+  const rgb2 = hexToRgb(color2);
+  
+  const r = rgb1.r + (rgb2.r - rgb1.r) * progress;
+  const g = rgb1.g + (rgb2.g - rgb1.g) * progress;
+  const b = rgb1.b + (rgb2.b - rgb1.b) * progress;
+  
+  return rgbToHex(r, g, b);
+};
 
 type PolarisProps = {
   x: number;
@@ -119,13 +148,78 @@ export default function Polaris({
   const groupRef = useRef<Konva.Group>(null);
   
   // Contexts
-  const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isTalking, registerStreamChunkCallback } = usePolarisContext();
+  const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isThinking, isTalking, hasError, registerStreamChunkCallback } = usePolarisContext();
   const { focusedObject, parallaxFocusData } = useFocusContext();
   const { mobileScaleFactor } = useMobile();
   const { height } = useWindowSizeContext();
   
   // Track one-time activation - callback should only fire once
   const hasActivatedRef = useRef(false);
+  
+  // Color state management
+  const [currentColor, setCurrentColor] = useState(POLARIS_IDLE_COLOR);
+  const animationRef = useRef<number | null>(null);
+  const startColorRef = useRef(POLARIS_IDLE_COLOR);
+  const startTimeRef = useRef<number | null>(null);
+  
+  // Determine target color based on state priority: error > thinking > talking > idle
+  const targetColor = hasError
+    ? POLARIS_ERROR_COLOR
+    : isThinking 
+    ? POLARIS_THINKING_COLOR 
+    : isTalking 
+    ? POLARIS_TALKING_COLOR 
+    : POLARIS_IDLE_COLOR;
+  
+  // Animate color transitions smoothly
+  useEffect(() => {
+    if (currentColor === targetColor) return;
+    
+    // Cancel any ongoing animation
+    if (animationRef.current !== null) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    
+    // Set up new animation
+    startColorRef.current = currentColor;
+    startTimeRef.current = null;
+    
+    const animate = (timestamp: number) => {
+      if (startTimeRef.current === null) {
+        startTimeRef.current = timestamp;
+      }
+      
+      const elapsed = timestamp - startTimeRef.current;
+      const duration = DURATION.normal * 1000; // Convert to milliseconds
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease out cubic for smooth deceleration
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      
+      const interpolatedColor = interpolateColor(
+        startColorRef.current,
+        targetColor,
+        easedProgress
+      );
+      
+      setCurrentColor(interpolatedColor);
+      
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        animationRef.current = null;
+      }
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current !== null) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [targetColor, currentColor]);
   
   // Pulse State
   const [pulseRings, setPulseRings] = useState<number[]>([]);
@@ -269,6 +363,7 @@ export default function Polaris({
         onHoverEnterCallback={onHoverEnterCallback}
         onHoverLeaveCallback={onHoverLeaveCallback}
         onHoverPointerOverride={true}
+        colorOverride={currentColor}
       />
     </Group>
   );

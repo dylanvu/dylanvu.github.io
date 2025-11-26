@@ -27,6 +27,14 @@ export const ACCENT_COLOR = "#C8E6FF"; // Light blue accent
 export const POLARIS_GLOW_COLOR = "rgba(200, 230, 255, 0.6)";
 
 // ===========================
+// POLARIS STATE COLORS
+// ===========================
+export const POLARIS_ERROR_COLOR = "#FF6464"; // Red when error occurs
+export const POLARIS_THINKING_COLOR = "#FFF4D4"; // Subtle cream/yellow when thinking
+export const POLARIS_TALKING_COLOR = "#fcea81ff"; // gold/yellow when talking
+export const POLARIS_IDLE_COLOR = "#FFFEF5"; // Warm white when idle
+
+// ===========================
 // OPACITY SCALE
 // ===========================
 export const OPACITY = {
