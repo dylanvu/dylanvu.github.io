@@ -4,6 +4,7 @@ import Konva from "konva";
 import StaticStar from "./StaticStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
+import { calculateParallaxLayerTransform } from "@/components/star-revamp/Star/Constellation/useParallaxCamera";
 
 interface ParallaxLayerProps {
   stars: Array<{ x: number; y: number; radius: number }>;
@@ -28,7 +29,8 @@ export default function ParallaxLayer({
   const fadeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { windowCenter } = useWindowSizeContext();
-  const { parallaxFocusData, focusedObject } = useFocusContext();
+  const { parallaxFocusData, previousParallaxFocusData, focusedObject } =
+    useFocusContext();
 
   // 1. ENTRANCE FADE EFFECT
   // We keep this standard useEffect because it's a "Mount" animation, not a "Physics" update.
@@ -48,7 +50,9 @@ export default function ParallaxLayer({
         duration: fadeDuration,
         opacity: 1,
         easing: Konva.Easings.Linear,
-        onFinish: () => { fadeTweenRef.current = null; },
+        onFinish: () => {
+          fadeTweenRef.current = null;
+        },
       });
       fadeTweenRef.current.play();
     }, fadeDelay * 1000);
@@ -59,52 +63,123 @@ export default function ParallaxLayer({
     };
   }, [fadeDuration, fadeDelay]);
 
-
-  // 2. PHYSICS & PARALLAX ENGINE
-  // Changed to useLayoutEffect to prevent "Flashes" where React renders the group 
-  // at the wrong position before the tween starts.
+  // 2. PHYSICS & PARALLAX ENGINE (FIXED)
   useLayoutEffect(() => {
     const group = groupRef.current;
     if (!group) return;
 
     // A. Destroy previous movement tween to prevent fighting
     if (moveTweenRef.current) {
-        moveTweenRef.current.destroy();
-        moveTweenRef.current = null;
+      moveTweenRef.current.destroy();
+      moveTweenRef.current = null;
     }
 
-    // B. Calculate Target State
-    let targetRotation = 0;
-    let targetScale = 1;
-    let targetX = windowCenter.x;
-    let targetY = windowCenter.y;
+    // =========================================
+    // CASE 1: Nothing focused - return to default
+    // =========================================
+    if (!parallaxFocusData || !focusedObject.constellation) {
+      group.offsetX(windowCenter.x);
+      group.offsetY(windowCenter.y);
 
-    if (parallaxFocusData && focusedObject.constellation) {
-      const { unfocusedX, unfocusedY } = parallaxFocusData;
-      const constellation = focusedObject.constellation;
-      
-      // Counter-rotate the world
-      targetRotation = -(constellation.rotation ?? 0);
-      
-      // Scale based on depth (Matches the Unified Camera Model math)
-      const focusScale = constellation.focusScale ?? 1;
-      targetScale = 1 + (focusScale - 1) * depth;
-      
-      // Parallax Shift
-      const dx = (windowCenter.x - unfocusedX) * depth;
-      const dy = (windowCenter.y - unfocusedY) * depth;
-      targetX += dx;
-      targetY += dy;
+      moveTweenRef.current = new Konva.Tween({
+        node: group,
+        duration: MOVEMENT_ANIMATION_DURATION,
+        easing: Konva.Easings.EaseInOut,
+        x: windowCenter.x,
+        y: windowCenter.y,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+        offsetX: windowCenter.x,
+        offsetY: windowCenter.y,
+        onFinish: () => {
+          moveTweenRef.current = null;
+        },
+      });
+      moveTweenRef.current.play();
+      return; // ✅ STOP HERE - prevents double tween
     }
 
-    // C. Handle Initialization Case
-    // If we are mounting, or if React re-rendered, we must ensure the node 
-    // is positioned correctly relative to the pivot.
-    // We set the Pivot (Offset) to the window center. This is crucial for the rotation math.
+    // Detect HOP using constellation NAME (stable string comparison)
+    const isHop = !!(
+      previousParallaxFocusData &&
+      previousParallaxFocusData.constellation.slug !==
+        parallaxFocusData.constellation.slug
+    );
+
+    // Build current camera state
+    const currentCam = {
+      x: parallaxFocusData.unfocusedX,
+      y: parallaxFocusData.unfocusedY,
+      zoom: parallaxFocusData.focusScale,
+      rotation: parallaxFocusData.rotation,
+    };
+
+    // =========================================
+    // CASE 2: HOP ANIMATION (constellation to constellation)
+    // =========================================
+    if (isHop && previousParallaxFocusData) {
+      const previousCam = {
+        x: previousParallaxFocusData.unfocusedX,
+        y: previousParallaxFocusData.unfocusedY,
+        zoom: previousParallaxFocusData.focusScale,
+        rotation: previousParallaxFocusData.rotation,
+      };
+
+      // Set initial state immediately (prevents flash)
+      const startState = calculateParallaxLayerTransform(
+        0,
+        depth,
+        previousCam,
+        currentCam,
+        windowCenter.x,
+        windowCenter.y
+      );
+      group.setAttrs(startState);
+
+      // Animate with frame-by-frame calculation
+      group.setAttr("animProgress", 0);
+      moveTweenRef.current = new Konva.Tween({
+        node: group,
+        duration: MOVEMENT_ANIMATION_DURATION,
+        easing: Konva.Easings.EaseInOut,
+        animProgress: 1,
+        onUpdate: () => {
+          const p = group.getAttr("animProgress");
+          const state = calculateParallaxLayerTransform(
+            p,
+            depth,
+            previousCam,
+            currentCam,
+            windowCenter.x,
+            windowCenter.y
+          );
+          group.setAttrs(state);
+        },
+        onFinish: () => {
+          moveTweenRef.current = null;
+        },
+      });
+      moveTweenRef.current.play();
+      return; // ✅ STOP HERE - prevents double tween!
+    }
+
+    // =========================================
+    // CASE 3: INITIAL FOCUS (first focus, not a hop)
+    // =========================================
+    const constellation = focusedObject.constellation;
+    const targetRotation = -(constellation.rotation ?? 0);
+    const focusScale = constellation.focusScale ?? 1;
+    const targetScale = 1 + (focusScale - 1) * depth;
+
+    const dx = (windowCenter.x - parallaxFocusData.unfocusedX) * depth;
+    const dy = (windowCenter.y - parallaxFocusData.unfocusedY) * depth;
+    const targetX = windowCenter.x + dx;
+    const targetY = windowCenter.y + dy;
+
     group.offsetX(windowCenter.x);
     group.offsetY(windowCenter.y);
 
-    // D. Start Tween
     moveTweenRef.current = new Konva.Tween({
       node: group,
       duration: MOVEMENT_ANIMATION_DURATION,
@@ -114,16 +189,21 @@ export default function ParallaxLayer({
       rotation: targetRotation,
       scaleX: targetScale,
       scaleY: targetScale,
-      // Ensure we maintain the pivot point during animation
       offsetX: windowCenter.x,
       offsetY: windowCenter.y,
-      
-      onFinish: () => { moveTweenRef.current = null; },
+      onFinish: () => {
+        moveTweenRef.current = null;
+      },
     });
-
     moveTweenRef.current.play();
-
-  }, [parallaxFocusData, depth, windowCenter, focusedObject]);
+    // No return needed - this is the final case
+  }, [
+    parallaxFocusData,
+    previousParallaxFocusData,
+    depth,
+    windowCenter,
+    focusedObject,
+  ]);
 
   return (
     <Group

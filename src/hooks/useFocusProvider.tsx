@@ -45,6 +45,7 @@ export interface FocusState {
   parallaxFocusData: ParallaxFocusData | null;
   navigateToStar: (slug: string) => void;
   navigateToConstellation: (slug: string) => void;
+  previousParallaxFocusData: ParallaxFocusData | null;
 }
 
 const FocusContext = createContext<FocusState | undefined>(undefined);
@@ -78,9 +79,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   // Track current slug to prevent redundant navigation calls
   const currentStarSlugRef = useRef<string | null>(null);
   const currentConstellationSlugRef = useRef<string | null>(null);
+  const previousParallaxFocusDataRef = useRef<ParallaxFocusData | null>(null);
 
   // Compute parallax focus data when constellation is focused
   useEffect(() => {
+    previousParallaxFocusDataRef.current = parallaxFocusData;
+
     if (focusedObject.constellation) {
       const c = focusedObject.constellation;
       const { centerX, centerY } = computeCenter(c.stars);
@@ -98,6 +102,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         unfocusedY,
         focusScale: c.focusScale,
         rotation: c.rotation ?? 0,
+        constellation: focusedObject.constellation
       });
     } else {
       // Clear when no constellation is focused
@@ -215,6 +220,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         parallaxFocusData,
         navigateToStar,
         navigateToConstellation,
+        previousParallaxFocusData: previousParallaxFocusDataRef.current,
       }}
     >
       {children}

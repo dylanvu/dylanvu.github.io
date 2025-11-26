@@ -6,10 +6,58 @@ const DEBUG = false; // Set to true if you need to debug coordinates again
 
 // --- MATH HELPER: Shortest Angle Distance ---
 // Ensures that rotating from 350 -> 10 goes 20 degrees, not -340 degrees.
-function interpolateRotation(start: number, end: number, t: number) {
+export function interpolateRotation(start: number, end: number, t: number) {
   const diff = (end - start + 180) % 360 - 180;
   const shortestDiff = diff < -180 ? diff + 360 : diff;
   return start + shortestDiff * t;
+}
+
+// Calculate parallax layer transform with rotation-aware offset
+export function calculateParallaxLayerTransform(
+  t: number,
+  depth: number,
+  startCam: { x: number; y: number; zoom: number; rotation: number },
+  endCam: { x: number; y: number; zoom: number; rotation: number },
+  windowCenterX: number,
+  windowCenterY: number
+) {
+  // 1. Interpolate Camera State (same as constellation animation!)
+  const camX = startCam.x + (endCam.x - startCam.x) * t;
+  const camY = startCam.y + (endCam.y - startCam.y) * t;
+  const camZoom = startCam.zoom + (endCam.zoom - startCam.zoom) * t;
+  const camRot = interpolateRotation(startCam.rotation, endCam.rotation, t);
+
+  // 2. Vector from camera to "parallax origin" (the window center)
+  const vecX = windowCenterX - camX;
+  const vecY = windowCenterY - camY;
+  
+  // 3. Apply rotation to vector (this creates the curved path!)
+  const angleRad = (-camRot * Math.PI) / 180;
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+  const rotatedX = vecX * cos - vecY * sin;
+  const rotatedY = vecX * sin + vecY * cos;
+  
+  // 4. Apply depth scaling
+  const offsetX = rotatedX * depth;
+  const offsetY = rotatedY * depth;
+  
+  // 5. Final position
+  const finalX = windowCenterX + offsetX;
+  const finalY = windowCenterY + offsetY;
+  
+  // 6. Scale based on depth
+  const parallaxScale = 1 + (camZoom - 1) * depth;
+
+  return {
+    x: finalX,
+    y: finalY,
+    scaleX: parallaxScale,
+    scaleY: parallaxScale,
+    rotation: -camRot,
+    offsetX: windowCenterX,
+    offsetY: windowCenterY,
+  };
 }
 
 // --- MATH HELPER: Direct Camera Transform ---
