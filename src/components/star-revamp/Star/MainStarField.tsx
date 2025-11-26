@@ -253,7 +253,7 @@ export default function MainStarField() {
               transformData={transformData}
               key={i}
               onClickCallback={() => {
-                navigateToConstellation(c.name.toLowerCase());
+                navigateToConstellation(c.slug);
               }}
               focusedConstellation={focusedObject.constellation}
               onHoverEnterCallback={() => {

@@ -160,9 +160,6 @@ export default function ConstellationContent({
                 // navigate to the star
                 navigateToStar(starData.slug);
               }
-              if (polarisDisplayState === "active") {
-                setPolarisDisplayState("suppressed");
-              }
             }
           }
         }}

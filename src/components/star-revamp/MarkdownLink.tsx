@@ -3,7 +3,6 @@ import Link from "next/link";
 import { FONT_FAMILY, SPACE_TEXT_COLOR, ACCENT_COLOR, DURATION, FOCUS_RING, OPACITY } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
-import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useState } from "react";
 
 /**
@@ -15,7 +14,6 @@ import { useState } from "react";
  */
 export function MarkdownLink({ children, href }: { children: React.ReactNode; href?: string }) {
   const { navigateToStar } = useFocusContext();
-  const { setPolarisDisplayState } = usePolarisContext();
   const [isHovered, setIsHovered] = useState(false);
   
   // Handle missing href
@@ -51,8 +49,6 @@ export function MarkdownLink({ children, href }: { children: React.ReactNode; hr
     const handleClick = () => {
       // Call navigateToStar immediately to focus the star
       navigateToStar(slug);
-      // suppress polaris
-      setPolarisDisplayState("suppressed");
     };
     
     // Use Next.js Link for proper URL navigation + immediate focus
