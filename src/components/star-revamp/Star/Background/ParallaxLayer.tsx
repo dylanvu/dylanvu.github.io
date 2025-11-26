@@ -129,64 +129,75 @@ export default function ParallaxLayer({
     };
 
     // =========================================
-    // CASE 2: HOP ANIMATION (constellation to constellation)
-    // =========================================
-    if (isHop && previousData) {
-      const previousCam = {
-        x: previousData.unfocusedX,
-        y: previousData.unfocusedY,
-        zoom: previousData.focusScale,
-        rotation: previousData.rotation,
-      };
+// CASE 2: HOP ANIMATION (constellation to constellation)
+// =========================================
+if (isHop && previousData) {
+  // 🔧 FIX: Capture ACTUAL current position, don't calculate it
+  const actualStart = {
+    x: group.x(),
+    y: group.y(),
+    rotation: group.rotation(),
+    scaleX: group.scaleX(),
+    scaleY: group.scaleY(),
+    offsetX: group.offsetX(),
+    offsetY: group.offsetY(),
+  };
 
-      // Set initial state immediately (prevents flash)
-      const startState = calculateParallaxLayerTransform(
-        0,
-        depth,
-        previousCam,
-        currentCam,
-        windowCenter.x,
-        windowCenter.y
-      );
-      group.setAttrs(startState);
+  // Calculate only the END state
+  const previousCam = {
+    x: previousData.unfocusedX,
+    y: previousData.unfocusedY,
+    zoom: previousData.focusScale,
+    rotation: previousData.rotation,
+  };
 
-      // Track animation start time
-      let startTime: number | null = null;
+  const endState = calculateParallaxLayerTransform(
+    1, // Always get END state
+    depth,
+    previousCam,
+    currentCam,
+    windowCenter.x,
+    windowCenter.y
+  );
 
-      moveAnimRef.current = new Konva.Animation((frame) => {
-        if (startTime === null) startTime = frame!.time;
-        
-        const elapsed = (frame!.time - startTime) / 1000; // Convert to seconds
-        const rawProgress = Math.min(elapsed / MOVEMENT_ANIMATION_DURATION, 1);
-        
-        // Apply easing (EaseInOut)
-        const p = rawProgress < 0.5
-          ? 2 * rawProgress * rawProgress
-          : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2;
+  // DON'T call setAttrs here - we're already in the right spot
 
-        const state = calculateParallaxLayerTransform(
-          p,
-          depth,
-          previousCam,
-          currentCam,
-          windowCenter.x,
-          windowCenter.y
-        );
-        group.setAttrs(state);
+  let startTime: number | null = null;
 
-        // Stop when complete
-        if (rawProgress >= 1) {
-          moveAnimRef.current?.stop();
-          moveAnimRef.current = null;
-        }
-      }, group.getLayer());
+  moveAnimRef.current = new Konva.Animation((frame) => {
+    if (startTime === null) startTime = frame!.time;
 
-      moveAnimRef.current.start();
+    const elapsed = (frame!.time - startTime) / 1000;
+    const rawProgress = Math.min(elapsed / MOVEMENT_ANIMATION_DURATION, 1);
 
-      // Update ref at END
-      prevParallaxDataRef.current = parallaxFocusData;
-      return;
+    // Apply easing (EaseInOut)
+    const p =
+      rawProgress < 0.5
+        ? 2 * rawProgress * rawProgress
+        : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2;
+
+    // Interpolate from actual start to calculated end
+    group.setAttrs({
+      x: actualStart.x + (endState.x - actualStart.x) * p,
+      y: actualStart.y + (endState.y - actualStart.y) * p,
+      rotation: actualStart.rotation + (endState.rotation - actualStart.rotation) * p,
+      scaleX: actualStart.scaleX + (endState.scaleX - actualStart.scaleX) * p,
+      scaleY: actualStart.scaleY + (endState.scaleY - actualStart.scaleY) * p,
+      offsetX: actualStart.offsetX + (endState.offsetX - actualStart.offsetX) * p,
+      offsetY: actualStart.offsetY + (endState.offsetY - actualStart.offsetY) * p,
+    });
+
+    if (rawProgress >= 1) {
+      moveAnimRef.current?.stop();
+      moveAnimRef.current = null;
     }
+  }, group.getLayer());
+
+  moveAnimRef.current.start();
+
+  prevParallaxDataRef.current = parallaxFocusData;
+  return;
+}
 
     // =========================================
     // CASE 3: INITIAL FOCUS (first focus, not a hop)
