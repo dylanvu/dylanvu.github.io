@@ -1,10 +1,11 @@
+import { StarDataWithInternalLink } from "@/interfaces/StarInterfaces";
 import Konva from "konva";
 import { RefObject } from "react";
 
 interface UseConstellationInteractionsProps {
   isFocusedRef: RefObject<boolean>;
   isReturningRef: RefObject<boolean>;
-  focusedObjectStar: any;
+  focusedObjectStar: StarDataWithInternalLink | null;
   transformData: { scaleX?: number; scaleY?: number };
   brightnessHover: number;
   HOVER_SCALE: number;

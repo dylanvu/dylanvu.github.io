@@ -3,7 +3,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
-import { ConstellationData, isStarDataWithInternalLink } from "@/interfaces/StarInterfaces";
+import { ConstellationData, isStarDataWithInternalLink, Star } from "@/interfaces/StarInterfaces";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
@@ -30,7 +30,7 @@ interface ConstellationContentProps {
 
   // Constellation data
   data: ConstellationData;
-  stars: Array<{ x: number; y: number; data?: any }>;
+  stars: Star[];
   lineSegments: [number, number][];
   lineDurations: number[];
   lineDelays: number[];
