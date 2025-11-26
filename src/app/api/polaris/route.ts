@@ -8,6 +8,8 @@ import {
   importAllActiveProjects,
   getHackathonStatistics,
   getHackathonListDocument,
+  importAllIterContent,
+  importAllViaeContent,
 } from "./cached-data";
 import { STAR_BASE_URL } from "@/constants/Routes";
 
@@ -29,6 +31,8 @@ export async function POST(request: NextRequest) {
   const resumeString = await getResumeString();
   const navigationInformation = await importMarkdownContent("SkyNavigation.md");
   const activeProjects = await importAllActiveProjects();
+  const iterContent = await importAllIterContent();
+  const viaeContent = await importAllViaeContent();
   const hackathonStatistics = await getHackathonStatistics();
   const hackathonListDocument = await getHackathonListDocument();
   const constellationLinks = formatConstellationLinksForLLM();
@@ -100,6 +104,10 @@ Statistics:
 ${hackathonStatistics}
 </hackathons>
 
+<external_links>
+${viaeContent}
+</external_links>
+
 <portfolio_metaphor>
 ${navigationInformation}
 
@@ -111,7 +119,7 @@ ${constellationLinks}
 </portfolio_metaphor>
 
 <bio>
-TBD
+${iterContent}
 </bio>
 </factual_data>
 

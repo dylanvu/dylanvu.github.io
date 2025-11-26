@@ -48,33 +48,64 @@ export const importMarkdownContent = unstable_cache(
 );
 
 /**
+ * 
+ * @param pathName in relation to the src/app/markdown/. Example: projects/active
+ */
+async function importMarkdownFromMarkdownDirectoryPath(pathName: string) {
+  const dir = path.join(process.cwd(), `src/app/markdown/${pathName}`);
+  const files = fs.readdirSync(dir);
+
+  const fileObject = await Promise.all(
+    files.filter((file) => file.endsWith(".md"))
+      .filter((file) => !file.includes("debug")) // Guard: exclude debug/test files
+      .map(async (file) => {
+        const content = await importMarkdownContent(`${pathName}/${file}`);
+        const name = file.replace(".md", "");
+        return { name, content };
+      })
+  )
+  return fileObject
+}
+
+/**
  * Imports all active project markdown files with caching
  * Returns an array of objects containing the project name and markdown content
  */
 export const importAllActiveProjects = unstable_cache(
   async () => {
-    const activeProjectsDir = path.join(
-      process.cwd(),
-      "src/app/markdown/projects/active"
-    );
-    const files = fs.readdirSync(activeProjectsDir);
-
-    const activeProjects = await Promise.all(
-      files
-        .filter((file) => file.endsWith(".md"))
-        .filter((file) => !file.includes("debug")) // Guard: exclude debug/test files
-        .map(async (file) => {
-          const content = await importMarkdownContent(`projects/active/${file}`);
-          const name = file.replace(".md", "");
-          return { name, content };
-        })
-    );
+    const activeProjects = await importMarkdownFromMarkdownDirectoryPath("projects/active");
 
     return activeProjects;
   },
   ["active-projects"],
   {
     tags: ["projects"],
+    revalidate: false,
+  }
+);
+
+export const importAllViaeContent = unstable_cache(
+  async () => {
+    const content = await importMarkdownFromMarkdownDirectoryPath("viae");
+
+    return content;
+  },
+  ["viae-content"],
+  {
+    tags: ["viae"],
+    revalidate: false,
+  }
+);
+
+export const importAllIterContent = unstable_cache(
+  async () => {
+    const content = await importMarkdownFromMarkdownDirectoryPath("iter");
+
+    return content;
+  },
+  ["iter-content"],
+  {
+    tags: ["iter"],
     revalidate: false,
   }
 );

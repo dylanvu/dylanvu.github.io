@@ -1,3 +1,3 @@
 # Email
 
-mailto:dylanvu9@gmail.com
+dylanvu9@gmail.com
