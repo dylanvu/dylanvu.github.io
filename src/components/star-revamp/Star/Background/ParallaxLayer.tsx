@@ -25,6 +25,7 @@ export default function ParallaxLayer({
 
   // Animation Refs
   const moveTweenRef = useRef<Konva.Tween | null>(null);
+  const moveAnimRef = useRef<Konva.Animation | null>(null);
   const fadeTweenRef = useRef<Konva.Tween | null>(null);
   const fadeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,10 +69,14 @@ export default function ParallaxLayer({
     const group = groupRef.current;
     if (!group) return;
 
-    // A. Destroy previous movement tween to prevent fighting
+    // Stop previous animations to prevent fighting
     if (moveTweenRef.current) {
       moveTweenRef.current.destroy();
       moveTweenRef.current = null;
+    }
+    if (moveAnimRef.current) {
+      moveAnimRef.current.stop();
+      moveAnimRef.current = null;
     }
 
     // =========================================
@@ -137,30 +142,38 @@ export default function ParallaxLayer({
       );
       group.setAttrs(startState);
 
-      // Animate with frame-by-frame calculation
-      group.setAttr("animProgress", 0);
-      moveTweenRef.current = new Konva.Tween({
-        node: group,
-        duration: MOVEMENT_ANIMATION_DURATION,
-        easing: Konva.Easings.EaseInOut,
-        animProgress: 1,
-        onUpdate: () => {
-          const p = group.getAttr("animProgress");
-          const state = calculateParallaxLayerTransform(
-            p,
-            depth,
-            previousCam,
-            currentCam,
-            windowCenter.x,
-            windowCenter.y
-          );
-          group.setAttrs(state);
-        },
-        onFinish: () => {
-          moveTweenRef.current = null;
-        },
-      });
-      moveTweenRef.current.play();
+      // Track animation start time
+      let startTime: number | null = null;
+
+      moveAnimRef.current = new Konva.Animation((frame) => {
+        if (startTime === null) startTime = frame!.time;
+        
+        const elapsed = (frame!.time - startTime) / 1000; // Convert to seconds
+        const rawProgress = Math.min(elapsed / MOVEMENT_ANIMATION_DURATION, 1);
+        
+        // Apply easing (EaseInOut)
+        const p = rawProgress < 0.5
+          ? 2 * rawProgress * rawProgress
+          : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2;
+
+        const state = calculateParallaxLayerTransform(
+          p,
+          depth,
+          previousCam,
+          currentCam,
+          windowCenter.x,
+          windowCenter.y
+        );
+        group.setAttrs(state);
+
+        // Stop when complete
+        if (rawProgress >= 1) {
+          moveAnimRef.current?.stop();
+          moveAnimRef.current = null;
+        }
+      }, group.getLayer());
+
+      moveAnimRef.current.start();
       return; // ✅ STOP HERE - prevents double tween!
     }
 

@@ -83,8 +83,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
 
   // Compute parallax focus data when constellation is focused
   useEffect(() => {
-    previousParallaxFocusDataRef.current = parallaxFocusData;
-
     if (focusedObject.constellation) {
       const c = focusedObject.constellation;
       const { centerX, centerY } = computeCenter(c.stars);
@@ -109,6 +107,11 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       setParallaxFocusData(null);
     }
   }, [focusedObject.constellation, width, height]);
+
+  // Track previous parallax data AFTER state updates (prevents race condition)
+  useEffect(() => {
+    previousParallaxFocusDataRef.current = parallaxFocusData;
+  }, [parallaxFocusData]);
 
   // Centralized overlay management based on focused object
   useEffect(() => {
