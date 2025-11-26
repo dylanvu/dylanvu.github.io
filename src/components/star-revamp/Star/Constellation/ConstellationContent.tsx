@@ -5,7 +5,6 @@ import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
 import { ConstellationData, isStarDataWithInternalLink, Star } from "@/interfaces/StarInterfaces";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
-import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
 import { usePathname } from "next/navigation";
@@ -153,7 +152,8 @@ export default function ConstellationContent({
               );
             } else if (isStarDataWithInternalLink(starData)) {
               // if we are currently on the page, bring it back to the base
-              if (focusedObject.star && focusedObject.star.slug) {
+              console.log(pathname.split("/").at(-1))
+              if (focusedObject.star && starData.slug === pathname.split("/").at(-1)) {
                 navigateToConstellation(data.slug);
               } else {
                 // navigate to the star
