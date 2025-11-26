@@ -300,7 +300,7 @@ export const useParallaxCamera = ({
   // --- PEER SWITCH (I am a neighbor) ---
   const animatePeerSwitch = (oldFocus: NonNullable<typeof parallaxData>, newFocus: NonNullable<typeof parallaxData>) => {
     const node = getNode();
-    if (!node) return;
+    if (!node || !node.visible()) return;
     stopTween();
 
     const startCam = { x: oldFocus.worldX, y: oldFocus.worldY, zoom: oldFocus.worldZoom, rotation: oldFocus.targetRotation };
@@ -384,7 +384,10 @@ export const useParallaxCamera = ({
         if (prevId === identityId && parallaxData) {
           animateHopFromFocus(parallaxData);
         } else if (isHop && prevData && parallaxData) {
-          animatePeerSwitch(prevData, parallaxData);
+          const node = getNode();
+          if (node && node.visible()) {
+            animatePeerSwitch(prevData, parallaxData);
+          }
         } else if (parallaxData && !focusTweenRef.current) {
           const node = getNode();
           if (node && node.visible()) {
@@ -404,7 +407,7 @@ export const useParallaxCamera = ({
     }
 
     prevGlobalIdRef.current = focusedGlobalId;
-    prevParallaxDataRef.current = parallaxData;
+    prevParallaxDataRef.current = focusedGlobalId ? parallaxData : null;  // Clear when no focus
   }, [isFocused, focusedGlobalId, parallaxData, identityId]);
 
   return {

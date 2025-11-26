@@ -96,6 +96,8 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       setParallaxFocusData({
         unfocusedX,
         unfocusedY,
+        focusScale: c.focusScale,
+        rotation: c.rotation ?? 0,
       });
     } else {
       // Clear when no constellation is focused

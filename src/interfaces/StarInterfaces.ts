@@ -40,6 +40,8 @@ export type TransformData = {
 export type ParallaxFocusData = {
   unfocusedX: number; // constellation center before focusing
   unfocusedY: number; // constellation center before focusing
+  focusScale: number; // zoom level of the focused constellation
+  rotation: number; // rotation of the focused constellation
 };
 
 type BaseStarData = {

@@ -133,8 +133,8 @@ function Constellation({
     return {
         worldX: parallaxFocusData.unfocusedX,
         worldY: parallaxFocusData.unfocusedY,
-        worldZoom: focusedConstellation.focusScale ?? 1,
-        targetRotation: focusedConstellation.rotation ?? 0
+        worldZoom: parallaxFocusData.focusScale,
+        targetRotation: parallaxFocusData.rotation
     };
   }, [parallaxFocusData, focusedConstellation]);
 
