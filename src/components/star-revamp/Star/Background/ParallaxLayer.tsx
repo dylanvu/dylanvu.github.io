@@ -5,6 +5,7 @@ import StaticStar from "./StaticStar";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { calculateParallaxLayerTransform } from "@/components/star-revamp/Star/Constellation/useParallaxCamera";
+import { ParallaxFocusData } from "@/interfaces/StarInterfaces";
 
 interface ParallaxLayerProps {
   stars: Array<{ x: number; y: number; radius: number }>;
@@ -29,9 +30,11 @@ export default function ParallaxLayer({
   const fadeTweenRef = useRef<Konva.Tween | null>(null);
   const fadeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Track previous parallax data locally (prevents race conditions)
+  const prevParallaxDataRef = useRef<ParallaxFocusData | null>(null);
+
   const { windowCenter } = useWindowSizeContext();
-  const { parallaxFocusData, previousParallaxFocusData, focusedObject } =
-    useFocusContext();
+  const { parallaxFocusData, focusedObject } = useFocusContext();
 
   // 1. ENTRANCE FADE EFFECT
   // We keep this standard useEffect because it's a "Mount" animation, not a "Physics" update.
@@ -69,6 +72,9 @@ export default function ParallaxLayer({
     const group = groupRef.current;
     if (!group) return;
 
+    // Capture previous data from ref at START of effect
+    const previousData = prevParallaxDataRef.current;
+
     // Stop previous animations to prevent fighting
     if (moveTweenRef.current) {
       moveTweenRef.current.destroy();
@@ -102,14 +108,16 @@ export default function ParallaxLayer({
         },
       });
       moveTweenRef.current.play();
-      return; // ✅ STOP HERE - prevents double tween
+
+      // Update ref at END
+      prevParallaxDataRef.current = parallaxFocusData;
+      return;
     }
 
-    // Detect HOP using constellation NAME (stable string comparison)
+    // Detect HOP using constellation slug (stable string comparison)
     const isHop = !!(
-      previousParallaxFocusData &&
-      previousParallaxFocusData.constellation.slug !==
-        parallaxFocusData.constellation.slug
+      previousData &&
+      previousData.constellation.slug !== parallaxFocusData.constellation.slug
     );
 
     // Build current camera state
@@ -123,12 +131,12 @@ export default function ParallaxLayer({
     // =========================================
     // CASE 2: HOP ANIMATION (constellation to constellation)
     // =========================================
-    if (isHop && previousParallaxFocusData) {
+    if (isHop && previousData) {
       const previousCam = {
-        x: previousParallaxFocusData.unfocusedX,
-        y: previousParallaxFocusData.unfocusedY,
-        zoom: previousParallaxFocusData.focusScale,
-        rotation: previousParallaxFocusData.rotation,
+        x: previousData.unfocusedX,
+        y: previousData.unfocusedY,
+        zoom: previousData.focusScale,
+        rotation: previousData.rotation,
       };
 
       // Set initial state immediately (prevents flash)
@@ -174,7 +182,10 @@ export default function ParallaxLayer({
       }, group.getLayer());
 
       moveAnimRef.current.start();
-      return; // ✅ STOP HERE - prevents double tween!
+
+      // Update ref at END
+      prevParallaxDataRef.current = parallaxFocusData;
+      return;
     }
 
     // =========================================
@@ -209,14 +220,10 @@ export default function ParallaxLayer({
       },
     });
     moveTweenRef.current.play();
-    // No return needed - this is the final case
-  }, [
-    parallaxFocusData,
-    previousParallaxFocusData,
-    depth,
-    windowCenter,
-    focusedObject,
-  ]);
+
+    // Update ref at END
+    prevParallaxDataRef.current = parallaxFocusData;
+  }, [parallaxFocusData, depth, windowCenter, focusedObject]);
 
   return (
     <Group
