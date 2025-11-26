@@ -16,6 +16,17 @@ function calculateParallaxTransform(
   targetRotation: number,
   depth: number = 3.5
 ) {
+  if (p === 0) {
+    return {
+      x: baseX,
+      y: baseY,
+      scaleX: baseScale,
+      scaleY: baseScale,
+      rotation: baseRotation,
+      opacity: 1
+    };
+  }
+
   const expansionFactor = 1 + (worldZoom - 1) * depth;
   const currentExpansion = 1 + (expansionFactor - 1) * p;
   const currentRotOffset = targetRotation * p;
@@ -54,13 +65,11 @@ interface UseParallaxCameraProps {
   focusScale: number;        
   windowCenter: { x: number; y: number };
   focusedTargetX: number;
-  focusedTargetY?: number; // <--- ADDED THIS PROP
+  focusedTargetY?: number;
   
-  // Global State
   isFocused: boolean;        
   focusedGlobalId: string | null; 
   
-  // Data about the CURRENTLY focused item
   parallaxData: { 
     worldX: number;
     worldY: number;
@@ -70,7 +79,7 @@ interface UseParallaxCameraProps {
   
   depth?: number;            
   duration?: number;
-  onFocusComplete?: () => void; // Callback when focus animation completes
+  onFocusComplete?: () => void;
 }
 
 export const useParallaxCamera = ({
@@ -83,7 +92,7 @@ export const useParallaxCamera = ({
   focusScale,
   windowCenter,
   focusedTargetX,
-  focusedTargetY, // <--- DESTRUCTURED HERE
+  focusedTargetY,
   isFocused,
   focusedGlobalId,
   parallaxData,
@@ -92,38 +101,15 @@ export const useParallaxCamera = ({
   onFocusComplete
 }: UseParallaxCameraProps) => {
 
-  // Calculate the actual target Y (Default to Center if not provided)
   const targetY = focusedTargetY ?? windowCenter.y;
-
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const EASING = Konva.Easings.EaseInOut;
 
-  const lastFocusStateRef = useRef<{ id: string } | null>(null);
-  const lockedFocusState = useRef<{
-    focusX: number;
-    focusY: number;
-    worldZoom: number;
-    targetRotation: number;
-  } | null>(null);
-  
-  // Store the focused position to use during unfocus snap
+  // Track Previous State
+  const prevGlobalIdRef = useRef<string | null>(null);
+  const prevParallaxDataRef = useRef(parallaxData);
   const lastFocusedPositionRef = useRef<{ x: number; y: number } | null>(null);
 
-  useEffect(() => {
-    if (focusedGlobalId) {
-      lastFocusStateRef.current = { id: focusedGlobalId };
-      if (parallaxData) {
-        lockedFocusState.current = {
-          focusX: parallaxData.worldX,
-          focusY: parallaxData.worldY,
-          worldZoom: parallaxData.worldZoom,
-          targetRotation: parallaxData.targetRotation,
-        };
-      }
-    }
-  }, [focusedGlobalId, parallaxData]);
-
-  // Safe getter for Konva Node
   const getNode = (): Konva.Node | null => {
     return nodeRef.current as Konva.Node | null;
   };
@@ -135,7 +121,9 @@ export const useParallaxCamera = ({
     }
   };
 
-  // A. TARGET FOCUS (Move to UI Position)
+  // --- ANIMATION ROUTINES ---
+
+  // A. TARGET FOCUS (Home -> Center)
   const animateTargetFocus = () => {
     const node = getNode();
     if (!node) return;
@@ -143,14 +131,11 @@ export const useParallaxCamera = ({
 
     focusTweenRef.current = new Konva.Tween({
       node, duration, easing: EASING,
-      x: focusedTargetX, 
-      y: targetY, // <--- USE DYNAMIC TARGET Y
+      x: focusedTargetX, y: targetY,
       scaleX: baseScale * focusScale,
       scaleY: baseScale * focusScale,
-      rotation: 0,
-      opacity: 1,
+      rotation: 0, opacity: 1,
       onFinish: () => { 
-        // Store the focused position for use during unfocus
         lastFocusedPositionRef.current = { x: focusedTargetX, y: targetY };
         focusTweenRef.current = null;
         onFocusComplete?.();
@@ -159,28 +144,16 @@ export const useParallaxCamera = ({
     focusTweenRef.current.play();
   };
 
-  // B. TARGET RETURN (Return Home)
+  // B. TARGET RETURN (Center -> Home)
   const animateTargetReturn = () => {
     const node = getNode();
     if (!node) return;
     stopTween();
 
-    const startZoom = lockedFocusState.current?.worldZoom || focusScale;
-    
-    // Use stored focused position (where constellation WAS) instead of current target
-    // This prevents snap when pathname changes (e.g., from /star/ to /)
     const snapX = lastFocusedPositionRef.current?.x ?? focusedTargetX;
     const snapY = lastFocusedPositionRef.current?.y ?? targetY;
     
-    // Snap to last focused position to prevent flash
-    node.setAttrs({
-      x: snapX, 
-      y: snapY,
-      scaleX: baseScale * startZoom,
-      scaleY: baseScale * startZoom,
-      rotation: 0,
-      visible: true, opacity: 1
-    });
+    node.setAttrs({ x: snapX, y: snapY, rotation: 0, visible: true, opacity: 1 });
 
     focusTweenRef.current = new Konva.Tween({
       node, duration, easing: EASING,
@@ -188,26 +161,26 @@ export const useParallaxCamera = ({
       scaleX: baseScale, scaleY: baseScale,
       rotation: baseRotation,
       onFinish: () => { 
-        lastFocusedPositionRef.current = null; // Clear after use
+        lastFocusedPositionRef.current = null;
         focusTweenRef.current = null; 
       }
     });
     focusTweenRef.current.play();
   };
 
-  // C. NEIGHBOR VANISH
-  const animateNeighborVanish = (targetData: NonNullable<typeof lockedFocusState.current>) => {
+  // C. NEIGHBOR VANISH (Home -> Parallax Offset)
+  const animateNeighborVanish = (targetData: NonNullable<typeof parallaxData>) => {
     const node = getNode();
     if (!node) return;
     stopTween();
 
-    const startState = calculateParallaxTransform(
-      0, unfocusedX, unfocusedY, baseScale, baseRotation,
-      targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, 
-      targetData.worldZoom, targetData.targetRotation, depth
-    );
+    // Force home state start
+    node.setAttrs({ 
+      x: unfocusedX, y: unfocusedY, 
+      scaleX: baseScale, scaleY: baseScale, 
+      rotation: baseRotation, opacity: 1, visible: true 
+    });
 
-    node.setAttrs({ ...startState, opacity: 1, visible: true });
     node.setAttr('animProgress', 0);
 
     focusTweenRef.current = new Konva.Tween({
@@ -217,39 +190,24 @@ export const useParallaxCamera = ({
         const p = node.getAttr('animProgress');
         const state = calculateParallaxTransform(
           p, unfocusedX, unfocusedY, baseScale, baseRotation,
-          targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, 
+          targetData.worldX, targetData.worldY, windowCenter.x, windowCenter.y, 
           targetData.worldZoom, targetData.targetRotation, depth
         );
         node.setAttrs({ ...state, opacity: 1 - p });
       },
-      onFinish: () => {
-        node.visible(false);
-        focusTweenRef.current = null;
-      }
+      onFinish: () => { node.visible(false); focusTweenRef.current = null; }
     });
     focusTweenRef.current.play();
   };
 
-  // D. NEIGHBOR RETURN
-  const animateNeighborReturn = () => {
+  // D. NEIGHBOR RETURN (Parallax Offset -> Home)
+  const animateNeighborReturn = (fromData: NonNullable<typeof parallaxData>) => {
     const node = getNode();
     if (!node) return;
     stopTween();
 
-    const targetData = lockedFocusState.current;
-    if (!targetData) {
-      node.setAttrs({ x: unfocusedX, y: unfocusedY, opacity: 1, visible: true });
-      return;
-    }
-
-    const startState = calculateParallaxTransform(
-      1, unfocusedX, unfocusedY, baseScale, baseRotation,
-      targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, 
-      targetData.worldZoom, targetData.targetRotation, depth
-    );
-
-    node.setAttrs({ ...startState, opacity: 0, visible: true });
     node.setAttr('animProgress', 1);
+    node.visible(true);
 
     focusTweenRef.current = new Konva.Tween({
       node, duration, easing: EASING,
@@ -258,17 +216,15 @@ export const useParallaxCamera = ({
         const p = node.getAttr('animProgress');
         const state = calculateParallaxTransform(
           p, unfocusedX, unfocusedY, baseScale, baseRotation,
-          targetData.focusX, targetData.focusY, windowCenter.x, windowCenter.y, 
-          targetData.worldZoom, targetData.targetRotation, depth
+          fromData.worldX, fromData.worldY, windowCenter.x, windowCenter.y, 
+          fromData.worldZoom, fromData.targetRotation, depth
         );
         node.setAttrs({ ...state, opacity: 1 - p });
       },
       onFinish: () => {
         node.setAttrs({
-          x: unfocusedX, y: unfocusedY,
-          scaleX: baseScale, scaleY: baseScale,
-          rotation: baseRotation,
-          opacity: 1
+          x: unfocusedX, y: unfocusedY, scaleX: baseScale, scaleY: baseScale,
+          rotation: baseRotation, opacity: 1
         });
         focusTweenRef.current = null;
       }
@@ -276,42 +232,157 @@ export const useParallaxCamera = ({
     focusTweenRef.current.play();
   };
 
-  // --- TRIGGERS ---
+  // E. PEER SWITCH (Offset A -> Offset B)
+  const animatePeerSwitch = (
+    oldFocus: NonNullable<typeof parallaxData>, 
+    newFocus: NonNullable<typeof parallaxData>
+  ) => {
+    const node = getNode();
+    if (!node) return;
+    stopTween();
 
+    const startState = calculateParallaxTransform(
+      1, unfocusedX, unfocusedY, baseScale, baseRotation,
+      oldFocus.worldX, oldFocus.worldY, windowCenter.x, windowCenter.y, 
+      oldFocus.worldZoom, oldFocus.targetRotation, depth
+    );
+
+    const endState = calculateParallaxTransform(
+      1, unfocusedX, unfocusedY, baseScale, baseRotation,
+      newFocus.worldX, newFocus.worldY, windowCenter.x, windowCenter.y, 
+      newFocus.worldZoom, newFocus.targetRotation, depth
+    );
+
+    node.setAttrs({ ...startState, visible: true, opacity: 0 }); 
+
+    focusTweenRef.current = new Konva.Tween({
+      node, duration, easing: EASING,
+      x: endState.x, y: endState.y,
+      scaleX: endState.scaleX, scaleY: endState.scaleY,
+      rotation: endState.rotation,
+      opacity: 0,
+      onFinish: () => { focusTweenRef.current = null; }
+    });
+    focusTweenRef.current.play();
+  };
+
+  // F. HOP IN (Offset A -> Center)
+  const animateHopToFocus = (oldFocus: NonNullable<typeof parallaxData>) => {
+    const node = getNode();
+    if (!node) return;
+    stopTween();
+
+    const startState = calculateParallaxTransform(
+      1, unfocusedX, unfocusedY, baseScale, baseRotation,
+      oldFocus.worldX, oldFocus.worldY, windowCenter.x, windowCenter.y, 
+      oldFocus.worldZoom, oldFocus.targetRotation, depth
+    );
+
+    node.setAttrs({ ...startState, visible: true, opacity: 0 });
+
+    focusTweenRef.current = new Konva.Tween({
+      node, duration, easing: EASING,
+      x: focusedTargetX, y: targetY,
+      scaleX: baseScale * focusScale,
+      scaleY: baseScale * focusScale,
+      rotation: 0, opacity: 1,
+      onFinish: () => {
+        lastFocusedPositionRef.current = { x: focusedTargetX, y: targetY };
+        focusTweenRef.current = null;
+        onFocusComplete?.();
+      }
+    });
+    focusTweenRef.current.play();
+  };
+
+  // G. HOP OUT (Center -> Offset B)
+  const animateHopFromFocus = (newFocus: NonNullable<typeof parallaxData>) => {
+    const node = getNode();
+    if (!node) return;
+    stopTween();
+
+    const snapX = lastFocusedPositionRef.current?.x ?? focusedTargetX;
+    const snapY = lastFocusedPositionRef.current?.y ?? targetY;
+    
+    node.setAttrs({ 
+      x: snapX, y: snapY, 
+      scaleX: baseScale * focusScale, scaleY: baseScale * focusScale, 
+      rotation: 0, opacity: 1, visible: true 
+    });
+
+    const endState = calculateParallaxTransform(
+      1, unfocusedX, unfocusedY, baseScale, baseRotation,
+      newFocus.worldX, newFocus.worldY, windowCenter.x, windowCenter.y, 
+      newFocus.worldZoom, newFocus.targetRotation, depth
+    );
+
+    focusTweenRef.current = new Konva.Tween({
+      node, duration, easing: EASING,
+      x: endState.x, y: endState.y,
+      scaleX: endState.scaleX, scaleY: endState.scaleY,
+      rotation: endState.rotation,
+      opacity: 0,
+      onFinish: () => { node.visible(false); focusTweenRef.current = null; }
+    });
+    focusTweenRef.current.play();
+  };
+
+  // --- TRIGGER LOGIC ---
   useEffect(() => {
+    const prevId = prevGlobalIdRef.current;
+    const prevData = prevParallaxDataRef.current;
+    const isHop = !!(prevId && focusedGlobalId && prevId !== focusedGlobalId);
+
     if (isFocused) {
-      animateTargetFocus();
-    } else {
-      if (focusedGlobalId) {
-        // Handled by parallaxData trigger
+      // 1. I AM THE TARGET
+      if (isHop && prevData) {
+        animateHopToFocus(prevData);
       } else {
-        if (lastFocusStateRef.current?.id === identityId) {
+        animateTargetFocus();
+      }
+    } else {
+      // 2. I AM NOT THE TARGET
+      if (focusedGlobalId) {
+        if (prevId === identityId && parallaxData) {
+          // A. I WAS the target -> Become Neighbor (Hop Out)
+          animateHopFromFocus(parallaxData);
+        } else if (isHop && prevData && parallaxData) {
+          // B. Peer Switch (Focus A -> Focus B)
+          animatePeerSwitch(prevData, parallaxData);
+        } else if (parallaxData && !focusTweenRef.current) {
+          // C. Standard Vanish / Late Data Fix
+          // If I am visible (at home) and have no tween, I need to vanish.
+          // This catches the Initial Click where data might be 1 frame late.
+          const node = getNode();
+          if (node && node.visible()) {
+            animateNeighborVanish(parallaxData);
+          }
+        }
+      } else {
+        // 3. NO ONE IS FOCUSED (Return to Home)
+        if (prevId === identityId) {
           animateTargetReturn();
+        } else if (prevData) {
+          animateNeighborReturn(prevData);
         } else {
-          animateNeighborReturn();
+          // Fallback reset
+          const node = getNode();
+          if(node) node.setAttrs({ x: unfocusedX, y: unfocusedY, opacity: 1, visible: true });
         }
       }
     }
-  }, [isFocused, focusedGlobalId, identityId, focusedTargetX, targetY]);
 
-  useEffect(() => {
-    if (!isFocused && focusedGlobalId && parallaxData && !focusTweenRef.current) {
-      const targetData = {
-        focusX: parallaxData.worldX,
-        focusY: parallaxData.worldY,
-        worldZoom: parallaxData.worldZoom,
-        targetRotation: parallaxData.targetRotation
-      };
-      lockedFocusState.current = targetData;
-      animateNeighborVanish(targetData);
-    }
-  }, [parallaxData, focusedGlobalId, isFocused]);
+    // Update Refs
+    prevGlobalIdRef.current = focusedGlobalId;
+    prevParallaxDataRef.current = parallaxData;
+
+  }, [isFocused, focusedGlobalId, parallaxData, identityId]);
 
   useLayoutEffect(() => {
     const node = getNode();
-    if (!node) return;
+    if (!node || focusTweenRef.current) return;
 
-    if (!focusTweenRef.current && !isFocused && !focusedGlobalId) {
+    if (!isFocused && !focusedGlobalId) {
        node.setAttrs({
          x: unfocusedX, y: unfocusedY,
          scaleX: baseScale, scaleY: baseScale,
@@ -319,7 +390,7 @@ export const useParallaxCamera = ({
          opacity: 1, visible: true
        });
     }
-  }, [unfocusedX, unfocusedY, baseScale, baseRotation, isFocused, focusedGlobalId]);
+  }, []);
 
   return {
     stopTweens: stopTween,
