@@ -278,7 +278,7 @@ export const useParallaxCamera = ({
         }
       }
     }
-  }, [isFocused, focusedGlobalId, identityId]); 
+  }, [isFocused, focusedGlobalId, identityId, focusedTargetX, targetY]);
 
   useEffect(() => {
     if (!isFocused && focusedGlobalId && parallaxData && !focusTweenRef.current) {
