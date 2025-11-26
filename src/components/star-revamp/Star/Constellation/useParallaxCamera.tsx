@@ -105,6 +105,9 @@ export const useParallaxCamera = ({
     worldZoom: number;
     targetRotation: number;
   } | null>(null);
+  
+  // Store the focused position to use during unfocus snap
+  const lastFocusedPositionRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (focusedGlobalId) {
@@ -146,6 +149,8 @@ export const useParallaxCamera = ({
       scaleY: baseScale * focusScale,
       rotation: 0,
       onFinish: () => { 
+        // Store the focused position for use during unfocus
+        lastFocusedPositionRef.current = { x: focusedTargetX, y: targetY };
         focusTweenRef.current = null;
         onFocusComplete?.();
       }
@@ -161,10 +166,15 @@ export const useParallaxCamera = ({
 
     const startZoom = lockedFocusState.current?.worldZoom || focusScale;
     
-    // Snap to "Active" position to prevent flash
+    // Use stored focused position (where constellation WAS) instead of current target
+    // This prevents snap when pathname changes (e.g., from /star/ to /)
+    const snapX = lastFocusedPositionRef.current?.x ?? focusedTargetX;
+    const snapY = lastFocusedPositionRef.current?.y ?? targetY;
+    
+    // Snap to last focused position to prevent flash
     node.setAttrs({
-      x: focusedTargetX, 
-      y: targetY, // <--- USE DYNAMIC TARGET Y
+      x: snapX, 
+      y: snapY,
       scaleX: baseScale * startZoom,
       scaleY: baseScale * startZoom,
       rotation: 0,
@@ -176,7 +186,10 @@ export const useParallaxCamera = ({
       x: unfocusedX, y: unfocusedY,
       scaleX: baseScale, scaleY: baseScale,
       rotation: baseRotation,
-      onFinish: () => { focusTweenRef.current = null; }
+      onFinish: () => { 
+        lastFocusedPositionRef.current = null; // Clear after use
+        focusTweenRef.current = null; 
+      }
     });
     focusTweenRef.current.play();
   };
