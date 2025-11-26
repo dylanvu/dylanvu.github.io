@@ -1,22 +1,18 @@
-// import Navbar from '@/components/Navbar'
-import ParticlesBg from "@/components/ParticlesBg";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 // fix the large flashing icon: https://blog.cetindere.de/fix-huge-flashing-icons-fontawesome/
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import { config } from "@fortawesome/fontawesome-svg-core";
+import { WindowSizeProvider } from "@/hooks/useWindowSizeProvider";
+import { SPACE_BACKGROUND_COLOR } from "./theme";
 
-// AI agent provider
-import AgentProvider from "@/providers/ai/AgentProvider";
+import { CenterOverlayProvider } from "@/hooks/useCenterOverlay";
+import { TopOverlayProvider } from "@/hooks/useTopOverlay";
+import NightSky from "@/components/star-revamp/NightSky";
+import { FocusProvider } from "@/hooks/useFocusProvider";
+import { PolarisProvider } from "@/hooks/Polaris/usePolarisProvider";
+import PortraitModeOverlay from "@/components/PortraitModeOverlay";
+import { Analytics } from '@vercel/analytics/next';
 
-// Prevent fontawesome from dynamically adding its css since we are going to include it manually
-config.autoAddCss = false;
-
-import Head from "next/head";
-
-import Script from "next/script";
-import Chat from "@/components/chat/Chat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +23,7 @@ export const metadata: Metadata = {
     "Dylan Vu is a Software Developer currently working for Amazon Health, One Medical that graduated from UC Irvine. He specializes in web, mobile, and game development with expertise in TypeScript, JavaScript, Flutter, and Python. Dylan's experience spans software engineering, hackathons, and projects in NodeJS and full-stack development.",
   keywords:
     "Dylan Vu, Software Developer, Full-Stack Developer, Web Development, Mobile Development, Embedded Systems, IoT, Internet of Things, Game Development, Amazon Health, One Medical, UCI, UC Irvine, Computer Science, TypeScript, JavaScript, Flutter, Python, NodeJS, Hackathon, Software Engineering",
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -35,31 +32,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <Head>
-        {/* Configure leaflet for the hackathon map component */}
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossOrigin=""
-        />
-      </Head>
-      <Script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossOrigin=""
-      />
-      <AgentProvider>
-        <body className={inter.className}>
-          <main className="main">
-            {/* floating particles in background  */}
-            <ParticlesBg />
-            {children}
-            <Chat />
-          </main>
-        </body>
-      </AgentProvider>
+    <html lang="en" style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
+      <body className={inter.className} style={{ backgroundColor: SPACE_BACKGROUND_COLOR }}>
+        <main className="main">
+          <WindowSizeProvider>
+            <CenterOverlayProvider>
+              <PolarisProvider>
+                <TopOverlayProvider>
+                  <FocusProvider>
+                    {/* children here really just refers to the side panels that appear when you go to a specific link */}
+                    <NightSky>{children}</NightSky>
+                  </FocusProvider>
+                </TopOverlayProvider>
+              </PolarisProvider>
+            </CenterOverlayProvider>
+            <PortraitModeOverlay />
+          </WindowSizeProvider>
+        </main>
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -1,0 +1,13 @@
+"use client"
+
+import { useEffect } from "react";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+// all this page does is activate polaris if you go to it
+export default function PolarisPageInitializer() {
+  const {setIsReady} = usePolarisContext();
+  useEffect(() => {
+    setIsReady(true);
+  }, [])
+  return null;
+
+}
