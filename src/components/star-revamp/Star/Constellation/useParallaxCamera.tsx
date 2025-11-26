@@ -69,7 +69,8 @@ interface UseParallaxCameraProps {
   } | null;
   
   depth?: number;            
-  duration?: number;         
+  duration?: number;
+  onFocusComplete?: () => void; // Callback when focus animation completes
 }
 
 export const useParallaxCamera = ({
@@ -87,7 +88,8 @@ export const useParallaxCamera = ({
   focusedGlobalId,
   parallaxData,
   depth = 3.5,
-  duration = 0.5
+  duration = 0.5,
+  onFocusComplete
 }: UseParallaxCameraProps) => {
 
   // Calculate the actual target Y (Default to Center if not provided)
@@ -143,7 +145,10 @@ export const useParallaxCamera = ({
       scaleX: baseScale * focusScale,
       scaleY: baseScale * focusScale,
       rotation: 0,
-      onFinish: () => { focusTweenRef.current = null; }
+      onFinish: () => { 
+        focusTweenRef.current = null;
+        onFocusComplete?.();
+      }
     });
     focusTweenRef.current.play();
   };

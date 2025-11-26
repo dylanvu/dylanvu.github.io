@@ -122,7 +122,10 @@ export default function Polaris({
   const { isReady, setIsReady, polarisDisplayState, setPolarisDisplayState, isTalking, registerStreamChunkCallback } = usePolarisContext();
   const { focusedObject, parallaxFocusData } = useFocusContext();
   const { mobileScaleFactor } = useMobile();
-  const { width, height } = useWindowSizeContext();
+  const { height } = useWindowSizeContext();
+  
+  // Track one-time activation - callback should only fire once
+  const hasActivatedRef = useRef(false);
   
   // Pulse State
   const [pulseRings, setPulseRings] = useState<number[]>([]);
@@ -151,19 +154,6 @@ export default function Polaris({
 
   const effectiveRadius = size * Math.max(brightness, twinkleMax ?? brightness) * 0.8;
 
-  // --- DISPLAY STATE SYNC ---
-  // Replicates the `onFinish` logic from your original code.
-  // When isReady becomes true, we wait for the animation duration (1s) then show the UI.
-  useEffect(() => {
-    if (isReady && polarisDisplayState !== "active") {
-        const t = setTimeout(() => {
-            setPolarisDisplayState("active");
-        }, ANIMATION_DURATION * 1000);
-        return () => clearTimeout(t);
-    }
-  }, [isReady, ANIMATION_DURATION, setPolarisDisplayState, polarisDisplayState]);
-
-
   // --- PARALLAX DATA ---
   // Only calculate this if we are NOT active. 
   // If isReady=true, this input is ignored by the hook anyway, but this optimization helps.
@@ -178,7 +168,7 @@ export default function Polaris({
   }, [parallaxFocusData, focusedObject, isReady]);
 
   // --- THE UNIFIED HOOK ---
-  const { isAnimatingOrFocused } = useParallaxCamera({
+  useParallaxCamera({
     nodeRef: groupRef,
     identityId: "Polaris",
     unfocusedX: x,
@@ -199,7 +189,13 @@ export default function Polaris({
     
     // CONFIG
     depth: 6.0, // High depth for foreground feel
-    duration: ANIMATION_DURATION // Dynamic duration based on mode
+    duration: ANIMATION_DURATION, // Dynamic duration based on mode
+    
+    // Callback when focus animation completes - only fires once when isReady becomes true
+    onFocusComplete: (!hasActivatedRef.current && isReady) ? () => {
+      hasActivatedRef.current = true;
+      setPolarisDisplayState("active");
+    } : undefined
   });
 
   // --- CLICK HANDLER (Unchanged) ---

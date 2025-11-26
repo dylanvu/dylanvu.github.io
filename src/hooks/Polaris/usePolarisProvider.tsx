@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ChatMessage, ErrorMessages, talkToAgent } from "@/hooks/Polaris/tools/talk";
 import { useCenterOverlayContext } from "../useCenterOverlay";
+import { usePathname } from "next/navigation";
 
 export type PolarisDisplayState = "hidden" | "active" | "suppressed";
 
@@ -45,6 +46,8 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   const [polarisHistory, setPolarisHistory] = useState<ChatMessage[]>([
     initialMessage,
   ]);
+
+  const pathname = usePathname();
 
   /**
    * This state shows whether Polaris LLM is thinking
@@ -126,6 +129,21 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
       onStreamChunk
     );
   }
+
+  useEffect(() => {
+    // auto suppress polaris if you just entered a star page
+    if (pathname.startsWith("/star/")) {
+      if (polarisDisplayState === "active") {
+        setPolarisDisplayState("suppressed");
+      }
+    } else if (pathname === "/") {
+      // If exiting from a star page and polaris was suppressed, restore it to active
+      if (polarisDisplayState === "suppressed") {
+          setPolarisDisplayState("active");
+        }
+    }
+
+  }, [pathname])
 
   return (
     <PolarisContext.Provider

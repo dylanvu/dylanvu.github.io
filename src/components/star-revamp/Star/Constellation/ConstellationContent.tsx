@@ -72,7 +72,6 @@ export default function ConstellationContent({
   const centerY = minY + height / 2;
 
   const { focusedObject, navigateToConstellation, navigateToStar } = useFocusContext();
-  const { polarisDisplayState, setPolarisDisplayState} = usePolarisContext();
   const { setOverlayTextContents: setTopOverlayTextContents, resetOverlayTextContents: resetTopOverlayTextContents } = useTopOverlayContext();
   const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
   const mobileState = useMobile();

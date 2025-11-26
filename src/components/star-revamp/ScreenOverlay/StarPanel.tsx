@@ -19,12 +19,7 @@ export default function StarPanel({
     navigateToStar(slug)
   }, [slug, navigateToStar])
 
-  // Polaris suppression effect - runs independently
-  useEffect(() => {
-    if (polarisDisplayState === "active") {
-      setPolarisDisplayState("suppressed");
-    }
-  }, [polarisDisplayState, setPolarisDisplayState])
+  // Polaris suppression effect happens in the polaris provider
   
   return <StarMarkdownRenderer markdown={markdown} />;
 }

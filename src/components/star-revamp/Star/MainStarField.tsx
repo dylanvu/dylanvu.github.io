@@ -31,7 +31,6 @@ export default function MainStarField() {
 
   const router = useRouter();
   const pathname = usePathname();
-  const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
   const { isSmallScreen, mobileScaleFactor } = useMobile();
 
   // Handler for background clicks/taps
@@ -39,10 +38,6 @@ export default function MainStarField() {
     // Navigate to home - pathname change will automatically clear focus and reset overlays
     if (pathname !== "/") {
       router.push("/");
-      // If exiting from a star page and polaris was suppressed, restore it to active
-      if (polarisDisplayState === "suppressed") {
-        setPolarisDisplayState("active");
-      }
     }
   };
 
