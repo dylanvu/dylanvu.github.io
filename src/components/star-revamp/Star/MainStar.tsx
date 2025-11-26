@@ -7,6 +7,7 @@ import {
   SPACE_TEXT_COLOR,
   MAIN_STAR_COLORS,
   getRandomColor,
+  DURATION,
 } from "@/app/theme";
 import { isStarDataWithInternalLink, isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -106,9 +107,26 @@ function MainStar({
   const delayTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hoverTweenRef = useRef<Konva.Tween | null>(null);
   const glowTweenRef = useRef<Konva.Tween | null>(null);
+  const labelFadeTweenRef = useRef<Konva.Tween | null>(null);
   
   // Track if initial fade-in is complete
   const initialFadeCompleteRef = useRef(false);
+  
+  // Track label opacity separately
+  const labelOpacityRef = useRef(0);
+  
+  // Pre-calculate label width to prevent position shift
+  const labelText = labelOverride || data?.label;
+  const labelWidth = useRef(0);
+  if (labelText && showLabel) {
+    const tempText = new Konva.Text({
+      text: labelText,
+      fontSize: scaledLabelSize,
+      fontFamily: FONT_FAMILY.style.fontFamily,
+    });
+    labelWidth.current = tempText.width();
+    tempText.destroy();
+  }
 
   const starColor = useRef(
     getRandomColor(MAIN_STAR_COLORS)
@@ -498,6 +516,50 @@ function MainStar({
     };
   }, [isConstellationFocused, focusedObject.star?.slug, isFocused]);
 
+  // 6. Label fade in/out animation
+  useEffect(() => {
+    const text = textRef.current;
+    if (!text || !hasLabel) return;
+
+    // Clean up previous label fade tween
+    if (labelFadeTweenRef.current) {
+      labelFadeTweenRef.current.destroy();
+      labelFadeTweenRef.current = null;
+    }
+
+    const targetOpacity = showLabel ? 1 : 0;
+    const startOpacity = labelOpacityRef.current;
+    
+    // Only animate if opacity needs to change
+    if (startOpacity === targetOpacity) return;
+    
+    labelFadeTweenRef.current = new Konva.Tween({
+      node: text,
+      duration: DURATION.normal,
+      opacity: targetOpacity,
+      easing: EASING,
+      onUpdate: () => {
+        labelOpacityRef.current = text.opacity();
+      },
+      onFinish: () => {
+        labelOpacityRef.current = targetOpacity;
+        if (labelFadeTweenRef.current) {
+          labelFadeTweenRef.current.destroy();
+          labelFadeTweenRef.current = null;
+        }
+      },
+    });
+    
+    labelFadeTweenRef.current.play();
+
+    return () => {
+      if (labelFadeTweenRef.current) {
+        labelFadeTweenRef.current.destroy();
+        labelFadeTweenRef.current = null;
+      }
+    };
+  }, [showLabel, hasLabel]);
+
   return (
     <Group
       ref={groupRef}
@@ -583,7 +645,7 @@ function MainStar({
         }}
         listening={true}
       />
-      {showLabel && (data?.label || labelOverride) && (() => {
+      {(data?.label || labelOverride) && (() => {
         // Calculate padding proportional to base star size (not affected by brightness/twinkle)
         // This keeps the label position fixed while the star twinkles
         const labelPadding = actualSize * 0.8; // 80% of base star size as padding
@@ -601,7 +663,8 @@ function MainStar({
             fillAfterStrokeEnabled={true}
             fontFamily={FONT_FAMILY.style.fontFamily}
             align="center"
-            offsetX={textRef.current ? textRef.current.width() / 2 : 0}
+            offsetX={labelWidth.current / 2}
+            opacity={labelOpacityRef.current}
           />
         );
       })()}
