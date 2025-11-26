@@ -15,6 +15,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Latin: "roads". Outlines converging roads.',
     about: "The gateway to worlds beyond this night sky",
     intro: "Constellation",
+    slug: "viae",
     stars: [
       {
         x: 80,
@@ -90,6 +91,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Latin: "journey, path". Draws a winding path.',
     about: "My journey from learning to creating",
     intro: "The Major & Minor",
+    slug: "iter",
     stars: [
       {
         x: 183,
@@ -191,6 +193,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Greek: "excellence, skill". Forms a laurel.',
     about: "The creations I've dreamed of and built",
     intro: "Constellation",
+    slug: "arete",
     // make this a laurel
     stars: [
       // remember, larger x = right, larger y = down
@@ -317,6 +320,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
     origin: 'Latin: "to elevate". Depicts a nation.',
     about: "The hackathons where I've grown and mentored",
     intro: "Constellation",
+    slug: "elevare",
     stars: US_MAP,
     // Only connect the outline stars (indices 0-47), not the hackathon locations
     connections: createSequentialLoopingConnections(
@@ -366,8 +370,14 @@ export function getConstellationDataByName(
   name: string
 ): ConstellationData | null {
   const result = CONSTELLATIONS.find((c) => c.name === name);
-  if (result) return result;
-  return null;
+  return result ?? null
+}
+
+export function getConstellationDataBySlug(
+  slug: string
+): ConstellationData | null {
+  const result = CONSTELLATIONS.find((c) => c.slug === slug);
+  return result ?? null
 }
 
 /**
@@ -457,6 +467,7 @@ export function formatConstellationForLLM(): string {
       origin: constellation.origin,
       about: constellation.about,
       intro: constellation.intro,
+      slug: constellation.slug,
       stars: constellation.stars
         .filter((star) => star.data) // Only include stars with data
         .map((star) => {

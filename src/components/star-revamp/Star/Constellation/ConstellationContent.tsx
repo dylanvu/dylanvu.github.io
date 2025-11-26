@@ -1,12 +1,16 @@
 import { Group, Rect } from "react-konva";
-import { ReactNode } from "react";
 import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
 import { ConstellationData, isStarDataWithInternalLink } from "@/interfaces/StarInterfaces";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
-import { PolarisDisplayState } from "@/hooks/Polaris/usePolarisProvider";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
+import { useFocusContext } from "@/hooks/useFocusProvider";
+import { useMobile } from "@/hooks/useMobile";
+import { usePathname } from "next/navigation";
+import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
+import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 
 interface ConstellationContentProps {
   // Bounding box dimensions
@@ -39,19 +43,6 @@ interface ConstellationContentProps {
   // Callbacks and context
   isReturningRef: React.RefObject<boolean>;
   isFocusedRef: React.RefObject<boolean>;
-  pathname: string;
-  focusedObject: { star: any; constellation: any };
-  mobileState: any;
-  polarisDisplayState: string;
-  
-  // Overlay handlers
-  setTopOverlayTextContents: (contents: any) => void;
-  resetTopOverlayTextContents: () => void;
-  setCenterOverlayTextContents: (contents: any) => void;
-  
-  // Navigation
-  navigateToStar: (slug: string) => void;
-  setPolarisDisplayState: (newState: PolarisDisplayState | ((prev: PolarisDisplayState) => PolarisDisplayState)) => void;
 }
 
 export default function ConstellationContent({
@@ -76,18 +67,16 @@ export default function ConstellationContent({
   onElevareZoomChange,
   isReturningRef,
   isFocusedRef,
-  pathname,
-  focusedObject,
-  mobileState,
-  polarisDisplayState,
-  setTopOverlayTextContents,
-  resetTopOverlayTextContents,
-  setCenterOverlayTextContents,
-  navigateToStar,
-  setPolarisDisplayState,
 }: ConstellationContentProps) {
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
+
+  const { focusedObject, navigateToConstellation, navigateToStar } = useFocusContext();
+  const { polarisDisplayState, setPolarisDisplayState} = usePolarisContext();
+  const { setOverlayTextContents: setTopOverlayTextContents, resetOverlayTextContents: resetTopOverlayTextContents } = useTopOverlayContext();
+  const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
+  const mobileState = useMobile();
+  const pathname = usePathname();
 
   // Helper function to render a single star
   const renderStar = (star: typeof stars[0], i: number) => {
@@ -164,7 +153,13 @@ export default function ConstellationContent({
                 "noopener,noreferrer"
               );
             } else if (isStarDataWithInternalLink(starData)) {
-              navigateToStar(starData.slug);
+              // if we are currently on the page, bring it back to the base
+              if (focusedObject.star && focusedObject.star.slug) {
+                navigateToConstellation(data.slug);
+              } else {
+                // navigate to the star
+                navigateToStar(starData.slug);
+              }
               if (polarisDisplayState === "active") {
                 setPolarisDisplayState("suppressed");
               }

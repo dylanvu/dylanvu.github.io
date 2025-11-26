@@ -29,6 +29,7 @@ import {
   getConstellationNameByStarSlug,
   getConstellationDataByName,
   getStarDataBySlug,
+  getConstellationDataBySlug,
 } from "@/components/star-revamp/Star/ConstellationList";
 import { STAR_BASE_URL } from "@/constants/Routes";
 import { setStarOverlayMobileAware, setConstellationOverlayMobileAware } from "@/utils/overlayHelpers";
@@ -185,11 +186,8 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     }
     currentConstellationSlugRef.current = slug;
     currentStarSlugRef.current = null; // Clear star when navigating to constellation
-
     
-    const capitalizedName = slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();
-    
-    const constellationData = getConstellationDataByName(capitalizedName);
+    const constellationData = getConstellationDataBySlug(slug);
     
     if (constellationData) {
       // Set focused object with constellation but no specific star
@@ -206,7 +204,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         router.push(targetPath);
       }
     } else {
-      console.error('[navigateToConstellation] No constellation found for name:', capitalizedName);
+      console.error('[navigateToConstellation] No constellation found for slug:', slug);
     }
   }, [pathname, router]);
 

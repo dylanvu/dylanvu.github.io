@@ -6,11 +6,8 @@ import { usePathname } from "next/navigation";
 
 // Hooks
 import { useParallaxCamera } from "./useParallaxCamera";
-import { useTopOverlayContext } from "@/hooks/useTopOverlay";
-import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
-import { useMobile } from "@/hooks/useMobile";
 import { useConstellationInteractions } from "./useConstellationInteractions";
 import { areConstellationPropsEqual } from "./useConstellationMemo";
 
@@ -63,8 +60,8 @@ function Constellation({
   const isFocusedRef = useRef(isFocused);
   isFocusedRef.current = isFocused;
 
-  const { focusedObject, parallaxFocusData, navigateToStar } = useFocusContext();
-  const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
+  const { focusedObject, parallaxFocusData } = useFocusContext();
+  const { polarisDisplayState } = usePolarisContext();
   
   // Local state
   const [brightness, setBrightness] = useState(1);
@@ -149,7 +146,7 @@ function Constellation({
   }, [pathname, polarisDisplayState, windowCenter.x]);
 
   // 2. Invoke Hook
-  const { stopTweens, isAnimatingOrFocused } = useParallaxCamera({
+  const { isAnimatingOrFocused } = useParallaxCamera({
     nodeRef: groupRef,
     identityId: data.name,
     unfocusedX: unfocusedConstellationX,
@@ -207,10 +204,6 @@ function Constellation({
     if (idx === 0) acc.push(0); else acc.push(acc[idx - 1] + lineDurations[idx - 1]);
     return acc;
   }, []);
-
-  const { setOverlayTextContents: setTopOverlayTextContents, resetOverlayTextContents: resetTopOverlayTextContents } = useTopOverlayContext();
-  const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
-  const mobileState = useMobile();
 
   const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
     useConstellationInteractions({
@@ -291,15 +284,6 @@ function Constellation({
         onElevareZoomChange={setElevareZoom}
         isReturningRef={isReturningRef}
         isFocusedRef={isFocusedRef}
-        pathname={pathname}
-        focusedObject={focusedObject}
-        mobileState={mobileState}
-        polarisDisplayState={polarisDisplayState}
-        setTopOverlayTextContents={setTopOverlayTextContents}
-        resetTopOverlayTextContents={resetTopOverlayTextContents}
-        setCenterOverlayTextContents={setCenterOverlayTextContents}
-        navigateToStar={navigateToStar}
-        setPolarisDisplayState={setPolarisDisplayState}
       />
     </Group>
   );
