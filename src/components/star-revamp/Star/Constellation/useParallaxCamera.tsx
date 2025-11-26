@@ -203,6 +203,22 @@ export const useParallaxCamera = ({
     }
   };
 
+  // Initialize position on mount - runs before first paint
+  useLayoutEffect(() => {
+    const node = getNode();
+    if (node && !isFocused && !focusedGlobalId) {
+      node.setAttrs({
+        x: unfocusedX,
+        y: unfocusedY,
+        scaleX: baseScale,
+        scaleY: baseScale,
+        rotation: baseRotation,
+        opacity: 1,
+        visible: true
+      });
+    }
+  }, []); // Run once on mount
+
   // --- ANIMATIONS ---
 
   const animateTargetFocus = () => {
