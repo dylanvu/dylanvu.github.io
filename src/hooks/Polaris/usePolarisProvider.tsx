@@ -31,7 +31,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
   const initialMessage: ChatMessage = {
     role: "model",
     message:
-      "Good evening, stargazer. What would you like to know about Dylan's night sky?",
+      "Good evening, stargazer. What would you like to know about Dylan's night sky? [Viae](/constellation/viae), [Iter](/constellation/iter), [Elevare](/constellation/elevare), [Arete](/constellation/arete)",
   };
 
   const {
