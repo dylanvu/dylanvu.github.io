@@ -148,6 +148,7 @@ export const useParallaxCamera = ({
       scaleX: baseScale * focusScale,
       scaleY: baseScale * focusScale,
       rotation: 0,
+      opacity: 1,
       onFinish: () => { 
         // Store the focused position for use during unfocus
         lastFocusedPositionRef.current = { x: focusedTargetX, y: targetY };
