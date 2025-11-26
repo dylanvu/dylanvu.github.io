@@ -45,7 +45,7 @@ export type ParallaxFocusData = {
   constellation: ConstellationData;
 };
 
-type BaseStarData = {
+export type StarData = {
   label?: string;
   origin?: string;
   about?: string;
@@ -58,50 +58,5 @@ type BaseStarData = {
     | "Yellow"
     | "Orange"
     | "Red";
+  slug?: string
 };
-
-/**
- * This star will render the markdown in the site
- */
-export type StarDataWithInternalLink = BaseStarData & {
-  slug: string;
-  externalLink?: never;
-};
-
-/**
- * This star will open a new tab with the link
- */
-export type StarDataWithExternalLink = BaseStarData & {
-  internalLink?: never;
-  slug?: never;
-  externalLink: string;
-};
-
-/**
- * This star has nothing
- */
-export type StarDataWithoutLink = BaseStarData & {
-  internalLink?: never;
-  slug?: never;
-  externalLink?: never;
-};
-
-// typeguard for star with internal link
-export function isStarDataWithInternalLink(
-  data: StarData
-): data is StarDataWithInternalLink {
-  return "slug" in data && !!data.slug;
-}
-
-// typeguard for star without link
-export function isStarDataWithoutLink(
-  data: StarData
-): data is StarDataWithoutLink {
-  return !("slug" in data) && !("externalLink" in data);
-}
-
-// The star data is a union of valid star data types
-export type StarData =
-  | StarDataWithInternalLink
-  | StarDataWithExternalLink
-  | StarDataWithoutLink;

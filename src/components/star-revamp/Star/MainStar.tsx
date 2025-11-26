@@ -9,7 +9,7 @@ import {
   getRandomColor,
   DURATION,
 } from "@/app/theme";
-import { isStarDataWithInternalLink, isStarDataWithoutLink, StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
+import { StarData, StarClassificationSize } from "@/interfaces/StarInterfaces";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
@@ -329,7 +329,7 @@ function MainStar({
     if (isConstellationFocused) {
       e.cancelBubble = cancelBubble;
       // Only trigger callback if star has an internal link (for navigation)
-      if (data && isStarDataWithInternalLink(data) && onClickCallback) {
+      if (data && data.slug && onClickCallback) {
         onClickCallback();
       }
     }
@@ -351,7 +351,7 @@ function MainStar({
 
   const handleInteractionStart = () => {
     onHoverEnterCallback?.();
-    if (onHoverPointerOverride || (data && !isStarDataWithoutLink(data))) {
+    if (onHoverPointerOverride || (data && data.slug && data.slug)) {
       document.body.style.cursor = "pointer";
     }
 

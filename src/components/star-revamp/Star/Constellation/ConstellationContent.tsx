@@ -3,7 +3,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
-import { ConstellationData, isStarDataWithInternalLink, Star } from "@/interfaces/StarInterfaces";
+import { ConstellationData, Star } from "@/interfaces/StarInterfaces";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
@@ -144,13 +144,7 @@ export default function ConstellationContent({
         onClickCallback={() => {
           const starData = star.data;
           if (starData) {
-            if (starData.externalLink) {
-              window.open(
-                starData.externalLink,
-                "_blank",
-                "noopener,noreferrer"
-              );
-            } else if (isStarDataWithInternalLink(starData)) {
+            if (starData.slug) {
               // if we are currently on the page, bring it back to the base
               console.log(pathname.split("/").at(-1))
               if (focusedObject.star && starData.slug === pathname.split("/").at(-1)) {
