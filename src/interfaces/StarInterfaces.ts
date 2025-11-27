@@ -46,10 +46,10 @@ export type ParallaxFocusData = {
 };
 
 export type StarData = {
-  label?: string;
-  origin?: string;
+  label?: string; // name of the star
+  origin?: string; // the origin
   about?: string;
-  classification: "Star" | "Supergiant" | "Giant" | "Dwarf" | "Subdwarf";
+  classification: "Star" | "Supergiant" | "Giant" | "Dwarf" | "Subdwarf"; // this takes the place of an intro
   color?:
     | "Blue"
     | "Blue-White"

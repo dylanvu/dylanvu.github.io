@@ -1,15 +1,20 @@
-import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, TEXT_SIZE, DURATION } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, DURATION } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
+import DrawLetters from "./MainStage/DrawLetters";
+import { getStarDataBySlug } from "./Star/ConstellationList";
 
 export default function StarMarkdownRenderer({
   markdown,
+  slug
 }: {
   markdown: string;
+  slug: string;
 }) {
   // Glass effect is always enabled to prevent flash from state transitions
   const showGlass = true;
+  const starData = getStarDataBySlug(slug)
 
   return (
     // this padding bottom is needed because the bottom thing is always cut off
@@ -19,12 +24,26 @@ export default function StarMarkdownRenderer({
       components={{
         h1: ({ children }) => (
           <h1
-            style={{
-              textAlign: "center",
-            }}
-            className={FONT_FAMILY.className}
+          style={{
+            margin: "auto",
+            display: "flex",
+            alignItems: "center",
+            alignContent: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+          className={FONT_FAMILY.className}
           >
-            {children}
+            <div>
+              {starData?.classification}
+            </div>
+            <DrawLetters text={children?.toString()}/>
+            <div>
+              {starData?.origin}
+            </div>
+            <div>
+              {starData?.about}
+            </div>
           </h1>
         ),
         h2: ({ children }) => (

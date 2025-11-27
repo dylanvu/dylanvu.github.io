@@ -5,8 +5,8 @@
 
 import {
   ConstellationData,
-  StarDataWithInternalLink,
   ParallaxFocusData,
+  StarData,
 } from "@/interfaces/StarInterfaces";
 import {
   createContext,
@@ -37,7 +37,7 @@ import { computeCenter } from "@/utils/constellationUtils";
 
 interface FocusedObject {
   constellation: ConstellationData | null;
-  star: StarDataWithInternalLink | null;
+  star: StarData | null;
 }
 
 export interface FocusState {
@@ -132,11 +132,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     if (pathname.startsWith("/star/")) {
       // if polaris is active, then it is in the center
       if (polarisDisplayState === "active") {
+        setTopOverlayVisibility(true);
         setHorizontalPosition("center")
       } else {
-        setHorizontalPosition("left")
+        // hide the top, the star panel should be open
+        setTopOverlayVisibility(false);
       }
-      // otherwise, it is on the left
     } else {
       setHorizontalPosition("center");
     }

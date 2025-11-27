@@ -181,6 +181,7 @@ export default function DrawLetters({
       className={className}
       style={{
         display: "flex",
+        justifyContent: "center",
         width,
         color,
         lineHeight: 0,
