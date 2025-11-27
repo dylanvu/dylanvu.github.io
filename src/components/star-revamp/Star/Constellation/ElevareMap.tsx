@@ -345,7 +345,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       
       {/* Invisible shape with hitFunc for precise US outline hit detection */}
       <Shape
-        sceneFunc={(context, shape) => {
+        sceneFunc={() => {
           // Don't draw anything - this is just for hit detection
         }}
         hitFunc={(context, shape) => {

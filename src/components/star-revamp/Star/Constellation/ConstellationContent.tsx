@@ -3,7 +3,7 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
-import { ConstellationData, Star } from "@/interfaces/StarInterfaces";
+import { ConstellationData } from "@/interfaces/StarInterfaces";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";

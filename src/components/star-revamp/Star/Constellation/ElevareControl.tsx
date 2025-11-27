@@ -69,7 +69,7 @@ export default function ElevareControl({
     slider.x(controlWidth / 2);
     
     // Get current Y position (relative to parent Group)
-    let currentY = slider.y();
+    const currentY = slider.y();
     
     // Clamp to slider bounds
     const minY = buttonSize + 10;
@@ -111,7 +111,7 @@ export default function ElevareControl({
     slider.x(controlWidth / 2);
     
     // Get current Y position and clamp it
-    let currentY = slider.y();
+    const currentY = slider.y();
     const minY = buttonSize + 10;
     const maxY = buttonSize + 10 + sliderHeight;
     const clampedY = Math.max(minY, Math.min(maxY, currentY));

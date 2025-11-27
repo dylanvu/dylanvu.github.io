@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR, TEXT_SIZE, SPACING, DURATION } from "@/app/theme";
+import { FANCY_FONT_FAMILY, FONT_FAMILY, SPACE_TEXT_COLOR, TEXT_SIZE, DURATION } from "@/app/theme";
 import DrawLetters from "@/components/star-revamp/MainStage/DrawLetters";
 import { FadeLine } from "@/components/star-revamp/MainStage/FadeLine";
 import { useWindowSizeContext } from "@/hooks/useWindowSizeProvider";
