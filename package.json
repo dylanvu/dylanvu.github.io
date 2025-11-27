@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "npx eslint",
     "analyze": "ANALYZE=true next build",
     "analyze:server": "ANALYZE=true BUNDLE_ANALYZE=server next build",
     "analyze:browser": "ANALYZE=true BUNDLE_ANALYZE=browser next build"
@@ -40,6 +40,7 @@
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.4",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-you-might-not-need-an-effect": "^0.7.0",
     "postcss": "^8.5.6",
     "prettier": "3.6.2",
     "tailwindcss": "^4.1.17",
