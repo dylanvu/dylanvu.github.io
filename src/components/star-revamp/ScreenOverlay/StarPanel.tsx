@@ -19,5 +19,5 @@ export default function StarPanel({
 
   // Polaris suppression effect happens in the polaris provider
   
-  return <StarMarkdownRenderer markdown={markdown} slug={slug} />;
+  return <StarMarkdownRenderer markdown={markdown} slug={slug} />
 }
