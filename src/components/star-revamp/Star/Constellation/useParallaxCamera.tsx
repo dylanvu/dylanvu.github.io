@@ -144,7 +144,7 @@ function calculateParallaxTransform(
 
 // --- INTERFACE ---
 interface UseParallaxCameraProps {
-  nodeRef: React.RefObject<any>; 
+  nodeRef: React.RefObject<Konva.Group | null>; 
   identityId: string;        
   unfocusedX: number;        
   unfocusedY: number;        
