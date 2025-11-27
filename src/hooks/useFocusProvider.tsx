@@ -62,7 +62,6 @@ export function FocusProvider({ children }: { children: ReactNode }) {
 
   const { width, height } = useWindowSizeContext();
   const { 
-    setHorizontalPosition, 
     setOverlayTextContents: setTopOverlayTextContents,
     setOverlayVisibility: setTopOverlayVisibility 
   } = useTopOverlayContext();
@@ -109,14 +108,12 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   // Centralized overlay management based on focused object
   useEffect(() => {
     if (focusedObject.constellation) {
-      // Something is focused: hide center overlay, show top overlay
+      // Something is focused: hide center overlay
       setCenterOverlayVisibility(false);
-      setTopOverlayVisibility(true);
       
       // Set contents based on whether a specific star or just constellation is focused
-      if (focusedObject.star) {
-        setStarOverlayMobileAware(focusedObject.star, setTopOverlayTextContents, mobileState);
-      } else {
+      if (!focusedObject.star) {
+        setTopOverlayVisibility(true);
         setConstellationOverlayMobileAware(focusedObject.constellation, setTopOverlayTextContents, mobileState);
       }
     } else {
@@ -128,20 +125,16 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   }, [focusedObject, mobileState, setCenterOverlayVisibility, setTopOverlayVisibility, setTopOverlayTextContents, resetCenterOverlayTextContents]);
 
   useEffect(() => {
-
     if (pathname.startsWith("/star/")) {
       // if polaris is active, then it is in the center
       if (polarisDisplayState === "active") {
         setTopOverlayVisibility(true);
-        setHorizontalPosition("center")
       } else {
         // hide the top, the star panel should be open
         setTopOverlayVisibility(false);
       }
-    } else {
-      setHorizontalPosition("center");
     }
-  }, [pathname, polarisDisplayState, setHorizontalPosition]);
+  }, [pathname, polarisDisplayState]);
 
   // Clear navigation refs when returning to homepage
   useEffect(() => {

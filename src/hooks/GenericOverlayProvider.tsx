@@ -35,6 +35,7 @@ export function createOverlayContext(defaults: {
   titleText?: string;
   originText?: string;
   aboutText?: string;
+  initialVisibility?: boolean;
 }) {
   const OverlayContext = createContext<GenericOverlayState | undefined>(
     undefined
@@ -52,7 +53,9 @@ export function createOverlayContext(defaults: {
     const [originText, setOriginText] = useState(DEFAULT_ORIGIN_TEXT);
     const [aboutText, setAboutText] = useState(DEFAULT_ABOUT_TEXT);
     const [introText, setIntroText] = useState(DEFAULT_INTRO_TEXT);
-    const [overlayVisibility, setOverlayVisibility] = useState(true);
+    const [overlayVisibility, setOverlayVisibility] = useState(
+      defaults.initialVisibility ?? true
+    );
     const [horizontalPosition, setHorizontalPosition] = useState<
       "left" | "center" | "right"
     >("center");
