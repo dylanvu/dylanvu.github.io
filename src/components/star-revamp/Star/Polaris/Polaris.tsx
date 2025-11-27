@@ -220,6 +220,13 @@ export default function Polaris({
       }
     };
   }, [targetColor, currentColor]);
+
+  useEffect(() => {
+    if (isReady && groupRef.current) {
+      console.log("moved to top")
+      groupRef.current.moveToTop();
+    }
+  }, [isReady, focusedObject.star])
   
   // Pulse State
   const [pulseRings, setPulseRings] = useState<number[]>([]);

@@ -242,62 +242,6 @@ export default function MainStarField() {
                 />
               </>
             )}
-            {/* Polaris, the guiding chatbot star */}
-            {(() => {
-              const polarisDesignX = DESIGN_REFERENCE.width / 2 + 2;
-              const polarisDesignY = 200; // bigger number moves it down
-              const polarisPercentX = polarisDesignX / DESIGN_REFERENCE.width;
-              const polarisPercentY = polarisDesignY / DESIGN_REFERENCE.height;
-              const polarisScreenX = polarisPercentX * width;
-              const polarisScreenY = polarisPercentY * height;
-              return (
-                <>
-                  {/* DEBUG: Polaris position marker */}
-                  {DEBUG_MODE && (
-                    <>
-                      <Circle
-                        x={polarisScreenX}
-                        y={polarisScreenY}
-                        radius={8}
-                        fill="yellow"
-                        opacity={0.7}
-                      />
-                      <Text
-                        x={polarisScreenX + 12}
-                        y={polarisScreenY - 5}
-                        text="Polaris"
-                        fontSize={12}
-                        fill="yellow"
-                        fontStyle="bold"
-                      />
-                    </>
-                  )}
-                  <Polaris
-                    x={polarisScreenX}
-                    y={polarisScreenY}
-                    size={4}
-                    brightness={2}
-                    twinkleMin={4.9}
-                    twinkleMax={5.1}
-                    windowCenter={windowCenter}
-                    onHoverEnterCallback={() => {
-                      setCenterOverlayTextContents({
-                        intro: "The North Star",
-                        title: "Polaris",
-                        origin: 'Latin: "pole star". A celestial guide.',
-                        about: "A beacon to help you navigate the stars",
-                      });
-                    }}
-                    onHoverLeaveCallback={() => {
-                      resetCenterOverlayTextContents();
-                      // polaris is outside of any constellation, so leaving the star should bring the cursor back to normal, whereas other constellations still have the pointer style
-                      document.body.style.cursor = "default";
-                    }}
-                    // label="Polaris"
-                  />
-                </>
-              );
-            })()}
             <Constellation
               data={c}
               windowCenter={windowCenter}
@@ -326,6 +270,63 @@ export default function MainStarField() {
           </React.Fragment>
         );
       })}
+
+      {/* Polaris, the guiding chatbot star - rendered last to ensure it's always on top */}
+      {(() => {
+        const polarisDesignX = DESIGN_REFERENCE.width / 2 + 2;
+        const polarisDesignY = 200; // bigger number moves it down
+        const polarisPercentX = polarisDesignX / DESIGN_REFERENCE.width;
+        const polarisPercentY = polarisDesignY / DESIGN_REFERENCE.height;
+        const polarisScreenX = polarisPercentX * width;
+        const polarisScreenY = polarisPercentY * height;
+        return (
+          <>
+            {/* DEBUG: Polaris position marker */}
+            {DEBUG_MODE && (
+              <>
+                <Circle
+                  x={polarisScreenX}
+                  y={polarisScreenY}
+                  radius={8}
+                  fill="yellow"
+                  opacity={0.7}
+                />
+                <Text
+                  x={polarisScreenX + 12}
+                  y={polarisScreenY - 5}
+                  text="Polaris"
+                  fontSize={12}
+                  fill="yellow"
+                  fontStyle="bold"
+                />
+              </>
+            )}
+            <Polaris
+              x={polarisScreenX}
+              y={polarisScreenY}
+              size={4}
+              brightness={2}
+              twinkleMin={4.9}
+              twinkleMax={5.1}
+              windowCenter={windowCenter}
+              onHoverEnterCallback={() => {
+                setCenterOverlayTextContents({
+                  intro: "The North Star",
+                  title: "Polaris",
+                  origin: 'Latin: "pole star". A celestial guide.',
+                  about: "A beacon to help you navigate the stars",
+                });
+              }}
+              onHoverLeaveCallback={() => {
+                resetCenterOverlayTextContents();
+                // polaris is outside of any constellation, so leaving the star should bring the cursor back to normal, whereas other constellations still have the pointer style
+                document.body.style.cursor = "default";
+              }}
+              // label="Polaris"
+            />
+          </>
+        );
+      })()}
     </Group>
   );
 }
