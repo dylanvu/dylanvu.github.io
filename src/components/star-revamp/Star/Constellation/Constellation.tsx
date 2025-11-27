@@ -74,6 +74,13 @@ function Constellation({
     if (!isFocused && isElevare) setElevareZoom(MIN_ZOOM);
   }, [isFocused, isElevare]);
 
+  // this effect fixes a bug where if you unfocus and try to hover on the same constellation again, the hover tween does not play
+  useEffect(() => {
+    if (pathname === "/") {
+      isFocusedRef.current = false;
+    }
+  }, [pathname])
+
   // --- BOUNDING BOX CALCULATIONS ---
   const { stars, connections, totalDuration } = data;
   const xs = stars.map((s) => s.x);
