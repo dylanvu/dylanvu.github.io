@@ -282,7 +282,6 @@ function Constellation({
         showBoundingBox={showBoundingBox}
         showStarBoundingBox={showStarBoundingBox}
         data={data}
-        stars={stars}
         lineSegments={lineSegments}
         lineDurations={lineDurations}
         lineDelays={lineDelays}

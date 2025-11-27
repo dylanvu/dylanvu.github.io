@@ -29,7 +29,6 @@ interface ConstellationContentProps {
 
   // Constellation data
   data: ConstellationData;
-  stars: Star[];
   lineSegments: [number, number][];
   lineDurations: number[];
   lineDelays: number[];
@@ -57,7 +56,6 @@ export default function ConstellationContent({
   showBoundingBox,
   showStarBoundingBox,
   data,
-  stars,
   lineSegments,
   lineDurations,
   lineDelays,
@@ -67,6 +65,7 @@ export default function ConstellationContent({
   isReturningRef,
   isFocusedRef,
 }: ConstellationContentProps) {
+  const { stars } = data;
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
 
