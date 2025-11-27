@@ -63,7 +63,7 @@ export function WindowSizeProvider({
     };
   }, []);
 
-  const value = useMemo(() => size, [size.width, size.height, size.ready]);
+  const value = useMemo(() => size, [size, size.width, size.height, size.ready]);
 
   return (
     <WindowSizeContext.Provider value={value}>
