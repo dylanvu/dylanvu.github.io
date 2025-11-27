@@ -19,6 +19,7 @@ import ConstellationContent from "./ConstellationContent";
 // Constants & Types
 import { MIN_ZOOM, MAX_ZOOM } from "./ElevareMap";
 import { ConstellationData, TransformData, StarClassificationSize } from "@/interfaces/StarInterfaces";
+import { STAR_BASE_URL } from "@/constants/Routes";
 
 function Constellation({
   data,
@@ -75,9 +76,14 @@ function Constellation({
   }, [isFocused, isElevare]);
 
   // this effect fixes a bug where if you unfocus and try to hover on the same constellation again, the hover tween does not play
+  // when I used focus object though, the bug persisted and I'm not sure why
+  // TODO: we sort of have two sources of truth: the pathname and the focus object. What is the truth here?
   useEffect(() => {
-    if (pathname === "/") {
+    if (pathname == "/") {
       isFocusedRef.current = false;
+    } else if (pathname.split("/").at(-1) === data.slug) {
+      // constellation is focused
+      isFocusedRef.current = true;
     }
   }, [pathname])
 
@@ -149,7 +155,7 @@ function Constellation({
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
   const focusedTargetX = useMemo(() => {
-    return pathname.startsWith("/star/") && polarisDisplayState !== "active" ? windowCenter.x / 2 : windowCenter.x;
+    return pathname.startsWith(STAR_BASE_URL) && polarisDisplayState !== "active" ? windowCenter.x / 2 : windowCenter.x;
   }, [pathname, polarisDisplayState, windowCenter.x]);
 
   // 2. Invoke Hook

@@ -25,6 +25,7 @@ import {
 import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import PolarisChat from "@/components/star-revamp/Star/Polaris/PolarisChat";
+import { CONSTELLATION_BASE_URL, STAR_BASE_URL } from "@/constants/Routes";
 
 const BasePanelStyle: React.CSSProperties = {
   position: "absolute",
@@ -136,7 +137,7 @@ export default function MainStage({
           
           {/* Star panels - for /star/[slug] pages */}
           <AnimatePresence mode="wait">
-            {pathname.startsWith("/star/") && polarisDisplayState !== "active" && (
+            {pathname.startsWith(STAR_BASE_URL) && polarisDisplayState !== "active" && (
               <motion.div
                 key="star-panel"
                 initial={StarPanelMotionInitial}
@@ -169,7 +170,7 @@ export default function MainStage({
           </AnimatePresence>
 
           {/* Hidden container for both /polaris route initialization and constellation navigation */}
-          {((pathname === "/polaris" && polarisDisplayState !== "active") || pathname.startsWith("/constellation/")) && (
+          {((pathname === "/polaris" && polarisDisplayState !== "active") || pathname.startsWith(CONSTELLATION_BASE_URL)) && (
             <div style={{ display: 'none' }}>
               {children}
             </div>

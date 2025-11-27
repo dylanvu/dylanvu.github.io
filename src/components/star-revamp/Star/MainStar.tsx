@@ -37,7 +37,6 @@ type Props = {
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
   isConstellationFocused?: boolean;
-  constellationData?: { name: string };
   labelOverride?: string;
   showLabel?: boolean;
   labelSize?: number;
@@ -65,7 +64,6 @@ function MainStar({
   onHoverLeaveCallback,
   onClickCallback,
   isConstellationFocused = false,
-  constellationData,
   labelOverride,
   showLabel,
   labelSize = 12,
@@ -350,6 +348,7 @@ function MainStar({
   };
 
   const handleInteractionStart = () => {
+    console.log("star interaction start")
     onHoverEnterCallback?.();
     if (onHoverPointerOverride || (data && data.slug && data.slug)) {
       document.body.style.cursor = "pointer";

@@ -30,7 +30,7 @@ import {
   getConstellationDataBySlug,
 } from "@/components/star-revamp/Star/ConstellationList";
 import { STAR_BASE_URL } from "@/constants/Routes";
-import { setStarOverlayMobileAware, setConstellationOverlayMobileAware } from "@/utils/overlayHelpers";
+import { setConstellationOverlayMobileAware } from "@/utils/overlayHelpers";
 import { useWindowSizeContext } from "./useWindowSizeProvider";
 import { DESIGN_REFERENCE } from "@/app/theme";
 import { computeCenter } from "@/utils/constellationUtils";
@@ -125,7 +125,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   }, [focusedObject, mobileState, setCenterOverlayVisibility, setTopOverlayVisibility, setTopOverlayTextContents, resetCenterOverlayTextContents]);
 
   useEffect(() => {
-    if (pathname.startsWith("/star/")) {
+    if (pathname.startsWith(STAR_BASE_URL)) {
       // if polaris is active, then it is in the center
       if (polarisDisplayState === "active") {
         setTopOverlayVisibility(true);

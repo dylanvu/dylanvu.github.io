@@ -96,9 +96,12 @@ export default function ConstellationContent({
         showLabel={isFocused}
         labelSize={4}
         isConstellationFocused={isFocused}
-        constellationData={data}
         onHoverEnterCallback={() => {
+          console.log("returning")
+          // for some reason, this always stops here
           if (isReturningRef.current) return;
+
+          console.log(isFocusedRef.current)
 
           if (star.data) {
             if (isFocusedRef.current) {
@@ -145,7 +148,6 @@ export default function ConstellationContent({
           if (starData) {
             if (starData.slug) {
               // if we are currently on the page, bring it back to the base
-              console.log(pathname.split("/").at(-1))
               if (focusedObject.star && starData.slug === pathname.split("/").at(-1)) {
                 navigateToConstellation(data.slug);
               } else {

@@ -11,9 +11,10 @@ import {
   SPACING,
   TEXT_OUTLINE,
 } from "@/app/theme";
+import { CONSTELLATION_BASE_URL, STAR_BASE_URL } from "@/constants/Routes";
 
 function getIntroTextForPath(pathname: string): string[] {
-  if (pathname.startsWith("/star/")) {
+  if (pathname.startsWith(STAR_BASE_URL)) {
     return [
       "In this star that you seek",
       "Within its twinkling light",
@@ -21,7 +22,7 @@ function getIntroTextForPath(pathname: string): string[] {
     ];
   }
   
-  if (pathname.startsWith("/constellation/")) {
+  if (pathname.startsWith(CONSTELLATION_BASE_URL)) {
     return [
       "A tapestry woven by stars",
       "The constellation blooms",
