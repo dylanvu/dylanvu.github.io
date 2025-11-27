@@ -1,4 +1,4 @@
-import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, DURATION } from "@/app/theme";
+import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, DURATION, TEXT_SIZE } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
@@ -31,17 +31,20 @@ export default function StarMarkdownRenderer({
               alignContent: "center",
               justifyContent: "center",
               flexDirection: "column",
+              gap: "0.8rem"
             }}
             className={FONT_FAMILY.className}
             >
-              <div>
+              <div style={{ fontSize: TEXT_SIZE.xl }}>
                 {starData?.classification}
               </div>
-              <DrawLetters text={children?.toString()}/>
-              <div>
+              <div style={{ marginBottom: "-1.2rem", marginTop: "-1.2rem" }}>
+                <DrawLetters text={children?.toString()}/>
+              </div>
+              <div style={{ fontSize: TEXT_SIZE.xl }}>
                 {starData?.origin}
               </div>
-              <div>
+              <div style={{ fontSize: TEXT_SIZE.xl }}>
                 {starData?.about}
               </div>
             </h1>
