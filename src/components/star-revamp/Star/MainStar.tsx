@@ -348,7 +348,6 @@ function MainStar({
   };
 
   const handleInteractionStart = () => {
-    console.log("star interaction start")
     onHoverEnterCallback?.();
     if (onHoverPointerOverride || (data && data.slug && data.slug)) {
       document.body.style.cursor = "pointer";

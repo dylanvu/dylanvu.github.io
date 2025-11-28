@@ -223,7 +223,6 @@ export default function Polaris({
 
   useEffect(() => {
     if (isReady && groupRef.current) {
-      console.log("moved to top")
       groupRef.current.moveToTop();
     }
   }, [isReady, focusedObject.star])
