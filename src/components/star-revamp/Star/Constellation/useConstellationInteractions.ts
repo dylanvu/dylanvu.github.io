@@ -4,7 +4,7 @@ import { useFocusContext } from "@/hooks/useFocusProvider";
 import { ConstellationData } from "@/interfaces/StarInterfaces";
 
 interface UseConstellationInteractionsProps {
-  isReturningRef: RefObject<boolean>;
+  animationTweenRef: React.RefObject<Konva.Tween | null>
   transformData: { scaleX?: number; scaleY?: number };
   brightnessHover: number;
   HOVER_SCALE: number;
@@ -19,7 +19,7 @@ interface UseConstellationInteractionsProps {
 }
 
 export function useConstellationInteractions({
-  isReturningRef,
+  animationTweenRef,
   transformData,
   brightnessHover,
   HOVER_SCALE,
@@ -51,7 +51,7 @@ export function useConstellationInteractions({
     }
     setIsHovered(true);
 
-    if (isReturningRef.current) {
+    if (animationTweenRef.current) {
       if (onHoverEnterCallback) onHoverEnterCallback();
       return;
     }
@@ -71,7 +71,7 @@ export function useConstellationInteractions({
     document.body.style.cursor = "default";
     setIsHovered(false);
 
-    if (isReturningRef.current) {
+    if (animationTweenRef.current) {
       if (onHoverLeaveCallback) onHoverLeaveCallback();
       return;
     }

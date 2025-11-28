@@ -143,7 +143,7 @@ function Constellation({
   }, [pathname, polarisDisplayState, windowCenter.x]);
 
   // 2. Invoke Hook
-  const { isAnimatingOrFocused } = useParallaxCamera({
+  const { animationTweenRef } = useParallaxCamera({
     nodeRef: groupRef,
     identityId: data.name,
     unfocusedX: unfocusedConstellationX,
@@ -168,7 +168,7 @@ function Constellation({
 
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
-    if (!node || isAnimatingOrFocused) return;
+    if (!node || animationTweenRef?.current) return;
     
     // Stop any residual tweens just in case
     if (hoverTweenRef.current) { hoverTweenRef.current.destroy(); }
@@ -185,10 +185,6 @@ function Constellation({
   };
 
   // --- INTERACTIONS & CONTENT PREP ---
-  
-  // We map the hook's status to the ref expected by the interaction hook
-  const isReturningRef = useRef(isAnimatingOrFocused);
-  isReturningRef.current = isAnimatingOrFocused;
 
   const DEFAULT_TOTAL_DURATION = 2;
   const getDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
@@ -203,7 +199,7 @@ function Constellation({
 
   const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
     useConstellationInteractions({
-      isReturningRef,
+      animationTweenRef,
       transformData,
       brightnessHover,
       HOVER_SCALE,
@@ -275,7 +271,7 @@ function Constellation({
         isElevare={isElevare}
         elevareZoom={elevareZoom}
         onElevareZoomChange={setElevareZoom}
-        isReturningRef={isReturningRef}
+        animationTweenRef={animationTweenRef}
       />
     </Group>
   );

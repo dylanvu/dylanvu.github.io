@@ -10,6 +10,7 @@ import { useMobile } from "@/hooks/useMobile";
 import { usePathname } from "next/navigation";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
+import Konva from "konva";
 
 interface ConstellationContentProps {
   // Bounding box dimensions
@@ -38,7 +39,7 @@ interface ConstellationContentProps {
   onElevareZoomChange?: (zoom: number) => void;
 
   // Callbacks and context
-  isReturningRef: React.RefObject<boolean>;
+  animationTweenRef: React.RefObject<Konva.Tween | null>;
 }
 
 export default function ConstellationContent({
@@ -59,7 +60,7 @@ export default function ConstellationContent({
   isElevare,
   elevareZoom,
   onElevareZoomChange,
-  isReturningRef,
+  animationTweenRef,
 }: ConstellationContentProps) {
   const { stars } = data;
   const centerX = minX + width / 2;
@@ -96,7 +97,7 @@ export default function ConstellationContent({
         onHoverEnterCallback={() => {
           console.log("returning")
           // for some reason, this always stops here
-          if (isReturningRef.current) return;
+          if (animationTweenRef.current) return;
 
 
           if (star.data) {
@@ -113,7 +114,7 @@ export default function ConstellationContent({
           }
         }}
         onHoverLeaveCallback={() => {
-          if (isReturningRef.current) return;
+          if (animationTweenRef.current) return;
 
           if (star.data?.label) {
             if (isFocused) {

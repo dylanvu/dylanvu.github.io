@@ -478,7 +478,7 @@ export const useParallaxCamera = ({
   }, [isFocused, focusedGlobalId, parallaxData, identityId, focusedTargetX, targetY]);
 
   return {
-    stopTweens: stopTween,
-    isAnimatingOrFocused: !!focusTweenRef.current || isFocused
+    // we can check the current to see if it is currently animating or not
+    animationTweenRef: focusTweenRef
   };
 };
