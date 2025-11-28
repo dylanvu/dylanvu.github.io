@@ -32,7 +32,6 @@ function Constellation({
   bboxLabelSize = 4,
   bboxLabelFontFamily = "sans-serif",
   windowCenter,
-  focusedConstellation,
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
@@ -47,21 +46,18 @@ function Constellation({
   bboxLabelSize?: number;
   bboxLabelFontFamily?: string;
   windowCenter: { x: number; y: number };
-  focusedConstellation: ConstellationData | null;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
 }) {
   const pathname = usePathname();
   const groupRef = useRef<Konva.Group>(null);
+  const { focusedObject, parallaxFocusData } = useFocusContext();
   
   // --- STATE ---
-  const isTarget = focusedConstellation?.name === data.name;
-  const isFocused = isTarget; 
-  const isFocusedRef = useRef(isFocused);
-  isFocusedRef.current = isFocused;
+  const isFocused = focusedObject.constellation === data;
 
-  const { focusedObject, parallaxFocusData } = useFocusContext();
+
   const { polarisDisplayState } = usePolarisContext();
   
   // Local state
@@ -74,18 +70,6 @@ function Constellation({
   useEffect(() => {
     if (!isFocused && isElevare) setElevareZoom(MIN_ZOOM);
   }, [isFocused, isElevare]);
-
-  // this effect fixes a bug where if you unfocus and try to hover on the same constellation again, the hover tween does not play
-  // when I used focus object though, the bug persisted and I'm not sure why
-  // TODO: we sort of have two sources of truth: the pathname and the focus object. What is the truth here?
-  useEffect(() => {
-    if (pathname == "/") {
-      isFocusedRef.current = false;
-    } else if (pathname.split("/").at(-1) === data.slug) {
-      // constellation is focused
-      isFocusedRef.current = true;
-    }
-  }, [pathname])
 
   // --- BOUNDING BOX CALCULATIONS ---
   const { stars, connections, totalDuration } = data;
@@ -141,7 +125,7 @@ function Constellation({
   const parallaxInputData = useMemo(() => {
     // If we don't have focus data, or if *we* are the focus, this input is null 
     // (hook handles isFocused separately)
-    if (!parallaxFocusData || !focusedConstellation) return null;
+    if (!parallaxFocusData || !focusedObject.constellation) return null;
     
     return {
         worldX: parallaxFocusData.unfocusedX,
@@ -149,7 +133,7 @@ function Constellation({
         worldZoom: parallaxFocusData.focusScale,
         targetRotation: parallaxFocusData.rotation
     };
-  }, [parallaxFocusData, focusedConstellation]);
+  }, [parallaxFocusData, focusedObject.constellation]);
 
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
@@ -169,8 +153,8 @@ function Constellation({
     focusScale: data.focusScale,
     windowCenter,
     focusedTargetX,
-    isFocused: isTarget,
-    focusedGlobalId: focusedConstellation?.name || null,
+    isFocused: isFocused,
+    focusedGlobalId: focusedObject.constellation?.name || null,
     parallaxData: parallaxInputData,
     depth: 3.5 // Standard background depth
   });
@@ -220,9 +204,7 @@ function Constellation({
 
   const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
     useConstellationInteractions({
-      isFocusedRef,
-      isReturningRef, // Passed from hook state
-      focusedObjectStar: focusedObject.star,
+      isReturningRef,
       transformData,
       brightnessHover,
       HOVER_SCALE,
@@ -233,6 +215,7 @@ function Constellation({
       setBrightness,
       setIsHovered,
       groupRef,
+      data
     });
 
   const controlWidth = 40;
@@ -283,7 +266,6 @@ function Constellation({
         width={width}
         height={height}
         brightness={brightness}
-        isFocused={isFocused}
         isHovered={isHovered}
         showBoundingBox={showBoundingBox}
         showStarBoundingBox={showStarBoundingBox}
@@ -295,7 +277,6 @@ function Constellation({
         elevareZoom={elevareZoom}
         onElevareZoomChange={setElevareZoom}
         isReturningRef={isReturningRef}
-        isFocusedRef={isFocusedRef}
       />
     </Group>
   );

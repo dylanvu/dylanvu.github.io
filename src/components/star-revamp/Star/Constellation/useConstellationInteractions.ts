@@ -1,11 +1,10 @@
-import { StarData } from "@/interfaces/StarInterfaces";
 import Konva from "konva";
 import { RefObject } from "react";
+import { useFocusContext } from "@/hooks/useFocusProvider";
+import { ConstellationData } from "@/interfaces/StarInterfaces";
 
 interface UseConstellationInteractionsProps {
-  isFocusedRef: RefObject<boolean>;
   isReturningRef: RefObject<boolean>;
-  focusedObjectStar: StarData | null;
   transformData: { scaleX?: number; scaleY?: number };
   brightnessHover: number;
   HOVER_SCALE: number;
@@ -16,12 +15,11 @@ interface UseConstellationInteractionsProps {
   setBrightness: (brightness: number) => void;
   setIsHovered: (isHovered: boolean) => void;
   groupRef: RefObject<Konva.Group | null>;
+  data: ConstellationData
 }
 
 export function useConstellationInteractions({
-  isFocusedRef,
   isReturningRef,
-  focusedObjectStar,
   transformData,
   brightnessHover,
   HOVER_SCALE,
@@ -32,12 +30,15 @@ export function useConstellationInteractions({
   setBrightness,
   setIsHovered,
   groupRef,
+  data,
 }: UseConstellationInteractionsProps) {
+  const { focusedObject } = useFocusContext();
+  const isFocused = focusedObject.constellation === data;
   const handleConstellationClick = (e: Konva.KonvaPointerEvent) => {
     e.cancelBubble = true;
-    if (focusedObjectStar) return;
+    if (focusedObject.star) return;
     
-    if (!isFocusedRef.current) {
+    if (!focusedObject.constellation) {
       groupRef.current?.moveToTop();
     }
     document.body.style.cursor = "default";
@@ -45,7 +46,7 @@ export function useConstellationInteractions({
   };
 
   const handleInteractionStart = () => {
-    if (!isFocusedRef.current) {
+    if (!isFocused) {
       document.body.style.cursor = "pointer";
     }
     setIsHovered(true);
@@ -55,7 +56,7 @@ export function useConstellationInteractions({
       return;
     }
 
-    if (!isFocusedRef.current) {
+    if (!isFocused) {
       setBrightness(brightnessHover);
       playHoverTween(
         (transformData.scaleX ?? 1) * HOVER_SCALE,
@@ -75,7 +76,7 @@ export function useConstellationInteractions({
       return;
     }
 
-    if (!isFocusedRef.current) {
+    if (!isFocused) {
       setBrightness(1);
       playHoverTween(transformData.scaleX ?? 1, transformData.scaleY ?? 1);
     }

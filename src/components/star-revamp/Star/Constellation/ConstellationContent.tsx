@@ -22,7 +22,6 @@ interface ConstellationContentProps {
 
   // Visual state
   brightness: number;
-  isFocused: boolean;
   isHovered: boolean;
   showBoundingBox?: boolean;
   showStarBoundingBox?: boolean;
@@ -40,7 +39,6 @@ interface ConstellationContentProps {
 
   // Callbacks and context
   isReturningRef: React.RefObject<boolean>;
-  isFocusedRef: React.RefObject<boolean>;
 }
 
 export default function ConstellationContent({
@@ -51,7 +49,6 @@ export default function ConstellationContent({
   width,
   height,
   brightness,
-  isFocused,
   isHovered,
   showBoundingBox,
   showStarBoundingBox,
@@ -63,13 +60,13 @@ export default function ConstellationContent({
   elevareZoom,
   onElevareZoomChange,
   isReturningRef,
-  isFocusedRef,
 }: ConstellationContentProps) {
   const { stars } = data;
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
 
   const { focusedObject, navigateToConstellation, navigateToStar } = useFocusContext();
+  const isFocused = focusedObject.constellation === data;
   const { setOverlayTextContents: setTopOverlayTextContents, resetOverlayTextContents: resetTopOverlayTextContents } = useTopOverlayContext();
   const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
   const mobileState = useMobile();
@@ -101,10 +98,9 @@ export default function ConstellationContent({
           // for some reason, this always stops here
           if (isReturningRef.current) return;
 
-          console.log(isFocusedRef.current)
 
           if (star.data) {
-            if (isFocusedRef.current) {
+            if (isFocused) {
               setStarOverlayMobileAware(star.data, setTopOverlayTextContents, mobileState);
             } else {
               setCenterOverlayTextContents({
@@ -120,7 +116,7 @@ export default function ConstellationContent({
           if (isReturningRef.current) return;
 
           if (star.data?.label) {
-            if (isFocusedRef.current) {
+            if (isFocused) {
               if (pathname === "/") {
                 setConstellationOverlay(data, setTopOverlayTextContents);
               } else if (focusedObject.star) {
@@ -138,7 +134,7 @@ export default function ConstellationContent({
               });
             }
           }
-          if (isFocusedRef.current) {
+          if (isFocused) {
             document.body.style.cursor = "default";
           }
         }}

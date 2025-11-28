@@ -249,7 +249,6 @@ export default function MainStarField() {
               onClickCallback={() => {
                 navigateToConstellation(c.slug);
               }}
-              focusedConstellation={focusedObject.constellation}
               onHoverEnterCallback={() => {
                 if (!focusedObject.constellation) {
                   setCenterOverlayTextContents({
