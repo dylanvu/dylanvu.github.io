@@ -149,7 +149,7 @@ export default function DrawLetters({
       perLetterDuration: calculatedLetterDuration,
       staggerDelay: calculatedStagger,
     };
-  }, [font, textStr, fontSize, id, duration]);
+  }, [font, textStr, fontSize, id, duration, scaledFontSize]);
 
   // 3. Animation Trigger
   useEffect(() => {
