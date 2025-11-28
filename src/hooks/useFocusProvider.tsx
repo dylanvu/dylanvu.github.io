@@ -24,8 +24,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useMobile } from "./useMobile";
 import {
-  getConstellationNameByStarSlug,
-  getConstellationDataByName,
   getStarDataBySlug,
   getConstellationDataBySlug,
 } from "@/components/star-revamp/Star/ConstellationList";
@@ -78,32 +76,25 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   const currentStarSlugRef = useRef<string | null>(null);
   const currentConstellationSlugRef = useRef<string | null>(null);
 
-  // Compute parallax focus data when constellation is focused
-  useEffect(() => {
-    if (focusedObject.constellation) {
-      const c = focusedObject.constellation;
-      const { centerX, centerY } = computeCenter(c.stars);
-      
-      // Use viewport percentage positioning
-      const percentX = c.designX / DESIGN_REFERENCE.width;
-      const percentY = c.designY / DESIGN_REFERENCE.height;
-      
-      // Calculate unfocused position (where the constellation's center is)
-      const unfocusedX = percentX * width + centerX;
-      const unfocusedY = percentY * height + centerY;
+  const calculateParallaxData = useCallback((c: ConstellationData) => {
+    const { centerX, centerY } = computeCenter(c.stars);
+    
+    // Use viewport percentage positioning
+    const percentX = c.designX / DESIGN_REFERENCE.width;
+    const percentY = c.designY / DESIGN_REFERENCE.height;
+    
+    // Calculate unfocused position (where the constellation's center is)
+    const unfocusedX = percentX * width + centerX;
+    const unfocusedY = percentY * height + centerY;
 
-      setParallaxFocusData({
+    return {
         unfocusedX,
         unfocusedY,
         focusScale: c.focusScale,
         rotation: c.rotation ?? 0,
-        constellation: focusedObject.constellation
-      });
-    } else {
-      // Clear when no constellation is focused
-      setParallaxFocusData(null);
-    }
-  }, [focusedObject.constellation, width, height]);
+        constellation: c
+      }
+  }, [width, height])
 
   // Centralized overlay management based on focused object
   useEffect(() => {
@@ -149,6 +140,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       // but leaving this also enables back button support!
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFocusedObject({ constellation: null, star: null });
+      setParallaxFocusData(null);
     }
   }, [pathname]);
 
@@ -160,16 +152,22 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     currentStarSlugRef.current = slug;
     currentConstellationSlugRef.current = null; // Clear constellation when navigating to star
 
-    const constellationName = getConstellationNameByStarSlug(slug);
-    if (constellationName) {
-      const constellationData = getConstellationDataByName(constellationName);
-      const starData = getStarDataBySlug(slug, constellationName);
+    const constellationData = getConstellationDataBySlug(slug);
+    if (constellationData) {
+      const starData = getStarDataBySlug(slug, constellationData.name);
       
+      const oldFocus = focusedObject;
       // Always set the focused object first
       setFocusedObject({
         constellation: constellationData,
         star: starData,
       });
+
+      // set the parallax data as well, only if we have changed constellations
+      if (oldFocus.constellation !== constellationData) {
+        const parallaxData = calculateParallaxData(constellationData);
+        setParallaxFocusData(parallaxData);
+      }
       
       // Build target path
       const targetPath = `${STAR_BASE_URL}/${slug}`;
@@ -179,7 +177,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         router.push(targetPath);
       }
     }
-  }, [pathname, router]);
+  }, [pathname, router, calculateParallaxData, focusedObject]);
 
   const navigateToConstellation = useCallback((slug: string) => {
     // Prevent redundant navigation to same constellation
@@ -192,11 +190,18 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     const constellationData = getConstellationDataBySlug(slug);
     
     if (constellationData) {
+      const oldFocus = focusedObject;
       // Set focused object with constellation but no specific star
       setFocusedObject({
         constellation: constellationData,
         star: null,
       });
+
+      if (oldFocus.constellation !== constellationData) {
+        const parallaxData = calculateParallaxData(constellationData);
+        setParallaxFocusData(parallaxData);
+      }
+
       
       // Build target path
       const targetPath = `/constellation/${slug.toLowerCase()}`;
@@ -208,7 +213,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     } else {
       console.error('[navigateToConstellation] No constellation found for slug:', slug);
     }
-  }, [pathname, router]);
+  }, [pathname, router, calculateParallaxData, focusedObject]);
 
   return (
     <FocusContext.Provider
