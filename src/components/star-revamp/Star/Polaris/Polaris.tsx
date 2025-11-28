@@ -8,6 +8,7 @@ import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
 import { useParallaxCamera } from "../Constellation/useParallaxCamera";
+import { useCallback } from "react";
 
 // Color interpolation helpers
 const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
@@ -267,6 +268,14 @@ export default function Polaris({
     };
   }, [parallaxFocusData, focusedObject, isReady]);
 
+  const handleFocusComplete = useCallback(() => {
+    if (!hasActivatedRef.current) {
+      hasActivatedRef.current = true;
+      setPolarisDisplayState("active")
+    }
+  }, [setPolarisDisplayState])
+
+
   // --- THE UNIFIED HOOK ---
   useParallaxCamera({
     nodeRef: groupRef,
@@ -291,10 +300,7 @@ export default function Polaris({
     duration: ANIMATION_DURATION, // Dynamic duration based on mode
     
     // Callback when focus animation completes - only fires once when isReady becomes true
-    onFocusComplete: (!hasActivatedRef.current && isReady) ? () => {
-      hasActivatedRef.current = true;
-      setPolarisDisplayState("active");
-    } : undefined
+    onFocusComplete: isReady ? handleFocusComplete : undefined
   });
 
   // --- CLICK HANDLER (Unchanged) ---
