@@ -1,9 +1,11 @@
 import { FONT_FAMILY, GLASS, RADIUS, OPACITY, SPACING, DURATION, TEXT_SIZE } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
 import gfm from "remark-gfm";
 import { MarkdownLink } from "./MarkdownLink";
 import DrawLetters from "./MainStage/DrawLetters";
 import { getStarDataBySlug } from "./Star/ConstellationList";
+import { useMemo } from "react";
 
 export default function StarMarkdownRenderer({
   markdown,
@@ -16,13 +18,10 @@ export default function StarMarkdownRenderer({
   const showGlass = true;
   const starData = getStarDataBySlug(slug)
 
-  return (
-    // this padding bottom is needed because the bottom thing is always cut off
-    <div style={{ paddingBottom: "3rem", pointerEvents: "auto" }}>
-      <ReactMarkdown
-        remarkPlugins={[gfm]}
-        components={{
-          h1: ({ children }) => (
+  // Memoize the components object to prevent unnecessary re-renders
+  // This prevents DrawLetters from re-animating when parent components re-render
+  const markdownComponents = useMemo<Components>(() => ({
+          h1: ({ children }: { children?: React.ReactNode }) => (
             <h1
             style={{
               margin: "auto",
@@ -49,48 +48,48 @@ export default function StarMarkdownRenderer({
               </div>
             </h1>
           ),
-          h2: ({ children }) => (
+          h2: ({ children }: { children?: React.ReactNode }) => (
             <h2 className={FONT_FAMILY.className}>{children}</h2>
           ),
-          h3: ({ children }) => (
+          h3: ({ children }: { children?: React.ReactNode }) => (
             <h3 className={FONT_FAMILY.className}>{children}</h3>
           ),
-          h4: ({ children }) => (
+          h4: ({ children }: { children?: React.ReactNode }) => (
             <h4 className={FONT_FAMILY.className}>{children}</h4>
           ),
-          h5: ({ children }) => (
+          h5: ({ children }: { children?: React.ReactNode }) => (
             <h5 className={FONT_FAMILY.className}>{children}</h5>
           ),
-          h6: ({ children }) => (
+          h6: ({ children }: { children?: React.ReactNode }) => (
             <h6 className={FONT_FAMILY.className}>{children}</h6>
           ),
 
-          p: ({ children }) => (
+          p: ({ children }: { children?: React.ReactNode }) => (
             <p className={FONT_FAMILY.className}>{children}</p>
           ),
 
-          a: ({ children, href }) => (
+          a: ({ children, href }: { children?: React.ReactNode; href?: string }) => (
             <MarkdownLink href={href}>{children}</MarkdownLink>
           ),
 
-          ul: ({ children }) => (
+          ul: ({ children }: { children?: React.ReactNode }) => (
             <ul className={FONT_FAMILY.className}>{children}</ul>
           ),
-          ol: ({ children }) => (
+          ol: ({ children }: { children?: React.ReactNode }) => (
             <ol className={FONT_FAMILY.className}>{children}</ol>
           ),
-          li: ({ children }) => (
+          li: ({ children }: { children?: React.ReactNode }) => (
             <li className={FONT_FAMILY.className}>{children}</li>
           ),
 
-          strong: ({ children }) => (
+          strong: ({ children }: { children?: React.ReactNode }) => (
             <strong className={FONT_FAMILY.className}>{children}</strong>
           ),
-          em: ({ children }) => (
+          em: ({ children }: { children?: React.ReactNode }) => (
             <em className={FONT_FAMILY.className}>{children}</em>
           ),
 
-          code: ({ children, className }) => {
+          code: ({ children, className }: { children?: React.ReactNode; className?: string }) => {
             // Check if this is inline code (no className) or block code (has className from pre)
             const isInline = !className;
             
@@ -114,7 +113,7 @@ export default function StarMarkdownRenderer({
             return <code className={className}>{children}</code>;
           },
 
-          pre: ({ children }) => (
+          pre: ({ children }: { children?: React.ReactNode }) => (
             <pre
               className={FONT_FAMILY.className}
               style={{
@@ -133,7 +132,7 @@ export default function StarMarkdownRenderer({
             </pre>
           ),
 
-          img: ({ src, alt }) => (
+          img: ({ src, alt }: { src?: string; alt?: string }) => (
             <img
               src={src}
               alt={alt}
@@ -150,7 +149,7 @@ export default function StarMarkdownRenderer({
             />
           ),
 
-          blockquote: ({ children }) => (
+          blockquote: ({ children }: { children?: React.ReactNode }) => (
             <blockquote
               className={FONT_FAMILY.className}
               style={{
@@ -166,7 +165,14 @@ export default function StarMarkdownRenderer({
               {children}
             </blockquote>
           ),
-        }}
+        }), [starData, showGlass]);
+
+  return (
+    // this padding bottom is needed because the bottom thing is always cut off
+    <div style={{ paddingBottom: "3rem", pointerEvents: "auto" }}>
+      <ReactMarkdown
+        remarkPlugins={[gfm]}
+        components={markdownComponents}
     >
       {markdown}
       </ReactMarkdown>
