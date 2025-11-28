@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { Group } from "react-konva";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import React from "react";
 import { usePathname } from "next/navigation";
 
@@ -66,6 +66,7 @@ function Constellation({
   const [isHovered, setIsHovered] = useState(false);
   const isElevare = data.name === "Elevare";
   const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
+  const [elevareMapOffset, setElevareMapOffset] = useState({ x: 0, y: 0 });
 
   // --- BOUNDING BOX CALCULATIONS ---
   const { stars, connections, totalDuration } = data;
@@ -212,6 +213,33 @@ function Constellation({
   const controlWidth = 40;
   const controlX = minX - controlWidth;
 
+  // --- ELEVARE ZOOM HELPERS ---
+  // Helper function to calculate centered offset when zoom changes
+  const calculateCenteredOffset = useCallback((oldScale: number, newScale: number, currentOffset: { x: number; y: number }) => {
+    // Calculate the current screen position of the bounding box center
+    const screenX = currentOffset.x + centerX * oldScale;
+    const screenY = currentOffset.y + centerY * oldScale;
+    
+    // Calculate new offset to keep the bounding box center at the same screen position
+    return {
+      x: screenX - centerX * newScale,
+      y: screenY - centerY * newScale
+    };
+  }, [centerX, centerY]);
+
+  // Handler for ElevareControl button presses - calculates offset to keep map centered
+  const handleElevareControlZoomChange = useCallback((newZoom: number) => {
+    const newOffset = calculateCenteredOffset(elevareZoom, newZoom, elevareMapOffset);
+    setElevareZoom(newZoom);
+    setElevareMapOffset(newOffset);
+  }, [calculateCenteredOffset, elevareZoom, elevareMapOffset]);
+
+  // Handler for ElevareMap wheel/drag events - receives both zoom and offset
+  const handleElevareMapZoomOffsetChange = useCallback((newZoom: number, newOffset: { x: number; y: number }) => {
+    setElevareZoom(newZoom);
+    setElevareMapOffset(newOffset);
+  }, []);
+
   return (
     <Group
       ref={groupRef}
@@ -237,7 +265,7 @@ function Constellation({
           currentZoom={elevareZoom}
           minZoom={MIN_ZOOM}
           maxZoom={MAX_ZOOM}
-          onZoomChange={setElevareZoom}
+          onZoomChange={handleElevareControlZoomChange}
         />
       )}
       
@@ -266,7 +294,8 @@ function Constellation({
         lineDelays={lineDelays}
         isElevare={isElevare}
         elevareZoom={elevareZoom}
-        onElevareZoomChange={setElevareZoom}
+        elevareMapOffset={elevareMapOffset}
+        onElevareZoomOffsetChange={handleElevareMapZoomOffsetChange}
         animationTweenRef={animationTweenRef}
       />
     </Group>

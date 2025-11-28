@@ -27,12 +27,11 @@ interface ElevareMapProps {
   constellationBoundingBoxWidth: number;
   constellationBoundingBoxHeight: number;
   externalZoom?: number;
-  onZoomChange?: (zoom: number) => void;
+  externalOffset?: { x: number; y: number };
+  onZoomOffsetChange?: (zoom: number, offset: { x: number; y: number }) => void;
 }
 
-export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, constellationBoundingBoxWidth, constellationBoundingBoxHeight, externalZoom, onZoomChange }: ElevareMapProps) {
-  const [mapScale, setMapScale] = useState(MIN_ZOOM);
-  const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
+export default function ElevareMap({ children, isFocused, boundingBox, boundingBoxCenter, constellationBoundingBoxWidth, constellationBoundingBoxHeight, externalZoom = MIN_ZOOM, externalOffset = { x: 0, y: 0 }, onZoomOffsetChange }: ElevareMapProps) {
   const [backgroundOpacity, setBackgroundOpacity] = useState(0);
   const lastDistRef = useRef(0);
   const innerGroupRef = useRef<Konva.Group>(null);
@@ -57,7 +56,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       evt.preventDefault();
 
       const scaleBy = 1.1;
-      const oldScale = mapScale;
+      const oldScale = externalZoom;
 
       const newScale = evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
       const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newScale));
@@ -75,8 +74,8 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
 
       // Classic zoom-to-point algorithm
       const contentPoint = {
-        x: (pointer.x - mapOffset.x) / oldScale,
-        y: (pointer.y - mapOffset.y) / oldScale,
+        x: (pointer.x - externalOffset.x) / oldScale,
+        y: (pointer.y - externalOffset.y) / oldScale,
       };
 
       const newOffset = {
@@ -84,11 +83,8 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         y: pointer.y - contentPoint.y * clampedScale,
       };
 
-      setMapScale(clampedScale);
-      setMapOffset(newOffset);
-
-      if (onZoomChange) {
-        onZoomChange(clampedScale);
+      if (onZoomOffsetChange) {
+        onZoomOffsetChange(clampedScale, newOffset);
       }
     };
 
@@ -97,7 +93,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
     return () => {
       canvas.removeEventListener('wheel', handleNativeWheel);
     };
-  }, [isFocused, mapScale, mapOffset, onZoomChange]);
+  }, [isFocused, externalZoom, externalOffset, onZoomOffsetChange]);
 
   const handleDragStart = useCallback(() => {
     if (!isFocused) return;
@@ -108,13 +104,21 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
     if (!isFocused) return;
     const node = innerGroupRef.current;
     if (!node) return;
-    setMapOffset({ x: node.x(), y: node.y() });
-  }, [isFocused]);
+    // Update parent state during drag
+    if (onZoomOffsetChange) {
+      onZoomOffsetChange(externalZoom, { x: node.x(), y: node.y() });
+    }
+  }, [isFocused, onZoomOffsetChange, externalZoom]);
 
   const handleDragEnd = useCallback(() => {
     if (!isFocused) return;
     document.body.style.cursor = "grab";
-  }, [isFocused]);
+    const node = innerGroupRef.current;
+    if (node && onZoomOffsetChange) {
+      // Final update on drag end
+      onZoomOffsetChange(externalZoom, { x: node.x(), y: node.y() });
+    }
+  }, [isFocused, onZoomOffsetChange, externalZoom]);
 
   const handleTouchMove = useCallback(
     (e: Konva.KonvaEventObject<TouchEvent>) => {
@@ -135,41 +139,20 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         return;
       }
 
-      const scale = mapScale * (dist / lastDistRef.current);
+      const scale = externalZoom * (dist / lastDistRef.current);
       const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, scale));
 
-      setMapScale(clampedScale);
+      if (onZoomOffsetChange) {
+        onZoomOffsetChange(clampedScale, externalOffset);
+      }
       lastDistRef.current = dist;
     },
-    [isFocused, mapScale]
+    [isFocused, externalZoom, externalOffset, onZoomOffsetChange]
   );
 
   const handleTouchEnd = useCallback(() => {
     lastDistRef.current = 0;
   }, []);
-
-  // Programmatic zoom control (from ElevareControl)
-  // Update internal zoom when external zoom changes, centering around bounding box
-  // Only trigger on externalZoom changes, not on internal mapScale changes
-  useEffect(() => {
-    if (externalZoom !== undefined && externalZoom !== mapScale) {
-      const oldScale = mapScale;
-      const newScale = externalZoom;
-      
-      // Calculate the current screen position of the bounding box center
-      const screenX = mapOffset.x + boundingBoxCenter.x * oldScale;
-      const screenY = mapOffset.y + boundingBoxCenter.y * oldScale;
-      
-      // Calculate new offset to keep the bounding box center at the same screen position
-      const newOffset = {
-        x: screenX - boundingBoxCenter.x * newScale,
-        y: screenY - boundingBoxCenter.y * newScale
-      };
-      
-      setMapScale(newScale);
-      setMapOffset(newOffset);
-    }
-  }, [externalZoom]); // Only depend on externalZoom, not mapScale!
 
   // Reset on unfocus with smooth tween animation
   useEffect(() => {
@@ -192,23 +175,18 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         scaleY: MIN_ZOOM,
         easing: Konva.Easings.EaseInOut,
         onUpdate: () => {
-          // Update React state during animation to keep everything in sync
+          // Update parent state during animation to keep everything in sync
           const currentScale = node.scaleX();
           const currentPos = { x: node.x(), y: node.y() };
           
-          setMapScale(currentScale);
-          setMapOffset(currentPos);
-          
-          if (onZoomChange) {
-            onZoomChange(currentScale);
+          if (onZoomOffsetChange) {
+            onZoomOffsetChange(currentScale, currentPos);
           }
         },
         onFinish: () => {
           // Ensure final state is exact
-          setMapScale(MIN_ZOOM);
-          setMapOffset({ x: 0, y: 0 });
-          if (onZoomChange) {
-            onZoomChange(MIN_ZOOM);
+          if (onZoomOffsetChange) {
+            onZoomOffsetChange(MIN_ZOOM, { x: 0, y: 0 });
           }
           
           if (resetTweenRef.current) {
@@ -233,7 +211,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
         resetTweenRef.current = null;
       }
     };
-  }, [isFocused, onZoomChange]);
+  }, [isFocused, onZoomOffsetChange]);
 
   // Fade animation for subtle background fill
   useEffect(() => {
@@ -277,10 +255,10 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
   return (
     <Group
       ref={innerGroupRef}
-      x={mapOffset.x}
-      y={mapOffset.y}
-      scaleX={mapScale}
-      scaleY={mapScale}
+      x={externalOffset.x}
+      y={externalOffset.y}
+      scaleX={externalZoom}
+      scaleY={externalZoom}
       draggable={isFocused}
       onDragStart={isFocused ? handleDragStart : undefined}
       onDragMove={isFocused ? handleDragMove : undefined}
@@ -369,7 +347,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
           document.body.style.cursor = "default";
         } : undefined}
       />
-      <MapScaleContext.Provider value={mapScale}>
+      <MapScaleContext.Provider value={externalZoom}>
         {children}
       </MapScaleContext.Provider>
     </Group>

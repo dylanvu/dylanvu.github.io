@@ -37,7 +37,8 @@ interface ConstellationContentProps {
   // Elevare-specific
   isElevare: boolean;
   elevareZoom?: number;
-  onElevareZoomChange?: (zoom: number) => void;
+  elevareMapOffset?: { x: number; y: number };
+  onElevareZoomOffsetChange?: (zoom: number, offset: { x: number; y: number }) => void;
 
   // Callbacks and context
   animationTweenRef: React.RefObject<Konva.Tween | null>;
@@ -60,7 +61,8 @@ export default function ConstellationContent({
   lineDelays,
   isElevare,
   elevareZoom,
-  onElevareZoomChange,
+  elevareMapOffset,
+  onElevareZoomOffsetChange,
   animationTweenRef,
 }: ConstellationContentProps) {
   const { stars } = data;
@@ -219,7 +221,7 @@ export default function ConstellationContent({
         totalDuration={data.totalDuration}
       />
 
-      {isElevare && elevareZoom !== undefined && onElevareZoomChange ? (
+      {isElevare && elevareZoom !== undefined && elevareMapOffset !== undefined && onElevareZoomOffsetChange ? (
         <ElevareMap 
           isFocused={isFocused}
           boundingBox={{ minX, maxX, minY, maxY }}
@@ -227,7 +229,8 @@ export default function ConstellationContent({
           constellationBoundingBoxWidth={width}
           constellationBoundingBoxHeight={height}
           externalZoom={elevareZoom}
-          onZoomChange={onElevareZoomChange}
+          externalOffset={elevareMapOffset}
+          onZoomOffsetChange={onElevareZoomOffsetChange}
         >
           {renderLines()}
           {stars.map(renderStar)}
