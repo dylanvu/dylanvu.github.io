@@ -9,7 +9,7 @@ import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay"
 import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Konva from "konva";
 
 import {
