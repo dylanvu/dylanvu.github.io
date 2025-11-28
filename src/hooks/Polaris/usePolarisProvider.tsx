@@ -138,6 +138,7 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
     // auto suppress polaris if you just entered a star page
     if (pathname.startsWith(STAR_BASE_URL)) {
       if (polarisDisplayState === "active") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPolarisDisplayState("suppressed");
       }
     } else if (pathname === "/") {

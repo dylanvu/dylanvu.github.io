@@ -141,6 +141,13 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     if (pathname === "/") {
       currentStarSlugRef.current = null;
       currentConstellationSlugRef.current = null;
+
+      // This effect feels clean since many places send the path to be home "/" so this eliminates me needing to duplicate the logic
+      // or adding a function to reset the focused object
+      // or exposing this state change function
+      // if it does cause a cascade later, you would need to find whereever we navigate to "/" and add this in
+      // but leaving this also enables back button support!
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFocusedObject({ constellation: null, star: null });
     }
   }, [pathname]);
