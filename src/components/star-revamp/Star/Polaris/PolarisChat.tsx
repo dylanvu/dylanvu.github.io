@@ -82,9 +82,14 @@ export default function PolarisChat() {
     };
 
     // Add listener to window (non-passive to ensure we catch it)
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, []);
+    if (polarisDisplayState === "active") {
+      window.addEventListener("wheel", handleWheel, { passive: false });
+    }
+    return () => {
+      if (polarisDisplayState === "active") {
+        window.removeEventListener("wheel", handleWheel)};
+      }
+  }, [polarisDisplayState]);
 
   let polarisInputPlaceholder = "Consult Polaris..."
 
