@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ApiError } from "@google/genai";
 
 import { formatConstellationForLLM, formatConstellationLinksForLLM } from "@/components/star-revamp/Star/ConstellationList";
 import {
@@ -241,17 +241,17 @@ Character Notes:
         "Transfer-Encoding": "chunked",
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error calling Gemini API:", error);
     
     // Extract status code from error (defaults to 500)
-    const status = error?.status || 500;
+    const status = error instanceof ApiError ? error.status : 500;
 
     // Return error response with proper status code
     return new Response(
       JSON.stringify({
         error: "API Error",
-        message: error?.message || "An error occurred",
+        message: error instanceof Error ? error.message : "An error occurred",
       }),
       {
         status: status,
