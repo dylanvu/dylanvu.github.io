@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { FONT_FAMILY, GLASS, RADIUS, DURATION, OPACITY, ERROR_COLOR, hexToRgba, TEXT_SIZE, SPACING } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { ChatMessage } from "@/hooks/Polaris/tools/talk";
 import { MarkdownLink } from "../../MarkdownLink";
 import { useMobile } from "@/hooks/useMobile";
@@ -25,28 +25,13 @@ interface ImageProps {
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
   const { mobileFontScaleFactor } = useMobile();
   const { polarisDisplayState } = usePolarisContext();
-  const [showGlass, setShowGlass] = useState(false);
-
-  useEffect(() => {
-    // Reset blur when panel is hidden
-    if (polarisDisplayState !== "active") {
-      setShowGlass(false);
-      return;
-    }
-    
-    // Start blur timer when panel becomes active, matching the panel fade-in duration
-    const timer = setTimeout(() => {
-      setShowGlass(true);
-    }, DURATION.normal * 1000); // Match MainStage panel opacity animation
-    
-    return () => clearTimeout(timer);
-  }, [polarisDisplayState]);
   
   // Handle both string and ChatMessage object
   const messageText = typeof message === "string" ? message : message.message;
   const isPlaceholder = typeof message === "object" && message.isPlaceholder;
   
-  // Memoize components to prevent recreating them on every render
+  const showGlass = polarisDisplayState === "active";
+  
   const markdownComponents = useMemo(() => ({
     p: ({ children }: MarkdownComponentProps) => (
       <p className={FONT_FAMILY.className}>{children}</p>
@@ -108,31 +93,45 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
             isPlaceholder
               ? {
                   opacity: [0.4, 0.7, 0.4],
+                  backdropFilter: showGlass ? "blur(8px)" : "blur(0px)",
                 }
               : {
                   opacity: 1,
+                  backdropFilter: showGlass ? "blur(8px)" : "blur(0px)",
                 }
           }
           transition={
             isPlaceholder
               ? {
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
+                  opacity: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  },
+                  backdropFilter: {
+                    duration: DURATION.normal,
+                    delay: DURATION.normal,
+                    ease: "easeOut",
+                  },
                 }
               : {
-                  duration: 0,
+                  opacity: {
+                    duration: DURATION.slow,
+                  },
+                  backdropFilter: {
+                    duration: DURATION.normal,
+                    delay: DURATION.normal, // Blur starts after opacity finishes
+                    ease: "easeOut",
+                  },
                 }
           }
           style={{
             background: GLASS.light.background,
             border: GLASS.light.border,
-            backdropFilter: showGlass ? "blur(8px)" : "none",
             padding: `${SPACING.md} ${SPACING.lg}`,
             borderRadius: `${RADIUS.sm} ${RADIUS.lg} ${RADIUS.lg} ${RADIUS.lg}`,
             lineHeight: "1.5",
             wordWrap: "break-word",
-            transition: `backdrop-filter ${DURATION.normal}s ease`,
           }}
         >
           <ReactMarkdown
