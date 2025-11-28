@@ -336,47 +336,34 @@ export const CONSTELLATIONS: ConstellationData[] = [
   },
 ];
 
-/**
- * Finds the name of the constellation that contains a star with the specific slug.
- * Returns null if no matching star is found.
- */
-export function getConstellationNameByStarSlug(slug: string): string | null {
-  // 1. Loop through each constellation
-  for (const constellation of CONSTELLATIONS) {
-    // 2. Check if this constellation contains the specific star
-    const hasMatchingStar = constellation.stars.some((star) => {
-      // If star has no data, it's not a match
-      if (!star.data) return false;
-
-      // Use typeguard to check if star has internal link and matches slug
-      return star.data.slug === slug;
-    });
-
-    // 3. If found, return the name immediately
-    if (hasMatchingStar) {
-      return constellation.name;
-    }
-  }
-
-  // 4. Return null if not found in any constellation
-  return null;
-}
-
-/**
- * 1. Retrieves the full constellation object matching the specific name.
- */
-export function getConstellationDataByName(
-  name: string
-): ConstellationData | null {
-  const result = CONSTELLATIONS.find((c) => c.name === name);
-  return result ?? null
-}
 
 export function getConstellationDataBySlug(
   slug: string
 ): ConstellationData | null {
   const result = CONSTELLATIONS.find((c) => c.slug === slug);
   return result ?? null
+}
+
+/**
+ * Retrieves the ConstellationData that contains a star with the given slug.
+ *
+ * @param starSlug - The unique slug of the star to search for
+ * @returns The ConstellationData containing the star, or null if not found
+ */
+export function getConstellationDataByStarSlug(
+  starSlug: string
+): ConstellationData | null {
+  for (const constellation of CONSTELLATIONS) {
+    const hasMatchingStar = constellation.stars.some(
+      (star) => star.data && star.data.slug === starSlug
+    );
+    
+    if (hasMatchingStar) {
+      return constellation;
+    }
+  }
+  
+  return null;
 }
 
 /**

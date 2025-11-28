@@ -26,6 +26,7 @@ import { useMobile } from "./useMobile";
 import {
   getStarDataBySlug,
   getConstellationDataBySlug,
+  getConstellationDataByStarSlug,
 } from "@/components/star-revamp/Star/ConstellationList";
 import { STAR_BASE_URL } from "@/constants/Routes";
 import { setConstellationOverlayMobileAware } from "@/utils/overlayHelpers";
@@ -152,7 +153,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     currentStarSlugRef.current = slug;
     currentConstellationSlugRef.current = null; // Clear constellation when navigating to star
 
-    const constellationData = getConstellationDataBySlug(slug);
+    const constellationData = getConstellationDataByStarSlug(slug);
     if (constellationData) {
       const starData = getStarDataBySlug(slug, constellationData.name);
       
@@ -176,6 +177,8 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       if (pathname !== targetPath) {
         router.push(targetPath);
       }
+    } else {
+      console.log("no constellation data when navigating to star")
     }
   }, [pathname, router, calculateParallaxData, focusedObject]);
 
