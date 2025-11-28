@@ -67,10 +67,6 @@ function Constellation({
   const isElevare = data.name === "Elevare";
   const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
 
-  useEffect(() => {
-    if (!isFocused && isElevare) setElevareZoom(MIN_ZOOM);
-  }, [isFocused, isElevare]);
-
   // --- BOUNDING BOX CALCULATIONS ---
   const { stars, connections, totalDuration } = data;
   const xs = stars.map((s) => s.x);
