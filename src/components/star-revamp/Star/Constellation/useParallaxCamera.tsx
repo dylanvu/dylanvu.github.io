@@ -1,5 +1,6 @@
 import { useRef, useEffect, useLayoutEffect } from 'react';
 import Konva from 'konva';
+import { useFocusContext } from '@/hooks/useFocusProvider';
 
 // --- CONFIGURATION ---
 const DEBUG = false; // Set to true if you need to debug coordinates again
@@ -155,7 +156,6 @@ interface UseParallaxCameraProps {
   focusedTargetX: number;
   focusedTargetY?: number;
   isFocused: boolean;        
-  focusedGlobalId: string | null; 
   parallaxData: { 
     worldX: number;
     worldY: number;
@@ -179,18 +179,20 @@ export const useParallaxCamera = ({
   focusedTargetX,
   focusedTargetY,
   isFocused,
-  focusedGlobalId,
   parallaxData,
   depth = 3.5,
   duration = 0.5,
   onFocusComplete
 }: UseParallaxCameraProps) => {
 
+  const { focusedObject } = useFocusContext();
+  const focusedGlobalId = focusedObject.constellation?.name
+
   const targetY = focusedTargetY ?? windowCenter.y;
   const focusTweenRef = useRef<Konva.Tween | null>(null);
   const EASING = Konva.Easings.EaseInOut;
 
-  const prevGlobalIdRef = useRef<string | null>(null);
+  const prevGlobalIdRef = useRef<string | undefined>(null);
   const prevParallaxDataRef = useRef(parallaxData);
   const lastFocusedPositionRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -477,6 +479,6 @@ export const useParallaxCamera = ({
 
   return {
     stopTweens: stopTween,
-    isAnimatingOrFocused: !!focusTweenRef.current || isFocused || !!focusedGlobalId
+    isAnimatingOrFocused: !!focusTweenRef.current || isFocused
   };
 };

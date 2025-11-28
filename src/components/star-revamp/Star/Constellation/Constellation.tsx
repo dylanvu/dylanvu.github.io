@@ -154,7 +154,6 @@ function Constellation({
     windowCenter,
     focusedTargetX,
     isFocused: isFocused,
-    focusedGlobalId: focusedObject.constellation?.name || null,
     parallaxData: parallaxInputData,
     depth: 3.5 // Standard background depth
   });

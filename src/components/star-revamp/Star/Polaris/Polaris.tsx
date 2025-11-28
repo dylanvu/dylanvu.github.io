@@ -284,7 +284,6 @@ export default function Polaris({
     isFocused: isReady, // "Ready" = "Focused" for the physics engine
     
     // PARALLAX STATE CONFIG (Ignored if isReady is true)
-    focusedGlobalId: focusedObject?.constellation?.name || null,
     parallaxData: parallaxInputData,
     
     // CONFIG
