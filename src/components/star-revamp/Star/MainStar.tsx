@@ -117,16 +117,6 @@ function MainStar({
   
   // Pre-calculate label width to prevent position shift
   const labelText = labelOverride || data?.label;
-  const labelWidth = useRef(0);
-  if (labelText && showLabel) {
-    const tempText = new Konva.Text({
-      text: labelText,
-      fontSize: scaledLabelSize,
-      fontFamily: FONT_FAMILY.style.fontFamily,
-    });
-    labelWidth.current = tempText.width();
-    tempText.destroy();
-  }
 
   const starColor = useRef(
     getRandomColor(MAIN_STAR_COLORS)
@@ -563,6 +553,41 @@ function MainStar({
     };
   }, [showLabel, hasLabel]);
 
+  const labelElement = React.useMemo(() => {
+    if (!labelText) return null;
+    
+    // Calculate label width
+    const tempText = new Konva.Text({
+      text: labelText,
+      fontSize: scaledLabelSize,
+      fontFamily: FONT_FAMILY.style.fontFamily,
+    });
+    const calculatedLabelWidth = tempText.width();
+    tempText.destroy();
+    
+    // Calculate padding proportional to base star size (not affected by brightness/twinkle)
+    // This keeps the label position fixed while the star twinkles
+    const labelPadding = actualSize * 0.8; // 80% of base star size as padding
+    
+    return (
+      <Text
+        ref={textRef}
+        x={0}
+        y={actualSize + labelPadding}
+        text={labelText}
+        fontSize={scaledLabelSize}
+        fill={SPACE_TEXT_COLOR}
+        stroke={SPACE_BACKGROUND_COLOR}
+        strokeWidth={0.8}
+        fillAfterStrokeEnabled={true}
+        fontFamily={FONT_FAMILY.style.fontFamily}
+        align="center"
+        offsetX={calculatedLabelWidth / 2}
+        opacity={0}
+      />
+    );
+  }, [labelText, actualSize, scaledLabelSize]);
+
   return (
     <Group
       ref={groupRef}
@@ -648,29 +673,7 @@ function MainStar({
         }}
         listening={true}
       />
-      {(data?.label || labelOverride) && (() => {
-        // Calculate padding proportional to base star size (not affected by brightness/twinkle)
-        // This keeps the label position fixed while the star twinkles
-        const labelPadding = actualSize * 0.8; // 80% of base star size as padding
-        
-        return (
-          <Text
-            ref={textRef}
-            x={0}
-            y={actualSize + labelPadding}
-            text={labelOverride || data?.label}
-            fontSize={scaledLabelSize}
-            fill={SPACE_TEXT_COLOR}
-            stroke={SPACE_BACKGROUND_COLOR}
-            strokeWidth={0.8}
-            fillAfterStrokeEnabled={true}
-            fontFamily={FONT_FAMILY.style.fontFamily}
-            align="center"
-            offsetX={labelWidth.current / 2}
-            opacity={labelOpacityRef.current}
-          />
-        );
-      })()}
+      {labelElement}
     </Group>
   );
 }
