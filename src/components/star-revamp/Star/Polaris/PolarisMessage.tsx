@@ -2,10 +2,11 @@ import { motion } from "motion/react";
 import { FONT_FAMILY, GLASS, RADIUS, DURATION, OPACITY, ERROR_COLOR, hexToRgba, TEXT_SIZE, SPACING } from "@/app/theme";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/hooks/Polaris/tools/talk";
 import { MarkdownLink } from "../../MarkdownLink";
 import { useMobile } from "@/hooks/useMobile";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 // Type definitions for markdown components
 interface MarkdownComponentProps {
@@ -23,14 +24,23 @@ interface ImageProps {
 
 export default function PolarisMessage({ message }: { message: string | ChatMessage }) {
   const { mobileFontScaleFactor } = useMobile();
+  const { polarisDisplayState } = usePolarisContext();
   const [showGlass, setShowGlass] = useState(false);
 
   useEffect(() => {
+    // Reset blur when panel is hidden
+    if (polarisDisplayState !== "active") {
+      setShowGlass(false);
+      return;
+    }
+    
+    // Start blur timer when panel becomes active, matching the panel fade-in duration
     const timer = setTimeout(() => {
       setShowGlass(true);
-    }, DURATION.slow * 1000); // Use slow duration to match the animation
+    }, DURATION.normal * 1000); // Match MainStage panel opacity animation
+    
     return () => clearTimeout(timer);
-  }, []);
+  }, [polarisDisplayState]);
   
   // Handle both string and ChatMessage object
   const messageText = typeof message === "string" ? message : message.message;
@@ -78,7 +88,7 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
         alignSelf: "flex-start",
         maxWidth: "30%",
         transformOrigin: "bottom left",
-        pointerEvents: "auto",
+        pointerEvents: polarisDisplayState === "active" ? "auto" : "none",
       }}
       className={FONT_FAMILY.className}
     >
@@ -139,21 +149,8 @@ export default function PolarisMessage({ message }: { message: string | ChatMess
 
 // Component to handle images during streaming with loading and error states
 function StreamingImage({ src, alt, mobileFontScaleFactor, showGlass }: { src?: string | Blob; alt?: string; mobileFontScaleFactor: number; showGlass: boolean }) {
-  // Use refs to persist state across re-renders (prevents flickering on hover)
-  const hasLoadedRef = useRef(false);
-  const hasErrorRef = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-
-  // Initialize state from refs on mount
-  useEffect(() => {
-    if (hasLoadedRef.current) {
-      setIsLoading(false);
-    }
-    if (hasErrorRef.current) {
-      setHasError(true);
-    }
-  }, []);
 
   // Don't render anything if src is not provided
   if (!src || typeof src !== 'string') {
@@ -200,11 +197,15 @@ function StreamingImage({ src, alt, mobileFontScaleFactor, showGlass }: { src?: 
           src={src}
           alt={alt}
           onLoad={() => {
-            hasLoadedRef.current = true;
-            setIsLoading(false);
+            if (isLoading) {
+              setIsLoading(false);
+            }
+          }}
+          onLoadStart={() => {
+            console.log("loading image")
+            setIsLoading(true);
           }}
           onError={() => {
-            hasErrorRef.current = true;
             setIsLoading(false);
             setHasError(true);
           }}

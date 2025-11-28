@@ -9,7 +9,7 @@ import CenterOverlay from "@/components/star-revamp/ScreenOverlay/CenterOverlay"
 import TopOverlay from "@/components/star-revamp/ScreenOverlay/TopOverlay";
 import { motion, AnimatePresence } from "motion/react";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Konva from "konva";
 
 import {
@@ -152,23 +152,21 @@ export default function MainStage({
             )}
           </AnimatePresence>
 
-          {/* Polaris panel - show when activated */}
-          <AnimatePresence mode="wait">
-            {polarisDisplayState === "active" && (
-              <motion.div
-                key="polaris-panel"
-                initial={PolarisPanelMotionInitial}
-                animate={PolarisPanelMotionAnimate}
-                exit={PolarisPanelMotionExit}
-                transition={StarPanelMotionTransition}
-                style={{...BasePanelStyle, ...PolarisStyleOverride}}
-                className={FONT_FAMILY.style.fontFamily}
-              >
-                <PolarisChat />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
+          {/* Polaris panel - always mounted, animated with Framer Motion */}
+          <motion.div
+            initial={PolarisPanelMotionInitial}
+            animate={{
+              opacity: polarisDisplayState === "active" ? 1 : 0,
+            }}
+            transition={StarPanelMotionTransition}
+            style={{
+              ...BasePanelStyle,
+              ...PolarisStyleOverride,
+            }}
+            className={FONT_FAMILY.style.fontFamily}
+          >
+            <PolarisChat />
+          </motion.div>
           {/* Hidden container for both /polaris route initialization and constellation navigation */}
           {((pathname === "/polaris" && polarisDisplayState !== "active") || pathname.startsWith(CONSTELLATION_BASE_URL)) && (
             <div style={{ display: 'none' }}>

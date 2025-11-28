@@ -1,17 +1,27 @@
 import { motion } from "motion/react";
 import { FONT_FAMILY, SPACE_TEXT_COLOR, GLASS, RADIUS, DURATION, TEXT_SIZE, SPACING } from "@/app/theme";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 
 export default function StargazerMessage({ message }: { message: string }) {
   const [showGlass, setShowGlass] = useState(false);
+  const { polarisDisplayState } = usePolarisContext();
 
   useEffect(() => {
+    // Reset blur when panel is hidden
+    if (polarisDisplayState !== "active") {
+      setShowGlass(false);
+      return;
+    }
+    
+    // Start blur timer when panel becomes active, matching the panel fade-in duration
     const timer = setTimeout(() => {
       setShowGlass(true);
-    }, DURATION.normal * 1000);
+    }, DURATION.normal * 1000); // Match MainStage panel opacity animation
+    
     return () => clearTimeout(timer);
-  }, []);
+  }, [polarisDisplayState]);
 
   return (
     <motion.div
@@ -27,7 +37,7 @@ export default function StargazerMessage({ message }: { message: string }) {
         maxWidth: "30%",
         // Ensure the container itself doesn't stretch nicely
         transformOrigin: "bottom right",
-        pointerEvents: "auto",
+        pointerEvents: polarisDisplayState === "active" ? "auto" : "none",
       }}
       className={FONT_FAMILY.className}
     >

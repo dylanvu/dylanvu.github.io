@@ -16,7 +16,7 @@ import {
 } from "@/app/theme";
 
 export default function PolarisChat() {
-  const { polarisHistory, talkToPolaris, isThinking, isTalking, setPolarisDisplayState } = usePolarisContext();
+  const { polarisHistory, talkToPolaris, isThinking, isTalking, setPolarisDisplayState, polarisDisplayState } = usePolarisContext();
   const [inputText, setInputText] = useState("");
   const [showGlass, setShowGlass] = useState(false);
 
@@ -140,7 +140,7 @@ export default function PolarisChat() {
           fontSize: "1.2rem",
           transition: `backdrop-filter ${DURATION.normal}s ease, transform ${DURATION.fast}s, background ${DURATION.fast}s`,
           zIndex: 10,
-          pointerEvents: "auto",
+          pointerEvents: polarisDisplayState === "active" ? "auto" : "none",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.background = `rgba(255, 255, 255, ${OPACITY.strong})`;
@@ -219,7 +219,7 @@ export default function PolarisChat() {
             flexWrap: "nowrap",
             justifyContent: "flex-end",
             marginBottom: "1rem",
-            pointerEvents: "all",
+            pointerEvents: polarisDisplayState === "active" ? "all" : "none",
           }}
         >
           {suggestions.map((suggestion, i) => (
@@ -265,7 +265,7 @@ export default function PolarisChat() {
             borderRadius: RADIUS.pill,
             padding: `${SPACING.sm} ${SPACING.sm} ${SPACING.sm} ${SPACING.lg}`,
             boxShadow: SHADOW.md,
-            pointerEvents: "all",
+            pointerEvents: polarisDisplayState === "active" ? "all" : "none",
             transition: `backdrop-filter ${DURATION.normal}s ease`,
           }}
         >

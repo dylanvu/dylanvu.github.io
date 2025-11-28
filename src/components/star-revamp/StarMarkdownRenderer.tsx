@@ -18,7 +18,7 @@ export default function StarMarkdownRenderer({
 
   return (
     // this padding bottom is needed because the bottom thing is always cut off
-    <div style={{ paddingBottom: "3rem" }}>
+    <div style={{ paddingBottom: "3rem", pointerEvents: "auto" }}>
       <ReactMarkdown
         remarkPlugins={[gfm]}
         components={{
