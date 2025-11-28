@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
 import Konva from "konva";
+import { useRef, useState, useLayoutEffect } from "react";
 
 interface ConstellationContentProps {
   // Bounding box dimensions
@@ -72,6 +73,24 @@ export default function ConstellationContent({
   const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
   const mobileState = useMobile();
   const pathname = usePathname();
+
+  // Track animation key for bounding box - increments when visibility transitions from false to true
+  const animationCounterRef = useRef(0);
+  const prevBoundingBoxVisibleRef = useRef(false);
+  const [animationKey, setAnimationKey] = useState(0);
+  const isBoundingBoxVisible = isFocused || showStarBoundingBox || isHovered;
+  
+  // Use useLayoutEffect to track visibility transitions and update animation key
+  useLayoutEffect(() => {
+    const wasVisible = prevBoundingBoxVisibleRef.current;
+    prevBoundingBoxVisibleRef.current = isBoundingBoxVisible;
+    
+    // Increment animation key when transitioning from invisible to visible
+    if (isBoundingBoxVisible && !wasVisible) {
+      animationCounterRef.current += 1;
+      setAnimationKey(animationCounterRef.current);
+    }
+  }, [isBoundingBoxVisible]);
 
   // Helper function to render a single star
   const renderStar = (star: typeof stars[0], i: number) => {
@@ -188,7 +207,8 @@ export default function ConstellationContent({
       />
 
       <ConstellationBoundingBox
-        isVisible={isFocused || showStarBoundingBox || isHovered}
+        isVisible={isBoundingBoxVisible}
+        animationKey={animationKey}
         tl={{ x: minX, y: minY }}
         tr={{ x: maxX, y: minY }}
         br={{ x: maxX, y: maxY }}
