@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ChatMessage, ErrorMessages, talkToAgent } from "@/hooks/Polaris/tools/talk";
 import { useCenterOverlayContext } from "../useCenterOverlay";
 import { usePathname } from "next/navigation";
+import { STAR_BASE_URL } from "@/constants/Routes";
 
 export type PolarisDisplayState = "hidden" | "active" | "suppressed";
 
@@ -135,8 +136,9 @@ export function PolarisProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // auto suppress polaris if you just entered a star page
-    if (pathname.startsWith("/star/")) {
+    if (pathname.startsWith(STAR_BASE_URL)) {
       if (polarisDisplayState === "active") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPolarisDisplayState("suppressed");
       }
     } else if (pathname === "/") {

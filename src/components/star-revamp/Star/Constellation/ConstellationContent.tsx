@@ -3,13 +3,15 @@ import MainStar from "@/components/star-revamp/Star/MainStar";
 import AnimatedLine from "./AnimatedLine";
 import ConstellationBoundingBox from "./ConstellationBoundingBox";
 import ElevareMap from "./ElevareMap";
-import { ConstellationData, isStarDataWithInternalLink, Star } from "@/interfaces/StarInterfaces";
+import { ConstellationData } from "@/interfaces/StarInterfaces";
 import { setConstellationOverlay, setStarOverlayMobileAware } from "@/utils/overlayHelpers";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useMobile } from "@/hooks/useMobile";
 import { usePathname } from "next/navigation";
 import { useCenterOverlayContext } from "@/hooks/useCenterOverlay";
 import { useTopOverlayContext } from "@/hooks/useTopOverlay";
+import Konva from "konva";
+import { useRef, useState, useLayoutEffect } from "react";
 
 interface ConstellationContentProps {
   // Bounding box dimensions
@@ -22,14 +24,12 @@ interface ConstellationContentProps {
 
   // Visual state
   brightness: number;
-  isFocused: boolean;
   isHovered: boolean;
   showBoundingBox?: boolean;
   showStarBoundingBox?: boolean;
 
   // Constellation data
   data: ConstellationData;
-  stars: Star[];
   lineSegments: [number, number][];
   lineDurations: number[];
   lineDelays: number[];
@@ -37,11 +37,11 @@ interface ConstellationContentProps {
   // Elevare-specific
   isElevare: boolean;
   elevareZoom?: number;
-  onElevareZoomChange?: (zoom: number) => void;
+  elevareMapOffset?: { x: number; y: number };
+  onElevareZoomOffsetChange?: (zoom: number, offset: { x: number; y: number }) => void;
 
   // Callbacks and context
-  isReturningRef: React.RefObject<boolean>;
-  isFocusedRef: React.RefObject<boolean>;
+  animationTweenRef: React.RefObject<Konva.Tween | null>;
 }
 
 export default function ConstellationContent({
@@ -52,29 +52,47 @@ export default function ConstellationContent({
   width,
   height,
   brightness,
-  isFocused,
   isHovered,
   showBoundingBox,
   showStarBoundingBox,
   data,
-  stars,
   lineSegments,
   lineDurations,
   lineDelays,
   isElevare,
   elevareZoom,
-  onElevareZoomChange,
-  isReturningRef,
-  isFocusedRef,
+  elevareMapOffset,
+  onElevareZoomOffsetChange,
+  animationTweenRef,
 }: ConstellationContentProps) {
+  const { stars } = data;
   const centerX = minX + width / 2;
   const centerY = minY + height / 2;
 
   const { focusedObject, navigateToConstellation, navigateToStar } = useFocusContext();
+  const isFocused = focusedObject.constellation === data;
   const { setOverlayTextContents: setTopOverlayTextContents, resetOverlayTextContents: resetTopOverlayTextContents } = useTopOverlayContext();
   const { setOverlayTextContents: setCenterOverlayTextContents } = useCenterOverlayContext();
   const mobileState = useMobile();
   const pathname = usePathname();
+
+  // Track animation key for bounding box - increments when visibility transitions from false to true
+  const animationCounterRef = useRef(0);
+  const prevBoundingBoxVisibleRef = useRef(false);
+  const [animationKey, setAnimationKey] = useState(0);
+  const isBoundingBoxVisible = isFocused || showStarBoundingBox || isHovered;
+  
+  // Use useLayoutEffect to track visibility transitions and update animation key
+  useLayoutEffect(() => {
+    const wasVisible = prevBoundingBoxVisibleRef.current;
+    prevBoundingBoxVisibleRef.current = isBoundingBoxVisible;
+    
+    // Increment animation key when transitioning from invisible to visible
+    if (isBoundingBoxVisible && !wasVisible) {
+      animationCounterRef.current += 1;
+      setAnimationKey(animationCounterRef.current);
+    }
+  }, [isBoundingBoxVisible]);
 
   // Helper function to render a single star
   const renderStar = (star: typeof stars[0], i: number) => {
@@ -97,12 +115,14 @@ export default function ConstellationContent({
         showLabel={isFocused}
         labelSize={4}
         isConstellationFocused={isFocused}
-        constellationData={data}
         onHoverEnterCallback={() => {
-          if (isReturningRef.current) return;
+          console.log("returning")
+          // for some reason, this always stops here
+          if (animationTweenRef.current) return;
+
 
           if (star.data) {
-            if (isFocusedRef.current) {
+            if (isFocused) {
               setStarOverlayMobileAware(star.data, setTopOverlayTextContents, mobileState);
             } else {
               setCenterOverlayTextContents({
@@ -115,10 +135,10 @@ export default function ConstellationContent({
           }
         }}
         onHoverLeaveCallback={() => {
-          if (isReturningRef.current) return;
+          if (animationTweenRef.current) return;
 
           if (star.data?.label) {
-            if (isFocusedRef.current) {
+            if (isFocused) {
               if (pathname === "/") {
                 setConstellationOverlay(data, setTopOverlayTextContents);
               } else if (focusedObject.star) {
@@ -136,7 +156,7 @@ export default function ConstellationContent({
               });
             }
           }
-          if (isFocusedRef.current) {
+          if (isFocused) {
             document.body.style.cursor = "default";
           }
         }}
@@ -144,15 +164,8 @@ export default function ConstellationContent({
         onClickCallback={() => {
           const starData = star.data;
           if (starData) {
-            if (starData.externalLink) {
-              window.open(
-                starData.externalLink,
-                "_blank",
-                "noopener,noreferrer"
-              );
-            } else if (isStarDataWithInternalLink(starData)) {
+            if (starData.slug) {
               // if we are currently on the page, bring it back to the base
-              console.log(pathname.split("/").at(-1))
               if (focusedObject.star && starData.slug === pathname.split("/").at(-1)) {
                 navigateToConstellation(data.slug);
               } else {
@@ -196,7 +209,8 @@ export default function ConstellationContent({
       />
 
       <ConstellationBoundingBox
-        isVisible={isFocused || showStarBoundingBox || isHovered}
+        isVisible={isBoundingBoxVisible}
+        animationKey={animationKey}
         tl={{ x: minX, y: minY }}
         tr={{ x: maxX, y: minY }}
         br={{ x: maxX, y: maxY }}
@@ -207,7 +221,7 @@ export default function ConstellationContent({
         totalDuration={data.totalDuration}
       />
 
-      {isElevare && elevareZoom !== undefined && onElevareZoomChange ? (
+      {isElevare && elevareZoom !== undefined && elevareMapOffset !== undefined && onElevareZoomOffsetChange ? (
         <ElevareMap 
           isFocused={isFocused}
           boundingBox={{ minX, maxX, minY, maxY }}
@@ -215,7 +229,8 @@ export default function ConstellationContent({
           constellationBoundingBoxWidth={width}
           constellationBoundingBoxHeight={height}
           externalZoom={elevareZoom}
-          onZoomChange={onElevareZoomChange}
+          externalOffset={elevareMapOffset}
+          onZoomOffsetChange={onElevareZoomOffsetChange}
         >
           {renderLines()}
           {stars.map(renderStar)}

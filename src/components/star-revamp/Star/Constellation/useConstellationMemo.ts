@@ -4,7 +4,6 @@ interface ConstellationProps {
   data: ConstellationData;
   transformData: TransformData;
   windowCenter: { x: number; y: number };
-  focusedConstellation: ConstellationData | null;
   showBoundingBox?: boolean;
   showStarBoundingBox?: boolean;
   onHoverEnterCallback?: () => void;
@@ -56,7 +55,6 @@ export function areConstellationPropsEqual(
   return (
     prevProps.windowCenter.x === nextProps.windowCenter.x &&
     prevProps.windowCenter.y === nextProps.windowCenter.y &&
-    prevProps.focusedConstellation?.name === nextProps.focusedConstellation?.name &&
     prevProps.showBoundingBox === nextProps.showBoundingBox &&
     prevProps.showStarBoundingBox === nextProps.showStarBoundingBox &&
     prevProps.onHoverEnterCallback === nextProps.onHoverEnterCallback &&

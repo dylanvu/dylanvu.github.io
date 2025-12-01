@@ -11,7 +11,6 @@ import { useMobile } from "@/hooks/useMobile";
 import React from "react";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { usePathname } from "next/navigation";
-import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { DESIGN_REFERENCE } from "@/app/theme";
 import { computeCenter } from "@/utils/constellationUtils";
 
@@ -250,7 +249,6 @@ export default function MainStarField() {
               onClickCallback={() => {
                 navigateToConstellation(c.slug);
               }}
-              focusedConstellation={focusedObject.constellation}
               onHoverEnterCallback={() => {
                 if (!focusedObject.constellation) {
                   setCenterOverlayTextContents({
@@ -270,7 +268,8 @@ export default function MainStarField() {
           </React.Fragment>
         );
       })}
-      {/* Polaris, the guiding chatbot star */}
+
+      {/* Polaris, the guiding chatbot star - rendered last to ensure it's always on top */}
       {(() => {
         const polarisDesignX = DESIGN_REFERENCE.width / 2 + 2;
         const polarisDesignY = 200; // bigger number moves it down
@@ -326,7 +325,6 @@ export default function MainStarField() {
           </>
         );
       })()}
-      
     </Group>
   );
 }

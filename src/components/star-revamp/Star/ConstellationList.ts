@@ -1,8 +1,7 @@
 import {
   ConstellationData,
   Star,
-  StarDataWithInternalLink,
-  isStarDataWithInternalLink,
+  StarData,
 } from "@/interfaces/StarInterfaces";
 import { US_MAP, US_OUTLINE_STAR_COUNT } from "./us_map";
 import { createSequentialLoopingConnections } from "@/components/star-revamp/Star/starUtils";
@@ -24,7 +23,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "Email",
           origin: "dylanvu9@gmail.com",
           about: "",
-          externalLink: "mailto:dylanvu9@gmail.com",
+          slug: "email",
           classification: "Supergiant",
         },
       },
@@ -35,7 +34,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "GitHub",
           origin: "github.com/dylanvu",
           about: "See my code",
-          externalLink: "https://github.com/dylanvu",
+          slug: "github",
           classification: "Giant",
         },
       },
@@ -46,7 +45,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "Devpost",
           origin: "devpost.com/dylanvu",
           about: "My hackathons",
-          externalLink: "https://devpost.com/dylanvu",
+          slug: "devpost",
           classification: "Star"
         }
       },
@@ -57,7 +56,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "LinkedIn",
           origin: "/in/dylanvu9",
           about: "Connect with me",
-          externalLink: "https://www.linkedin.com/in/dylanvu9/",
+          slug: "linkedin",
           classification: "Star",
         },
       },
@@ -68,7 +67,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "Medium",
           origin: "@mentor-mementos",
           about: "I write about hackathon mentoring",
-          externalLink: "https://medium.com/@mentor-mementos",
+          slug: "medium",
           classification: "Dwarf",
         },
       },
@@ -100,7 +99,7 @@ export const CONSTELLATIONS: ConstellationData[] = [
           label: "Resume",
           origin: "Present",
           about: "See Iter outside this night sky",
-          externalLink: "/Dylan_Vu_Resume.pdf",
+          slug: "resume",
           classification: "Supergiant",
         },
       },
@@ -337,47 +336,34 @@ export const CONSTELLATIONS: ConstellationData[] = [
   },
 ];
 
-/**
- * Finds the name of the constellation that contains a star with the specific slug.
- * Returns null if no matching star is found.
- */
-export function getConstellationNameByStarSlug(slug: string): string | null {
-  // 1. Loop through each constellation
-  for (const constellation of CONSTELLATIONS) {
-    // 2. Check if this constellation contains the specific star
-    const hasMatchingStar = constellation.stars.some((star) => {
-      // If star has no data, it's not a match
-      if (!star.data) return false;
-
-      // Use typeguard to check if star has internal link and matches slug
-      return isStarDataWithInternalLink(star.data) && star.data.slug === slug;
-    });
-
-    // 3. If found, return the name immediately
-    if (hasMatchingStar) {
-      return constellation.name;
-    }
-  }
-
-  // 4. Return null if not found in any constellation
-  return null;
-}
-
-/**
- * 1. Retrieves the full constellation object matching the specific name.
- */
-export function getConstellationDataByName(
-  name: string
-): ConstellationData | null {
-  const result = CONSTELLATIONS.find((c) => c.name === name);
-  return result ?? null
-}
 
 export function getConstellationDataBySlug(
   slug: string
 ): ConstellationData | null {
   const result = CONSTELLATIONS.find((c) => c.slug === slug);
   return result ?? null
+}
+
+/**
+ * Retrieves the ConstellationData that contains a star with the given slug.
+ *
+ * @param starSlug - The unique slug of the star to search for
+ * @returns The ConstellationData containing the star, or null if not found
+ */
+export function getConstellationDataByStarSlug(
+  starSlug: string
+): ConstellationData | null {
+  for (const constellation of CONSTELLATIONS) {
+    const hasMatchingStar = constellation.stars.some(
+      (star) => star.data && star.data.slug === starSlug
+    );
+    
+    if (hasMatchingStar) {
+      return constellation;
+    }
+  }
+  
+  return null;
 }
 
 /**
@@ -390,11 +376,11 @@ export function getConstellationDataBySlug(
 export function getStarDataBySlug(
   slug: string,
   constellationName?: string
-): StarDataWithInternalLink | null {
+): StarData | null {
   // Helper: Checks a specific list of stars for the slug
-  const findStarInList = (stars: Star[]): StarDataWithInternalLink | null => {
+  const findStarInList = (stars: Star[]): StarData | null => {
     for (const star of stars) {
-      if (star.data && isStarDataWithInternalLink(star.data) && star.data.slug === slug) {
+      if (star.data && star.data.slug === slug) {
         return star.data;
       }
     }
@@ -478,14 +464,10 @@ export function formatConstellationForLLM(): string {
             about: starData.about,
             classification: starData.classification,
             ...(starData.color && { color: starData.color }),
-            ...(isStarDataWithInternalLink(starData) && { 
+            ...(starData.slug && { 
               slug: starData.slug,
               internalLink: `${STAR_BASE_URL}/${starData.slug}`
-            }),
-            ...("externalLink" in starData &&
-              starData.externalLink && {
-                externalLink: starData.externalLink,
-              }),
+          })
           };
         }),
     };

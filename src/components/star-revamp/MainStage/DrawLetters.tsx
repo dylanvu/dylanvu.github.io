@@ -3,6 +3,7 @@ import * as opentype from "opentype.js";
 import type { Font } from "opentype.js";
 import { SPACE_TEXT_COLOR } from "@/app/theme";
 import { useMobile } from "@/hooks/useMobile";
+import { useId } from "react";
 
 // --- Global Font Cache ---
 const fontCache: Record<string, Promise<Font>> = {};
@@ -53,7 +54,7 @@ export default function DrawLetters({
   const containerRef = useRef<HTMLDivElement>(null);
   const textStr = text || "";
 
-  const uid = useMemo(() => `dl-${Math.random().toString(36).slice(2, 9)}`, []);
+  const id = useId()
 
   // 1. Load Font
   useEffect(() => {
@@ -113,7 +114,7 @@ export default function DrawLetters({
           // FIX: Use glyphData.length (0, 1, 2...) instead of 'i' (0, 1, 5...)
           // This ensures the animation timing is continuous and ignores spaces.
           index: glyphData.length,
-          maskId: `${uid}-m-${i}`,
+          maskId: `${id}-m-${i}`,
         });
       }
 
@@ -148,7 +149,7 @@ export default function DrawLetters({
       perLetterDuration: calculatedLetterDuration,
       staggerDelay: calculatedStagger,
     };
-  }, [font, textStr, fontSize, uid, duration]);
+  }, [font, textStr, fontSize, id, duration, scaledFontSize]);
 
   // 3. Animation Trigger
   useEffect(() => {
@@ -181,6 +182,7 @@ export default function DrawLetters({
       className={className}
       style={{
         display: "flex",
+        justifyContent: "center",
         width,
         color,
         lineHeight: 0,

@@ -10,4 +10,5 @@ export const {
   titleText: "",
   originText: "",
   aboutText: "",
+  initialVisibility: false,
 });

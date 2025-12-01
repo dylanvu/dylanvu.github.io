@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Group } from "react-konva";
 import Konva from "konva";
 import AnimatedLine from "@/components/star-revamp/Star/Constellation/AnimatedLine";
@@ -8,6 +8,7 @@ type Point = { x: number; y: number };
 
 type Props = {
   isVisible: boolean;
+  animationKey: number;
   tl: Point;
   tr: Point;
   br: Point;
@@ -22,6 +23,7 @@ const DEFAULT_TOTAL_DURATION = 2;
 
 export default function ConstellationBoundingBox({
   isVisible,
+  animationKey,
   tl,
   tr,
   br,
@@ -33,7 +35,6 @@ export default function ConstellationBoundingBox({
 }: Props) {
   const groupRef = useRef<Konva.Group>(null);
   const tweenRef = useRef<Konva.Tween | null>(null);
-  const [boxKey, setBoxKey] = useState(0);
 
   // --- ANIMATION TIMING CALCULATIONS ---
   // We calculate this here so the parent doesn't have to worry about edge math
@@ -77,14 +78,11 @@ export default function ConstellationBoundingBox({
     }
 
     if (isVisible) {
-      // ENTER:
-      // 1. Increment key to force React to remount children (triggers drawing animation)
-      // 2. Set opacity to 1 immediately
-      setBoxKey((k) => k + 1);
+      // ENTER: Set opacity to 1 immediately
+      // Animation replay is handled by animationKey prop change from parent
       node.opacity(1);
     } else {
-      // EXIT:
-      // Tween opacity to 0
+      // EXIT: Tween opacity to 0
       tweenRef.current = new Konva.Tween({
         node,
         duration: 0.35,
@@ -107,7 +105,7 @@ export default function ConstellationBoundingBox({
         The key change forces these components to unmount/remount, 
         replaying their internal animations from t=0 
       */}
-      <Group key={boxKey}>
+      <Group key={animationKey}>
         {/* Edges */}
         <AnimatedLine
           p1={tl}

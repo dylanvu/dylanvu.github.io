@@ -8,7 +8,8 @@ import { generateClusterMarkdown, getAllClusterSlugs } from "@/utils/hackathonCl
 
 const directories = [
   "src/app/markdown/projects/active",
-  "src/app/markdown/iter"
+  "src/app/markdown/iter",
+  "src/app/markdown/viae",
 ]
 
 export async function generateStaticParams() {

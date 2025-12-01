@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { Group } from "react-konva";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import React from "react";
 import { usePathname } from "next/navigation";
 
@@ -19,6 +19,7 @@ import ConstellationContent from "./ConstellationContent";
 // Constants & Types
 import { MIN_ZOOM, MAX_ZOOM } from "./ElevareMap";
 import { ConstellationData, TransformData, StarClassificationSize } from "@/interfaces/StarInterfaces";
+import { STAR_BASE_URL } from "@/constants/Routes";
 
 function Constellation({
   data,
@@ -31,7 +32,6 @@ function Constellation({
   bboxLabelSize = 4,
   bboxLabelFontFamily = "sans-serif",
   windowCenter,
-  focusedConstellation,
   onHoverEnterCallback,
   onHoverLeaveCallback,
   onClickCallback,
@@ -46,21 +46,18 @@ function Constellation({
   bboxLabelSize?: number;
   bboxLabelFontFamily?: string;
   windowCenter: { x: number; y: number };
-  focusedConstellation: ConstellationData | null;
   onHoverEnterCallback?: () => void;
   onHoverLeaveCallback?: () => void;
   onClickCallback?: () => void;
 }) {
   const pathname = usePathname();
   const groupRef = useRef<Konva.Group>(null);
+  const { focusedObject, parallaxFocusData } = useFocusContext();
   
   // --- STATE ---
-  const isTarget = focusedConstellation?.name === data.name;
-  const isFocused = isTarget; 
-  const isFocusedRef = useRef(isFocused);
-  isFocusedRef.current = isFocused;
+  const isFocused = focusedObject.constellation === data;
 
-  const { focusedObject, parallaxFocusData } = useFocusContext();
+
   const { polarisDisplayState } = usePolarisContext();
   
   // Local state
@@ -69,10 +66,7 @@ function Constellation({
   const [isHovered, setIsHovered] = useState(false);
   const isElevare = data.name === "Elevare";
   const [elevareZoom, setElevareZoom] = useState(MIN_ZOOM);
-
-  useEffect(() => {
-    if (!isFocused && isElevare) setElevareZoom(MIN_ZOOM);
-  }, [isFocused, isElevare]);
+  const [elevareMapOffset, setElevareMapOffset] = useState({ x: 0, y: 0 });
 
   // --- BOUNDING BOX CALCULATIONS ---
   const { stars, connections, totalDuration } = data;
@@ -128,7 +122,7 @@ function Constellation({
   const parallaxInputData = useMemo(() => {
     // If we don't have focus data, or if *we* are the focus, this input is null 
     // (hook handles isFocused separately)
-    if (!parallaxFocusData || !focusedConstellation) return null;
+    if (!parallaxFocusData || !focusedObject.constellation) return null;
     
     return {
         worldX: parallaxFocusData.unfocusedX,
@@ -136,17 +130,17 @@ function Constellation({
         worldZoom: parallaxFocusData.focusScale,
         targetRotation: parallaxFocusData.rotation
     };
-  }, [parallaxFocusData, focusedConstellation]);
+  }, [parallaxFocusData, focusedObject.constellation]);
 
   const unfocusedConstellationX = (transformData.x ?? 0) + centerX;
   const unfocusedConstellationY = (transformData.y ?? 0) + centerY;
 
   const focusedTargetX = useMemo(() => {
-    return pathname.startsWith("/star/") && polarisDisplayState !== "active" ? windowCenter.x / 2 : windowCenter.x;
+    return pathname.startsWith(STAR_BASE_URL) && polarisDisplayState !== "active" ? windowCenter.x / 2 : windowCenter.x;
   }, [pathname, polarisDisplayState, windowCenter.x]);
 
   // 2. Invoke Hook
-  const { isAnimatingOrFocused } = useParallaxCamera({
+  const { animationTweenRef } = useParallaxCamera({
     nodeRef: groupRef,
     identityId: data.name,
     unfocusedX: unfocusedConstellationX,
@@ -156,8 +150,7 @@ function Constellation({
     focusScale: data.focusScale,
     windowCenter,
     focusedTargetX,
-    isFocused: isTarget,
-    focusedGlobalId: focusedConstellation?.name || null,
+    isFocused: isFocused,
     parallaxData: parallaxInputData,
     depth: 3.5 // Standard background depth
   });
@@ -172,7 +165,7 @@ function Constellation({
 
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
-    if (!node || isAnimatingOrFocused) return;
+    if (!node || animationTweenRef?.current) return;
     
     // Stop any residual tweens just in case
     if (hoverTweenRef.current) { hoverTweenRef.current.destroy(); }
@@ -189,10 +182,6 @@ function Constellation({
   };
 
   // --- INTERACTIONS & CONTENT PREP ---
-  
-  // We map the hook's status to the ref expected by the interaction hook
-  const isReturningRef = useRef(isAnimatingOrFocused);
-  isReturningRef.current = isAnimatingOrFocused;
 
   const DEFAULT_TOTAL_DURATION = 2;
   const getDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }) => Math.hypot(p2.x - p1.x, p2.y - p1.y);
@@ -207,9 +196,7 @@ function Constellation({
 
   const { handleConstellationClick, handleInteractionStart, handleInteractionEnd } =
     useConstellationInteractions({
-      isFocusedRef,
-      isReturningRef, // Passed from hook state
-      focusedObjectStar: focusedObject.star,
+      animationTweenRef,
       transformData,
       brightnessHover,
       HOVER_SCALE,
@@ -220,10 +207,38 @@ function Constellation({
       setBrightness,
       setIsHovered,
       groupRef,
+      data
     });
 
   const controlWidth = 40;
   const controlX = minX - controlWidth;
+
+  // --- ELEVARE ZOOM HELPERS ---
+  // Helper function to calculate centered offset when zoom changes
+  const calculateCenteredOffset = useCallback((oldScale: number, newScale: number, currentOffset: { x: number; y: number }) => {
+    // Calculate the current screen position of the bounding box center
+    const screenX = currentOffset.x + centerX * oldScale;
+    const screenY = currentOffset.y + centerY * oldScale;
+    
+    // Calculate new offset to keep the bounding box center at the same screen position
+    return {
+      x: screenX - centerX * newScale,
+      y: screenY - centerY * newScale
+    };
+  }, [centerX, centerY]);
+
+  // Handler for ElevareControl button presses - calculates offset to keep map centered
+  const handleElevareControlZoomChange = useCallback((newZoom: number) => {
+    const newOffset = calculateCenteredOffset(elevareZoom, newZoom, elevareMapOffset);
+    setElevareZoom(newZoom);
+    setElevareMapOffset(newOffset);
+  }, [calculateCenteredOffset, elevareZoom, elevareMapOffset]);
+
+  // Handler for ElevareMap wheel/drag events - receives both zoom and offset
+  const handleElevareMapZoomOffsetChange = useCallback((newZoom: number, newOffset: { x: number; y: number }) => {
+    setElevareZoom(newZoom);
+    setElevareMapOffset(newOffset);
+  }, []);
 
   return (
     <Group
@@ -250,7 +265,7 @@ function Constellation({
           currentZoom={elevareZoom}
           minZoom={MIN_ZOOM}
           maxZoom={MAX_ZOOM}
-          onZoomChange={setElevareZoom}
+          onZoomChange={handleElevareControlZoomChange}
         />
       )}
       
@@ -270,20 +285,18 @@ function Constellation({
         width={width}
         height={height}
         brightness={brightness}
-        isFocused={isFocused}
         isHovered={isHovered}
         showBoundingBox={showBoundingBox}
         showStarBoundingBox={showStarBoundingBox}
         data={data}
-        stars={stars}
         lineSegments={lineSegments}
         lineDurations={lineDurations}
         lineDelays={lineDelays}
         isElevare={isElevare}
         elevareZoom={elevareZoom}
-        onElevareZoomChange={setElevareZoom}
-        isReturningRef={isReturningRef}
-        isFocusedRef={isFocusedRef}
+        elevareMapOffset={elevareMapOffset}
+        onElevareZoomOffsetChange={handleElevareMapZoomOffsetChange}
+        animationTweenRef={animationTweenRef}
       />
     </Group>
   );

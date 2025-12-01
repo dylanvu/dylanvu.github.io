@@ -4,7 +4,6 @@ import React, {
   createContext,
   useContext,
   useLayoutEffect,
-  useMemo,
   useState,
 } from "react";
 
@@ -63,10 +62,8 @@ export function WindowSizeProvider({
     };
   }, []);
 
-  const value = useMemo(() => size, [size.width, size.height, size.ready]);
-
   return (
-    <WindowSizeContext.Provider value={value}>
+    <WindowSizeContext.Provider value={size}>
       {children}
     </WindowSizeContext.Provider>
   );

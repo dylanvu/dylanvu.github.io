@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ApiError } from "@google/genai";
 
 import { formatConstellationForLLM, formatConstellationLinksForLLM } from "@/components/star-revamp/Star/ConstellationList";
 import {
@@ -8,6 +8,8 @@ import {
   importAllActiveProjects,
   getHackathonStatistics,
   getHackathonListDocument,
+  importAllIterContent,
+  importAllViaeContent,
 } from "./cached-data";
 import { STAR_BASE_URL } from "@/constants/Routes";
 
@@ -29,6 +31,8 @@ export async function POST(request: NextRequest) {
   const resumeString = await getResumeString();
   const navigationInformation = await importMarkdownContent("SkyNavigation.md");
   const activeProjects = await importAllActiveProjects();
+  const iterContent = await importAllIterContent();
+  const viaeContent = await importAllViaeContent();
   const hackathonStatistics = await getHackathonStatistics();
   const hackathonListDocument = await getHackathonListDocument();
   const constellationLinks = formatConstellationLinksForLLM();
@@ -100,6 +104,10 @@ Statistics:
 ${hackathonStatistics}
 </hackathons>
 
+<external_links>
+${viaeContent}
+</external_links>
+
 <portfolio_metaphor>
 ${navigationInformation}
 
@@ -111,7 +119,7 @@ ${constellationLinks}
 </portfolio_metaphor>
 
 <bio>
-TBD
+${iterContent}
 </bio>
 </factual_data>
 
@@ -157,6 +165,7 @@ Presentation Rules:
   - Example: "You can navigate to the [Arete constellation](/constellation/arete) to see his projects"
   - Always use the constellation metaphor terminology when referencing them
 - Can reference images from projects using markdown syntax: ![alt text](image-url)
+- You are able to directly show images if the user asks.
 
 Metaphor Terminology Rules:
 - **CRITICAL**: NEVER use web-centric terms like "page", "link", "website", "click here"
@@ -232,17 +241,17 @@ Character Notes:
         "Transfer-Encoding": "chunked",
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error calling Gemini API:", error);
     
     // Extract status code from error (defaults to 500)
-    const status = error?.status || 500;
+    const status = error instanceof ApiError ? error.status : 500;
 
     // Return error response with proper status code
     return new Response(
       JSON.stringify({
         error: "API Error",
-        message: error?.message || "An error occurred",
+        message: error instanceof Error ? error.message : "An error occurred",
       }),
       {
         status: status,

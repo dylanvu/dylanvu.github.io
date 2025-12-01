@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { FONT_FAMILY, SPACE_TEXT_COLOR, ACCENT_COLOR, DURATION, FOCUS_RING, OPACITY } from "@/app/theme";
+import { FONT_FAMILY, SPACE_TEXT_COLOR, ACCENT_COLOR, DURATION, OPACITY } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { STAR_BASE_URL } from "@/constants/Routes";
 import { useState } from "react";

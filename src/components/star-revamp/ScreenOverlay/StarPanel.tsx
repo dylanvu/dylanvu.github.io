@@ -1,6 +1,5 @@
 "use client";
 import StarMarkdownRenderer from "@/components/star-revamp/StarMarkdownRenderer";
-import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 import { useEffect } from "react";
 
@@ -12,7 +11,6 @@ export default function StarPanel({
   slug: string;
 }) {
   const { navigateToStar } = useFocusContext();
-  const { polarisDisplayState, setPolarisDisplayState } = usePolarisContext();
 
   // Navigation effect - only runs when slug changes
   useEffect(() => {
@@ -21,5 +19,5 @@ export default function StarPanel({
 
   // Polaris suppression effect happens in the polaris provider
   
-  return <StarMarkdownRenderer markdown={markdown} />;
+  return <StarMarkdownRenderer markdown={markdown} slug={slug} />
 }
