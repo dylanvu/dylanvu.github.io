@@ -132,7 +132,7 @@ export default function StarMarkdownRenderer({
             </pre>
           ),
 
-          img: ({ src, alt }: { src?: string; alt?: string }) => (
+          img: ({ src, alt }: { src?: string | Blob; alt?: string }) => (
             <img
               src={src}
               alt={alt}
