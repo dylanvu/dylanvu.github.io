@@ -234,6 +234,18 @@ if (isHop && previousData) {
 
     // Update ref at END
     prevParallaxDataRef.current = parallaxFocusData;
+    
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      if (moveTweenRef.current) {
+        moveTweenRef.current.destroy();
+        moveTweenRef.current = null;
+      }
+      if (moveAnimRef.current) {
+        moveAnimRef.current.stop();
+        moveAnimRef.current = null;
+      }
+    };
   }, [parallaxFocusData, depth, windowCenter, focusedObject]);
 
   return (

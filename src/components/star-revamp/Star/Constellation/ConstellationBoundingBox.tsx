@@ -99,6 +99,16 @@ export default function ConstellationBoundingBox({
     }
   }, [isVisible]);
 
+  // Cleanup tween on unmount
+  useEffect(() => {
+    return () => {
+      if (tweenRef.current) {
+        tweenRef.current.destroy();
+        tweenRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <Group ref={groupRef} listening={isVisible}>
       {/* 
