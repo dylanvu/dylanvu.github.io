@@ -210,72 +210,73 @@ function MainStar({
     };
   }, [delay, initialOpacity]);
 
-  // 2. Optimized twinkle logic
+  // 2. Optimized twinkle logic using Konva.Animation
   useEffect(() => {
     if (!twinkleEnabled) return;
-    let rafId: number | null = null;
+    
+    const shape = shapeRef.current;
+    if (!shape) return;
+    
+    const layer = shape.getLayer();
+    if (!layer) return;
+
     let stopped = false;
-    let lastUpdateTime = 0;
-    const THROTTLE_MS = 16; // ~60fps, adjust higher to reduce CPU usage
+    let animation: Konva.Animation | null = null;
+    let currentTarget = brightnessRef.current;
+    let startBrightness = brightnessRef.current;
+    let startTime: number | null = null;
+    let currentDuration = 0;
 
     const easeInOut = (t: number) => t * t * (3 - 2 * t);
 
-    const animateTo = (start: number, target: number, duration: number) => {
-      const startTime = performance.now();
-      const step = (now: number) => {
-        if (stopped) return;
-        
-        const t = (now - startTime) / duration;
-        if (t >= 1) {
-          brightnessRef.current = target;
-          // Final update - draw only this shape, not entire layer
-          const shape = shapeRef.current;
-          const layer = shape?.getLayer();
-          if (shape && layer) {
-            layer.batchDraw();
-          }
-          scheduleNext();
-          return;
-        }
-        
-        // Throttle updates to reduce CPU usage
-        if (now - lastUpdateTime >= THROTTLE_MS) {
-          const eased = easeInOut(t);
-          brightnessRef.current = start + (target - start) * eased;
-          
-          // Only redraw this specific shape, not the entire layer
-          const shape = shapeRef.current;
-          const layer = shape?.getLayer();
-          if (shape && layer) {
-            layer.batchDraw();
-          }
-          
-          lastUpdateTime = now;
-        }
-        
-        rafId = window.requestAnimationFrame(step);
-      };
-      rafId = window.requestAnimationFrame(step);
-    };
-
     const scheduleNext = () => {
       if (stopped) return;
-      const target =
+      
+      // Generate new target and duration
+      currentTarget =
         Math.min(twinkleMin, twinkleMax) +
         Math.random() *
           (Math.max(twinkleMin, twinkleMax) - Math.min(twinkleMin, twinkleMax));
-      const duration =
+      currentDuration =
         Math.min(twinkleMinDuration, twinkleMaxDuration) +
         Math.random() *
           (Math.max(twinkleMinDuration, twinkleMaxDuration) -
             Math.min(twinkleMinDuration, twinkleMaxDuration));
-      animateTo(brightnessRef.current, target, duration);
+      
+      startBrightness = brightnessRef.current;
+      startTime = null; // Reset start time for next animation cycle
     };
 
+    // Create Konva.Animation for continuous twinkle effect
+    animation = new Konva.Animation((frame) => {
+      if (stopped) return;
+      
+      if (startTime === null) {
+        startTime = frame!.time;
+      }
+      
+      const elapsed = frame!.time - startTime;
+      const progress = Math.min(elapsed / currentDuration, 1);
+      
+      if (progress >= 1) {
+        // Animation complete, schedule next
+        brightnessRef.current = currentTarget;
+        scheduleNext();
+      } else {
+        // Update brightness with easing
+        const eased = easeInOut(progress);
+        brightnessRef.current = startBrightness + (currentTarget - startBrightness) * eased;
+      }
+    }, layer);
+
     scheduleNext();
+    animation.start();
+
     return () => {
       stopped = true;
-      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      if (animation) {
+        animation.stop();
+      }
     };
   }, [
     twinkleEnabled,
