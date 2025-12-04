@@ -86,7 +86,21 @@ export default function GenericOverlay({
   const gap = 0.8;
   const gapUnit = "rem";
   const gapValue = gap + gapUnit;
-  const gapTitleOverride = -1 * 1.5 * gap + gapUnit;
+
+  // Detect if title text has descending letters (g, j, p, q, y)
+  const hasDescenders = (text: string) => {
+    if (!text) return false;
+    return /[gjpqy]/.test(text);
+  };
+
+  // Top margin: Always use the old logic
+  const gapTitleOverrideTop = -1 * 1.5 * gap + gapUnit;
+
+  // Bottom margin: If title has descenders, keep normal spacing. Otherwise, reduce for tighter fit
+  const gapTitleOverrideBottom = useMemo(() => {
+    const multiplier = hasDescenders(titleText) ? 1.5 : 3.5;
+    return -1 * multiplier * gap + gapUnit;
+  }, [titleText, gap, gapUnit]);
 
   return (
     <AnimatePresence
@@ -136,8 +150,8 @@ export default function GenericOverlay({
                   key={`${line.key}-${line.text}`}
                   style={{
                     display: "inline-block",
-                    marginBottom: gapTitleOverride,
-                    marginTop: gapTitleOverride,
+                    marginBottom: gapTitleOverrideBottom,
+                    marginTop: gapTitleOverrideTop,
                   }}
                 >
                   <DrawLetters

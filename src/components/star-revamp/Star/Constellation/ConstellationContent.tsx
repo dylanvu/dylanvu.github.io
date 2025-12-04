@@ -120,7 +120,7 @@ export default function ConstellationContent({
           if (animationTweenRef.current) return;
 
 
-          if (star.data) {
+          if (star.data?.label) {
             if (isFocused) {
               setStarOverlayMobileAware(star.data, setTopOverlayTextContents, mobileState);
             } else {

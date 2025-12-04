@@ -1,7 +1,7 @@
 import { Group, Rect, Text, Line, Circle } from "react-konva";
 import { useState, useRef, useEffect } from "react";
 import Konva from "konva";
-import { SPACE_TEXT_COLOR } from "@/app/theme";
+import { SPACE_TEXT_COLOR, FONT_FAMILY } from "@/app/theme";
 import { useFocusContext } from "@/hooks/useFocusProvider";
 
 interface ElevareControlProps {
@@ -30,7 +30,9 @@ export default function ElevareControl({
   const controlHeight = bottomY - topY;
   const y = topY;
   const [controlOpacity, setControlOpacity] = useState(0);
+  const [textWidth, setTextWidth] = useState(0);
   const sliderRef = useRef<Konva.Circle>(null);
+  const textRef = useRef<Konva.Text>(null);
   const rafIdRef = useRef<number | null>(null);
   const pendingZoomRef = useRef<number | null>(null);
   const groupRef = useRef<Konva.Group>(null);
@@ -127,6 +129,15 @@ export default function ElevareControl({
     pendingZoomRef.current = null;
   };
 
+  // Measure text width for proper centering
+  useEffect(() => {
+    const text = textRef.current;
+    if (text) {
+      const width = text.width();
+      setTextWidth(width);
+    }
+  }, []);
+
   // Fade animation for control panel
   useEffect(() => {
     const node = groupRef.current;
@@ -173,6 +184,20 @@ export default function ElevareControl({
       y={y}
       opacity={controlOpacity}
     >
+      {/* Zoom Label */}
+      <Text
+        ref={textRef}
+        text="Zoom"
+        x={controlWidth / 2}
+        y={-20}
+        fontSize={12}
+        fontFamily={FONT_FAMILY.style.fontFamily}
+        fill={SPACE_TEXT_COLOR}
+        align="center"
+        offsetX={textWidth / 2}
+        listening={false}
+      />
+
       {/* Background */}
       <Rect
         x={0}
