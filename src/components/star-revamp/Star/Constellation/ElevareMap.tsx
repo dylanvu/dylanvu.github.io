@@ -36,8 +36,52 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
   const lastDistRef = useRef(0);
   const innerGroupRef = useRef<Konva.Group>(null);
   const backgroundShapeRef = useRef<Konva.Shape>(null);
+  const strokeShapeRef = useRef<Konva.Shape>(null);
   const fadeAnimationRef = useRef<Konva.Tween | null>(null);
   const resetTweenRef = useRef<Konva.Tween | null>(null);
+
+  // Shape caching for complex US map polygon
+  // Cache both the stroke outline and background fill shapes after initial render
+  useEffect(() => {
+    const strokeShape = strokeShapeRef.current;
+    const backgroundShape = backgroundShapeRef.current;
+    
+    // Calculate bounding box from US_MAP_SIMPLE coordinates
+    const xs = US_MAP_SIMPLE.map(p => p.x);
+    const ys = US_MAP_SIMPLE.map(p => p.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const width = maxX - minX;
+    const height = maxY - minY;
+    
+    // Explicit cache bounds required for shapes with custom sceneFunc
+    const cacheBounds = {
+      x: minX,
+      y: minY,
+      width: width,
+      height: height,
+    };
+    
+    // Only cache if dimensions are valid
+    if (strokeShape && width > 0 && height > 0) {
+      strokeShape.cache(cacheBounds);
+    }
+    
+    if (backgroundShape && width > 0 && height > 0) {
+      backgroundShape.cache(cacheBounds);
+    }
+    
+    return () => {
+      if (strokeShape) {
+        strokeShape.clearCache();
+      }
+      if (backgroundShape) {
+        backgroundShape.clearCache();
+      }
+    };
+  }, []); // Only cache once on mount
 
   // Native wheel event listener - bypasses Konva event system
   useEffect(() => {
@@ -284,6 +328,7 @@ export default function ElevareMap({ children, isFocused, boundingBox, boundingB
       
       {/* Permanent stroke outline - always visible, never fades */}
       <Shape
+        ref={strokeShapeRef}
         sceneFunc={(context) => {
           // Draw stroked US outline polygon
           context.beginPath();
