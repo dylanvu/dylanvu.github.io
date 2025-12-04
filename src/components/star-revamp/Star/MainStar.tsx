@@ -82,7 +82,7 @@ function MainStar({
   // Determine if this star should listen for events
   // If listening prop is explicitly provided, use it
   // Otherwise, only listen if star has data (interactive)
-  const shouldListen = listening !== undefined ? listening : !!data;
+  const shouldListen = listening !== undefined ? listening : !!data?.label;
   
   // Check if this star has a label
   const hasLabel = !!(data?.label || labelOverride);
