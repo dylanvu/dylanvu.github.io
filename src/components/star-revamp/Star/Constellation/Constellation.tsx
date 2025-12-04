@@ -94,7 +94,9 @@ function Constellation({
 
       if (s.data?.label) {
         const temp = new Konva.Text({ text: String(s.data.label), fontSize: bboxLabelSize, fontFamily: bboxLabelFontFamily });
-        const labelW = temp.width(); const labelH = temp.height();
+        const labelW = temp.width();
+        const labelH = temp.height();
+        temp.destroy();
         const labelTop = sy + starRadius + bboxLabelSize;
         minX = Math.min(minX, sx - labelW / 2); maxX = Math.max(maxX, sx + labelW / 2);
         minY = Math.min(minY, labelTop); maxY = Math.max(maxY, labelTop + labelH);
@@ -238,6 +240,16 @@ function Constellation({
   const handleElevareMapZoomOffsetChange = useCallback((newZoom: number, newOffset: { x: number; y: number }) => {
     setElevareZoom(newZoom);
     setElevareMapOffset(newOffset);
+  }, []);
+
+  // Cleanup hover tween on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTweenRef.current) {
+        hoverTweenRef.current.destroy();
+        hoverTweenRef.current = null;
+      }
+    };
   }, []);
 
   return (

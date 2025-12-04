@@ -183,6 +183,7 @@ export default function ElevareControl({
         stroke={SPACE_TEXT_COLOR}
         strokeWidth={1}
         cornerRadius={5}
+        listening={false}
       />
 
       {/* Zoom In Button (+) */}

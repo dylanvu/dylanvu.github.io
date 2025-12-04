@@ -117,7 +117,6 @@ export default function ConstellationContent({
         isConstellationFocused={isFocused}
         onHoverEnterCallback={() => {
           console.log("returning")
-          // for some reason, this always stops here
           if (animationTweenRef.current) return;
 
 
@@ -188,7 +187,6 @@ export default function ConstellationContent({
         p2={stars[i2]}
         duration={lineDurations[idx]}
         delay={lineDelays[idx]}
-        constellationData={data}
       />
     ));
   };

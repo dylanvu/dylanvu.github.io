@@ -33,10 +33,40 @@ export default function ParallaxLayer({
   // Track previous parallax data locally (prevents race conditions)
   const prevParallaxDataRef = useRef<ParallaxFocusData | null>(null);
 
+  // Track if group is cached
+  const isCachedRef = useRef(false);
+
   const { windowCenter } = useWindowSizeContext();
   const { parallaxFocusData, focusedObject } = useFocusContext();
 
-  // 1. ENTRANCE FADE EFFECT
+  // 1. SHAPE CACHING FOR PERFORMANCE
+  // Cache the group after stars are rendered to improve parallax performance
+  // Individual StaticStar components are already cached, but caching the group provides additional benefit
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!group || isCachedRef.current) return;
+
+    // Wait for stars to render and validate dimensions before caching
+    const cacheTimer = setTimeout(() => {
+      const clientRect = group.getClientRect();
+      
+      // Only cache if the group has valid, non-zero dimensions
+      if (clientRect.width > 0 && clientRect.height > 0) {
+        group.cache();
+        isCachedRef.current = true;
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(cacheTimer);
+      if (isCachedRef.current) {
+        group.clearCache();
+        isCachedRef.current = false;
+      }
+    };
+  }, [stars]); // Re-cache if stars array changes (e.g., on resize)
+
+  // 2. ENTRANCE FADE EFFECT
   // We keep this standard useEffect because it's a "Mount" animation, not a "Physics" update.
   useEffect(() => {
     const group = groupRef.current;
@@ -67,7 +97,7 @@ export default function ParallaxLayer({
     };
   }, [fadeDuration, fadeDelay]);
 
-  // 2. PHYSICS & PARALLAX ENGINE (FIXED)
+  // 3. PHYSICS & PARALLAX ENGINE (FIXED)
   useLayoutEffect(() => {
     const group = groupRef.current;
     if (!group) return;
@@ -234,6 +264,18 @@ if (isHop && previousData) {
 
     // Update ref at END
     prevParallaxDataRef.current = parallaxFocusData;
+    
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      if (moveTweenRef.current) {
+        moveTweenRef.current.destroy();
+        moveTweenRef.current = null;
+      }
+      if (moveAnimRef.current) {
+        moveAnimRef.current.stop();
+        moveAnimRef.current = null;
+      }
+    };
   }, [parallaxFocusData, depth, windowCenter, focusedObject]);
 
   return (

@@ -474,6 +474,11 @@ export const useParallaxCamera = ({
 
     prevGlobalIdRef.current = focusedGlobalId;
     prevParallaxDataRef.current = focusedGlobalId ? parallaxData : null;  // Clear when no focus
+    
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      stopTween();
+    };
     // we must include focusedTargetX and targetY target coords to re-animate when focus position changes
   }, [isFocused, focusedGlobalId, parallaxData, identityId, focusedTargetX, targetY]);
 

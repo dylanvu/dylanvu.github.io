@@ -159,9 +159,8 @@ export default function Polaris({
   
   // Color state management
   const [currentColor, setCurrentColor] = useState(POLARIS_IDLE_COLOR);
-  const animationRef = useRef<number | null>(null);
+  const colorAnimationRef = useRef<Konva.Animation | null>(null);
   const startColorRef = useRef(POLARIS_IDLE_COLOR);
-  const startTimeRef = useRef<number | null>(null);
   
   // Determine target color based on state priority: error > thinking > talking > idle
   const targetColor = hasError
@@ -172,25 +171,34 @@ export default function Polaris({
     ? POLARIS_TALKING_COLOR 
     : POLARIS_IDLE_COLOR;
   
-  // Animate color transitions smoothly
+  // Animate color transitions smoothly using Konva.Animation
   useEffect(() => {
     if (currentColor === targetColor) return;
     
+    const group = groupRef.current;
+    if (!group) return;
+    
+    const layer = group.getLayer();
+    if (!layer) return;
+    
     // Cancel any ongoing animation
-    if (animationRef.current !== null) {
-      cancelAnimationFrame(animationRef.current);
+    if (colorAnimationRef.current) {
+      colorAnimationRef.current.stop();
+      colorAnimationRef.current = null;
     }
     
     // Set up new animation
     startColorRef.current = currentColor;
-    startTimeRef.current = null;
+    let startTime: number | null = null;
     
-    const animate = (timestamp: number) => {
-      if (startTimeRef.current === null) {
-        startTimeRef.current = timestamp;
+    colorAnimationRef.current = new Konva.Animation((frame) => {
+      if (!frame) return;
+      
+      if (startTime === null) {
+        startTime = frame.time;
       }
       
-      const elapsed = timestamp - startTimeRef.current;
+      const elapsed = frame.time - startTime;
       const duration = DURATION.normal * 1000; // Convert to milliseconds
       const progress = Math.min(elapsed / duration, 1);
       
@@ -205,19 +213,18 @@ export default function Polaris({
       
       setCurrentColor(interpolatedColor);
       
-      if (progress < 1) {
-        animationRef.current = requestAnimationFrame(animate);
-      } else {
-        animationRef.current = null;
+      if (progress >= 1) {
+        colorAnimationRef.current?.stop();
+        colorAnimationRef.current = null;
       }
-    };
+    }, layer);
     
-    animationRef.current = requestAnimationFrame(animate);
+    colorAnimationRef.current.start();
     
     return () => {
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
+      if (colorAnimationRef.current) {
+        colorAnimationRef.current.stop();
+        colorAnimationRef.current = null;
       }
     };
   }, [targetColor, currentColor]);
@@ -375,6 +382,7 @@ export default function Polaris({
         onHoverLeaveCallback={onHoverLeaveCallback}
         onHoverPointerOverride={true}
         colorOverride={currentColor}
+        listening={true}
       />
     </Group>
   );
