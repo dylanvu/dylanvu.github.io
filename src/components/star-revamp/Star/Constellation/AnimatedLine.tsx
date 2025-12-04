@@ -2,27 +2,18 @@ import { Line } from "react-konva";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { OPACITY } from "@/app/theme";
-import { useFocusContext } from "@/hooks/useFocusProvider";
 
 export default function AnimatedLine({
   p1,
   p2,
   duration = 0.5,
   delay = 0,
-  constellationData,
 }: {
   p1: { x: number; y: number };
   p2: { x: number; y: number };
   duration?: number;
   delay?: number;
-  constellationData?: { name: string };
 }) {
-  const { focusedObject } = useFocusContext();
-  
-  // Disable listening for lines in Elevare when Elevare is focused
-  const shouldDisableListening = 
-    constellationData?.name === "Elevare" &&
-    focusedObject.constellation?.name === "Elevare";
   const lineRef = useRef<Konva.Line>(null);
   const totalLength = Math.hypot(p2.x - p1.x, p2.y - p1.y);
 
@@ -60,7 +51,7 @@ export default function AnimatedLine({
       strokeWidth={1}
       lineCap="round"
       lineJoin="round"
-      listening={!shouldDisableListening}
+      listening={false}
     />
   );
 }

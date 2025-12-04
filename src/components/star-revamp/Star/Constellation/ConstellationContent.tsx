@@ -188,7 +188,6 @@ export default function ConstellationContent({
         p2={stars[i2]}
         duration={lineDurations[idx]}
         delay={lineDelays[idx]}
-        constellationData={data}
       />
     ));
   };
