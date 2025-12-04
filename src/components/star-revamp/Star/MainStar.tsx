@@ -122,6 +122,9 @@ function MainStar({
   // Track label opacity separately
   const labelOpacityRef = useRef(0);
   
+  // Track if glow is cached
+  const glowCachedRef = useRef(false);
+  
   // Pre-calculate label width to prevent position shift
   const labelText = labelOverride || data?.label;
 
@@ -210,7 +213,41 @@ function MainStar({
     };
   }, [delay, initialOpacity]);
 
-  // 2. Optimized twinkle logic using Konva.Animation
+  // 2. Shape caching for glow effect
+  // Cache the glow shape to improve performance when focusing stars
+  // Only opacity animates, so cached version can be reused
+  useEffect(() => {
+    const glow = glowRef.current;
+    if (!glow) return;
+
+    // Clear any previous cache
+    if (glowCachedRef.current) {
+      glow.clearCache();
+      glowCachedRef.current = false;
+    }
+
+    // Calculate glow dimensions
+    const starRadius = actualSize * Math.max(brightness, twinkleMax ?? brightness);
+    const glowRadius = starRadius * 2.5;
+
+    // Cache with explicit bounds
+    glow.cache({
+      x: -glowRadius,
+      y: -glowRadius,
+      width: glowRadius * 2,
+      height: glowRadius * 2,
+    });
+    glowCachedRef.current = true;
+
+    return () => {
+      if (glowCachedRef.current) {
+        glow.clearCache();
+        glowCachedRef.current = false;
+      }
+    };
+  }, [actualSize, brightness, twinkleMax]); // Re-cache only when size changes
+
+  // 3. Optimized twinkle logic using Konva.Animation
   useEffect(() => {
     if (!twinkleEnabled) return;
     
@@ -286,7 +323,7 @@ function MainStar({
     twinkleMaxDuration,
   ]);
 
-  // 3. Hover scale
+  // 4. Hover scale
   const playHoverTween = (toScaleX: number, toScaleY: number) => {
     const node = groupRef.current;
     if (!node) return;
@@ -434,7 +471,7 @@ function MainStar({
     playHoverTween(baseScale, baseScale);
   }, [focusedObject, isConstellationFocused]);
 
-  // 4. Glow fade in/out animation
+  // 5. Glow fade in/out animation
   useEffect(() => {
     const glow = glowRef.current;
     if (!glow) return;
@@ -470,7 +507,7 @@ function MainStar({
     };
   }, [isFocused]);
 
-  // 5. Focus-based dimming (only runs after initial fade completes)
+  // 6. Focus-based dimming (only runs after initial fade completes)
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
@@ -517,7 +554,7 @@ function MainStar({
     };
   }, [isConstellationFocused, focusedObject.star?.slug, isFocused]);
 
-  // 6. Label fade in/out animation
+  // 7. Label fade in/out animation
   useEffect(() => {
     const text = textRef.current;
     if (!text || !hasLabel) return;
