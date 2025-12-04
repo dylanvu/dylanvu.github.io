@@ -117,7 +117,6 @@ export default function ConstellationContent({
         isConstellationFocused={isFocused}
         onHoverEnterCallback={() => {
           console.log("returning")
-          // for some reason, this always stops here
           if (animationTweenRef.current) return;
 
 

@@ -679,7 +679,7 @@ function MainStar({
           ctx.closePath();
           ctx.fillStrokeShape(shape);
         }}
-        listening={true}
+        listening={shouldListen}
       />
       {labelElement}
     </Group>
