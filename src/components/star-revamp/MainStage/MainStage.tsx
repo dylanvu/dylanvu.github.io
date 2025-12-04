@@ -182,11 +182,18 @@ export default function MainStage({
           height={height}
           style={{ background: SPACE_BACKGROUND_COLOR }}
         >
-          <Layer>
+          {/* Background Layer - Static/Rarely Updated 
+              Only redraws on focus state changes, not on every star twinkle */}
+          <Layer listening={false}>
             <BackgroundStarField
               width={width}
               height={height}
             />
+          </Layer>
+          
+          {/* Main Content Layer - Frequently Animated
+              Contains constellations, stars with twinkles, and interactive elements */}
+          <Layer>
             {showMainStars && <MainStarField />}
           </Layer>
         </Stage>
