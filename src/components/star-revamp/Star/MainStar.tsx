@@ -45,6 +45,7 @@ type Props = {
   onHoverPointerOverride?: boolean;
   onHoverScale?: number;
   colorOverride?: string; // Override the star color
+  listening?: boolean; // Override listening behavior
 };
 
 function MainStar({
@@ -72,10 +73,16 @@ function MainStar({
   onHoverPointerOverride = false,
   onHoverScale = 1.1,
   colorOverride,
+  listening,
 }: Props) {
   const { mobileScaleFactor, mobileFontScaleFactor } = useMobile();
   
   const { focusedObject } = useFocusContext();
+  
+  // Determine if this star should listen for events
+  // If listening prop is explicitly provided, use it
+  // Otherwise, only listen if star has data (interactive)
+  const shouldListen = listening !== undefined ? listening : !!data;
   
   // Check if this star has a label
   const hasLabel = !!(data?.label || labelOverride);
@@ -584,6 +591,7 @@ function MainStar({
         align="center"
         offsetX={calculatedLabelWidth / 2}
         opacity={0}
+        listening={false}
       />
     );
   }, [labelText, actualSize, scaledLabelSize]);
@@ -600,7 +608,7 @@ function MainStar({
       onTouchEnd={handleInteractionEnd}
       onClick={handleStarClick}
       onTap={handleStarClick}
-      listening={true}
+      listening={shouldListen}
     >
       {/* Glow/Halo effect for focused star */}
       <Shape

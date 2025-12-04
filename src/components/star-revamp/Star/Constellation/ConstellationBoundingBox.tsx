@@ -110,7 +110,7 @@ export default function ConstellationBoundingBox({
   }, []);
 
   return (
-    <Group ref={groupRef} listening={isVisible}>
+    <Group ref={groupRef} listening={false}>
       {/* 
         The key change forces these components to unmount/remount, 
         replaying their internal animations from t=0 
@@ -149,6 +149,7 @@ export default function ConstellationBoundingBox({
           size={2}
           brightness={brightness}
           delay={cornerStarDelays[0]}
+          listening={false}
         />
         <MainStar
           x={tr.x}
@@ -156,6 +157,7 @@ export default function ConstellationBoundingBox({
           size={3}
           brightness={brightness}
           delay={cornerStarDelays[1]}
+          listening={false}
         />
         <MainStar
           x={br.x}
@@ -163,6 +165,7 @@ export default function ConstellationBoundingBox({
           size={4}
           brightness={brightness}
           delay={cornerStarDelays[2]}
+          listening={false}
         />
         <MainStar
           x={bl.x}
@@ -170,6 +173,7 @@ export default function ConstellationBoundingBox({
           size={2}
           brightness={brightness}
           delay={cornerStarDelays[3]}
+          listening={false}
         />
       </Group>
     </Group>
