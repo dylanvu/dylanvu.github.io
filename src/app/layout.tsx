@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 // fix the large flashing icon: https://blog.cetindere.de/fix-huge-flashing-icons-fontawesome/
@@ -24,11 +24,12 @@ export const metadata: Metadata = {
   keywords:
     "Dylan Vu, Software Developer, Full-Stack Developer, Web Development, Mobile Development, Embedded Systems, IoT, Internet of Things, Game Development, Amazon Health, One Medical, UCI, UC Irvine, Computer Science, TypeScript, JavaScript, Flutter, Python, NodeJS, Hackathon, Software Engineering",
   manifest: "/site.webmanifest",
-  viewport: {
-    width: "device-width",
-    initialScale: 1.0,
-    userScalable: false,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  userScalable: false,
 };
 
 export default function RootLayout({
