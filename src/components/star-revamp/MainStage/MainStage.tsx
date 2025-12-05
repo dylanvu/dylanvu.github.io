@@ -26,6 +26,7 @@ import { TargetAndTransition, VariantLabels, Transition } from "motion/react";
 import { usePolarisContext } from "@/hooks/Polaris/usePolarisProvider";
 import PolarisChat from "@/components/star-revamp/Star/Polaris/PolarisChat";
 import { CONSTELLATION_BASE_URL, STAR_BASE_URL } from "@/constants/Routes";
+import ShootingStarField from "@/components/star-revamp/Star/ShootingStarField";
 
 const BasePanelStyle: React.CSSProperties = {
   position: "absolute",
@@ -189,6 +190,13 @@ export default function MainStage({
               width={width}
               height={height}
             />
+          </Layer>
+          
+          {/* Shooting Star Layer - Animated but Minimal
+              Only redraws when shooting stars are active (2-3 simple shapes max)
+              Positioned between background and main content for proper z-ordering */}
+          <Layer listening={false}>
+            {showMainStars && <ShootingStarField width={width} height={height} />}
           </Layer>
           
           {/* Main Content Layer - Frequently Animated
