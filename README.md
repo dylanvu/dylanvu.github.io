@@ -4,11 +4,6 @@ My portfolio website created using React.js, Next.js, Framer Motion, and TypeScr
 
 https://dylanvu-github-io.vercel.app/
 
-## TODO List
-
-- Add a "Hackathons" page
-- Add a "Mentoring" page
-
 ## How to Add New Project Groups
 
 1. Go to the `public` directory
